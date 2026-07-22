@@ -4,7 +4,7 @@ import {
   useRouterState,
   useNavigate,
 } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAuth, useOptionalTenant } from "@/core/hooks";
 import { AppLayout } from "@/core/components/AppLayout";
 
@@ -24,10 +24,13 @@ function AuthenticatedLayout() {
   const tenant = useOptionalTenant();
   const navigate = useNavigate();
   const href = useRouterState({ select: (s) => s.location.href });
+  const redirectedRef = useRef(false);
   useEffect(() => {
-    if (!loading && !user) {
-      navigate({ to: "/auth", search: { redirect: href }, replace: true });
-    }
+    if (loading || user) return;
+    if (redirectedRef.current) return;
+    redirectedRef.current = true;
+    const safe = href.startsWith("/auth") ? "/" : href;
+    navigate({ to: "/auth", search: { redirect: safe }, replace: true });
   }, [loading, user, navigate, href]);
   // Sem empresa cadastrada → força onboarding (exceto na própria página).
   useEffect(() => {
