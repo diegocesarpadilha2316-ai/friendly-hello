@@ -20,6 +20,7 @@ import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedObservabilidadeRouteImport } from './routes/_authenticated.observabilidade'
 import { Route as AuthenticatedNotificacoesRouteImport } from './routes/_authenticated.notificacoes'
 import { Route as AuthenticatedMarketplaceRouteImport } from './routes/_authenticated.marketplace'
+import { Route as AuthenticatedIntegracoesRouteImport } from './routes/_authenticated.integracoes'
 import { Route as AuthenticatedIaRouteImport } from './routes/_authenticated.ia'
 import { Route as AuthenticatedFinanceiroRouteImport } from './routes/_authenticated.financeiro'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated.crm'
@@ -85,6 +86,12 @@ const AuthenticatedMarketplaceRoute =
     path: '/marketplace',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedIntegracoesRoute =
+  AuthenticatedIntegracoesRouteImport.update({
+    id: '/integracoes',
+    path: '/integracoes',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedIaRoute = AuthenticatedIaRouteImport.update({
   id: '/ia',
   path: '/ia',
@@ -132,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/crm': typeof AuthenticatedCrmRoute
   '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/ia': typeof AuthenticatedIaRoute
+  '/integracoes': typeof AuthenticatedIntegracoesRoute
   '/marketplace': typeof AuthenticatedMarketplaceRoute
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/observabilidade': typeof AuthenticatedObservabilidadeRoute
@@ -150,6 +158,7 @@ export interface FileRoutesByTo {
   '/crm': typeof AuthenticatedCrmRoute
   '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/ia': typeof AuthenticatedIaRoute
+  '/integracoes': typeof AuthenticatedIntegracoesRoute
   '/marketplace': typeof AuthenticatedMarketplaceRoute
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/observabilidade': typeof AuthenticatedObservabilidadeRoute
@@ -171,6 +180,7 @@ export interface FileRoutesById {
   '/_authenticated/crm': typeof AuthenticatedCrmRoute
   '/_authenticated/financeiro': typeof AuthenticatedFinanceiroRoute
   '/_authenticated/ia': typeof AuthenticatedIaRoute
+  '/_authenticated/integracoes': typeof AuthenticatedIntegracoesRoute
   '/_authenticated/marketplace': typeof AuthenticatedMarketplaceRoute
   '/_authenticated/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/_authenticated/observabilidade': typeof AuthenticatedObservabilidadeRoute
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
     | '/crm'
     | '/financeiro'
     | '/ia'
+    | '/integracoes'
     | '/marketplace'
     | '/notificacoes'
     | '/observabilidade'
@@ -211,6 +222,7 @@ export interface FileRouteTypes {
     | '/crm'
     | '/financeiro'
     | '/ia'
+    | '/integracoes'
     | '/marketplace'
     | '/notificacoes'
     | '/observabilidade'
@@ -231,6 +243,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm'
     | '/_authenticated/financeiro'
     | '/_authenticated/ia'
+    | '/_authenticated/integracoes'
     | '/_authenticated/marketplace'
     | '/_authenticated/notificacoes'
     | '/_authenticated/observabilidade'
@@ -329,6 +342,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMarketplaceRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/integracoes': {
+      id: '/_authenticated/integracoes'
+      path: '/integracoes'
+      fullPath: '/integracoes'
+      preLoaderRoute: typeof AuthenticatedIntegracoesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/ia': {
       id: '/_authenticated/ia'
       path: '/ia'
@@ -386,6 +406,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRoute
   AuthenticatedFinanceiroRoute: typeof AuthenticatedFinanceiroRoute
   AuthenticatedIaRoute: typeof AuthenticatedIaRoute
+  AuthenticatedIntegracoesRoute: typeof AuthenticatedIntegracoesRoute
   AuthenticatedMarketplaceRoute: typeof AuthenticatedMarketplaceRoute
   AuthenticatedNotificacoesRoute: typeof AuthenticatedNotificacoesRoute
   AuthenticatedObservabilidadeRoute: typeof AuthenticatedObservabilidadeRoute
@@ -404,6 +425,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCrmRoute: AuthenticatedCrmRoute,
   AuthenticatedFinanceiroRoute: AuthenticatedFinanceiroRoute,
   AuthenticatedIaRoute: AuthenticatedIaRoute,
+  AuthenticatedIntegracoesRoute: AuthenticatedIntegracoesRoute,
   AuthenticatedMarketplaceRoute: AuthenticatedMarketplaceRoute,
   AuthenticatedNotificacoesRoute: AuthenticatedNotificacoesRoute,
   AuthenticatedObservabilidadeRoute: AuthenticatedObservabilidadeRoute,
