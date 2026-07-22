@@ -136,10 +136,10 @@ function AdminCenterPage() {
               className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-2xl"
             >
               <ModuleCard
-                title={section.title}
+                name={section.title}
                 description={section.description}
                 icon={<Icon className="h-5 w-5 text-primary" />}
-                tag={section.tag}
+                status={{ label: section.tag, tone: "info" }}
                 className="h-full transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/50"
               />
             </Link>
