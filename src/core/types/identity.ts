@@ -1,9 +1,8 @@
 /**
  * Tipos base de identidade — consumidos por todos os módulos.
- * Implementações concretas virão nas próximas fases.
+ * `CompanyId` vive em `./tenant`; aqui ficam apenas identidade humana.
  */
 export type UserId = string & { readonly __brand: "UserId" };
-export type CompanyId = string & { readonly __brand: "CompanyId" };
 
 export interface CoreUser {
   id: UserId;
@@ -11,18 +10,4 @@ export interface CoreUser {
   displayName: string | null;
   avatarUrl: string | null;
   createdAt: string;
-}
-
-export interface CoreCompany {
-  id: CompanyId;
-  name: string;
-  slug: string;
-  createdAt: string;
-}
-
-export type Permission = string;
-export interface RoleGrant {
-  userId: UserId;
-  companyId: CompanyId;
-  permissions: readonly Permission[];
 }
