@@ -350,7 +350,7 @@ function SecurityTab() {
           <input
             type="number"
             className="w-full rounded-md border bg-background px-2 py-1.5"
-            value={String(form[k] ?? (s ? (s as unknown as Record<string, number>)[k] ?? "") : "")}
+            value={String(form[k] ?? (s ? ((s as unknown as Record<string, number>)[k] ?? "") : ""))}
             onChange={(e) => setForm((f) => ({ ...f, [k]: e.target.value }))}
           />
         </label>
