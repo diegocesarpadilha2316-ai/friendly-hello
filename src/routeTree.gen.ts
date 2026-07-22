@@ -16,6 +16,7 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.
 import { Route as AuthenticatedStorageRouteImport } from './routes/_authenticated.storage'
 import { Route as AuthenticatedSitesRouteImport } from './routes/_authenticated.sites'
 import { Route as AuthenticatedSistemasRouteImport } from './routes/_authenticated.sistemas'
+import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticated.security'
 import { Route as AuthenticatedSdkRouteImport } from './routes/_authenticated.sdk'
 import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticated.planner'
 import { Route as AuthenticatedObservabilidadeRouteImport } from './routes/_authenticated.observabilidade'
@@ -67,6 +68,11 @@ const AuthenticatedSitesRoute = AuthenticatedSitesRouteImport.update({
 const AuthenticatedSistemasRoute = AuthenticatedSistemasRouteImport.update({
   id: '/sistemas',
   path: '/sistemas',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSecurityRoute = AuthenticatedSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedSdkRoute = AuthenticatedSdkRouteImport.update({
@@ -184,6 +190,7 @@ export interface FileRoutesByFullPath {
   '/observabilidade': typeof AuthenticatedObservabilidadeRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/sdk': typeof AuthenticatedSdkRoute
+  '/security': typeof AuthenticatedSecurityRoute
   '/sistemas': typeof AuthenticatedSistemasRoute
   '/sites': typeof AuthenticatedSitesRoute
   '/storage': typeof AuthenticatedStorageRoute
@@ -209,6 +216,7 @@ export interface FileRoutesByTo {
   '/observabilidade': typeof AuthenticatedObservabilidadeRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/sdk': typeof AuthenticatedSdkRoute
+  '/security': typeof AuthenticatedSecurityRoute
   '/sistemas': typeof AuthenticatedSistemasRoute
   '/sites': typeof AuthenticatedSitesRoute
   '/storage': typeof AuthenticatedStorageRoute
@@ -237,6 +245,7 @@ export interface FileRoutesById {
   '/_authenticated/observabilidade': typeof AuthenticatedObservabilidadeRoute
   '/_authenticated/planner': typeof AuthenticatedPlannerRoute
   '/_authenticated/sdk': typeof AuthenticatedSdkRoute
+  '/_authenticated/security': typeof AuthenticatedSecurityRoute
   '/_authenticated/sistemas': typeof AuthenticatedSistemasRoute
   '/_authenticated/sites': typeof AuthenticatedSitesRoute
   '/_authenticated/storage': typeof AuthenticatedStorageRoute
@@ -266,6 +275,7 @@ export interface FileRouteTypes {
     | '/observabilidade'
     | '/planner'
     | '/sdk'
+    | '/security'
     | '/sistemas'
     | '/sites'
     | '/storage'
@@ -291,6 +301,7 @@ export interface FileRouteTypes {
     | '/observabilidade'
     | '/planner'
     | '/sdk'
+    | '/security'
     | '/sistemas'
     | '/sites'
     | '/storage'
@@ -318,6 +329,7 @@ export interface FileRouteTypes {
     | '/_authenticated/observabilidade'
     | '/_authenticated/planner'
     | '/_authenticated/sdk'
+    | '/_authenticated/security'
     | '/_authenticated/sistemas'
     | '/_authenticated/sites'
     | '/_authenticated/storage'
@@ -386,6 +398,13 @@ declare module '@tanstack/react-router' {
       path: '/sistemas'
       fullPath: '/sistemas'
       preLoaderRoute: typeof AuthenticatedSistemasRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/security': {
+      id: '/_authenticated/security'
+      path: '/security'
+      fullPath: '/security'
+      preLoaderRoute: typeof AuthenticatedSecurityRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/sdk': {
@@ -531,6 +550,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedObservabilidadeRoute: typeof AuthenticatedObservabilidadeRoute
   AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRoute
   AuthenticatedSdkRoute: typeof AuthenticatedSdkRoute
+  AuthenticatedSecurityRoute: typeof AuthenticatedSecurityRoute
   AuthenticatedSistemasRoute: typeof AuthenticatedSistemasRoute
   AuthenticatedSitesRoute: typeof AuthenticatedSitesRoute
   AuthenticatedStorageRoute: typeof AuthenticatedStorageRoute
@@ -554,6 +574,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedObservabilidadeRoute: AuthenticatedObservabilidadeRoute,
   AuthenticatedPlannerRoute: AuthenticatedPlannerRoute,
   AuthenticatedSdkRoute: AuthenticatedSdkRoute,
+  AuthenticatedSecurityRoute: AuthenticatedSecurityRoute,
   AuthenticatedSistemasRoute: AuthenticatedSistemasRoute,
   AuthenticatedSitesRoute: AuthenticatedSitesRoute,
   AuthenticatedStorageRoute: AuthenticatedStorageRoute,

@@ -10,6 +10,7 @@ import {
   LogOut,
   Plug,
   Puzzle,
+  ShieldCheck,
   Settings,
 } from "lucide-react";
 import {
@@ -55,6 +56,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         { title: "Jobs & Workers", url: "/jobs", icon: ListTodo },
         { title: "API Gateway", url: "/api-gateway", icon: Globe2 },
         { title: "Cache", url: "/cache", icon: Database },
+        { title: "Segurança", url: "/security", icon: ShieldCheck },
         { title: "Configurações", url: "/configuracoes", icon: Settings },
       ],
     },
