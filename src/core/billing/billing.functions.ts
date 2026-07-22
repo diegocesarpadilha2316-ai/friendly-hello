@@ -1,8 +1,11 @@
 /**
- * Server functions de billing/créditos.
- * Tolerante à ausência das tabelas (retorna defaults) para permitir que o
- * dashboard renderize antes da aplicação da migration 002.
+ * Server functions de billing/créditos + helper interno reutilizável.
+ *
+ * IMPORTANTE: `composeBillingSummary(supabase, tenantId)` é a fonte única
+ * da lógica — todas as server functions e outros server-side callers usam
+ * este helper, evitando encadeamento de RPCs entre server functions.
  */
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireTenant } from "@/core/middleware/require-tenant";
@@ -15,10 +18,7 @@ import type {
 const isMissingTable = (message: string | undefined) =>
   !!message && (message.includes("does not exist") || message.includes("schema cache"));
 
-async function loadPlan(
-  supabase: import("@supabase/supabase-js").SupabaseClient,
-  key: string,
-): Promise<PlanDefinition | null> {
+async function loadPlan(supabase: SupabaseClient, key: string): Promise<PlanDefinition | null> {
   const { data, error } = await supabase
     .from("plans")
     .select("key, label, monthly_credits, price_cents, currency, features, sort_order")
@@ -45,7 +45,7 @@ async function loadPlan(
 }
 
 async function loadSubscription(
-  supabase: import("@supabase/supabase-js").SupabaseClient,
+  supabase: SupabaseClient,
   companyId: string,
 ): Promise<TenantSubscription | null> {
   const { data, error } = await supabase
@@ -74,12 +74,13 @@ async function loadSubscription(
 }
 
 async function loadBalance(
-  supabase: import("@supabase/supabase-js").SupabaseClient,
+  supabase: SupabaseClient,
   companyId: string,
 ): Promise<{ balance: number; used: number }> {
   const { data, error } = await supabase.rpc("credit_balance", { _company_id: companyId });
   if (error && !isMissingTable(error.message)) throw new Error(error.message);
   const balance = typeof data === "number" ? data : 0;
+
   const { data: usedRows, error: usedErr } = await supabase
     .from("credit_ledger")
     .select("amount")
@@ -93,25 +94,28 @@ async function loadBalance(
   return { balance, used };
 }
 
-/** Snapshot de billing do tenant ativo. */
+/** Fonte única: consumida por server functions e helpers server-side. */
+export async function composeBillingSummary(
+  supabase: SupabaseClient,
+  tenantId: string,
+): Promise<BillingSummary> {
+  const subscription = await loadSubscription(supabase, tenantId);
+  const planKey = subscription?.planKey ?? "free";
+  const plan = await loadPlan(supabase, planKey);
+  const { balance, used } = await loadBalance(supabase, tenantId);
+  return {
+    plan,
+    subscription,
+    balance,
+    usedThisPeriod: used,
+    resetsAt: subscription?.currentPeriodEnd ?? null,
+  };
+}
+
 export const getBillingSummary = createServerFn({ method: "GET" })
   .middleware([requireTenant])
-  .handler(async ({ context }): Promise<BillingSummary> => {
-    const { supabase, tenantId } = context;
-    const subscription = await loadSubscription(supabase, tenantId);
-    const planKey = subscription?.planKey ?? "free";
-    const plan = await loadPlan(supabase, planKey);
-    const { balance, used } = await loadBalance(supabase, tenantId);
-    return {
-      plan,
-      subscription,
-      balance,
-      usedThisPeriod: used,
-      resetsAt: subscription?.currentPeriodEnd ?? null,
-    };
-  });
+  .handler(({ context }) => composeBillingSummary(context.supabase, context.tenantId));
 
-/** Lista pública de planos (catálogo). */
 export const listPlans = createServerFn({ method: "GET" })
   .middleware([requireTenant])
   .handler(async ({ context }): Promise<ReadonlyArray<PlanDefinition>> => {
@@ -140,10 +144,6 @@ export const listPlans = createServerFn({ method: "GET" })
     });
   });
 
-/**
- * Consumo de créditos — chamado por qualquer módulo (IA/Render/etc.).
- * Fase 1.6 apenas registra no ledger; enforcement/holdback vem na Fase 1.7.
- */
 const consumeSchema = z.object({
   amount: z.number().int().positive(),
   reason: z.string().min(1).max(120),
