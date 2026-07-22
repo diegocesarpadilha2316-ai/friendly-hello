@@ -434,7 +434,7 @@ function FlagsTab() {
           criar
         </button>
       </div>
-      <DataTable data={list} columns={cols} getRowKey={(r) => r.id} empty="Nenhuma flag cadastrada." />
+      <DataTable data={[...list]} columns={cols} getRowKey={(r) => r.id} empty="Nenhuma flag cadastrada." />
     </section>
   );
 }
