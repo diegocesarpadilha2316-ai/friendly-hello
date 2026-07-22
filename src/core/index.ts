@@ -25,3 +25,4 @@ export * as configuration from "./configuration";
 export * as integrations from "./integrations";
 export * as sdk from "./sdk";
 export * as jobs from "./jobs";
+export * as apiGateway from "./api-gateway";
