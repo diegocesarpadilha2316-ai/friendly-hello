@@ -39,8 +39,8 @@ function WorkspaceKeys() {
                 id: "status",
                 header: "Status",
                 cell: (r) => (
-                  <StatusBadge tone={r.status === "healthy" ? "success" : r.status === "degraded" ? "warning" : "neutral"}>
-                    {r.status}
+                  <StatusBadge tone={r.revokedAt ? "danger" : "success"}>
+                    {r.revokedAt ? "revogada" : "ativa"}
                   </StatusBadge>
                 ),
               },

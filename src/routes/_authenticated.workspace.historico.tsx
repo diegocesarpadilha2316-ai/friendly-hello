@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/workspace/historico")({
 
 function WorkspaceHist() {
   const q = useNotificationAudit();
-  const rows = (q.data ?? []) as Array<Record<string, unknown> & { id: string }>;
+  const rows = (q.data ?? []) as ReadonlyArray<Record<string, unknown> & { id: string }>;
   return (
     <PageContainer>
       <PageHeader eyebrow="Workspace" title="Histórico" description="Auditoria consolidada" />
