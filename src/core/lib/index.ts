@@ -1,5 +1,4 @@
 /**
- * core/lib — placeholder barrel.
- * Adicione exports conforme os recursos do Core forem implementados.
+ * core/lib — libs de baixo nível (clients, gateways, integrações).
  */
-export {};
+export * from "./supabase";

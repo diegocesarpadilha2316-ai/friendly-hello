@@ -1,5 +1,1 @@
-/**
- * core/providers — placeholder barrel.
- * Adicione exports conforme os recursos do Core forem implementados.
- */
-export {};
+export { AuthProvider, useAuth, useOptionalAuth, type AuthState } from "./AuthProvider";
