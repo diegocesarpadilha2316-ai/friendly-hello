@@ -95,7 +95,7 @@ const runSchema = z.object({
   durationMs: z.number().int().min(0).nullish(),
   coveragePct: z.number().min(0).max(100).nullish(),
   correlationId: z.string().max(120).nullish(),
-  metadata: z.record(z.string(), z.unknown()).default({}),
+  metadata: z.record(z.string(), z.string()).default({}),
   cases: z.array(z.object({
     name: z.string().min(1).max(240),
     file: z.string().max(300).nullish(),
