@@ -35,6 +35,7 @@ import { Route as AuthenticatedCacheRouteImport } from './routes/_authenticated.
 import { Route as AuthenticatedAutomacaoRouteImport } from './routes/_authenticated.automacao'
 import { Route as AuthenticatedApiGatewayRouteImport } from './routes/_authenticated.api-gateway'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
+import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated.workspace.index'
 import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated.configuracoes.index'
 import { Route as AuthenticatedOnboardingCompanyRouteImport } from './routes/_authenticated.onboarding.company'
 import { Route as AuthenticatedConfiguracoesEmpresaRouteImport } from './routes/_authenticated.configuracoes.empresa'
@@ -174,6 +175,12 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedWorkspaceIndexRoute =
+  AuthenticatedWorkspaceIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
 const AuthenticatedConfiguracoesIndexRoute =
   AuthenticatedConfiguracoesIndexRouteImport.update({
     id: '/configuracoes/',
@@ -228,10 +235,11 @@ export interface FileRoutesByFullPath {
   '/sistemas': typeof AuthenticatedSistemasRoute
   '/sites': typeof AuthenticatedSitesRoute
   '/storage': typeof AuthenticatedStorageRoute
-  '/workspace': typeof AuthenticatedWorkspaceRoute
+  '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
   '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
+  '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
 }
@@ -259,11 +267,11 @@ export interface FileRoutesByTo {
   '/sistemas': typeof AuthenticatedSistemasRoute
   '/sites': typeof AuthenticatedSitesRoute
   '/storage': typeof AuthenticatedStorageRoute
-  '/workspace': typeof AuthenticatedWorkspaceRoute
   '/': typeof AuthenticatedIndexRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesIndexRoute
+  '/workspace': typeof AuthenticatedWorkspaceIndexRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
 }
@@ -293,11 +301,12 @@ export interface FileRoutesById {
   '/_authenticated/sistemas': typeof AuthenticatedSistemasRoute
   '/_authenticated/sites': typeof AuthenticatedSitesRoute
   '/_authenticated/storage': typeof AuthenticatedStorageRoute
-  '/_authenticated/workspace': typeof AuthenticatedWorkspaceRoute
+  '/_authenticated/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/_authenticated/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
   '/_authenticated/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
+  '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
 }
@@ -332,6 +341,7 @@ export interface FileRouteTypes {
     | '/configuracoes/empresa'
     | '/onboarding/company'
     | '/configuracoes/'
+    | '/workspace/'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
   fileRoutesByTo: FileRoutesByTo
@@ -359,11 +369,11 @@ export interface FileRouteTypes {
     | '/sistemas'
     | '/sites'
     | '/storage'
-    | '/workspace'
     | '/'
     | '/configuracoes/empresa'
     | '/onboarding/company'
     | '/configuracoes'
+    | '/workspace'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
   id:
@@ -397,6 +407,7 @@ export interface FileRouteTypes {
     | '/_authenticated/configuracoes/empresa'
     | '/_authenticated/onboarding/company'
     | '/_authenticated/configuracoes/'
+    | '/_authenticated/workspace/'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
   fileRoutesById: FileRoutesById
@@ -593,6 +604,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/workspace/': {
+      id: '/_authenticated/workspace/'
+      path: '/'
+      fullPath: '/workspace/'
+      preLoaderRoute: typeof AuthenticatedWorkspaceIndexRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
     '/_authenticated/configuracoes/': {
       id: '/_authenticated/configuracoes/'
       path: '/configuracoes'
@@ -631,6 +649,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedWorkspaceRouteChildren {
+  AuthenticatedWorkspaceIndexRoute: typeof AuthenticatedWorkspaceIndexRoute
+}
+
+const AuthenticatedWorkspaceRouteChildren: AuthenticatedWorkspaceRouteChildren =
+  {
+    AuthenticatedWorkspaceIndexRoute: AuthenticatedWorkspaceIndexRoute,
+  }
+
+const AuthenticatedWorkspaceRouteWithChildren =
+  AuthenticatedWorkspaceRoute._addFileChildren(
+    AuthenticatedWorkspaceRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedApiGatewayRoute: typeof AuthenticatedApiGatewayRoute
@@ -653,7 +685,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedSistemasRoute: typeof AuthenticatedSistemasRoute
   AuthenticatedSitesRoute: typeof AuthenticatedSitesRoute
   AuthenticatedStorageRoute: typeof AuthenticatedStorageRoute
-  AuthenticatedWorkspaceRoute: typeof AuthenticatedWorkspaceRoute
+  AuthenticatedWorkspaceRoute: typeof AuthenticatedWorkspaceRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedConfiguracoesEmpresaRoute: typeof AuthenticatedConfiguracoesEmpresaRoute
   AuthenticatedOnboardingCompanyRoute: typeof AuthenticatedOnboardingCompanyRoute
@@ -682,7 +714,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedSistemasRoute: AuthenticatedSistemasRoute,
   AuthenticatedSitesRoute: AuthenticatedSitesRoute,
   AuthenticatedStorageRoute: AuthenticatedStorageRoute,
-  AuthenticatedWorkspaceRoute: AuthenticatedWorkspaceRoute,
+  AuthenticatedWorkspaceRoute: AuthenticatedWorkspaceRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedConfiguracoesEmpresaRoute:
     AuthenticatedConfiguracoesEmpresaRoute,
