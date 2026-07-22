@@ -21,3 +21,4 @@ export * as dashboard from "./dashboard";
 export * as billing from "./billing";
 export * as ai from "./ai";
 export * as observability from "./observability";
+export * as configuration from "./configuration";
