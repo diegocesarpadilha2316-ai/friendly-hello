@@ -70,23 +70,12 @@ class EventBusImpl {
 
     const event = mapEvent(data);
 
-    // Cria deliveries para regras ativas do tenant que casem com o tipo
-    const { data: rules } = await ctx.supabase
-      .from("notification_rules")
-      .select("id")
-      .eq("company_id", ctx.tenantId)
-      .eq("enabled", true)
-      .eq("event_type", input.type);
-
-    if (rules && rules.length > 0) {
-      await ctx.supabase.from("event_deliveries").insert(
-        rules.map((r) => ({
-          company_id: ctx.tenantId,
-          event_id: event.id,
-          subscriber: `rule:${r.id}`,
-          status: "pending",
-        })),
-      );
+    // Materializa notificações via NotificationManager (regras + audiência + templates)
+    try {
+      const { NotificationManager } = await import("@/core/notifications/manager.server");
+      await NotificationManager.processEvent(ctx, event);
+    } catch (err) {
+      console.error(`[EventBus] processEvent falhou para ${event.type}:`, err);
     }
 
     // Fanout in-process (best-effort, não bloqueante em caso de erro)
