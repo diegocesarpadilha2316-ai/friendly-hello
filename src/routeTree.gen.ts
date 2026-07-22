@@ -27,9 +27,12 @@ import { Route as AuthenticatedIaRouteImport } from './routes/_authenticated.ia'
 import { Route as AuthenticatedFinanceiroRouteImport } from './routes/_authenticated.financeiro'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated.crm'
 import { Route as AuthenticatedAutomacaoRouteImport } from './routes/_authenticated.automacao'
+import { Route as AuthenticatedApiGatewayRouteImport } from './routes/_authenticated.api-gateway'
 import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated.configuracoes.index'
 import { Route as AuthenticatedOnboardingCompanyRouteImport } from './routes/_authenticated.onboarding.company'
 import { Route as AuthenticatedConfiguracoesEmpresaRouteImport } from './routes/_authenticated.configuracoes.empresa'
+import { Route as ApiPublicV1PingRouteImport } from './routes/api/public/v1/ping'
+import { Route as ApiPublicV1OpenapiRouteImport } from './routes/api/public/v1/openapi'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -124,6 +127,11 @@ const AuthenticatedAutomacaoRoute = AuthenticatedAutomacaoRouteImport.update({
   path: '/automacao',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedApiGatewayRoute = AuthenticatedApiGatewayRouteImport.update({
+  id: '/api-gateway',
+  path: '/api-gateway',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedConfiguracoesIndexRoute =
   AuthenticatedConfiguracoesIndexRouteImport.update({
     id: '/configuracoes/',
@@ -142,11 +150,22 @@ const AuthenticatedConfiguracoesEmpresaRoute =
     path: '/configuracoes/empresa',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const ApiPublicV1PingRoute = ApiPublicV1PingRouteImport.update({
+  id: '/api/public/v1/ping',
+  path: '/api/public/v1/ping',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicV1OpenapiRoute = ApiPublicV1OpenapiRouteImport.update({
+  id: '/api/public/v1/openapi',
+  path: '/api/public/v1/openapi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/automacao': typeof AuthenticatedAutomacaoRoute
   '/crm': typeof AuthenticatedCrmRoute
   '/financeiro': typeof AuthenticatedFinanceiroRoute
@@ -164,10 +183,13 @@ export interface FileRoutesByFullPath {
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
   '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
+  '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
+  '/api/public/v1/ping': typeof ApiPublicV1PingRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/automacao': typeof AuthenticatedAutomacaoRoute
   '/crm': typeof AuthenticatedCrmRoute
   '/financeiro': typeof AuthenticatedFinanceiroRoute
@@ -186,12 +208,15 @@ export interface FileRoutesByTo {
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesIndexRoute
+  '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
+  '/api/public/v1/ping': typeof ApiPublicV1PingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/_authenticated/automacao': typeof AuthenticatedAutomacaoRoute
   '/_authenticated/crm': typeof AuthenticatedCrmRoute
   '/_authenticated/financeiro': typeof AuthenticatedFinanceiroRoute
@@ -210,6 +235,8 @@ export interface FileRoutesById {
   '/_authenticated/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/_authenticated/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
   '/_authenticated/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
+  '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
+  '/api/public/v1/ping': typeof ApiPublicV1PingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -217,6 +244,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/api-gateway'
     | '/automacao'
     | '/crm'
     | '/financeiro'
@@ -234,10 +262,13 @@ export interface FileRouteTypes {
     | '/configuracoes/empresa'
     | '/onboarding/company'
     | '/configuracoes/'
+    | '/api/public/v1/openapi'
+    | '/api/public/v1/ping'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
     | '/reset-password'
+    | '/api-gateway'
     | '/automacao'
     | '/crm'
     | '/financeiro'
@@ -256,11 +287,14 @@ export interface FileRouteTypes {
     | '/configuracoes/empresa'
     | '/onboarding/company'
     | '/configuracoes'
+    | '/api/public/v1/openapi'
+    | '/api/public/v1/ping'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
+    | '/_authenticated/api-gateway'
     | '/_authenticated/automacao'
     | '/_authenticated/crm'
     | '/_authenticated/financeiro'
@@ -279,12 +313,16 @@ export interface FileRouteTypes {
     | '/_authenticated/configuracoes/empresa'
     | '/_authenticated/onboarding/company'
     | '/_authenticated/configuracoes/'
+    | '/api/public/v1/openapi'
+    | '/api/public/v1/ping'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiPublicV1OpenapiRoute: typeof ApiPublicV1OpenapiRoute
+  ApiPublicV1PingRoute: typeof ApiPublicV1PingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -415,6 +453,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAutomacaoRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/api-gateway': {
+      id: '/_authenticated/api-gateway'
+      path: '/api-gateway'
+      fullPath: '/api-gateway'
+      preLoaderRoute: typeof AuthenticatedApiGatewayRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/configuracoes/': {
       id: '/_authenticated/configuracoes/'
       path: '/configuracoes'
@@ -436,10 +481,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConfiguracoesEmpresaRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/api/public/v1/ping': {
+      id: '/api/public/v1/ping'
+      path: '/api/public/v1/ping'
+      fullPath: '/api/public/v1/ping'
+      preLoaderRoute: typeof ApiPublicV1PingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/v1/openapi': {
+      id: '/api/public/v1/openapi'
+      path: '/api/public/v1/openapi'
+      fullPath: '/api/public/v1/openapi'
+      preLoaderRoute: typeof ApiPublicV1OpenapiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedApiGatewayRoute: typeof AuthenticatedApiGatewayRoute
   AuthenticatedAutomacaoRoute: typeof AuthenticatedAutomacaoRoute
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRoute
   AuthenticatedFinanceiroRoute: typeof AuthenticatedFinanceiroRoute
@@ -461,6 +521,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedApiGatewayRoute: AuthenticatedApiGatewayRoute,
   AuthenticatedAutomacaoRoute: AuthenticatedAutomacaoRoute,
   AuthenticatedCrmRoute: AuthenticatedCrmRoute,
   AuthenticatedFinanceiroRoute: AuthenticatedFinanceiroRoute,
@@ -490,6 +551,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiPublicV1OpenapiRoute: ApiPublicV1OpenapiRoute,
+  ApiPublicV1PingRoute: ApiPublicV1PingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
