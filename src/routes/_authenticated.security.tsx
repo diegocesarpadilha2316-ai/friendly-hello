@@ -43,14 +43,14 @@ type TabKey =
   | "audit";
 
 const TABS: readonly { key: TabKey; label: string }[] = [
-  { key: "dashboard", label: "Dashboard" },
-  { key: "sessions", label: "Sessões" },
-  { key: "devices", label: "Dispositivos" },
-  { key: "login", label: "Login" },
-  { key: "mfa", label: "MFA" },
-  { key: "policies", label: "Políticas" },
-  { key: "incidents", label: "Incidentes" },
-  { key: "audit", label: "Auditoria" },
+  { id: "dashboard", label: "Dashboard" },
+  { id: "sessions", label: "Sessões" },
+  { id: "devices", label: "Dispositivos" },
+  { id: "login", label: "Login" },
+  { id: "mfa", label: "MFA" },
+  { id: "policies", label: "Políticas" },
+  { id: "incidents", label: "Incidentes" },
+  { id: "audit", label: "Auditoria" },
 ];
 
 export const Route = createFileRoute("/_authenticated/security")({
@@ -79,7 +79,7 @@ export const Route = createFileRoute("/_authenticated/security")({
 function severityTone(s: SecurityIncident["severity"]): StatusTone {
   switch (s) {
     case "critical":
-      return "error";
+      return "danger";
     case "high":
       return "warning";
     case "medium":
@@ -92,7 +92,7 @@ function severityTone(s: SecurityIncident["severity"]): StatusTone {
 function outcomeTone(o: SecurityLoginAttempt["outcome"]): StatusTone {
   if (o === "success") return "success";
   if (o === "mfa_required") return "info";
-  if (o === "locked" || o === "suspicious") return "error";
+  if (o === "locked" || o === "suspicious") return "danger";
   return "warning";
 }
 
@@ -159,9 +159,9 @@ function SessionsTab({ sessions }: { sessions: SecuritySession[] }) {
   const logout = useGlobalLogout();
   const columns: DataTableColumn<SecuritySession>[] = useMemo(
     () => [
-      { key: "userId", header: "Usuário", cell: (r) => <code className="text-xs">{r.userId.slice(0, 8)}</code> },
-      { key: "ip", header: "IP", cell: (r) => r.ip ?? "—" },
-      { key: "location", header: "Local", cell: (r) => r.location ?? "—" },
+      { id: "userId", header: "Usuário", cell: (r) => <code className="text-xs">{r.userId.slice(0, 8)}</code> },
+      { id: "ip", header: "IP", cell: (r) => r.ip ?? "—" },
+      { id: "location", header: "Local", cell: (r) => r.location ?? "—" },
       {
         key: "status",
         header: "Status",
@@ -171,7 +171,7 @@ function SessionsTab({ sessions }: { sessions: SecuritySession[] }) {
           </StatusBadge>
         ),
       },
-      { key: "lastSeenAt", header: "Última atividade", cell: (r) => new Date(r.lastSeenAt).toLocaleString() },
+      { id: "lastSeenAt", header: "Última atividade", cell: (r) => new Date(r.lastSeenAt).toLocaleString() },
       {
         key: "actions",
         header: "",
@@ -208,9 +208,9 @@ function SessionsTab({ sessions }: { sessions: SecuritySession[] }) {
 function DevicesTab({ devices }: { devices: SecurityDevice[] }) {
   const trust = useSetDeviceTrust();
   const columns: DataTableColumn<SecurityDevice>[] = [
-    { key: "name", header: "Dispositivo", cell: (r) => r.name ?? r.fingerprint.slice(0, 10) },
-    { key: "platform", header: "Plataforma", cell: (r) => r.platform ?? "—" },
-    { key: "lastIp", header: "Último IP", cell: (r) => r.lastIp ?? "—" },
+    { id: "name", header: "Dispositivo", cell: (r) => r.name ?? r.fingerprint.slice(0, 10) },
+    { id: "platform", header: "Plataforma", cell: (r) => r.platform ?? "—" },
+    { id: "lastIp", header: "Último IP", cell: (r) => r.lastIp ?? "—" },
     {
       key: "trusted",
       header: "Confiança",
@@ -220,7 +220,7 @@ function DevicesTab({ devices }: { devices: SecurityDevice[] }) {
         </StatusBadge>
       ),
     },
-    { key: "lastSeenAt", header: "Última atividade", cell: (r) => new Date(r.lastSeenAt).toLocaleString() },
+    { id: "lastSeenAt", header: "Última atividade", cell: (r) => new Date(r.lastSeenAt).toLocaleString() },
     {
       key: "actions",
       header: "",
@@ -244,15 +244,15 @@ function DevicesTab({ devices }: { devices: SecurityDevice[] }) {
 
 function LoginTab({ attempts }: { attempts: SecurityLoginAttempt[] }) {
   const columns: DataTableColumn<SecurityLoginAttempt>[] = [
-    { key: "createdAt", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString() },
-    { key: "email", header: "Email", cell: (r) => r.email ?? "—" },
-    { key: "ip", header: "IP", cell: (r) => r.ip ?? "—" },
+    { id: "createdAt", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString() },
+    { id: "email", header: "Email", cell: (r) => r.email ?? "—" },
+    { id: "ip", header: "IP", cell: (r) => r.ip ?? "—" },
     {
       key: "outcome",
       header: "Resultado",
       cell: (r) => <StatusBadge tone={outcomeTone(r.outcome)}>{r.outcome}</StatusBadge>,
     },
-    { key: "reason", header: "Motivo", cell: (r) => r.reason ?? "—" },
+    { id: "reason", header: "Motivo", cell: (r) => r.reason ?? "—" },
   ];
   return attempts.length === 0 ? (
     <EmptyState title="Sem tentativas" description="Nenhuma tentativa de login registrada." />
@@ -266,8 +266,8 @@ function MfaTab({ factors, policy }: { factors: SecurityMfaFactor[]; policy: Sec
   const toggle = useToggleMfa();
   const remove = useDeleteMfa();
   const columns: DataTableColumn<SecurityMfaFactor>[] = [
-    { key: "method", header: "Método", cell: (r) => r.method },
-    { key: "label", header: "Rótulo", cell: (r) => r.label ?? "—" },
+    { id: "method", header: "Método", cell: (r) => r.method },
+    { id: "label", header: "Rótulo", cell: (r) => r.label ?? "—" },
     {
       key: "enabled",
       header: "Status",
@@ -277,7 +277,7 @@ function MfaTab({ factors, policy }: { factors: SecurityMfaFactor[]; policy: Sec
         </StatusBadge>
       ),
     },
-    { key: "createdAt", header: "Criado", cell: (r) => new Date(r.createdAt).toLocaleString() },
+    { id: "createdAt", header: "Criado", cell: (r) => new Date(r.createdAt).toLocaleString() },
     {
       key: "actions",
       header: "",
@@ -522,14 +522,14 @@ function IncidentsTab({ incidents }: { incidents: SecurityIncident[] }) {
     description: "",
   });
   const columns: DataTableColumn<SecurityIncident>[] = [
-    { key: "createdAt", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString() },
+    { id: "createdAt", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString() },
     {
       key: "severity",
       header: "Severidade",
       cell: (r) => <StatusBadge tone={severityTone(r.severity)}>{r.severity}</StatusBadge>,
     },
-    { key: "category", header: "Categoria", cell: (r) => r.category },
-    { key: "title", header: "Título", cell: (r) => r.title },
+    { id: "category", header: "Categoria", cell: (r) => r.category },
+    { id: "title", header: "Título", cell: (r) => r.title },
     {
       key: "status",
       header: "Status",
@@ -590,11 +590,11 @@ function IncidentsTab({ incidents }: { incidents: SecurityIncident[] }) {
 
 function AuditTab({ audit }: { audit: SecurityAuditEntry[] }) {
   const columns: DataTableColumn<SecurityAuditEntry>[] = [
-    { key: "createdAt", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString() },
-    { key: "action", header: "Ação", cell: (r) => <code className="text-xs">{r.action}</code> },
-    { key: "actorEmail", header: "Ator", cell: (r) => r.actorEmail ?? r.actorId?.slice(0, 8) ?? "—" },
-    { key: "targetType", header: "Alvo", cell: (r) => (r.targetType ? `${r.targetType}:${r.targetId?.slice(0, 8) ?? ""}` : "—") },
-    { key: "correlationId", header: "Correlation", cell: (r) => r.correlationId ?? "—" },
+    { id: "createdAt", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString() },
+    { id: "action", header: "Ação", cell: (r) => <code className="text-xs">{r.action}</code> },
+    { id: "actorEmail", header: "Ator", cell: (r) => r.actorEmail ?? r.actorId?.slice(0, 8) ?? "—" },
+    { id: "targetType", header: "Alvo", cell: (r) => (r.targetType ? `${r.targetType}:${r.targetId?.slice(0, 8) ?? ""}` : "—") },
+    { id: "correlationId", header: "Correlation", cell: (r) => r.correlationId ?? "—" },
   ];
   return audit.length === 0 ? (
     <EmptyState title="Sem eventos" description="Nenhum evento de auditoria registrado." />
