@@ -15,6 +15,7 @@ import {
   Gauge,
   Rocket,
   LifeBuoy,
+  Command,
 } from "lucide-react";
 import {
   AppShell,
@@ -27,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { app, modules } from "@/core/config";
 import { useOptionalAuth } from "@/core/hooks";
 import { useNavigate } from "@tanstack/react-router";
+import diorisMark from "@/assets/dioris-mark.png";
 
 /**
  * AppLayout — composição padrão consumida pelo __root para páginas do hub.
@@ -38,7 +40,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const groups: SidebarNavGroup[] = [
     {
       label: "Visão geral",
-      items: [{ title: "Dashboard", url: "/", icon: LayoutDashboard }],
+      items: [
+        { title: "Dashboard", url: "/", icon: LayoutDashboard },
+        { title: "Admin Center", url: "/admin", icon: Command },
+      ],
     },
     {
       label: "Módulos",
@@ -70,7 +75,28 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <AppShell
-      sidebar={<Sidebar brand={app.name} groups={groups} />}
+      sidebar={
+        <Sidebar
+          brand={
+            <div className="flex items-center gap-2">
+              <img
+                src={diorisMark}
+                alt="Dioris"
+                width={28}
+                height={28}
+                className="h-7 w-7 shrink-0"
+              />
+              <div className="flex flex-col leading-tight">
+                <span className="text-sm font-semibold tracking-tight">{app.name}</span>
+                <span className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                  Inteligência que conecta
+                </span>
+              </div>
+            </div>
+          }
+          groups={groups}
+        />
+      }
       topbar={
         <Topbar
           left={
