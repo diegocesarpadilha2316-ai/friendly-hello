@@ -30,3 +30,4 @@ export * as cache from "./cache";
 export * as security from "./security";
 export * as quality from "./quality";
 export * as cicd from "./cicd";
+export * as recovery from "./recovery";
