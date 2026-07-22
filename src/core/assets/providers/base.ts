@@ -9,16 +9,30 @@ export abstract class BaseStorageProvider implements StorageProvider {
     throw new StorageError(`Operação ${op} não suportada no provider ${this.id}`, "provider_error", this.id);
   }
 
-  createSignedUploadUrl(): Promise<SignedUrl> {
+  createSignedUploadUrl(_input: {
+    bucket: string;
+    objectKey: string;
+    mime: string;
+    sizeBytes: number;
+    expiresInSec?: number;
+  }): Promise<SignedUrl> {
     return Promise.reject(this.unsupported("createSignedUploadUrl"));
   }
-  createSignedDownloadUrl(): Promise<SignedUrl> {
+  createSignedDownloadUrl(_input: {
+    bucket: string;
+    objectKey: string;
+    expiresInSec?: number;
+    downloadName?: string;
+  }): Promise<SignedUrl> {
     return Promise.reject(this.unsupported("createSignedDownloadUrl"));
   }
-  deleteObject(): Promise<void> {
+  deleteObject(_input: { bucket: string; objectKey: string }): Promise<void> {
     return Promise.reject(this.unsupported("deleteObject"));
   }
-  headObject(): Promise<{ sizeBytes: number; mime: string | null } | null> {
+  headObject(_input: {
+    bucket: string;
+    objectKey: string;
+  }): Promise<{ sizeBytes: number; mime: string | null } | null> {
     return Promise.resolve(null);
   }
   health(): Promise<{ status: "healthy" | "degraded" | "down" | "unknown"; message?: string }> {
