@@ -13,6 +13,38 @@ import {
 } from "./api-gateway.functions";
 import { apiGatewayKeys, apiGatewaySnapshotQuery } from "./queries";
 
+export type CreateApiKeyInput = {
+  name: string;
+  description?: string;
+  scopes?: string[];
+  allowedIps?: string[];
+  expiresAt?: string;
+};
+export type RateLimitInput = {
+  scope: "company" | "user" | "api_key" | "endpoint";
+  scopeKey: string;
+  windowSeconds?: number;
+  maxRequests?: number;
+};
+export type QuotaInput = { period: "minute" | "hour" | "day" | "month"; maxRequests: number };
+export type EndpointInput = {
+  version?: string;
+  method: string;
+  path: string;
+  module: string;
+  summary?: string;
+  scopes?: string[];
+  public?: boolean;
+  deprecated?: boolean;
+};
+export type WebhookInput = {
+  id?: string;
+  name: string;
+  url: string;
+  events?: string[];
+  active?: boolean;
+};
+
 export function useApiGatewaySnapshot() {
   return useSuspenseQuery(apiGatewaySnapshotQuery());
 }
@@ -26,8 +58,7 @@ export function useCreateApiKey() {
   const fn = useServerFn(apiKeyCreate);
   const invalidate = useInvalidate();
   return useMutation({
-    mutationFn: (data: Parameters<typeof fn>[0] extends { data: infer D } ? D : never) =>
-      fn({ data }),
+    mutationFn: (data: CreateApiKeyInput) => fn({ data } as never),
     onSuccess: () => invalidate(),
   });
 }
@@ -54,8 +85,7 @@ export function useUpsertRateLimit() {
   const fn = useServerFn(apiRateLimitUpsert);
   const invalidate = useInvalidate();
   return useMutation({
-    mutationFn: (data: Parameters<typeof fn>[0] extends { data: infer D } ? D : never) =>
-      fn({ data }),
+    mutationFn: (data: RateLimitInput) => fn({ data } as never),
     onSuccess: () => invalidate(),
   });
 }
@@ -64,8 +94,7 @@ export function useUpsertQuota() {
   const fn = useServerFn(apiQuotaUpsert);
   const invalidate = useInvalidate();
   return useMutation({
-    mutationFn: (data: Parameters<typeof fn>[0] extends { data: infer D } ? D : never) =>
-      fn({ data }),
+    mutationFn: (data: QuotaInput) => fn({ data } as never),
     onSuccess: () => invalidate(),
   });
 }
@@ -74,8 +103,7 @@ export function useRegisterEndpoint() {
   const fn = useServerFn(apiEndpointRegister);
   const invalidate = useInvalidate();
   return useMutation({
-    mutationFn: (data: Parameters<typeof fn>[0] extends { data: infer D } ? D : never) =>
-      fn({ data }),
+    mutationFn: (data: EndpointInput) => fn({ data } as never),
     onSuccess: () => invalidate(),
   });
 }
@@ -84,8 +112,7 @@ export function useUpsertWebhook() {
   const fn = useServerFn(apiWebhookUpsert);
   const invalidate = useInvalidate();
   return useMutation({
-    mutationFn: (data: Parameters<typeof fn>[0] extends { data: infer D } ? D : never) =>
-      fn({ data }),
+    mutationFn: (data: WebhookInput) => fn({ data } as never),
     onSuccess: () => invalidate(),
   });
 }
