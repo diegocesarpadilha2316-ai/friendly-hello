@@ -9,8 +9,56 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitesRouteImport } from './routes/sites'
+import { Route as SistemasRouteImport } from './routes/sistemas'
+import { Route as PlannerRouteImport } from './routes/planner'
+import { Route as MarketplaceRouteImport } from './routes/marketplace'
+import { Route as IaRouteImport } from './routes/ia'
+import { Route as FinanceiroRouteImport } from './routes/financeiro'
+import { Route as CrmRouteImport } from './routes/crm'
+import { Route as AutomacaoRouteImport } from './routes/automacao'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SitesRoute = SitesRouteImport.update({
+  id: '/sites',
+  path: '/sites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SistemasRoute = SistemasRouteImport.update({
+  id: '/sistemas',
+  path: '/sistemas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlannerRoute = PlannerRouteImport.update({
+  id: '/planner',
+  path: '/planner',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceRoute = MarketplaceRouteImport.update({
+  id: '/marketplace',
+  path: '/marketplace',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IaRoute = IaRouteImport.update({
+  id: '/ia',
+  path: '/ia',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceiroRoute = FinanceiroRouteImport.update({
+  id: '/financeiro',
+  path: '/financeiro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CrmRoute = CrmRouteImport.update({
+  id: '/crm',
+  path: '/crm',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AutomacaoRoute = AutomacaoRouteImport.update({
+  id: '/automacao',
+  path: '/automacao',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +67,144 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/automacao': typeof AutomacaoRoute
+  '/crm': typeof CrmRoute
+  '/financeiro': typeof FinanceiroRoute
+  '/ia': typeof IaRoute
+  '/marketplace': typeof MarketplaceRoute
+  '/planner': typeof PlannerRoute
+  '/sistemas': typeof SistemasRoute
+  '/sites': typeof SitesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/automacao': typeof AutomacaoRoute
+  '/crm': typeof CrmRoute
+  '/financeiro': typeof FinanceiroRoute
+  '/ia': typeof IaRoute
+  '/marketplace': typeof MarketplaceRoute
+  '/planner': typeof PlannerRoute
+  '/sistemas': typeof SistemasRoute
+  '/sites': typeof SitesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/automacao': typeof AutomacaoRoute
+  '/crm': typeof CrmRoute
+  '/financeiro': typeof FinanceiroRoute
+  '/ia': typeof IaRoute
+  '/marketplace': typeof MarketplaceRoute
+  '/planner': typeof PlannerRoute
+  '/sistemas': typeof SistemasRoute
+  '/sites': typeof SitesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/automacao'
+    | '/crm'
+    | '/financeiro'
+    | '/ia'
+    | '/marketplace'
+    | '/planner'
+    | '/sistemas'
+    | '/sites'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/automacao'
+    | '/crm'
+    | '/financeiro'
+    | '/ia'
+    | '/marketplace'
+    | '/planner'
+    | '/sistemas'
+    | '/sites'
+  id:
+    | '__root__'
+    | '/'
+    | '/automacao'
+    | '/crm'
+    | '/financeiro'
+    | '/ia'
+    | '/marketplace'
+    | '/planner'
+    | '/sistemas'
+    | '/sites'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AutomacaoRoute: typeof AutomacaoRoute
+  CrmRoute: typeof CrmRoute
+  FinanceiroRoute: typeof FinanceiroRoute
+  IaRoute: typeof IaRoute
+  MarketplaceRoute: typeof MarketplaceRoute
+  PlannerRoute: typeof PlannerRoute
+  SistemasRoute: typeof SistemasRoute
+  SitesRoute: typeof SitesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sites': {
+      id: '/sites'
+      path: '/sites'
+      fullPath: '/sites'
+      preLoaderRoute: typeof SitesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sistemas': {
+      id: '/sistemas'
+      path: '/sistemas'
+      fullPath: '/sistemas'
+      preLoaderRoute: typeof SistemasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/planner': {
+      id: '/planner'
+      path: '/planner'
+      fullPath: '/planner'
+      preLoaderRoute: typeof PlannerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace': {
+      id: '/marketplace'
+      path: '/marketplace'
+      fullPath: '/marketplace'
+      preLoaderRoute: typeof MarketplaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ia': {
+      id: '/ia'
+      path: '/ia'
+      fullPath: '/ia'
+      preLoaderRoute: typeof IaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/financeiro': {
+      id: '/financeiro'
+      path: '/financeiro'
+      fullPath: '/financeiro'
+      preLoaderRoute: typeof FinanceiroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crm': {
+      id: '/crm'
+      path: '/crm'
+      fullPath: '/crm'
+      preLoaderRoute: typeof CrmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/automacao': {
+      id: '/automacao'
+      path: '/automacao'
+      fullPath: '/automacao'
+      preLoaderRoute: typeof AutomacaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +217,14 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AutomacaoRoute: AutomacaoRoute,
+  CrmRoute: CrmRoute,
+  FinanceiroRoute: FinanceiroRoute,
+  IaRoute: IaRoute,
+  MarketplaceRoute: MarketplaceRoute,
+  PlannerRoute: PlannerRoute,
+  SistemasRoute: SistemasRoute,
+  SitesRoute: SitesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
