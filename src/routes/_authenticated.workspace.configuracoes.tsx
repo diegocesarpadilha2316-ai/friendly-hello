@@ -67,7 +67,7 @@ function WorkspaceConfig() {
 
   const savePreferences = () => {
     upsertCompany.mutate(
-      { theme, timezone, currency, displayName, locale },
+      { theme, timezone, currency, displayName },
       {
         onSuccess: () => toast.success("Preferências salvas"),
         onError: (e) => toast.error((e as Error).message),
