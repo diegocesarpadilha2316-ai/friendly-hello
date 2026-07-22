@@ -4,6 +4,15 @@
 export type CompanyId = string & { readonly __brand: "CompanyId" };
 
 export type TenantRole = "owner" | "admin" | "manager" | "member";
+
+/** JSON serializável — usado por campos `settings` etc. */
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json }
+  | Json[];
 export type TenantPlan = "free" | "starter" | "pro" | "business" | "enterprise";
 export type TenantStatus = "active" | "suspended" | "canceled";
 
@@ -30,7 +39,7 @@ export interface Company {
   plan: TenantPlan;
   status: TenantStatus;
   custom_domain: string | null;
-  settings: Record<string, unknown>;
+  settings: Json;
   created_by: string | null;
   created_at: string;
   updated_at: string;

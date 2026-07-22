@@ -29,14 +29,17 @@ export const listMyCompanies = createServerFn({ method: "GET" })
       .eq("user_id", userId)
       .eq("active", true);
     if (error) throw new Error(error.message);
-    const rows = (data ?? []) as Array<{
+    const rows = (data ?? []) as unknown as Array<{
       role: TenantRole;
       active: boolean;
-      company: Company;
+      company: Company | Company[] | null;
     }>;
     return rows
-      .filter((r) => r.company)
-      .map<CompanyWithRole>((r) => ({ ...r.company, role: r.role }));
+      .map<CompanyWithRole | null>((r) => {
+        const company = Array.isArray(r.company) ? r.company[0] : r.company;
+        return company ? { ...company, role: r.role } : null;
+      })
+      .filter((c): c is CompanyWithRole => c !== null);
   });
 
 /** Cria uma nova empresa; o criador vira `owner` via trigger no banco. */
@@ -80,7 +83,7 @@ export const updateActiveCompany = createServerFn({ method: "POST" })
         cnpj: z.string().trim().max(32).nullable().optional(),
         logo_url: z.string().url().nullable().optional(),
         custom_domain: z.string().trim().nullable().optional(),
-        settings: z.record(z.string(), z.unknown()).optional(),
+        settings: z.record(z.string(), z.any()).optional(),
       })
       .parse(input),
   )
