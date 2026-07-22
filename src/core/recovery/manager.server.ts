@@ -19,7 +19,6 @@ export function mapTarget(r: Record<string, unknown>): Target {
     retentionDays: Number(r.retention_days ?? 0),
     encryption: String(r.encryption ?? "aes256"),
     enabled: Boolean(r.enabled),
-    metadata: (r.metadata as Record<string, unknown>) ?? {},
     createdAt: String(r.created_at), updatedAt: String(r.updated_at),
   };
 }
@@ -51,7 +50,6 @@ export function mapBackup(r: Record<string, unknown>): Backup {
     startedAt: (r.started_at as string | null) ?? null,
     finishedAt: (r.finished_at as string | null) ?? null,
     expiresAt: (r.expires_at as string | null) ?? null,
-    metadata: (r.metadata as Record<string, unknown>) ?? {},
     createdAt: String(r.created_at),
   };
 }
@@ -66,7 +64,6 @@ export function mapSnapshot(r: Record<string, unknown>): Snapshot {
     sizeBytes: r.size_bytes == null ? null : Number(r.size_bytes),
     checksum: (r.checksum as string | null) ?? null,
     storageUri: (r.storage_uri as string | null) ?? null,
-    metadata: (r.metadata as Record<string, unknown>) ?? {},
     createdAt: String(r.created_at),
   };
 }
@@ -84,7 +81,6 @@ export function mapRestore(r: Record<string, unknown>): Restore {
     correlationId: (r.correlation_id as string | null) ?? null,
     startedAt: (r.started_at as string | null) ?? null,
     finishedAt: (r.finished_at as string | null) ?? null,
-    metadata: (r.metadata as Record<string, unknown>) ?? {},
     createdAt: String(r.created_at),
   };
 }
@@ -109,7 +105,6 @@ export function mapPlan(r: Record<string, unknown>): DrPlan {
     status: r.status as DrPlan["status"],
     lastDrillAt: (r.last_drill_at as string | null) ?? null,
     lastDrillStatus: (r.last_drill_status as string | null) ?? null,
-    metadata: (r.metadata as Record<string, unknown>) ?? {},
     createdAt: String(r.created_at), updatedAt: String(r.updated_at),
   };
 }
