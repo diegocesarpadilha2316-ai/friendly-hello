@@ -237,7 +237,7 @@ function mapAsset(row: Record<string, unknown>): Asset {
     width: (row.width as number | null) ?? null,
     height: (row.height as number | null) ?? null,
     durationMs: (row.duration_ms as number | null) ?? null,
-    metadata: (row.metadata as Record<string, unknown>) ?? {},
+    metadata: (row.metadata as Asset["metadata"]) ?? {},
     deletedAt: (row.deleted_at as string | null) ?? null,
     createdBy: (row.created_by as string | null) ?? null,
     createdAt: row.created_at as string,
