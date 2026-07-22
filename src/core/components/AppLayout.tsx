@@ -4,6 +4,7 @@ import {
   AppShell,
   Sidebar,
   Topbar,
+  CompanySwitcher,
   type SidebarNavGroup,
 } from "@/core/components/ui-kit";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
       sidebar={<Sidebar brand={app.name} groups={groups} />}
       topbar={
         <Topbar
+          left={
+            <CompanySwitcher
+              onCreateNew={() => navigate({ to: "/onboarding/company" })}
+            />
+          }
           right={
             auth?.user ? (
               <>

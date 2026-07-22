@@ -1,7 +1,11 @@
-import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Outlet,
+  useRouterState,
+  useNavigate,
+} from "@tanstack/react-router";
 import { useEffect } from "react";
-import { useNavigate } from "@tanstack/react-router";
-import { useAuth } from "@/core/hooks";
+import { useAuth, useOptionalTenant } from "@/core/hooks";
 import { AppLayout } from "@/core/components/AppLayout";
 
 /**
@@ -17,6 +21,7 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthenticatedLayout() {
   const { user, loading } = useAuth();
+  const tenant = useOptionalTenant();
   const navigate = useNavigate();
   const href = useRouterState({ select: (s) => s.location.href });
   useEffect(() => {
@@ -24,8 +29,17 @@ function AuthenticatedLayout() {
       navigate({ to: "/auth", search: { redirect: href }, replace: true });
     }
   }, [loading, user, navigate, href]);
+  // Sem empresa cadastrada → força onboarding (exceto na própria página).
+  useEffect(() => {
+    if (!user) return;
+    if (tenant && !tenant.loading && tenant.companies.length === 0) {
+      if (!href.startsWith("/onboarding")) {
+        navigate({ to: "/onboarding/company", replace: true });
+      }
+    }
+  }, [user, tenant, href, navigate]);
 
-  if (loading) {
+  if (loading || tenant?.loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">
         Carregando…

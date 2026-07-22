@@ -21,24 +21,38 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
  * Attach the Supabase access token to every server-fn call so
  * requireAuth middleware can validate the caller.
  */
-const attachSupabaseAuth = createMiddleware({ type: "function" }).client(async ({ next }) => {
-  let headers: Record<string, string> = {};
+/**
+ * Anexa credenciais do usuário + tenant ativo em cada chamada de server fn.
+ *  - Authorization: Bearer <access_token>   (requireAuth / requireTenant)
+ *  - x-dioris-tenant: <company_id>          (requireTenant)
+ */
+const attachDiorisContext = createMiddleware({ type: "function" }).client(async ({ next }) => {
+  const headers: Record<string, string> = {};
   if (typeof window !== "undefined") {
     try {
       const { getSupabaseBrowser } = await import("@/core/lib/supabase/client");
       const supabase = getSupabaseBrowser();
       const { data } = await supabase.auth.getSession();
       if (data.session?.access_token) {
-        headers = { Authorization: `Bearer ${data.session.access_token}` };
+        headers["Authorization"] = `Bearer ${data.session.access_token}`;
       }
     } catch {
-      // client not ready yet — skip
+      /* client not ready yet — skip */
+    }
+    try {
+      const { getActiveTenantIdFromStorage } = await import(
+        "@/core/providers/TenantProvider"
+      );
+      const tenantId = getActiveTenantIdFromStorage();
+      if (tenantId) headers["x-dioris-tenant"] = tenantId;
+    } catch {
+      /* no tenant selected */
     }
   }
-  return next({ sendContext: { headers } as never, headers });
+  return next({ headers });
 });
 
 export const startInstance = createStart(() => ({
   requestMiddleware: [errorMiddleware],
-  functionMiddleware: [attachSupabaseAuth],
+  functionMiddleware: [attachDiorisContext],
 }));
