@@ -221,65 +221,65 @@ alter table public.notification_audit         enable row level security;
 do $$ begin
   create policy "tenant read/write events"
     on public.events for all to authenticated
-    using (public.is_company_member(company_id))
-    with check (public.is_company_member(company_id));
+    using (public.is_company_member(company_id, auth.uid()))
+    with check (public.is_company_member(company_id, auth.uid()));
 exception when duplicate_object then null; end $$;
 
 do $$ begin
   create policy "tenant read/write event_deliveries"
     on public.event_deliveries for all to authenticated
-    using (public.is_company_member(company_id))
-    with check (public.is_company_member(company_id));
+    using (public.is_company_member(company_id, auth.uid()))
+    with check (public.is_company_member(company_id, auth.uid()));
 exception when duplicate_object then null; end $$;
 
 do $$ begin
   create policy "templates: tenant or global read"
     on public.notification_templates for select to authenticated
-    using (company_id is null or public.is_company_member(company_id));
+    using (company_id is null or public.is_company_member(company_id, auth.uid()));
 exception when duplicate_object then null; end $$;
 
 do $$ begin
   create policy "templates: tenant write"
     on public.notification_templates for insert to authenticated
-    with check (company_id is not null and public.is_company_member(company_id));
+    with check (company_id is not null and public.is_company_member(company_id, auth.uid()));
 exception when duplicate_object then null; end $$;
 
 do $$ begin
   create policy "templates: tenant update"
     on public.notification_templates for update to authenticated
-    using (company_id is not null and public.is_company_member(company_id))
-    with check (company_id is not null and public.is_company_member(company_id));
+    using (company_id is not null and public.is_company_member(company_id, auth.uid()))
+    with check (company_id is not null and public.is_company_member(company_id, auth.uid()));
 exception when duplicate_object then null; end $$;
 
 do $$ begin
   create policy "templates: tenant delete"
     on public.notification_templates for delete to authenticated
-    using (company_id is not null and public.is_company_member(company_id));
+    using (company_id is not null and public.is_company_member(company_id, auth.uid()));
 exception when duplicate_object then null; end $$;
 
 do $$ begin
   create policy "tenant rules"
     on public.notification_rules for all to authenticated
-    using (public.is_company_member(company_id))
-    with check (public.is_company_member(company_id));
+    using (public.is_company_member(company_id, auth.uid()))
+    with check (public.is_company_member(company_id, auth.uid()));
 exception when duplicate_object then null; end $$;
 
 do $$ begin
   create policy "tenant subscriptions"
     on public.notification_subscriptions for all to authenticated
-    using (public.is_company_member(company_id))
-    with check (public.is_company_member(company_id));
+    using (public.is_company_member(company_id, auth.uid()))
+    with check (public.is_company_member(company_id, auth.uid()));
 exception when duplicate_object then null; end $$;
 
 do $$ begin
   create policy "prefs: owner or admin"
     on public.notification_preferences for all to authenticated
     using (
-      public.is_company_member(company_id)
+      public.is_company_member(company_id, auth.uid())
       and (user_id is null or user_id = auth.uid() or public.has_role(auth.uid(), 'admin'))
     )
     with check (
-      public.is_company_member(company_id)
+      public.is_company_member(company_id, auth.uid())
       and (user_id is null or user_id = auth.uid() or public.has_role(auth.uid(), 'admin'))
     );
 exception when duplicate_object then null; end $$;
@@ -288,7 +288,7 @@ do $$ begin
   create policy "notifications: destinatário ou admin"
     on public.notifications for select to authenticated
     using (
-      public.is_company_member(company_id)
+      public.is_company_member(company_id, auth.uid())
       and (user_id is null or user_id = auth.uid() or public.has_role(auth.uid(), 'admin'))
     );
 exception when duplicate_object then null; end $$;
@@ -297,11 +297,11 @@ do $$ begin
   create policy "notifications: owner marks read/archive"
     on public.notifications for update to authenticated
     using (
-      public.is_company_member(company_id)
+      public.is_company_member(company_id, auth.uid())
       and (user_id = auth.uid() or public.has_role(auth.uid(), 'admin'))
     )
     with check (
-      public.is_company_member(company_id)
+      public.is_company_member(company_id, auth.uid())
       and (user_id = auth.uid() or public.has_role(auth.uid(), 'admin'))
     );
 exception when duplicate_object then null; end $$;
@@ -310,7 +310,7 @@ do $$ begin
   create policy "notifications: admin insert"
     on public.notifications for insert to authenticated
     with check (
-      public.is_company_member(company_id)
+      public.is_company_member(company_id, auth.uid())
       and public.has_role(auth.uid(), 'admin')
     );
 exception when duplicate_object then null; end $$;
@@ -318,18 +318,18 @@ exception when duplicate_object then null; end $$;
 do $$ begin
   create policy "tenant deliveries"
     on public.notification_deliveries for all to authenticated
-    using (public.is_company_member(company_id))
-    with check (public.is_company_member(company_id));
+    using (public.is_company_member(company_id, auth.uid()))
+    with check (public.is_company_member(company_id, auth.uid()));
 exception when duplicate_object then null; end $$;
 
 do $$ begin
   create policy "tenant audit read"
     on public.notification_audit for select to authenticated
-    using (public.is_company_member(company_id));
+    using (public.is_company_member(company_id, auth.uid()));
 exception when duplicate_object then null; end $$;
 
 do $$ begin
   create policy "tenant audit insert"
     on public.notification_audit for insert to authenticated
-    with check (public.is_company_member(company_id));
+    with check (public.is_company_member(company_id, auth.uid()));
 exception when duplicate_object then null; end $$;
