@@ -28,6 +28,7 @@ import { Route as AuthenticatedIntegracoesRouteImport } from './routes/_authenti
 import { Route as AuthenticatedIaRouteImport } from './routes/_authenticated.ia'
 import { Route as AuthenticatedFinanceiroRouteImport } from './routes/_authenticated.financeiro'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated.crm'
+import { Route as AuthenticatedCicdRouteImport } from './routes/_authenticated.cicd'
 import { Route as AuthenticatedCacheRouteImport } from './routes/_authenticated.cache'
 import { Route as AuthenticatedAutomacaoRouteImport } from './routes/_authenticated.automacao'
 import { Route as AuthenticatedApiGatewayRouteImport } from './routes/_authenticated.api-gateway'
@@ -135,6 +136,11 @@ const AuthenticatedCrmRoute = AuthenticatedCrmRouteImport.update({
   path: '/crm',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedCicdRoute = AuthenticatedCicdRouteImport.update({
+  id: '/cicd',
+  path: '/cicd',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedCacheRoute = AuthenticatedCacheRouteImport.update({
   id: '/cache',
   path: '/cache',
@@ -186,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/automacao': typeof AuthenticatedAutomacaoRoute
   '/cache': typeof AuthenticatedCacheRoute
+  '/cicd': typeof AuthenticatedCicdRoute
   '/crm': typeof AuthenticatedCrmRoute
   '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/ia': typeof AuthenticatedIaRoute
@@ -213,6 +220,7 @@ export interface FileRoutesByTo {
   '/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/automacao': typeof AuthenticatedAutomacaoRoute
   '/cache': typeof AuthenticatedCacheRoute
+  '/cicd': typeof AuthenticatedCicdRoute
   '/crm': typeof AuthenticatedCrmRoute
   '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/ia': typeof AuthenticatedIaRoute
@@ -243,6 +251,7 @@ export interface FileRoutesById {
   '/_authenticated/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/_authenticated/automacao': typeof AuthenticatedAutomacaoRoute
   '/_authenticated/cache': typeof AuthenticatedCacheRoute
+  '/_authenticated/cicd': typeof AuthenticatedCicdRoute
   '/_authenticated/crm': typeof AuthenticatedCrmRoute
   '/_authenticated/financeiro': typeof AuthenticatedFinanceiroRoute
   '/_authenticated/ia': typeof AuthenticatedIaRoute
@@ -274,6 +283,7 @@ export interface FileRouteTypes {
     | '/api-gateway'
     | '/automacao'
     | '/cache'
+    | '/cicd'
     | '/crm'
     | '/financeiro'
     | '/ia'
@@ -301,6 +311,7 @@ export interface FileRouteTypes {
     | '/api-gateway'
     | '/automacao'
     | '/cache'
+    | '/cicd'
     | '/crm'
     | '/financeiro'
     | '/ia'
@@ -330,6 +341,7 @@ export interface FileRouteTypes {
     | '/_authenticated/api-gateway'
     | '/_authenticated/automacao'
     | '/_authenticated/cache'
+    | '/_authenticated/cicd'
     | '/_authenticated/crm'
     | '/_authenticated/financeiro'
     | '/_authenticated/ia'
@@ -496,6 +508,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/cicd': {
+      id: '/_authenticated/cicd'
+      path: '/cicd'
+      fullPath: '/cicd'
+      preLoaderRoute: typeof AuthenticatedCicdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/cache': {
       id: '/_authenticated/cache'
       path: '/cache'
@@ -559,6 +578,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedApiGatewayRoute: typeof AuthenticatedApiGatewayRoute
   AuthenticatedAutomacaoRoute: typeof AuthenticatedAutomacaoRoute
   AuthenticatedCacheRoute: typeof AuthenticatedCacheRoute
+  AuthenticatedCicdRoute: typeof AuthenticatedCicdRoute
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRoute
   AuthenticatedFinanceiroRoute: typeof AuthenticatedFinanceiroRoute
   AuthenticatedIaRoute: typeof AuthenticatedIaRoute
@@ -584,6 +604,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedApiGatewayRoute: AuthenticatedApiGatewayRoute,
   AuthenticatedAutomacaoRoute: AuthenticatedAutomacaoRoute,
   AuthenticatedCacheRoute: AuthenticatedCacheRoute,
+  AuthenticatedCicdRoute: AuthenticatedCicdRoute,
   AuthenticatedCrmRoute: AuthenticatedCrmRoute,
   AuthenticatedFinanceiroRoute: AuthenticatedFinanceiroRoute,
   AuthenticatedIaRoute: AuthenticatedIaRoute,

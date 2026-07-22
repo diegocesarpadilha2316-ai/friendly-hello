@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Settings,
   Gauge,
+  Rocket,
 } from "lucide-react";
 import {
   AppShell,
@@ -59,6 +60,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         { title: "Cache", url: "/cache", icon: Database },
         { title: "Segurança", url: "/security", icon: ShieldCheck },
         { title: "Qualidade", url: "/quality", icon: Gauge },
+        { title: "CI/CD", url: "/cicd", icon: Rocket },
         { title: "Configurações", url: "/configuracoes", icon: Settings },
       ],
     },

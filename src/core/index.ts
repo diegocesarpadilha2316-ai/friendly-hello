@@ -29,3 +29,4 @@ export * as apiGateway from "./api-gateway";
 export * as cache from "./cache";
 export * as security from "./security";
 export * as quality from "./quality";
+export * as cicd from "./cicd";
