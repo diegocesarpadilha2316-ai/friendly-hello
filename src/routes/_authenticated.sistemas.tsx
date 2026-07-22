@@ -7,7 +7,7 @@ import {
   StatusBadge,
 } from "@/core/components/ui-kit";
 
-export const Route = createFileRoute("/sistemas")({
+export const Route = createFileRoute("/_authenticated/sistemas")({
   head: () => ({
     meta: [
       { title: "Sistemas — Dioris Hub" },

@@ -7,7 +7,7 @@ import {
   StatusBadge,
 } from "@/core/components/ui-kit";
 
-export const Route = createFileRoute("/marketplace")({
+export const Route = createFileRoute("/_authenticated/marketplace")({
   head: () => ({
     meta: [
       { title: "Marketplace — Dioris Hub" },
