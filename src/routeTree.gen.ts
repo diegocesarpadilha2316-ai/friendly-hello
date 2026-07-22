@@ -26,6 +26,7 @@ import { Route as AuthenticatedIntegracoesRouteImport } from './routes/_authenti
 import { Route as AuthenticatedIaRouteImport } from './routes/_authenticated.ia'
 import { Route as AuthenticatedFinanceiroRouteImport } from './routes/_authenticated.financeiro'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated.crm'
+import { Route as AuthenticatedCacheRouteImport } from './routes/_authenticated.cache'
 import { Route as AuthenticatedAutomacaoRouteImport } from './routes/_authenticated.automacao'
 import { Route as AuthenticatedApiGatewayRouteImport } from './routes/_authenticated.api-gateway'
 import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated.configuracoes.index'
@@ -122,6 +123,11 @@ const AuthenticatedCrmRoute = AuthenticatedCrmRouteImport.update({
   path: '/crm',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedCacheRoute = AuthenticatedCacheRouteImport.update({
+  id: '/cache',
+  path: '/cache',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedAutomacaoRoute = AuthenticatedAutomacaoRouteImport.update({
   id: '/automacao',
   path: '/automacao',
@@ -167,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/automacao': typeof AuthenticatedAutomacaoRoute
+  '/cache': typeof AuthenticatedCacheRoute
   '/crm': typeof AuthenticatedCrmRoute
   '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/ia': typeof AuthenticatedIaRoute
@@ -191,6 +198,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/automacao': typeof AuthenticatedAutomacaoRoute
+  '/cache': typeof AuthenticatedCacheRoute
   '/crm': typeof AuthenticatedCrmRoute
   '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/ia': typeof AuthenticatedIaRoute
@@ -218,6 +226,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/_authenticated/automacao': typeof AuthenticatedAutomacaoRoute
+  '/_authenticated/cache': typeof AuthenticatedCacheRoute
   '/_authenticated/crm': typeof AuthenticatedCrmRoute
   '/_authenticated/financeiro': typeof AuthenticatedFinanceiroRoute
   '/_authenticated/ia': typeof AuthenticatedIaRoute
@@ -246,6 +255,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/api-gateway'
     | '/automacao'
+    | '/cache'
     | '/crm'
     | '/financeiro'
     | '/ia'
@@ -270,6 +280,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/api-gateway'
     | '/automacao'
+    | '/cache'
     | '/crm'
     | '/financeiro'
     | '/ia'
@@ -296,6 +307,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/api-gateway'
     | '/_authenticated/automacao'
+    | '/_authenticated/cache'
     | '/_authenticated/crm'
     | '/_authenticated/financeiro'
     | '/_authenticated/ia'
@@ -446,6 +458,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/cache': {
+      id: '/_authenticated/cache'
+      path: '/cache'
+      fullPath: '/cache'
+      preLoaderRoute: typeof AuthenticatedCacheRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/automacao': {
       id: '/_authenticated/automacao'
       path: '/automacao'
@@ -501,6 +520,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteChildren {
   AuthenticatedApiGatewayRoute: typeof AuthenticatedApiGatewayRoute
   AuthenticatedAutomacaoRoute: typeof AuthenticatedAutomacaoRoute
+  AuthenticatedCacheRoute: typeof AuthenticatedCacheRoute
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRoute
   AuthenticatedFinanceiroRoute: typeof AuthenticatedFinanceiroRoute
   AuthenticatedIaRoute: typeof AuthenticatedIaRoute
@@ -523,6 +543,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedApiGatewayRoute: AuthenticatedApiGatewayRoute,
   AuthenticatedAutomacaoRoute: AuthenticatedAutomacaoRoute,
+  AuthenticatedCacheRoute: AuthenticatedCacheRoute,
   AuthenticatedCrmRoute: AuthenticatedCrmRoute,
   AuthenticatedFinanceiroRoute: AuthenticatedFinanceiroRoute,
   AuthenticatedIaRoute: AuthenticatedIaRoute,

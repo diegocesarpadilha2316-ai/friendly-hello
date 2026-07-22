@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import {
   Activity,
   Bell,
+  Database,
   Globe2,
   HardDrive,
   LayoutDashboard,
@@ -53,6 +54,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         { title: "SDK & Plugins", url: "/sdk", icon: Puzzle },
         { title: "Jobs & Workers", url: "/jobs", icon: ListTodo },
         { title: "API Gateway", url: "/api-gateway", icon: Globe2 },
+        { title: "Cache", url: "/cache", icon: Database },
         { title: "Configurações", url: "/configuracoes", icon: Settings },
       ],
     },
