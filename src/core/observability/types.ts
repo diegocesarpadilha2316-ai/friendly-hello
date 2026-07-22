@@ -15,7 +15,6 @@ export type AuditAction =
   | "CONFIG_CHANGE";
 
 export type HealthStatus = "healthy" | "degraded" | "down" | "unknown";
-
 export type JsonRecord = Record<string, unknown>;
 
 export interface LogEntry {
