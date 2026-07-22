@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Activity, Bell, HardDrive, LayoutDashboard, LogOut, Plug, Settings } from "lucide-react";
+import { Activity, Bell, HardDrive, LayoutDashboard, LogOut, Plug, Puzzle, Settings } from "lucide-react";
 import {
   AppShell,
   Sidebar,
@@ -39,6 +39,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         { title: "Storage", url: "/storage", icon: HardDrive },
         { title: "Observabilidade", url: "/observabilidade", icon: Activity },
         { title: "Integrações", url: "/integracoes", icon: Plug },
+        { title: "SDK & Plugins", url: "/sdk", icon: Puzzle },
         { title: "Configurações", url: "/configuracoes", icon: Settings },
       ],
     },
