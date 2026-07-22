@@ -17,6 +17,7 @@ import { Route as AuthenticatedStorageRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedSitesRouteImport } from './routes/_authenticated.sites'
 import { Route as AuthenticatedSistemasRouteImport } from './routes/_authenticated.sistemas'
 import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticated.planner'
+import { Route as AuthenticatedObservabilidadeRouteImport } from './routes/_authenticated.observabilidade'
 import { Route as AuthenticatedNotificacoesRouteImport } from './routes/_authenticated.notificacoes'
 import { Route as AuthenticatedMarketplaceRouteImport } from './routes/_authenticated.marketplace'
 import { Route as AuthenticatedIaRouteImport } from './routes/_authenticated.ia'
@@ -65,6 +66,12 @@ const AuthenticatedPlannerRoute = AuthenticatedPlannerRouteImport.update({
   path: '/planner',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedObservabilidadeRoute =
+  AuthenticatedObservabilidadeRouteImport.update({
+    id: '/observabilidade',
+    path: '/observabilidade',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedNotificacoesRoute =
   AuthenticatedNotificacoesRouteImport.update({
     id: '/notificacoes',
@@ -120,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/ia': typeof AuthenticatedIaRoute
   '/marketplace': typeof AuthenticatedMarketplaceRoute
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
+  '/observabilidade': typeof AuthenticatedObservabilidadeRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/sistemas': typeof AuthenticatedSistemasRoute
   '/sites': typeof AuthenticatedSitesRoute
@@ -136,6 +144,7 @@ export interface FileRoutesByTo {
   '/ia': typeof AuthenticatedIaRoute
   '/marketplace': typeof AuthenticatedMarketplaceRoute
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
+  '/observabilidade': typeof AuthenticatedObservabilidadeRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/sistemas': typeof AuthenticatedSistemasRoute
   '/sites': typeof AuthenticatedSitesRoute
@@ -155,6 +164,7 @@ export interface FileRoutesById {
   '/_authenticated/ia': typeof AuthenticatedIaRoute
   '/_authenticated/marketplace': typeof AuthenticatedMarketplaceRoute
   '/_authenticated/notificacoes': typeof AuthenticatedNotificacoesRoute
+  '/_authenticated/observabilidade': typeof AuthenticatedObservabilidadeRoute
   '/_authenticated/planner': typeof AuthenticatedPlannerRoute
   '/_authenticated/sistemas': typeof AuthenticatedSistemasRoute
   '/_authenticated/sites': typeof AuthenticatedSitesRoute
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
     | '/ia'
     | '/marketplace'
     | '/notificacoes'
+    | '/observabilidade'
     | '/planner'
     | '/sistemas'
     | '/sites'
@@ -191,6 +202,7 @@ export interface FileRouteTypes {
     | '/ia'
     | '/marketplace'
     | '/notificacoes'
+    | '/observabilidade'
     | '/planner'
     | '/sistemas'
     | '/sites'
@@ -209,6 +221,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ia'
     | '/_authenticated/marketplace'
     | '/_authenticated/notificacoes'
+    | '/_authenticated/observabilidade'
     | '/_authenticated/planner'
     | '/_authenticated/sistemas'
     | '/_authenticated/sites'
@@ -282,6 +295,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlannerRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/observabilidade': {
+      id: '/_authenticated/observabilidade'
+      path: '/observabilidade'
+      fullPath: '/observabilidade'
+      preLoaderRoute: typeof AuthenticatedObservabilidadeRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/notificacoes': {
       id: '/_authenticated/notificacoes'
       path: '/notificacoes'
@@ -348,6 +368,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedIaRoute: typeof AuthenticatedIaRoute
   AuthenticatedMarketplaceRoute: typeof AuthenticatedMarketplaceRoute
   AuthenticatedNotificacoesRoute: typeof AuthenticatedNotificacoesRoute
+  AuthenticatedObservabilidadeRoute: typeof AuthenticatedObservabilidadeRoute
   AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRoute
   AuthenticatedSistemasRoute: typeof AuthenticatedSistemasRoute
   AuthenticatedSitesRoute: typeof AuthenticatedSitesRoute
@@ -364,6 +385,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedIaRoute: AuthenticatedIaRoute,
   AuthenticatedMarketplaceRoute: AuthenticatedMarketplaceRoute,
   AuthenticatedNotificacoesRoute: AuthenticatedNotificacoesRoute,
+  AuthenticatedObservabilidadeRoute: AuthenticatedObservabilidadeRoute,
   AuthenticatedPlannerRoute: AuthenticatedPlannerRoute,
   AuthenticatedSistemasRoute: AuthenticatedSistemasRoute,
   AuthenticatedSitesRoute: AuthenticatedSitesRoute,
