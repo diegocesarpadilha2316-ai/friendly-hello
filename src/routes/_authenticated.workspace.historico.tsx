@@ -6,6 +6,7 @@ import {
   EmptyState,
 } from "@/core/components/ui-kit";
 import { useNotificationAudit } from "@/core/notifications/use-notifications";
+import type { NotificationAuditEntry } from "@/core/notifications/types";
 
 export const Route = createFileRoute("/_authenticated/workspace/historico")({
   head: () => ({
@@ -20,7 +21,7 @@ export const Route = createFileRoute("/_authenticated/workspace/historico")({
 
 function WorkspaceHist() {
   const q = useNotificationAudit();
-  const rows = (q.data ?? []) as ReadonlyArray<Record<string, unknown> & { id: string }>;
+  const rows: ReadonlyArray<NotificationAuditEntry> = q.data ?? [];
   return (
     <PageContainer>
       <PageHeader eyebrow="Workspace" title="Histórico" description="Auditoria consolidada" />
@@ -31,9 +32,9 @@ function WorkspaceHist() {
           <ul className="divide-y divide-border/60 rounded-md border border-border/60 bg-card/30">
             {rows.map((r) => (
               <li key={r.id} className="flex items-center justify-between px-4 py-3 text-sm">
-                <span>{String(r.action ?? r.event ?? "evento")}</span>
+                <span>{r.action}{r.entity ? ` — ${r.entity}` : ""}</span>
                 <span className="text-xs text-muted-foreground">
-                  {r.at ? new Date(String(r.at)).toLocaleString("pt-BR") : ""}
+                  {new Date(r.createdAt).toLocaleString("pt-BR")}
                 </span>
               </li>
             ))}
