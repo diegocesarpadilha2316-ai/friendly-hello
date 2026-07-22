@@ -40,6 +40,7 @@ import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_a
 import { Route as AuthenticatedWorkspaceEquipeRouteImport } from './routes/_authenticated.workspace.equipe'
 import { Route as AuthenticatedWorkspaceEmpresaRouteImport } from './routes/_authenticated.workspace.empresa'
 import { Route as AuthenticatedWorkspaceCreditosRouteImport } from './routes/_authenticated.workspace.creditos'
+import { Route as AuthenticatedWorkspaceAssinaturaRouteImport } from './routes/_authenticated.workspace.assinatura'
 import { Route as AuthenticatedOnboardingCompanyRouteImport } from './routes/_authenticated.onboarding.company'
 import { Route as AuthenticatedConfiguracoesEmpresaRouteImport } from './routes/_authenticated.configuracoes.empresa'
 import { Route as ApiPublicV1PingRouteImport } from './routes/api/public/v1/ping'
@@ -208,6 +209,12 @@ const AuthenticatedWorkspaceCreditosRoute =
     path: '/creditos',
     getParentRoute: () => AuthenticatedWorkspaceRoute,
   } as any)
+const AuthenticatedWorkspaceAssinaturaRoute =
+  AuthenticatedWorkspaceAssinaturaRouteImport.update({
+    id: '/assinatura',
+    path: '/assinatura',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
 const AuthenticatedOnboardingCompanyRoute =
   AuthenticatedOnboardingCompanyRouteImport.update({
     id: '/onboarding/company',
@@ -259,6 +266,7 @@ export interface FileRoutesByFullPath {
   '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
+  '/workspace/assinatura': typeof AuthenticatedWorkspaceAssinaturaRoute
   '/workspace/creditos': typeof AuthenticatedWorkspaceCreditosRoute
   '/workspace/empresa': typeof AuthenticatedWorkspaceEmpresaRoute
   '/workspace/equipe': typeof AuthenticatedWorkspaceEquipeRoute
@@ -294,6 +302,7 @@ export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
+  '/workspace/assinatura': typeof AuthenticatedWorkspaceAssinaturaRoute
   '/workspace/creditos': typeof AuthenticatedWorkspaceCreditosRoute
   '/workspace/empresa': typeof AuthenticatedWorkspaceEmpresaRoute
   '/workspace/equipe': typeof AuthenticatedWorkspaceEquipeRoute
@@ -332,6 +341,7 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/_authenticated/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
+  '/_authenticated/workspace/assinatura': typeof AuthenticatedWorkspaceAssinaturaRoute
   '/_authenticated/workspace/creditos': typeof AuthenticatedWorkspaceCreditosRoute
   '/_authenticated/workspace/empresa': typeof AuthenticatedWorkspaceEmpresaRoute
   '/_authenticated/workspace/equipe': typeof AuthenticatedWorkspaceEquipeRoute
@@ -370,6 +380,7 @@ export interface FileRouteTypes {
     | '/workspace'
     | '/configuracoes/empresa'
     | '/onboarding/company'
+    | '/workspace/assinatura'
     | '/workspace/creditos'
     | '/workspace/empresa'
     | '/workspace/equipe'
@@ -405,6 +416,7 @@ export interface FileRouteTypes {
     | '/'
     | '/configuracoes/empresa'
     | '/onboarding/company'
+    | '/workspace/assinatura'
     | '/workspace/creditos'
     | '/workspace/empresa'
     | '/workspace/equipe'
@@ -442,6 +454,7 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/configuracoes/empresa'
     | '/_authenticated/onboarding/company'
+    | '/_authenticated/workspace/assinatura'
     | '/_authenticated/workspace/creditos'
     | '/_authenticated/workspace/empresa'
     | '/_authenticated/workspace/equipe'
@@ -678,6 +691,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceCreditosRouteImport
       parentRoute: typeof AuthenticatedWorkspaceRoute
     }
+    '/_authenticated/workspace/assinatura': {
+      id: '/_authenticated/workspace/assinatura'
+      path: '/assinatura'
+      fullPath: '/workspace/assinatura'
+      preLoaderRoute: typeof AuthenticatedWorkspaceAssinaturaRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
     '/_authenticated/onboarding/company': {
       id: '/_authenticated/onboarding/company'
       path: '/onboarding/company'
@@ -710,6 +730,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedWorkspaceRouteChildren {
+  AuthenticatedWorkspaceAssinaturaRoute: typeof AuthenticatedWorkspaceAssinaturaRoute
   AuthenticatedWorkspaceCreditosRoute: typeof AuthenticatedWorkspaceCreditosRoute
   AuthenticatedWorkspaceEmpresaRoute: typeof AuthenticatedWorkspaceEmpresaRoute
   AuthenticatedWorkspaceEquipeRoute: typeof AuthenticatedWorkspaceEquipeRoute
@@ -718,6 +739,8 @@ interface AuthenticatedWorkspaceRouteChildren {
 
 const AuthenticatedWorkspaceRouteChildren: AuthenticatedWorkspaceRouteChildren =
   {
+    AuthenticatedWorkspaceAssinaturaRoute:
+      AuthenticatedWorkspaceAssinaturaRoute,
     AuthenticatedWorkspaceCreditosRoute: AuthenticatedWorkspaceCreditosRoute,
     AuthenticatedWorkspaceEmpresaRoute: AuthenticatedWorkspaceEmpresaRoute,
     AuthenticatedWorkspaceEquipeRoute: AuthenticatedWorkspaceEquipeRoute,
