@@ -45,6 +45,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
       label: "Visão geral",
       items: [
         { title: "Dashboard", url: "/", icon: LayoutDashboard },
+        { title: "Workspace", url: "/workspace", icon: Rocket },
         { title: "Admin Center", url: "/admin", icon: Command },
       ],
     },
