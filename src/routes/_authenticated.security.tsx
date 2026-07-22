@@ -43,14 +43,14 @@ type TabKey =
   | "audit";
 
 const TABS: readonly { key: TabKey; label: string }[] = [
-  { id: "dashboard", label: "Dashboard" },
-  { id: "sessions", label: "Sessões" },
-  { id: "devices", label: "Dispositivos" },
-  { id: "login", label: "Login" },
-  { id: "mfa", label: "MFA" },
-  { id: "policies", label: "Políticas" },
-  { id: "incidents", label: "Incidentes" },
-  { id: "audit", label: "Auditoria" },
+  { key: "dashboard", label: "Dashboard" },
+  { key: "sessions", label: "Sessões" },
+  { key: "devices", label: "Dispositivos" },
+  { key: "login", label: "Login" },
+  { key: "mfa", label: "MFA" },
+  { key: "policies", label: "Políticas" },
+  { key: "incidents", label: "Incidentes" },
+  { key: "audit", label: "Auditoria" },
 ];
 
 export const Route = createFileRoute("/_authenticated/security")({
@@ -163,7 +163,7 @@ function SessionsTab({ sessions }: { sessions: SecuritySession[] }) {
       { id: "ip", header: "IP", cell: (r) => r.ip ?? "—" },
       { id: "location", header: "Local", cell: (r) => r.location ?? "—" },
       {
-        key: "status",
+        id: "status",
         header: "Status",
         cell: (r) => (
           <StatusBadge tone={r.active ? "success" : "neutral"}>
@@ -173,7 +173,7 @@ function SessionsTab({ sessions }: { sessions: SecuritySession[] }) {
       },
       { id: "lastSeenAt", header: "Última atividade", cell: (r) => new Date(r.lastSeenAt).toLocaleString() },
       {
-        key: "actions",
+        id: "actions",
         header: "",
         cell: (r) =>
           r.active ? (
@@ -212,7 +212,7 @@ function DevicesTab({ devices }: { devices: SecurityDevice[] }) {
     { id: "platform", header: "Plataforma", cell: (r) => r.platform ?? "—" },
     { id: "lastIp", header: "Último IP", cell: (r) => r.lastIp ?? "—" },
     {
-      key: "trusted",
+      id: "trusted",
       header: "Confiança",
       cell: (r) => (
         <StatusBadge tone={r.trusted ? "success" : "neutral"}>
@@ -222,7 +222,7 @@ function DevicesTab({ devices }: { devices: SecurityDevice[] }) {
     },
     { id: "lastSeenAt", header: "Última atividade", cell: (r) => new Date(r.lastSeenAt).toLocaleString() },
     {
-      key: "actions",
+      id: "actions",
       header: "",
       cell: (r) => (
         <Button
@@ -248,7 +248,7 @@ function LoginTab({ attempts }: { attempts: SecurityLoginAttempt[] }) {
     { id: "email", header: "Email", cell: (r) => r.email ?? "—" },
     { id: "ip", header: "IP", cell: (r) => r.ip ?? "—" },
     {
-      key: "outcome",
+      id: "outcome",
       header: "Resultado",
       cell: (r) => <StatusBadge tone={outcomeTone(r.outcome)}>{r.outcome}</StatusBadge>,
     },
@@ -269,7 +269,7 @@ function MfaTab({ factors, policy }: { factors: SecurityMfaFactor[]; policy: Sec
     { id: "method", header: "Método", cell: (r) => r.method },
     { id: "label", header: "Rótulo", cell: (r) => r.label ?? "—" },
     {
-      key: "enabled",
+      id: "enabled",
       header: "Status",
       cell: (r) => (
         <StatusBadge tone={r.enabled ? "success" : "neutral"}>
@@ -279,7 +279,7 @@ function MfaTab({ factors, policy }: { factors: SecurityMfaFactor[]; policy: Sec
     },
     { id: "createdAt", header: "Criado", cell: (r) => new Date(r.createdAt).toLocaleString() },
     {
-      key: "actions",
+      id: "actions",
       header: "",
       cell: (r) => (
         <div className="flex gap-2">
@@ -524,14 +524,14 @@ function IncidentsTab({ incidents }: { incidents: SecurityIncident[] }) {
   const columns: DataTableColumn<SecurityIncident>[] = [
     { id: "createdAt", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString() },
     {
-      key: "severity",
+      id: "severity",
       header: "Severidade",
       cell: (r) => <StatusBadge tone={severityTone(r.severity)}>{r.severity}</StatusBadge>,
     },
     { id: "category", header: "Categoria", cell: (r) => r.category },
     { id: "title", header: "Título", cell: (r) => r.title },
     {
-      key: "status",
+      id: "status",
       header: "Status",
       cell: (r) => (
         <StatusBadge tone={r.status === "open" ? "warning" : r.status === "resolved" ? "success" : "neutral"}>
@@ -540,7 +540,7 @@ function IncidentsTab({ incidents }: { incidents: SecurityIncident[] }) {
       ),
     },
     {
-      key: "actions",
+      id: "actions",
       header: "",
       cell: (r) => (
         <div className="flex gap-2">
