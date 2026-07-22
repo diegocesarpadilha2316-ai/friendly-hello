@@ -37,25 +37,25 @@ function IaPage() {
   const models = useAIModels();
 
   const healthCols: DataTableColumn<AIProviderHealth>[] = [
-    { key: "provider", header: "Provider" },
+    { id: "provider", header: "Provider", cell: (r) => r.provider },
     {
-      key: "status",
+      id: "status",
       header: "Status",
       cell: (r) => <StatusBadge tone={STATUS_TONE[r.status]}>{r.status}</StatusBadge>,
     },
-    { key: "latencyMs", header: "Latência (ms)", cell: (r) => r.latencyMs ?? "—" },
-    { key: "message", header: "Mensagem", cell: (r) => r.message ?? "—" },
+    { id: "latencyMs", header: "Latência (ms)", cell: (r) => r.latencyMs ?? "—" },
+    { id: "message", header: "Mensagem", cell: (r) => r.message ?? "—" },
   ];
 
   const modelCols: DataTableColumn<AIModel>[] = [
-    { key: "id", header: "Model ID" },
-    { key: "provider", header: "Provider" },
-    { key: "quality", header: "Qualidade" },
-    { key: "speed", header: "Velocidade" },
-    { key: "cost", header: "Custo" },
-    { key: "capabilities", header: "Capabilities", cell: (r) => r.capabilities.join(", ") },
+    { id: "id", header: "Model ID", cell: (r) => r.id },
+    { id: "provider", header: "Provider", cell: (r) => r.provider },
+    { id: "quality", header: "Qualidade", cell: (r) => r.quality },
+    { id: "speed", header: "Velocidade", cell: (r) => r.speed },
+    { id: "cost", header: "Custo", cell: (r) => r.cost },
+    { id: "capabilities", header: "Capabilities", cell: (r) => r.capabilities.join(", ") },
     {
-      key: "enabled",
+      id: "enabled",
       header: "Ativo",
       cell: (r) => (
         <StatusBadge tone={r.enabled ? "success" : "neutral"}>
@@ -88,7 +88,7 @@ function IaPage() {
         <DataTable
           data={(health.data ?? []) as AIProviderHealth[]}
           columns={healthCols}
-          rowKey={(r) => r.provider}
+          getRowKey={(r) => r.provider}
           empty="Sem dados de saúde ainda."
         />
       </section>
@@ -98,7 +98,7 @@ function IaPage() {
         <DataTable
           data={(models.data?.models ?? []) as AIModel[]}
           columns={modelCols}
-          rowKey={(r) => r.id}
+          getRowKey={(r) => r.id}
           empty="Nenhum modelo registrado."
         />
       </section>
