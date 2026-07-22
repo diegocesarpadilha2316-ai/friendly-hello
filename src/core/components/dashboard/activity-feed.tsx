@@ -28,7 +28,7 @@ export function ActivityFeed({ entries, status, limit = 6 }: ActivityFeedProps) 
     >
       <ul className="space-y-3">
         {list.map((e) => {
-          const Icon = (e.iconKey && ICON_MAP[e.iconKey]) ?? Clock;
+          const Icon: LucideIcon = e.iconKey ? (ICON_MAP[e.iconKey] ?? Clock) : Clock;
           return (
             <li key={e.id} className="flex items-start gap-3">
               <span className="mt-0.5 rounded-md bg-muted p-1.5 text-muted-foreground">
