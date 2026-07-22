@@ -1,18 +1,23 @@
 import type { ReactNode } from "react";
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, LogOut } from "lucide-react";
 import {
   AppShell,
   Sidebar,
   Topbar,
   type SidebarNavGroup,
 } from "@/core/components/ui-kit";
+import { Button } from "@/components/ui/button";
 import { app, modules } from "@/core/config";
+import { useOptionalAuth } from "@/core/hooks";
+import { useNavigate } from "@tanstack/react-router";
 
 /**
  * AppLayout — composição padrão consumida pelo __root para páginas do hub.
  * Renderiza Sidebar + Topbar + slot de conteúdo.
  */
 export function AppLayout({ children }: { children: ReactNode }) {
+  const auth = useOptionalAuth();
+  const navigate = useNavigate();
   const groups: SidebarNavGroup[] = [
     {
       label: "Visão geral",
@@ -31,7 +36,29 @@ export function AppLayout({ children }: { children: ReactNode }) {
   return (
     <AppShell
       sidebar={<Sidebar brand={app.name} groups={groups} />}
-      topbar={<Topbar />}
+      topbar={
+        <Topbar
+          right={
+            auth?.user ? (
+              <>
+                <span className="hidden text-xs text-muted-foreground sm:inline">
+                  {auth.user.email}
+                </span>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={async () => {
+                    await auth.signOut();
+                    navigate({ to: "/auth", replace: true });
+                  }}
+                >
+                  <LogOut className="mr-1 h-4 w-4" /> Sair
+                </Button>
+              </>
+            ) : null
+          }
+        />
+      }
     >
       {children}
     </AppShell>

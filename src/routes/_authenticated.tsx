@@ -1,40 +1,29 @@
-import { createFileRoute, Outlet, redirect, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/core/hooks";
 import { AppLayout } from "@/core/components/AppLayout";
 
 /**
  * Gate de rotas autenticadas.
  * `ssr: false` porque a sessão Supabase vive no localStorage do browser.
- * `beforeLoad` (client-only) redireciona anônimos para /auth.
+ * Redirecionamento acontece no efeito client-side, evitando corrida com o
+ * bootstrap do client Supabase (feito por <AuthProvider>).
  */
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
-  beforeLoad: async ({ location }) => {
-    if (typeof window === "undefined") return;
-    const { getSupabaseBrowser } = await import("@/core/lib/supabase/client");
-    try {
-      const supabase = getSupabaseBrowser();
-      const { data } = await supabase.auth.getSession();
-      if (!data.session) {
-        throw redirect({ to: "/auth", search: { redirect: location.href } });
-      }
-    } catch (err) {
-      if (err && typeof err === "object" && "to" in err) throw err;
-      // Client ainda não inicializado — deixa o componente lidar (loading).
-    }
-  },
   component: AuthenticatedLayout,
 });
 
 function AuthenticatedLayout() {
   const { user, loading } = useAuth();
-  const router = useRouter();
+  const navigate = useNavigate();
+  const href = useRouterState({ select: (s) => s.location.href });
   useEffect(() => {
     if (!loading && !user) {
-      router.navigate({ to: "/auth", replace: true });
+      navigate({ to: "/auth", search: { redirect: href }, replace: true });
     }
-  }, [loading, user, router]);
+  }, [loading, user, navigate, href]);
 
   if (loading) {
     return (
