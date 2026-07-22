@@ -156,7 +156,7 @@ function WorkspaceDashboard() {
           <ul className="divide-y divide-border/60">
             {snapshot.activity.slice(0, 6).map((a) => (
               <li key={a.id} className="flex items-center justify-between py-2 text-sm">
-                <span className="truncate">{a.description ?? a.action}</span>
+                <span className="truncate">{a.action}{a.target ? ` — ${a.target}` : ""}</span>
                 <span className="text-xs text-muted-foreground">
                   {a.at ? new Date(a.at).toLocaleString("pt-BR") : ""}
                 </span>
