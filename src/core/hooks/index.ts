@@ -1,6 +1,4 @@
-export { useAuth, useOptionalAuth } from "@/core/providers/AuthProvider";
 /**
- * core/hooks — placeholder barrel.
- * Adicione exports conforme os recursos do Core forem implementados.
+ * core/hooks — hooks compartilhados de todos os módulos.
  */
-export {};
+export { useAuth, useOptionalAuth } from "@/core/providers/AuthProvider";
