@@ -58,10 +58,10 @@ function EmpresaSettings() {
             data={(query.data ?? []) as CompanyMember[]}
             empty="Nenhum membro."
             columns={[
-              { key: "user_id", header: "Usuário", cell: (m) => <span className="font-mono text-xs">{m.user_id.slice(0, 8)}…</span> },
-              { key: "role", header: "Papel", cell: (m) => <StatusBadge tone="info">{m.role}</StatusBadge> },
+              { id: "user_id", header: "Usuário", cell: (m) => <span className="font-mono text-xs">{m.user_id.slice(0, 8)}…</span> },
+              { id: "role", header: "Papel", cell: (m) => <StatusBadge tone="info">{m.role}</StatusBadge> },
               {
-                key: "active",
+                id: "active",
                 header: "Status",
                 cell: (m) => (
                   <StatusBadge tone={m.active ? "success" : "neutral"}>
@@ -69,7 +69,7 @@ function EmpresaSettings() {
                   </StatusBadge>
                 ),
               },
-              { key: "joined_at", header: "Entrou em", cell: (m) => new Date(m.joined_at).toLocaleDateString("pt-BR") },
+              { id: "joined_at", header: "Entrou em", cell: (m) => new Date(m.joined_at).toLocaleDateString("pt-BR") },
             ]}
           />
         </div>
