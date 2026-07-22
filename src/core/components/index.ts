@@ -1,5 +1,5 @@
 /**
- * core/components — placeholder barrel.
- * Adicione exports conforme os recursos do Core forem implementados.
+ * core/components — componentes compartilhados do Core.
+ * Reexporta o Design System (ui-kit) usado por todos os módulos.
  */
-export {};
+export * from "./ui-kit";
