@@ -37,6 +37,7 @@ import { Route as AuthenticatedApiGatewayRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated.workspace.index'
 import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated.configuracoes.index'
+import { Route as AuthenticatedWorkspaceEquipeRouteImport } from './routes/_authenticated.workspace.equipe'
 import { Route as AuthenticatedWorkspaceEmpresaRouteImport } from './routes/_authenticated.workspace.empresa'
 import { Route as AuthenticatedOnboardingCompanyRouteImport } from './routes/_authenticated.onboarding.company'
 import { Route as AuthenticatedConfiguracoesEmpresaRouteImport } from './routes/_authenticated.configuracoes.empresa'
@@ -188,6 +189,12 @@ const AuthenticatedConfiguracoesIndexRoute =
     path: '/configuracoes/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedWorkspaceEquipeRoute =
+  AuthenticatedWorkspaceEquipeRouteImport.update({
+    id: '/equipe',
+    path: '/equipe',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
 const AuthenticatedWorkspaceEmpresaRoute =
   AuthenticatedWorkspaceEmpresaRouteImport.update({
     id: '/empresa',
@@ -246,6 +253,7 @@ export interface FileRoutesByFullPath {
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
   '/workspace/empresa': typeof AuthenticatedWorkspaceEmpresaRoute
+  '/workspace/equipe': typeof AuthenticatedWorkspaceEquipeRoute
   '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
@@ -279,6 +287,7 @@ export interface FileRoutesByTo {
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
   '/workspace/empresa': typeof AuthenticatedWorkspaceEmpresaRoute
+  '/workspace/equipe': typeof AuthenticatedWorkspaceEquipeRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesIndexRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
@@ -315,6 +324,7 @@ export interface FileRoutesById {
   '/_authenticated/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/_authenticated/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
   '/_authenticated/workspace/empresa': typeof AuthenticatedWorkspaceEmpresaRoute
+  '/_authenticated/workspace/equipe': typeof AuthenticatedWorkspaceEquipeRoute
   '/_authenticated/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
@@ -351,6 +361,7 @@ export interface FileRouteTypes {
     | '/configuracoes/empresa'
     | '/onboarding/company'
     | '/workspace/empresa'
+    | '/workspace/equipe'
     | '/configuracoes/'
     | '/workspace/'
     | '/api/public/v1/openapi'
@@ -384,6 +395,7 @@ export interface FileRouteTypes {
     | '/configuracoes/empresa'
     | '/onboarding/company'
     | '/workspace/empresa'
+    | '/workspace/equipe'
     | '/configuracoes'
     | '/workspace'
     | '/api/public/v1/openapi'
@@ -419,6 +431,7 @@ export interface FileRouteTypes {
     | '/_authenticated/configuracoes/empresa'
     | '/_authenticated/onboarding/company'
     | '/_authenticated/workspace/empresa'
+    | '/_authenticated/workspace/equipe'
     | '/_authenticated/configuracoes/'
     | '/_authenticated/workspace/'
     | '/api/public/v1/openapi'
@@ -631,6 +644,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConfiguracoesIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/workspace/equipe': {
+      id: '/_authenticated/workspace/equipe'
+      path: '/equipe'
+      fullPath: '/workspace/equipe'
+      preLoaderRoute: typeof AuthenticatedWorkspaceEquipeRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
     '/_authenticated/workspace/empresa': {
       id: '/_authenticated/workspace/empresa'
       path: '/empresa'
@@ -671,12 +691,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedWorkspaceRouteChildren {
   AuthenticatedWorkspaceEmpresaRoute: typeof AuthenticatedWorkspaceEmpresaRoute
+  AuthenticatedWorkspaceEquipeRoute: typeof AuthenticatedWorkspaceEquipeRoute
   AuthenticatedWorkspaceIndexRoute: typeof AuthenticatedWorkspaceIndexRoute
 }
 
 const AuthenticatedWorkspaceRouteChildren: AuthenticatedWorkspaceRouteChildren =
   {
     AuthenticatedWorkspaceEmpresaRoute: AuthenticatedWorkspaceEmpresaRoute,
+    AuthenticatedWorkspaceEquipeRoute: AuthenticatedWorkspaceEquipeRoute,
     AuthenticatedWorkspaceIndexRoute: AuthenticatedWorkspaceIndexRoute,
   }
 
