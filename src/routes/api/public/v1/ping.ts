@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "crypto";
 import {
   authenticateApiRequest,
@@ -23,10 +22,8 @@ export const Route = createFileRoute("/api/public/v1/ping")({
         const started = Date.now();
         const requestId = randomUUID();
         const correlationId = request.headers.get("x-correlation-id") ?? requestId;
-        const base = process.env.SUPABASE_URL!;
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        void base;
-        void createClient;
+        const { getSupabaseAdmin } = await import("@/core/lib/supabase/admin.server");
+        const supabaseAdmin = getSupabaseAdmin();
         const authResult = await authenticateApiRequest(supabaseAdmin, request);
         if ("error" in authResult) {
           return new Response(JSON.stringify({ error: authResult.error, requestId }), {
