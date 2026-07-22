@@ -16,6 +16,7 @@ import {
   Rocket,
   LifeBuoy,
   Command,
+  Search,
 } from "lucide-react";
 import {
   AppShell,
@@ -24,6 +25,7 @@ import {
   CompanySwitcher,
   type SidebarNavGroup,
 } from "@/core/components/ui-kit";
+import { CommandPalette, useCommandPalette } from "@/core/components/command-palette";
 import { Button } from "@/components/ui/button";
 import { app, modules } from "@/core/config";
 import { useOptionalAuth } from "@/core/hooks";
@@ -37,6 +39,7 @@ import diorisLogo from "@/assets/dioris-logo.png";
 export function AppLayout({ children }: { children: ReactNode }) {
   const auth = useOptionalAuth();
   const navigate = useNavigate();
+  const palette = useCommandPalette();
   const groups: SidebarNavGroup[] = [
     {
       label: "Visão geral",
@@ -102,6 +105,19 @@ export function AppLayout({ children }: { children: ReactNode }) {
           right={
             auth?.user ? (
               <>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={palette.toggle}
+                  className="hidden gap-2 border-border/60 text-xs text-muted-foreground sm:inline-flex"
+                  aria-label="Abrir busca global"
+                >
+                  <Search className="h-3.5 w-3.5" />
+                  Buscar…
+                  <kbd className="ml-2 rounded border border-border/60 bg-muted/60 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                    ⌘K
+                  </kbd>
+                </Button>
                 <span className="hidden text-xs text-muted-foreground sm:inline">
                   {auth.user.email}
                 </span>
@@ -122,6 +138,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
       }
     >
       {children}
+      <CommandPalette open={palette.open} onOpenChange={palette.setOpen} />
     </AppShell>
   );
 }
