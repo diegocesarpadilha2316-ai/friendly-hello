@@ -12,6 +12,7 @@ import {
   Puzzle,
   ShieldCheck,
   Settings,
+  Gauge,
 } from "lucide-react";
 import {
   AppShell,
@@ -57,6 +58,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         { title: "API Gateway", url: "/api-gateway", icon: Globe2 },
         { title: "Cache", url: "/cache", icon: Database },
         { title: "Segurança", url: "/security", icon: ShieldCheck },
+        { title: "Qualidade", url: "/quality", icon: Gauge },
         { title: "Configurações", url: "/configuracoes", icon: Settings },
       ],
     },
