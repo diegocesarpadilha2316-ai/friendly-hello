@@ -1,0 +1,197 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import { requireAuth } from "@/core/middleware/require-auth";
+import { requireTenant } from "@/core/middleware/require-tenant";
+import type {
+  Company,
+  CompanyMember,
+  CompanyWithRole,
+  TenantRole,
+} from "@/core/types/tenant";
+
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48) || "empresa";
+
+/** Empresas às quais o usuário atual pertence (com o papel dele em cada). */
+export const listMyCompanies = createServerFn({ method: "GET" })
+  .middleware([requireAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const { data, error } = await supabase
+      .from("company_members")
+      .select("role, active, company:companies(*)")
+      .eq("user_id", userId)
+      .eq("active", true);
+    if (error) throw new Error(error.message);
+    const rows = (data ?? []) as unknown as Array<{
+      role: TenantRole;
+      active: boolean;
+      company: Company | Company[] | null;
+    }>;
+    return rows
+      .map<CompanyWithRole | null>((r) => {
+        const company = Array.isArray(r.company) ? r.company[0] : r.company;
+        return company ? { ...company, role: r.role } : null;
+      })
+      .filter((c): c is CompanyWithRole => c !== null);
+  });
+
+/** Cria uma nova empresa; o criador vira `owner` via trigger no banco. */
+export const createCompany = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .inputValidator((input) =>
+    z
+      .object({
+        name: z.string().trim().min(2).max(120),
+        cnpj: z.string().trim().max(32).optional().nullable(),
+        logo_url: z.string().url().optional().nullable(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ context, data }) => {
+    const { supabase, userId } = context;
+    const baseSlug = slugify(data.name);
+    const slug = `${baseSlug}-${Math.random().toString(36).slice(2, 6)}`;
+    const { data: created, error } = await supabase
+      .from("companies")
+      .insert({
+        name: data.name,
+        slug,
+        cnpj: data.cnpj ?? null,
+        logo_url: data.logo_url ?? null,
+        created_by: userId,
+      })
+      .select("*")
+      .single();
+    if (error) throw new Error(error.message);
+    return created as Company;
+  });
+
+/** Atualiza dados da empresa ativa. Requer admin/owner. */
+export const updateActiveCompany = createServerFn({ method: "POST" })
+  .middleware([requireTenant])
+  .inputValidator((input) =>
+    z
+      .object({
+        name: z.string().trim().min(2).max(120).optional(),
+        cnpj: z.string().trim().max(32).nullable().optional(),
+        logo_url: z.string().url().nullable().optional(),
+        custom_domain: z.string().trim().nullable().optional(),
+        settings: z.record(z.string(), z.any()).optional(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ context, data }) => {
+    const { supabase, tenantId, role } = context;
+    if (role !== "owner" && role !== "admin") {
+      throw new Response("Forbidden", { status: 403 });
+    }
+    const { data: updated, error } = await supabase
+      .from("companies")
+      .update(data)
+      .eq("id", tenantId)
+      .select("*")
+      .single();
+    if (error) throw new Error(error.message);
+    return updated as Company;
+  });
+
+/** Membros da empresa ativa. */
+export const listCompanyMembers = createServerFn({ method: "GET" })
+  .middleware([requireTenant])
+  .handler(async ({ context }) => {
+    const { supabase, tenantId } = context;
+    const { data, error } = await supabase
+      .from("company_members")
+      .select("*")
+      .eq("company_id", tenantId)
+      .order("created_at", { ascending: true });
+    if (error) throw new Error(error.message);
+    return (data ?? []) as CompanyMember[];
+  });
+
+/** Convida um e-mail para a empresa ativa (admin+). */
+export const inviteMember = createServerFn({ method: "POST" })
+  .middleware([requireTenant])
+  .inputValidator((input) =>
+    z
+      .object({
+        email: z.string().email(),
+        role: z.enum(["admin", "manager", "member"]),
+      })
+      .parse(input),
+  )
+  .handler(async ({ context, data }) => {
+    const { supabase, tenantId, userId, role } = context;
+    if (role !== "owner" && role !== "admin") {
+      throw new Response("Forbidden", { status: 403 });
+    }
+    const token = crypto.randomUUID().replace(/-/g, "");
+    const { data: inv, error } = await supabase
+      .from("company_invitations")
+      .insert({
+        company_id: tenantId,
+        email: data.email.toLowerCase(),
+        role: data.role,
+        token,
+        invited_by: userId,
+      })
+      .select("*")
+      .single();
+    if (error) throw new Error(error.message);
+    return inv;
+  });
+
+/** Atualiza o papel de um membro (admin+). */
+export const updateMemberRole = createServerFn({ method: "POST" })
+  .middleware([requireTenant])
+  .inputValidator((input) =>
+    z
+      .object({
+        memberId: z.string().uuid(),
+        role: z.enum(["owner", "admin", "manager", "member"]),
+      })
+      .parse(input),
+  )
+  .handler(async ({ context, data }) => {
+    const { supabase, role } = context;
+    if (role !== "owner" && role !== "admin") {
+      throw new Response("Forbidden", { status: 403 });
+    }
+    if (data.role === "owner" && role !== "owner") {
+      throw new Response("Somente owner pode promover a owner", { status: 403 });
+    }
+    const { data: updated, error } = await supabase
+      .from("company_members")
+      .update({ role: data.role })
+      .eq("id", data.memberId)
+      .select("*")
+      .single();
+    if (error) throw new Error(error.message);
+    return updated as CompanyMember;
+  });
+
+/** Desativa (ou reativa) um membro. */
+export const setMemberActive = createServerFn({ method: "POST" })
+  .middleware([requireTenant])
+  .inputValidator((input) =>
+    z.object({ memberId: z.string().uuid(), active: z.boolean() }).parse(input),
+  )
+  .handler(async ({ context, data }) => {
+    const { supabase, role } = context;
+    if (role !== "owner" && role !== "admin") {
+      throw new Response("Forbidden", { status: 403 });
+    }
+    const { error } = await supabase
+      .from("company_members")
+      .update({ active: data.active })
+      .eq("id", data.memberId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });

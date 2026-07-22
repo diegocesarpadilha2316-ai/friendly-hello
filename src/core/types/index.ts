@@ -1,5 +1,6 @@
 /**
- * core/types — placeholder barrel.
- * Adicione exports conforme os recursos do Core forem implementados.
+ * core/types — tipos base da plataforma.
  */
-export {};
+export * from "./identity";
+export * from "./tenant";
+export * from "./rbac";

@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/core/providers/AuthProvider";
+import { TenantProvider } from "@/core/providers/TenantProvider";
 import { getPublicSupabaseConfig } from "@/core/lib/supabase/config.functions";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -129,9 +130,11 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider config={supabaseConfig}>
-        {/* Required: nested routes render here. Layout (AppShell) lives under _authenticated. */}
-        <Outlet />
-        <Toaster position="top-right" />
+        <TenantProvider>
+          {/* Required: nested routes render here. Layout (AppShell) lives under _authenticated. */}
+          <Outlet />
+          <Toaster position="top-right" />
+        </TenantProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

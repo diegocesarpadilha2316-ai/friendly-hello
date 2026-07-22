@@ -20,3 +20,5 @@ export * from "./module-card";
 export * from "./app-shell";
 export * from "./sidebar";
 export * from "./topbar";
+export * from "./company-switcher";
+export * from "./can";
