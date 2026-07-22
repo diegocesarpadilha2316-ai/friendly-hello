@@ -1,7 +1,8 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export interface DashboardCardProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface DashboardCardProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "title"> {
   title?: React.ReactNode;
   description?: React.ReactNode;
   actions?: React.ReactNode;
