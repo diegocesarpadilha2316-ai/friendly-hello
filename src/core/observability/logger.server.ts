@@ -1,14 +1,7 @@
 import type { LogEntry, LogLevel, JsonRecord } from "./types";
 
-type TenantContext = {
-  supabase: {
-    from: (t: string) => {
-      insert: (rows: unknown) => Promise<{ error: { message: string } | null }>;
-    };
-  };
-  tenantId: string;
-  userId: string;
-};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TenantContext = { supabase: any; tenantId: string; userId: string };
 
 export interface LogInput {
   level?: LogLevel;
