@@ -17,3 +17,5 @@ export * as lib from "./lib";
 export * as services from "./services";
 export * as hooks from "./hooks";
 export * as providers from "./providers";
+export * as dashboard from "./dashboard";
+export * as billing from "./billing";
