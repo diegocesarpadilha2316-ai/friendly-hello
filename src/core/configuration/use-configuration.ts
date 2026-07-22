@@ -50,18 +50,20 @@ function invalidateAll(qc: ReturnType<typeof useQueryClient>) {
   qc.invalidateQueries({ queryKey: configurationKeys.all });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyInput = any;
+
 export function useUpdateCompanySettings() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: Parameters<typeof companySettingsUpsert>[0]["data"]) =>
-      companySettingsUpsert({ data: input }),
+    mutationFn: (input: AnyInput) => companySettingsUpsert({ data: input }),
     onSuccess: () => invalidateAll(qc),
   });
 }
 export function useUpsertFlag() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: Parameters<typeof flagUpsert>[0]["data"]) => flagUpsert({ data: input }),
+    mutationFn: (input: AnyInput) => flagUpsert({ data: input }),
     onSuccess: () => invalidateAll(qc),
   });
 }
@@ -75,8 +77,7 @@ export function useDeleteFlag() {
 export function useUpsertIntegration() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: Parameters<typeof integrationUpsert>[0]["data"]) =>
-      integrationUpsert({ data: input }),
+    mutationFn: (input: AnyInput) => integrationUpsert({ data: input }),
     onSuccess: () => invalidateAll(qc),
   });
 }
@@ -90,40 +91,35 @@ export function useTestIntegration() {
 export function useUpsertBranding() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: Parameters<typeof brandingUpsert>[0]["data"]) =>
-      brandingUpsert({ data: input }),
+    mutationFn: (input: AnyInput) => brandingUpsert({ data: input }),
     onSuccess: () => invalidateAll(qc),
   });
 }
 export function useUpsertLocalization() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: Parameters<typeof localizationUpsert>[0]["data"]) =>
-      localizationUpsert({ data: input }),
+    mutationFn: (input: AnyInput) => localizationUpsert({ data: input }),
     onSuccess: () => invalidateAll(qc),
   });
 }
 export function useUpsertSecurity() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: Parameters<typeof securityUpsert>[0]["data"]) =>
-      securityUpsert({ data: input }),
+    mutationFn: (input: AnyInput) => securityUpsert({ data: input }),
     onSuccess: () => invalidateAll(qc),
   });
 }
 export function useUpsertBackup() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: Parameters<typeof backupUpsert>[0]["data"]) =>
-      backupUpsert({ data: input }),
+    mutationFn: (input: AnyInput) => backupUpsert({ data: input }),
     onSuccess: () => invalidateAll(qc),
   });
 }
 export function useCreateApiKey() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: Parameters<typeof apiKeyCreate>[0]["data"]) =>
-      apiKeyCreate({ data: input }),
+    mutationFn: (input: AnyInput) => apiKeyCreate({ data: input }),
     onSuccess: () => invalidateAll(qc),
   });
 }
