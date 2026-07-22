@@ -139,7 +139,7 @@ export const assetsListAudit = createServerFn({ method: "GET" })
       assetId: (r.asset_id as string | null) ?? null,
       actorId: (r.actor_id as string | null) ?? null,
       action: r.action as string,
-      detail: (r.detail as Record<string, unknown>) ?? {},
+      detail: (r.detail as AssetAuditEntry["detail"]) ?? {},
       createdAt: r.created_at as string,
     }));
   });
@@ -165,7 +165,7 @@ function mapAssetRow(r: Record<string, unknown>): Asset {
     width: (r.width as number | null) ?? null,
     height: (r.height as number | null) ?? null,
     durationMs: (r.duration_ms as number | null) ?? null,
-    metadata: (r.metadata as Record<string, unknown>) ?? {},
+    metadata: (r.metadata as Asset["metadata"]) ?? {},
     deletedAt: (r.deleted_at as string | null) ?? null,
     createdBy: (r.created_by as string | null) ?? null,
     createdAt: r.created_at as string,
