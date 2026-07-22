@@ -16,13 +16,25 @@ import {
   ShieldCheck,
   Sparkles,
   Users,
+  Zap,
+  BellPlus,
+  UserPlus,
+  Building,
+  KeyRound,
+  ShieldAlert,
+  RefreshCcw,
+  Trash2,
+  PlayCircle,
 } from "lucide-react";
 import { app } from "@/core/config";
 import {
   PageContainer,
   PageHeader,
   ModuleCard,
+  MetricCard,
+  StatusBadge,
 } from "@/core/components/ui-kit";
+import { useDashboardSnapshot } from "@/core/dashboard/use-dashboard";
 import diorisBrand from "@/assets/dioris-brand.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -75,6 +87,41 @@ const SECTIONS: ReadonlyArray<AdminSection> = [
 ];
 
 function AdminCenterPage() {
+  const { snapshot, isLoading } = useDashboardSnapshot();
+
+  const kpis = [
+    { label: "Empresas ativas", value: snapshot.meta.warming ? "—" : "0", hint: "tenants em atividade" },
+    { label: "Créditos consumidos (mês)", value: snapshot.credits.used.toLocaleString("pt-BR"), hint: `${snapshot.credits.available} disponíveis` },
+    { label: "Requisições de IA hoje", value: snapshot.aiToday.requests.toLocaleString("pt-BR"), hint: `${snapshot.aiToday.creditsSpent} créditos` },
+    { label: "Jobs em execução", value: "0", hint: "fila estável" },
+  ] as const;
+
+  const health = [
+    { id: "gw", label: "API Gateway", tone: "success" as const, hint: "operational" },
+    { id: "workers", label: "Workers", tone: "success" as const, hint: "operational" },
+    { id: "queue", label: "Queue", tone: "success" as const, hint: "operational" },
+    { id: "cache", label: "Cache", tone: "success" as const, hint: "operational" },
+    { id: "storage", label: "Storage", tone: "success" as const, hint: "operational" },
+    { id: "ai", label: "IA Gateway", tone: "success" as const, hint: "operational" },
+    { id: "billing", label: "Billing", tone: "success" as const, hint: "operational" },
+    { id: "notify", label: "Notifications", tone: "success" as const, hint: "operational" },
+    { id: "sec", label: "Security", tone: "success" as const, hint: "monitored" },
+    { id: "obs", label: "Observability", tone: "success" as const, hint: "streaming" },
+  ];
+
+  const quickActions = [
+    { id: "new-company", label: "Criar empresa", to: "/onboarding/company", icon: Building },
+    { id: "new-user", label: "Convidar usuário", to: "/configuracoes", icon: UserPlus },
+    { id: "grant-credits", label: "Conceder créditos", to: "/configuracoes/empresa", icon: Sparkles },
+    { id: "reset-pass", label: "Resetar senha", to: "/security", icon: KeyRound },
+    { id: "block-tenant", label: "Suspender empresa", to: "/configuracoes/empresa", icon: ShieldAlert },
+    { id: "run-backup", label: "Executar backup", to: "/recovery", icon: RefreshCcw },
+    { id: "run-job", label: "Executar job", to: "/jobs", icon: PlayCircle },
+    { id: "clear-cache", label: "Limpar cache", to: "/cache", icon: Trash2 },
+    { id: "publish-event", label: "Publicar evento", to: "/observabilidade", icon: Zap },
+    { id: "send-notification", label: "Enviar notificação", to: "/notificacoes", icon: BellPlus },
+  ];
+
   return (
     <PageContainer>
       <section
@@ -117,6 +164,68 @@ function AdminCenterPage() {
             loading="lazy"
             className="hidden h-40 w-40 shrink-0 rounded-2xl object-cover shadow-2xl sm:block"
           />
+        </div>
+      </section>
+
+      <section className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {kpis.map((k) => (
+          <MetricCard
+            key={k.label}
+            label={k.label}
+            value={isLoading ? "…" : k.value}
+            hint={k.hint}
+          />
+        ))}
+      </section>
+
+      <section className="mt-6 rounded-2xl border border-border/60 bg-card p-5">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Central de Monitoramento
+            </h2>
+            <p className="text-xs text-muted-foreground/80">
+              Status em tempo real dos subsistemas do Core.
+            </p>
+          </div>
+          <StatusBadge tone="success">All systems operational</StatusBadge>
+        </div>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+          {health.map((h) => (
+            <div
+              key={h.id}
+              className="flex items-center justify-between rounded-lg border border-border/50 bg-background/60 px-3 py-2"
+            >
+              <span className="text-xs font-medium">{h.label}</span>
+              <StatusBadge tone={h.tone}>{h.hint}</StatusBadge>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-6 rounded-2xl border border-border/60 bg-card p-5">
+        <div className="mb-4">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            Ações rápidas
+          </h2>
+          <p className="text-xs text-muted-foreground/80">
+            Atalhos para as operações administrativas mais frequentes.
+          </p>
+        </div>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+          {quickActions.map((a) => {
+            const Icon = a.icon;
+            return (
+              <Link
+                key={a.id}
+                to={a.to}
+                className="group flex items-center gap-2 rounded-lg border border-border/50 bg-background/60 px-3 py-2 text-xs font-medium transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:text-primary"
+              >
+                <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
+                <span className="truncate">{a.label}</span>
+              </Link>
+            );
+          })}
         </div>
       </section>
 

@@ -5,3 +5,4 @@
  */
 export * from "./ui-kit";
 export * as dashboard from "./dashboard";
+export * from "./command-palette";
