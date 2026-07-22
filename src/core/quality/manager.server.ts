@@ -126,7 +126,7 @@ export async function recordRun(
     coveragePct?: number | null;
     durationMs?: number | null;
     correlationId?: string | null;
-    metadata?: Record<string, unknown>;
+    metadata?: Record<string, string>;
   },
 ): Promise<QualityRun> {
   const total = input.cases.length;
