@@ -14,6 +14,7 @@ import {
   Settings,
   Gauge,
   Rocket,
+  LifeBuoy,
 } from "lucide-react";
 import {
   AppShell,
@@ -61,6 +62,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         { title: "Segurança", url: "/security", icon: ShieldCheck },
         { title: "Qualidade", url: "/quality", icon: Gauge },
         { title: "CI/CD", url: "/cicd", icon: Rocket },
+        { title: "Recovery", url: "/recovery", icon: LifeBuoy },
         { title: "Configurações", url: "/configuracoes", icon: Settings },
       ],
     },

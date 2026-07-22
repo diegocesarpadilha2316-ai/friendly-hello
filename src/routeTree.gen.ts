@@ -18,6 +18,7 @@ import { Route as AuthenticatedSitesRouteImport } from './routes/_authenticated.
 import { Route as AuthenticatedSistemasRouteImport } from './routes/_authenticated.sistemas'
 import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticated.security'
 import { Route as AuthenticatedSdkRouteImport } from './routes/_authenticated.sdk'
+import { Route as AuthenticatedRecoveryRouteImport } from './routes/_authenticated.recovery'
 import { Route as AuthenticatedQualityRouteImport } from './routes/_authenticated.quality'
 import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticated.planner'
 import { Route as AuthenticatedObservabilidadeRouteImport } from './routes/_authenticated.observabilidade'
@@ -80,6 +81,11 @@ const AuthenticatedSecurityRoute = AuthenticatedSecurityRouteImport.update({
 const AuthenticatedSdkRoute = AuthenticatedSdkRouteImport.update({
   id: '/sdk',
   path: '/sdk',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedRecoveryRoute = AuthenticatedRecoveryRouteImport.update({
+  id: '/recovery',
+  path: '/recovery',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedQualityRoute = AuthenticatedQualityRouteImport.update({
@@ -203,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/observabilidade': typeof AuthenticatedObservabilidadeRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/quality': typeof AuthenticatedQualityRoute
+  '/recovery': typeof AuthenticatedRecoveryRoute
   '/sdk': typeof AuthenticatedSdkRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/sistemas': typeof AuthenticatedSistemasRoute
@@ -231,6 +238,7 @@ export interface FileRoutesByTo {
   '/observabilidade': typeof AuthenticatedObservabilidadeRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/quality': typeof AuthenticatedQualityRoute
+  '/recovery': typeof AuthenticatedRecoveryRoute
   '/sdk': typeof AuthenticatedSdkRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/sistemas': typeof AuthenticatedSistemasRoute
@@ -262,6 +270,7 @@ export interface FileRoutesById {
   '/_authenticated/observabilidade': typeof AuthenticatedObservabilidadeRoute
   '/_authenticated/planner': typeof AuthenticatedPlannerRoute
   '/_authenticated/quality': typeof AuthenticatedQualityRoute
+  '/_authenticated/recovery': typeof AuthenticatedRecoveryRoute
   '/_authenticated/sdk': typeof AuthenticatedSdkRoute
   '/_authenticated/security': typeof AuthenticatedSecurityRoute
   '/_authenticated/sistemas': typeof AuthenticatedSistemasRoute
@@ -294,6 +303,7 @@ export interface FileRouteTypes {
     | '/observabilidade'
     | '/planner'
     | '/quality'
+    | '/recovery'
     | '/sdk'
     | '/security'
     | '/sistemas'
@@ -322,6 +332,7 @@ export interface FileRouteTypes {
     | '/observabilidade'
     | '/planner'
     | '/quality'
+    | '/recovery'
     | '/sdk'
     | '/security'
     | '/sistemas'
@@ -352,6 +363,7 @@ export interface FileRouteTypes {
     | '/_authenticated/observabilidade'
     | '/_authenticated/planner'
     | '/_authenticated/quality'
+    | '/_authenticated/recovery'
     | '/_authenticated/sdk'
     | '/_authenticated/security'
     | '/_authenticated/sistemas'
@@ -436,6 +448,13 @@ declare module '@tanstack/react-router' {
       path: '/sdk'
       fullPath: '/sdk'
       preLoaderRoute: typeof AuthenticatedSdkRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/recovery': {
+      id: '/_authenticated/recovery'
+      path: '/recovery'
+      fullPath: '/recovery'
+      preLoaderRoute: typeof AuthenticatedRecoveryRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/quality': {
@@ -589,6 +608,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedObservabilidadeRoute: typeof AuthenticatedObservabilidadeRoute
   AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRoute
   AuthenticatedQualityRoute: typeof AuthenticatedQualityRoute
+  AuthenticatedRecoveryRoute: typeof AuthenticatedRecoveryRoute
   AuthenticatedSdkRoute: typeof AuthenticatedSdkRoute
   AuthenticatedSecurityRoute: typeof AuthenticatedSecurityRoute
   AuthenticatedSistemasRoute: typeof AuthenticatedSistemasRoute
@@ -615,6 +635,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedObservabilidadeRoute: AuthenticatedObservabilidadeRoute,
   AuthenticatedPlannerRoute: AuthenticatedPlannerRoute,
   AuthenticatedQualityRoute: AuthenticatedQualityRoute,
+  AuthenticatedRecoveryRoute: AuthenticatedRecoveryRoute,
   AuthenticatedSdkRoute: AuthenticatedSdkRoute,
   AuthenticatedSecurityRoute: AuthenticatedSecurityRoute,
   AuthenticatedSistemasRoute: AuthenticatedSistemasRoute,
