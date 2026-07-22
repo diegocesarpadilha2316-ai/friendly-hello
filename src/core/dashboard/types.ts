@@ -6,6 +6,9 @@
 import type { Permission } from "@/core/types/rbac";
 import type { LucideIcon } from "lucide-react";
 
+/** Estado universal de um widget assíncrono. */
+export type WidgetStatus = "loading" | "empty" | "error" | "ready";
+
 /** Slot semântico de um widget na grid. */
 export type WidgetSize = "sm" | "md" | "lg" | "xl";
 
@@ -67,7 +70,8 @@ export interface ActivityEntry {
   readonly action: string;
   readonly target?: string;
   readonly at: string;
-  readonly icon?: LucideIcon;
+  /** Chave semântica do ícone (resolvida no cliente). Server-serializable. */
+  readonly iconKey?: string;
 }
 
 export interface UpcomingTask {
