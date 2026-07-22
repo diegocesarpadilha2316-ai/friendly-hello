@@ -42,14 +42,14 @@ export interface Backup {
   sizeBytes: number | null; checksum: string | null; storageUri: string | null;
   parentBackupId: string | null; correlationId: string | null;
   startedAt: string | null; finishedAt: string | null; expiresAt: string | null;
-  metadata: Record<string, unknown>; createdAt: string;
+  createdAt: string;
 }
 
 export interface Snapshot {
   id: string; backupId: string | null;
   scope: SnapshotScope; target: string; version: string | null;
   sizeBytes: number | null; checksum: string | null; storageUri: string | null;
-  metadata: Record<string, unknown>; createdAt: string;
+  createdAt: string;
 }
 
 export interface Restore {
@@ -58,7 +58,7 @@ export interface Restore {
   pointInTime: string | null; targetScope: string | null;
   requestedBy: string | null; correlationId: string | null;
   startedAt: string | null; finishedAt: string | null;
-  metadata: Record<string, unknown>; createdAt: string;
+  createdAt: string;
 }
 
 export interface IntegrityCheck {
