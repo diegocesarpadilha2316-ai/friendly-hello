@@ -46,7 +46,6 @@ export function mapRun(r: Record<string, unknown>): QualityRun {
     durationMs: (r.duration_ms as number | null) ?? null,
     coveragePct: r.coverage_pct == null ? null : Number(r.coverage_pct),
     correlationId: (r.correlation_id as string | null) ?? null,
-    metadata: (r.metadata as Record<string, unknown> | null) ?? {},
     createdAt: String(r.created_at),
     completedAt: (r.completed_at as string | null) ?? null,
   };
