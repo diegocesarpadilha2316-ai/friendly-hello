@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { LayoutDashboard, LogOut } from "lucide-react";
+import { Bell, HardDrive, LayoutDashboard, LogOut } from "lucide-react";
 import {
   AppShell,
   Sidebar,
@@ -31,6 +31,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
         url: m.path,
         icon: m.icon,
       })),
+    },
+    {
+      label: "Plataforma",
+      items: [
+        { title: "Notificações", url: "/notificacoes", icon: Bell },
+        { title: "Storage", url: "/storage", icon: HardDrive },
+      ],
     },
   ];
 
