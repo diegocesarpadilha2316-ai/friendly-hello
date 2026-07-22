@@ -23,3 +23,4 @@ export * as ai from "./ai";
 export * as observability from "./observability";
 export * as configuration from "./configuration";
 export * as integrations from "./integrations";
+export * as sdk from "./sdk";
