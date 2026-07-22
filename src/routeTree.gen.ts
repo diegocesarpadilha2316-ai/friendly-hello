@@ -21,6 +21,7 @@ import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedObservabilidadeRouteImport } from './routes/_authenticated.observabilidade'
 import { Route as AuthenticatedNotificacoesRouteImport } from './routes/_authenticated.notificacoes'
 import { Route as AuthenticatedMarketplaceRouteImport } from './routes/_authenticated.marketplace'
+import { Route as AuthenticatedJobsRouteImport } from './routes/_authenticated.jobs'
 import { Route as AuthenticatedIntegracoesRouteImport } from './routes/_authenticated.integracoes'
 import { Route as AuthenticatedIaRouteImport } from './routes/_authenticated.ia'
 import { Route as AuthenticatedFinanceiroRouteImport } from './routes/_authenticated.financeiro'
@@ -92,6 +93,11 @@ const AuthenticatedMarketplaceRoute =
     path: '/marketplace',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedJobsRoute = AuthenticatedJobsRouteImport.update({
+  id: '/jobs',
+  path: '/jobs',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedIntegracoesRoute =
   AuthenticatedIntegracoesRouteImport.update({
     id: '/integracoes',
@@ -146,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/ia': typeof AuthenticatedIaRoute
   '/integracoes': typeof AuthenticatedIntegracoesRoute
+  '/jobs': typeof AuthenticatedJobsRoute
   '/marketplace': typeof AuthenticatedMarketplaceRoute
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/observabilidade': typeof AuthenticatedObservabilidadeRoute
@@ -166,6 +173,7 @@ export interface FileRoutesByTo {
   '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/ia': typeof AuthenticatedIaRoute
   '/integracoes': typeof AuthenticatedIntegracoesRoute
+  '/jobs': typeof AuthenticatedJobsRoute
   '/marketplace': typeof AuthenticatedMarketplaceRoute
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/observabilidade': typeof AuthenticatedObservabilidadeRoute
@@ -189,6 +197,7 @@ export interface FileRoutesById {
   '/_authenticated/financeiro': typeof AuthenticatedFinanceiroRoute
   '/_authenticated/ia': typeof AuthenticatedIaRoute
   '/_authenticated/integracoes': typeof AuthenticatedIntegracoesRoute
+  '/_authenticated/jobs': typeof AuthenticatedJobsRoute
   '/_authenticated/marketplace': typeof AuthenticatedMarketplaceRoute
   '/_authenticated/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/_authenticated/observabilidade': typeof AuthenticatedObservabilidadeRoute
@@ -213,6 +222,7 @@ export interface FileRouteTypes {
     | '/financeiro'
     | '/ia'
     | '/integracoes'
+    | '/jobs'
     | '/marketplace'
     | '/notificacoes'
     | '/observabilidade'
@@ -233,6 +243,7 @@ export interface FileRouteTypes {
     | '/financeiro'
     | '/ia'
     | '/integracoes'
+    | '/jobs'
     | '/marketplace'
     | '/notificacoes'
     | '/observabilidade'
@@ -255,6 +266,7 @@ export interface FileRouteTypes {
     | '/_authenticated/financeiro'
     | '/_authenticated/ia'
     | '/_authenticated/integracoes'
+    | '/_authenticated/jobs'
     | '/_authenticated/marketplace'
     | '/_authenticated/notificacoes'
     | '/_authenticated/observabilidade'
@@ -361,6 +373,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMarketplaceRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/jobs': {
+      id: '/_authenticated/jobs'
+      path: '/jobs'
+      fullPath: '/jobs'
+      preLoaderRoute: typeof AuthenticatedJobsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/integracoes': {
       id: '/_authenticated/integracoes'
       path: '/integracoes'
@@ -426,6 +445,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedFinanceiroRoute: typeof AuthenticatedFinanceiroRoute
   AuthenticatedIaRoute: typeof AuthenticatedIaRoute
   AuthenticatedIntegracoesRoute: typeof AuthenticatedIntegracoesRoute
+  AuthenticatedJobsRoute: typeof AuthenticatedJobsRoute
   AuthenticatedMarketplaceRoute: typeof AuthenticatedMarketplaceRoute
   AuthenticatedNotificacoesRoute: typeof AuthenticatedNotificacoesRoute
   AuthenticatedObservabilidadeRoute: typeof AuthenticatedObservabilidadeRoute
@@ -446,6 +466,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedFinanceiroRoute: AuthenticatedFinanceiroRoute,
   AuthenticatedIaRoute: AuthenticatedIaRoute,
   AuthenticatedIntegracoesRoute: AuthenticatedIntegracoesRoute,
+  AuthenticatedJobsRoute: AuthenticatedJobsRoute,
   AuthenticatedMarketplaceRoute: AuthenticatedMarketplaceRoute,
   AuthenticatedNotificacoesRoute: AuthenticatedNotificacoesRoute,
   AuthenticatedObservabilidadeRoute: AuthenticatedObservabilidadeRoute,
