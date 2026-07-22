@@ -26,7 +26,6 @@ export interface Target {
   id: string; slug: string; name: string;
   kind: TargetKind; destination: Destination;
   retentionDays: number; encryption: string; enabled: boolean;
-  metadata: Record<string, unknown>;
   createdAt: string; updatedAt: string;
 }
 
@@ -74,7 +73,6 @@ export interface DrPlan {
   replication: Replication; failover: Failover;
   status: DrPlanStatus;
   lastDrillAt: string | null; lastDrillStatus: string | null;
-  metadata: Record<string, unknown>;
   createdAt: string; updatedAt: string;
 }
 
