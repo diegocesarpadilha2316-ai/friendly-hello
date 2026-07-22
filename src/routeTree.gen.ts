@@ -37,10 +37,20 @@ import { Route as AuthenticatedApiGatewayRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated.workspace.index'
 import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated.configuracoes.index'
+import { Route as AuthenticatedWorkspacePerfilRouteImport } from './routes/_authenticated.workspace.perfil'
+import { Route as AuthenticatedWorkspaceNotificacoesRouteImport } from './routes/_authenticated.workspace.notificacoes'
+import { Route as AuthenticatedWorkspaceIntegracoesRouteImport } from './routes/_authenticated.workspace.integracoes'
+import { Route as AuthenticatedWorkspaceIaRouteImport } from './routes/_authenticated.workspace.ia'
+import { Route as AuthenticatedWorkspaceHistoricoRouteImport } from './routes/_authenticated.workspace.historico'
 import { Route as AuthenticatedWorkspaceEquipeRouteImport } from './routes/_authenticated.workspace.equipe'
 import { Route as AuthenticatedWorkspaceEmpresaRouteImport } from './routes/_authenticated.workspace.empresa'
 import { Route as AuthenticatedWorkspaceCreditosRouteImport } from './routes/_authenticated.workspace.creditos'
+import { Route as AuthenticatedWorkspaceConfiguracoesRouteImport } from './routes/_authenticated.workspace.configuracoes'
+import { Route as AuthenticatedWorkspaceAtividadesRouteImport } from './routes/_authenticated.workspace.atividades'
 import { Route as AuthenticatedWorkspaceAssinaturaRouteImport } from './routes/_authenticated.workspace.assinatura'
+import { Route as AuthenticatedWorkspaceAssetsRouteImport } from './routes/_authenticated.workspace.assets'
+import { Route as AuthenticatedWorkspaceApiKeysRouteImport } from './routes/_authenticated.workspace.api-keys'
+import { Route as AuthenticatedWorkspaceAjudaRouteImport } from './routes/_authenticated.workspace.ajuda'
 import { Route as AuthenticatedOnboardingCompanyRouteImport } from './routes/_authenticated.onboarding.company'
 import { Route as AuthenticatedConfiguracoesEmpresaRouteImport } from './routes/_authenticated.configuracoes.empresa'
 import { Route as ApiPublicV1PingRouteImport } from './routes/api/public/v1/ping'
@@ -191,6 +201,36 @@ const AuthenticatedConfiguracoesIndexRoute =
     path: '/configuracoes/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedWorkspacePerfilRoute =
+  AuthenticatedWorkspacePerfilRouteImport.update({
+    id: '/perfil',
+    path: '/perfil',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
+const AuthenticatedWorkspaceNotificacoesRoute =
+  AuthenticatedWorkspaceNotificacoesRouteImport.update({
+    id: '/notificacoes',
+    path: '/notificacoes',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
+const AuthenticatedWorkspaceIntegracoesRoute =
+  AuthenticatedWorkspaceIntegracoesRouteImport.update({
+    id: '/integracoes',
+    path: '/integracoes',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
+const AuthenticatedWorkspaceIaRoute =
+  AuthenticatedWorkspaceIaRouteImport.update({
+    id: '/ia',
+    path: '/ia',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
+const AuthenticatedWorkspaceHistoricoRoute =
+  AuthenticatedWorkspaceHistoricoRouteImport.update({
+    id: '/historico',
+    path: '/historico',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
 const AuthenticatedWorkspaceEquipeRoute =
   AuthenticatedWorkspaceEquipeRouteImport.update({
     id: '/equipe',
@@ -209,10 +249,40 @@ const AuthenticatedWorkspaceCreditosRoute =
     path: '/creditos',
     getParentRoute: () => AuthenticatedWorkspaceRoute,
   } as any)
+const AuthenticatedWorkspaceConfiguracoesRoute =
+  AuthenticatedWorkspaceConfiguracoesRouteImport.update({
+    id: '/configuracoes',
+    path: '/configuracoes',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
+const AuthenticatedWorkspaceAtividadesRoute =
+  AuthenticatedWorkspaceAtividadesRouteImport.update({
+    id: '/atividades',
+    path: '/atividades',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
 const AuthenticatedWorkspaceAssinaturaRoute =
   AuthenticatedWorkspaceAssinaturaRouteImport.update({
     id: '/assinatura',
     path: '/assinatura',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
+const AuthenticatedWorkspaceAssetsRoute =
+  AuthenticatedWorkspaceAssetsRouteImport.update({
+    id: '/assets',
+    path: '/assets',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
+const AuthenticatedWorkspaceApiKeysRoute =
+  AuthenticatedWorkspaceApiKeysRouteImport.update({
+    id: '/api-keys',
+    path: '/api-keys',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
+const AuthenticatedWorkspaceAjudaRoute =
+  AuthenticatedWorkspaceAjudaRouteImport.update({
+    id: '/ajuda',
+    path: '/ajuda',
     getParentRoute: () => AuthenticatedWorkspaceRoute,
   } as any)
 const AuthenticatedOnboardingCompanyRoute =
@@ -266,10 +336,20 @@ export interface FileRoutesByFullPath {
   '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
+  '/workspace/ajuda': typeof AuthenticatedWorkspaceAjudaRoute
+  '/workspace/api-keys': typeof AuthenticatedWorkspaceApiKeysRoute
+  '/workspace/assets': typeof AuthenticatedWorkspaceAssetsRoute
   '/workspace/assinatura': typeof AuthenticatedWorkspaceAssinaturaRoute
+  '/workspace/atividades': typeof AuthenticatedWorkspaceAtividadesRoute
+  '/workspace/configuracoes': typeof AuthenticatedWorkspaceConfiguracoesRoute
   '/workspace/creditos': typeof AuthenticatedWorkspaceCreditosRoute
   '/workspace/empresa': typeof AuthenticatedWorkspaceEmpresaRoute
   '/workspace/equipe': typeof AuthenticatedWorkspaceEquipeRoute
+  '/workspace/historico': typeof AuthenticatedWorkspaceHistoricoRoute
+  '/workspace/ia': typeof AuthenticatedWorkspaceIaRoute
+  '/workspace/integracoes': typeof AuthenticatedWorkspaceIntegracoesRoute
+  '/workspace/notificacoes': typeof AuthenticatedWorkspaceNotificacoesRoute
+  '/workspace/perfil': typeof AuthenticatedWorkspacePerfilRoute
   '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
@@ -302,10 +382,20 @@ export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
+  '/workspace/ajuda': typeof AuthenticatedWorkspaceAjudaRoute
+  '/workspace/api-keys': typeof AuthenticatedWorkspaceApiKeysRoute
+  '/workspace/assets': typeof AuthenticatedWorkspaceAssetsRoute
   '/workspace/assinatura': typeof AuthenticatedWorkspaceAssinaturaRoute
+  '/workspace/atividades': typeof AuthenticatedWorkspaceAtividadesRoute
+  '/workspace/configuracoes': typeof AuthenticatedWorkspaceConfiguracoesRoute
   '/workspace/creditos': typeof AuthenticatedWorkspaceCreditosRoute
   '/workspace/empresa': typeof AuthenticatedWorkspaceEmpresaRoute
   '/workspace/equipe': typeof AuthenticatedWorkspaceEquipeRoute
+  '/workspace/historico': typeof AuthenticatedWorkspaceHistoricoRoute
+  '/workspace/ia': typeof AuthenticatedWorkspaceIaRoute
+  '/workspace/integracoes': typeof AuthenticatedWorkspaceIntegracoesRoute
+  '/workspace/notificacoes': typeof AuthenticatedWorkspaceNotificacoesRoute
+  '/workspace/perfil': typeof AuthenticatedWorkspacePerfilRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesIndexRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
@@ -341,10 +431,20 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/_authenticated/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
+  '/_authenticated/workspace/ajuda': typeof AuthenticatedWorkspaceAjudaRoute
+  '/_authenticated/workspace/api-keys': typeof AuthenticatedWorkspaceApiKeysRoute
+  '/_authenticated/workspace/assets': typeof AuthenticatedWorkspaceAssetsRoute
   '/_authenticated/workspace/assinatura': typeof AuthenticatedWorkspaceAssinaturaRoute
+  '/_authenticated/workspace/atividades': typeof AuthenticatedWorkspaceAtividadesRoute
+  '/_authenticated/workspace/configuracoes': typeof AuthenticatedWorkspaceConfiguracoesRoute
   '/_authenticated/workspace/creditos': typeof AuthenticatedWorkspaceCreditosRoute
   '/_authenticated/workspace/empresa': typeof AuthenticatedWorkspaceEmpresaRoute
   '/_authenticated/workspace/equipe': typeof AuthenticatedWorkspaceEquipeRoute
+  '/_authenticated/workspace/historico': typeof AuthenticatedWorkspaceHistoricoRoute
+  '/_authenticated/workspace/ia': typeof AuthenticatedWorkspaceIaRoute
+  '/_authenticated/workspace/integracoes': typeof AuthenticatedWorkspaceIntegracoesRoute
+  '/_authenticated/workspace/notificacoes': typeof AuthenticatedWorkspaceNotificacoesRoute
+  '/_authenticated/workspace/perfil': typeof AuthenticatedWorkspacePerfilRoute
   '/_authenticated/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
@@ -380,10 +480,20 @@ export interface FileRouteTypes {
     | '/workspace'
     | '/configuracoes/empresa'
     | '/onboarding/company'
+    | '/workspace/ajuda'
+    | '/workspace/api-keys'
+    | '/workspace/assets'
     | '/workspace/assinatura'
+    | '/workspace/atividades'
+    | '/workspace/configuracoes'
     | '/workspace/creditos'
     | '/workspace/empresa'
     | '/workspace/equipe'
+    | '/workspace/historico'
+    | '/workspace/ia'
+    | '/workspace/integracoes'
+    | '/workspace/notificacoes'
+    | '/workspace/perfil'
     | '/configuracoes/'
     | '/workspace/'
     | '/api/public/v1/openapi'
@@ -416,10 +526,20 @@ export interface FileRouteTypes {
     | '/'
     | '/configuracoes/empresa'
     | '/onboarding/company'
+    | '/workspace/ajuda'
+    | '/workspace/api-keys'
+    | '/workspace/assets'
     | '/workspace/assinatura'
+    | '/workspace/atividades'
+    | '/workspace/configuracoes'
     | '/workspace/creditos'
     | '/workspace/empresa'
     | '/workspace/equipe'
+    | '/workspace/historico'
+    | '/workspace/ia'
+    | '/workspace/integracoes'
+    | '/workspace/notificacoes'
+    | '/workspace/perfil'
     | '/configuracoes'
     | '/workspace'
     | '/api/public/v1/openapi'
@@ -454,10 +574,20 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/configuracoes/empresa'
     | '/_authenticated/onboarding/company'
+    | '/_authenticated/workspace/ajuda'
+    | '/_authenticated/workspace/api-keys'
+    | '/_authenticated/workspace/assets'
     | '/_authenticated/workspace/assinatura'
+    | '/_authenticated/workspace/atividades'
+    | '/_authenticated/workspace/configuracoes'
     | '/_authenticated/workspace/creditos'
     | '/_authenticated/workspace/empresa'
     | '/_authenticated/workspace/equipe'
+    | '/_authenticated/workspace/historico'
+    | '/_authenticated/workspace/ia'
+    | '/_authenticated/workspace/integracoes'
+    | '/_authenticated/workspace/notificacoes'
+    | '/_authenticated/workspace/perfil'
     | '/_authenticated/configuracoes/'
     | '/_authenticated/workspace/'
     | '/api/public/v1/openapi'
@@ -670,6 +800,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConfiguracoesIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/workspace/perfil': {
+      id: '/_authenticated/workspace/perfil'
+      path: '/perfil'
+      fullPath: '/workspace/perfil'
+      preLoaderRoute: typeof AuthenticatedWorkspacePerfilRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
+    '/_authenticated/workspace/notificacoes': {
+      id: '/_authenticated/workspace/notificacoes'
+      path: '/notificacoes'
+      fullPath: '/workspace/notificacoes'
+      preLoaderRoute: typeof AuthenticatedWorkspaceNotificacoesRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
+    '/_authenticated/workspace/integracoes': {
+      id: '/_authenticated/workspace/integracoes'
+      path: '/integracoes'
+      fullPath: '/workspace/integracoes'
+      preLoaderRoute: typeof AuthenticatedWorkspaceIntegracoesRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
+    '/_authenticated/workspace/ia': {
+      id: '/_authenticated/workspace/ia'
+      path: '/ia'
+      fullPath: '/workspace/ia'
+      preLoaderRoute: typeof AuthenticatedWorkspaceIaRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
+    '/_authenticated/workspace/historico': {
+      id: '/_authenticated/workspace/historico'
+      path: '/historico'
+      fullPath: '/workspace/historico'
+      preLoaderRoute: typeof AuthenticatedWorkspaceHistoricoRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
     '/_authenticated/workspace/equipe': {
       id: '/_authenticated/workspace/equipe'
       path: '/equipe'
@@ -691,11 +856,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceCreditosRouteImport
       parentRoute: typeof AuthenticatedWorkspaceRoute
     }
+    '/_authenticated/workspace/configuracoes': {
+      id: '/_authenticated/workspace/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/workspace/configuracoes'
+      preLoaderRoute: typeof AuthenticatedWorkspaceConfiguracoesRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
+    '/_authenticated/workspace/atividades': {
+      id: '/_authenticated/workspace/atividades'
+      path: '/atividades'
+      fullPath: '/workspace/atividades'
+      preLoaderRoute: typeof AuthenticatedWorkspaceAtividadesRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
     '/_authenticated/workspace/assinatura': {
       id: '/_authenticated/workspace/assinatura'
       path: '/assinatura'
       fullPath: '/workspace/assinatura'
       preLoaderRoute: typeof AuthenticatedWorkspaceAssinaturaRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
+    '/_authenticated/workspace/assets': {
+      id: '/_authenticated/workspace/assets'
+      path: '/assets'
+      fullPath: '/workspace/assets'
+      preLoaderRoute: typeof AuthenticatedWorkspaceAssetsRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
+    '/_authenticated/workspace/api-keys': {
+      id: '/_authenticated/workspace/api-keys'
+      path: '/api-keys'
+      fullPath: '/workspace/api-keys'
+      preLoaderRoute: typeof AuthenticatedWorkspaceApiKeysRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
+    '/_authenticated/workspace/ajuda': {
+      id: '/_authenticated/workspace/ajuda'
+      path: '/ajuda'
+      fullPath: '/workspace/ajuda'
+      preLoaderRoute: typeof AuthenticatedWorkspaceAjudaRouteImport
       parentRoute: typeof AuthenticatedWorkspaceRoute
     }
     '/_authenticated/onboarding/company': {
@@ -730,20 +930,44 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedWorkspaceRouteChildren {
+  AuthenticatedWorkspaceAjudaRoute: typeof AuthenticatedWorkspaceAjudaRoute
+  AuthenticatedWorkspaceApiKeysRoute: typeof AuthenticatedWorkspaceApiKeysRoute
+  AuthenticatedWorkspaceAssetsRoute: typeof AuthenticatedWorkspaceAssetsRoute
   AuthenticatedWorkspaceAssinaturaRoute: typeof AuthenticatedWorkspaceAssinaturaRoute
+  AuthenticatedWorkspaceAtividadesRoute: typeof AuthenticatedWorkspaceAtividadesRoute
+  AuthenticatedWorkspaceConfiguracoesRoute: typeof AuthenticatedWorkspaceConfiguracoesRoute
   AuthenticatedWorkspaceCreditosRoute: typeof AuthenticatedWorkspaceCreditosRoute
   AuthenticatedWorkspaceEmpresaRoute: typeof AuthenticatedWorkspaceEmpresaRoute
   AuthenticatedWorkspaceEquipeRoute: typeof AuthenticatedWorkspaceEquipeRoute
+  AuthenticatedWorkspaceHistoricoRoute: typeof AuthenticatedWorkspaceHistoricoRoute
+  AuthenticatedWorkspaceIaRoute: typeof AuthenticatedWorkspaceIaRoute
+  AuthenticatedWorkspaceIntegracoesRoute: typeof AuthenticatedWorkspaceIntegracoesRoute
+  AuthenticatedWorkspaceNotificacoesRoute: typeof AuthenticatedWorkspaceNotificacoesRoute
+  AuthenticatedWorkspacePerfilRoute: typeof AuthenticatedWorkspacePerfilRoute
   AuthenticatedWorkspaceIndexRoute: typeof AuthenticatedWorkspaceIndexRoute
 }
 
 const AuthenticatedWorkspaceRouteChildren: AuthenticatedWorkspaceRouteChildren =
   {
+    AuthenticatedWorkspaceAjudaRoute: AuthenticatedWorkspaceAjudaRoute,
+    AuthenticatedWorkspaceApiKeysRoute: AuthenticatedWorkspaceApiKeysRoute,
+    AuthenticatedWorkspaceAssetsRoute: AuthenticatedWorkspaceAssetsRoute,
     AuthenticatedWorkspaceAssinaturaRoute:
       AuthenticatedWorkspaceAssinaturaRoute,
+    AuthenticatedWorkspaceAtividadesRoute:
+      AuthenticatedWorkspaceAtividadesRoute,
+    AuthenticatedWorkspaceConfiguracoesRoute:
+      AuthenticatedWorkspaceConfiguracoesRoute,
     AuthenticatedWorkspaceCreditosRoute: AuthenticatedWorkspaceCreditosRoute,
     AuthenticatedWorkspaceEmpresaRoute: AuthenticatedWorkspaceEmpresaRoute,
     AuthenticatedWorkspaceEquipeRoute: AuthenticatedWorkspaceEquipeRoute,
+    AuthenticatedWorkspaceHistoricoRoute: AuthenticatedWorkspaceHistoricoRoute,
+    AuthenticatedWorkspaceIaRoute: AuthenticatedWorkspaceIaRoute,
+    AuthenticatedWorkspaceIntegracoesRoute:
+      AuthenticatedWorkspaceIntegracoesRoute,
+    AuthenticatedWorkspaceNotificacoesRoute:
+      AuthenticatedWorkspaceNotificacoesRoute,
+    AuthenticatedWorkspacePerfilRoute: AuthenticatedWorkspacePerfilRoute,
     AuthenticatedWorkspaceIndexRoute: AuthenticatedWorkspaceIndexRoute,
   }
 
