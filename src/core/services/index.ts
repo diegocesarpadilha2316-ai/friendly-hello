@@ -1,5 +1,4 @@
 /**
- * core/services — placeholder barrel.
- * Adicione exports conforme os recursos do Core forem implementados.
+ * core/services — server functions de domínio do Core.
  */
-export {};
+export * from "./tenant.functions";
