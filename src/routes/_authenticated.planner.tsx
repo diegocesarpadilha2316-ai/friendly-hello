@@ -7,7 +7,7 @@ import {
   StatusBadge,
 } from "@/core/components/ui-kit";
 
-export const Route = createFileRoute("/planner")({
+export const Route = createFileRoute("/_authenticated/planner")({
   head: () => ({
     meta: [
       { title: "Planner — Dioris Hub" },

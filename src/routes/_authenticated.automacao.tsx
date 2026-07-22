@@ -7,7 +7,7 @@ import {
   StatusBadge,
 } from "@/core/components/ui-kit";
 
-export const Route = createFileRoute("/automacao")({
+export const Route = createFileRoute("/_authenticated/automacao")({
   head: () => ({
     meta: [
       { title: "Automação — Dioris Hub" },

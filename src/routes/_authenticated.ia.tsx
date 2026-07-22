@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Boxes } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import {
   PageContainer,
   PageHeader,
@@ -7,33 +7,33 @@ import {
   StatusBadge,
 } from "@/core/components/ui-kit";
 
-export const Route = createFileRoute("/sistemas")({
+export const Route = createFileRoute("/_authenticated/ia")({
   head: () => ({
     meta: [
-      { title: "Sistemas — Dioris Hub" },
-      { name: "description", content: "Sistemas internos e ferramentas customizadas da Dioris Hub." },
-      { property: "og:title", content: "Sistemas — Dioris Hub" },
-      { property: "og:description", content: "Sistemas internos e ferramentas customizadas." },
+      { title: "IA — Dioris Hub" },
+      { name: "description", content: "Recursos de inteligência artificial da Dioris Hub." },
+      { property: "og:title", content: "IA — Dioris Hub" },
+      { property: "og:description", content: "Recursos de inteligência artificial da plataforma." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: SistemasPage,
+  component: IaPage,
 });
 
-function SistemasPage() {
+function IaPage() {
   return (
     <PageContainer>
       <PageHeader
         eyebrow="Módulo"
-        title="Sistemas"
-        description="Sistemas internos e ferramentas customizadas."
+        title="IA"
+        description="Recursos de inteligência artificial da plataforma."
         actions={<StatusBadge tone="neutral">planejado</StatusBadge>}
       />
       <div className="mt-8">
         <EmptyState
-          icon={<Boxes className="h-6 w-6" />}
-          title="Módulo Sistemas em preparação"
+          icon={<Sparkles className="h-6 w-6" />}
+          title="Módulo IA em preparação"
           description="A funcionalidade será implementada na próxima fase."
         />
       </div>

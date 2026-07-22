@@ -11,7 +11,9 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { AppLayout } from "@/core/components/AppLayout";
+import { AuthProvider } from "@/core/providers/AuthProvider";
+import { getPublicSupabaseConfig } from "@/core/lib/supabase/config.functions";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -95,6 +97,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
+  loader: async () => {
+    // Bootstrap: fetch publishable Supabase config from server (SSR + client).
+    const config = await getPublicSupabaseConfig();
+    return { supabaseConfig: config };
+  },
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -117,13 +124,15 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { supabaseConfig } = Route.useLoaderData();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AppLayout>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+      <AuthProvider config={supabaseConfig}>
+        {/* Required: nested routes render here. Layout (AppShell) lives under _authenticated. */}
         <Outlet />
-      </AppLayout>
+        <Toaster position="top-right" />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

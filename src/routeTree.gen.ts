@@ -9,100 +9,127 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SitesRouteImport } from './routes/sites'
-import { Route as SistemasRouteImport } from './routes/sistemas'
-import { Route as PlannerRouteImport } from './routes/planner'
-import { Route as MarketplaceRouteImport } from './routes/marketplace'
-import { Route as IaRouteImport } from './routes/ia'
-import { Route as FinanceiroRouteImport } from './routes/financeiro'
-import { Route as CrmRouteImport } from './routes/crm'
-import { Route as AutomacaoRouteImport } from './routes/automacao'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.index'
+import { Route as AuthenticatedSitesRouteImport } from './routes/_authenticated.sites'
+import { Route as AuthenticatedSistemasRouteImport } from './routes/_authenticated.sistemas'
+import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticated.planner'
+import { Route as AuthenticatedMarketplaceRouteImport } from './routes/_authenticated.marketplace'
+import { Route as AuthenticatedIaRouteImport } from './routes/_authenticated.ia'
+import { Route as AuthenticatedFinanceiroRouteImport } from './routes/_authenticated.financeiro'
+import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated.crm'
+import { Route as AuthenticatedAutomacaoRouteImport } from './routes/_authenticated.automacao'
 
-const SitesRoute = SitesRouteImport.update({
-  id: '/sites',
-  path: '/sites',
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SistemasRoute = SistemasRouteImport.update({
-  id: '/sistemas',
-  path: '/sistemas',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlannerRoute = PlannerRouteImport.update({
-  id: '/planner',
-  path: '/planner',
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MarketplaceRoute = MarketplaceRouteImport.update({
-  id: '/marketplace',
-  path: '/marketplace',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IaRoute = IaRouteImport.update({
-  id: '/ia',
-  path: '/ia',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FinanceiroRoute = FinanceiroRouteImport.update({
-  id: '/financeiro',
-  path: '/financeiro',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CrmRoute = CrmRouteImport.update({
-  id: '/crm',
-  path: '/crm',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AutomacaoRoute = AutomacaoRouteImport.update({
-  id: '/automacao',
-  path: '/automacao',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSitesRoute = AuthenticatedSitesRouteImport.update({
+  id: '/sites',
+  path: '/sites',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSistemasRoute = AuthenticatedSistemasRouteImport.update({
+  id: '/sistemas',
+  path: '/sistemas',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedPlannerRoute = AuthenticatedPlannerRouteImport.update({
+  id: '/planner',
+  path: '/planner',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedMarketplaceRoute =
+  AuthenticatedMarketplaceRouteImport.update({
+    id: '/marketplace',
+    path: '/marketplace',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedIaRoute = AuthenticatedIaRouteImport.update({
+  id: '/ia',
+  path: '/ia',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedFinanceiroRoute = AuthenticatedFinanceiroRouteImport.update({
+  id: '/financeiro',
+  path: '/financeiro',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedCrmRoute = AuthenticatedCrmRouteImport.update({
+  id: '/crm',
+  path: '/crm',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAutomacaoRoute = AuthenticatedAutomacaoRouteImport.update({
+  id: '/automacao',
+  path: '/automacao',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/automacao': typeof AutomacaoRoute
-  '/crm': typeof CrmRoute
-  '/financeiro': typeof FinanceiroRoute
-  '/ia': typeof IaRoute
-  '/marketplace': typeof MarketplaceRoute
-  '/planner': typeof PlannerRoute
-  '/sistemas': typeof SistemasRoute
-  '/sites': typeof SitesRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/automacao': typeof AuthenticatedAutomacaoRoute
+  '/crm': typeof AuthenticatedCrmRoute
+  '/financeiro': typeof AuthenticatedFinanceiroRoute
+  '/ia': typeof AuthenticatedIaRoute
+  '/marketplace': typeof AuthenticatedMarketplaceRoute
+  '/planner': typeof AuthenticatedPlannerRoute
+  '/sistemas': typeof AuthenticatedSistemasRoute
+  '/sites': typeof AuthenticatedSitesRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/automacao': typeof AutomacaoRoute
-  '/crm': typeof CrmRoute
-  '/financeiro': typeof FinanceiroRoute
-  '/ia': typeof IaRoute
-  '/marketplace': typeof MarketplaceRoute
-  '/planner': typeof PlannerRoute
-  '/sistemas': typeof SistemasRoute
-  '/sites': typeof SitesRoute
+  '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/automacao': typeof AuthenticatedAutomacaoRoute
+  '/crm': typeof AuthenticatedCrmRoute
+  '/financeiro': typeof AuthenticatedFinanceiroRoute
+  '/ia': typeof AuthenticatedIaRoute
+  '/marketplace': typeof AuthenticatedMarketplaceRoute
+  '/planner': typeof AuthenticatedPlannerRoute
+  '/sistemas': typeof AuthenticatedSistemasRoute
+  '/sites': typeof AuthenticatedSitesRoute
+  '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/automacao': typeof AutomacaoRoute
-  '/crm': typeof CrmRoute
-  '/financeiro': typeof FinanceiroRoute
-  '/ia': typeof IaRoute
-  '/marketplace': typeof MarketplaceRoute
-  '/planner': typeof PlannerRoute
-  '/sistemas': typeof SistemasRoute
-  '/sites': typeof SitesRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/automacao': typeof AuthenticatedAutomacaoRoute
+  '/_authenticated/crm': typeof AuthenticatedCrmRoute
+  '/_authenticated/financeiro': typeof AuthenticatedFinanceiroRoute
+  '/_authenticated/ia': typeof AuthenticatedIaRoute
+  '/_authenticated/marketplace': typeof AuthenticatedMarketplaceRoute
+  '/_authenticated/planner': typeof AuthenticatedPlannerRoute
+  '/_authenticated/sistemas': typeof AuthenticatedSistemasRoute
+  '/_authenticated/sites': typeof AuthenticatedSitesRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
+    | '/reset-password'
     | '/automacao'
     | '/crm'
     | '/financeiro'
@@ -113,7 +140,8 @@ export interface FileRouteTypes {
     | '/sites'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
+    | '/auth'
+    | '/reset-password'
     | '/automacao'
     | '/crm'
     | '/financeiro'
@@ -122,120 +150,151 @@ export interface FileRouteTypes {
     | '/planner'
     | '/sistemas'
     | '/sites'
+    | '/'
   id:
     | '__root__'
-    | '/'
-    | '/automacao'
-    | '/crm'
-    | '/financeiro'
-    | '/ia'
-    | '/marketplace'
-    | '/planner'
-    | '/sistemas'
-    | '/sites'
+    | '/_authenticated'
+    | '/auth'
+    | '/reset-password'
+    | '/_authenticated/automacao'
+    | '/_authenticated/crm'
+    | '/_authenticated/financeiro'
+    | '/_authenticated/ia'
+    | '/_authenticated/marketplace'
+    | '/_authenticated/planner'
+    | '/_authenticated/sistemas'
+    | '/_authenticated/sites'
+    | '/_authenticated/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AutomacaoRoute: typeof AutomacaoRoute
-  CrmRoute: typeof CrmRoute
-  FinanceiroRoute: typeof FinanceiroRoute
-  IaRoute: typeof IaRoute
-  MarketplaceRoute: typeof MarketplaceRoute
-  PlannerRoute: typeof PlannerRoute
-  SistemasRoute: typeof SistemasRoute
-  SitesRoute: typeof SitesRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sites': {
-      id: '/sites'
-      path: '/sites'
-      fullPath: '/sites'
-      preLoaderRoute: typeof SitesRouteImport
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sistemas': {
-      id: '/sistemas'
-      path: '/sistemas'
-      fullPath: '/sistemas'
-      preLoaderRoute: typeof SistemasRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/planner': {
-      id: '/planner'
-      path: '/planner'
-      fullPath: '/planner'
-      preLoaderRoute: typeof PlannerRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/marketplace': {
-      id: '/marketplace'
-      path: '/marketplace'
-      fullPath: '/marketplace'
-      preLoaderRoute: typeof MarketplaceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ia': {
-      id: '/ia'
-      path: '/ia'
-      fullPath: '/ia'
-      preLoaderRoute: typeof IaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/financeiro': {
-      id: '/financeiro'
-      path: '/financeiro'
-      fullPath: '/financeiro'
-      preLoaderRoute: typeof FinanceiroRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/crm': {
-      id: '/crm'
-      path: '/crm'
-      fullPath: '/crm'
-      preLoaderRoute: typeof CrmRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/automacao': {
-      id: '/automacao'
-      path: '/automacao'
-      fullPath: '/automacao'
-      preLoaderRoute: typeof AutomacaoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/sites': {
+      id: '/_authenticated/sites'
+      path: '/sites'
+      fullPath: '/sites'
+      preLoaderRoute: typeof AuthenticatedSitesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/sistemas': {
+      id: '/_authenticated/sistemas'
+      path: '/sistemas'
+      fullPath: '/sistemas'
+      preLoaderRoute: typeof AuthenticatedSistemasRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/planner': {
+      id: '/_authenticated/planner'
+      path: '/planner'
+      fullPath: '/planner'
+      preLoaderRoute: typeof AuthenticatedPlannerRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/marketplace': {
+      id: '/_authenticated/marketplace'
+      path: '/marketplace'
+      fullPath: '/marketplace'
+      preLoaderRoute: typeof AuthenticatedMarketplaceRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/ia': {
+      id: '/_authenticated/ia'
+      path: '/ia'
+      fullPath: '/ia'
+      preLoaderRoute: typeof AuthenticatedIaRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/financeiro': {
+      id: '/_authenticated/financeiro'
+      path: '/financeiro'
+      fullPath: '/financeiro'
+      preLoaderRoute: typeof AuthenticatedFinanceiroRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/crm': {
+      id: '/_authenticated/crm'
+      path: '/crm'
+      fullPath: '/crm'
+      preLoaderRoute: typeof AuthenticatedCrmRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/automacao': {
+      id: '/_authenticated/automacao'
+      path: '/automacao'
+      fullPath: '/automacao'
+      preLoaderRoute: typeof AuthenticatedAutomacaoRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
   }
 }
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedAutomacaoRoute: typeof AuthenticatedAutomacaoRoute
+  AuthenticatedCrmRoute: typeof AuthenticatedCrmRoute
+  AuthenticatedFinanceiroRoute: typeof AuthenticatedFinanceiroRoute
+  AuthenticatedIaRoute: typeof AuthenticatedIaRoute
+  AuthenticatedMarketplaceRoute: typeof AuthenticatedMarketplaceRoute
+  AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRoute
+  AuthenticatedSistemasRoute: typeof AuthenticatedSistemasRoute
+  AuthenticatedSitesRoute: typeof AuthenticatedSitesRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAutomacaoRoute: AuthenticatedAutomacaoRoute,
+  AuthenticatedCrmRoute: AuthenticatedCrmRoute,
+  AuthenticatedFinanceiroRoute: AuthenticatedFinanceiroRoute,
+  AuthenticatedIaRoute: AuthenticatedIaRoute,
+  AuthenticatedMarketplaceRoute: AuthenticatedMarketplaceRoute,
+  AuthenticatedPlannerRoute: AuthenticatedPlannerRoute,
+  AuthenticatedSistemasRoute: AuthenticatedSistemasRoute,
+  AuthenticatedSitesRoute: AuthenticatedSitesRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AutomacaoRoute: AutomacaoRoute,
-  CrmRoute: CrmRoute,
-  FinanceiroRoute: FinanceiroRoute,
-  IaRoute: IaRoute,
-  MarketplaceRoute: MarketplaceRoute,
-  PlannerRoute: PlannerRoute,
-  SistemasRoute: SistemasRoute,
-  SitesRoute: SitesRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AuthRoute: AuthRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
