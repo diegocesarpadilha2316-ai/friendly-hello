@@ -1,5 +1,5 @@
 /**
- * core/config — placeholder barrel.
- * Adicione exports conforme os recursos do Core forem implementados.
+ * core/config — configuração canônica da plataforma.
  */
-export {};
+export * from "./app";
+export * from "./modules";
