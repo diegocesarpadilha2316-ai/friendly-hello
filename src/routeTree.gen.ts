@@ -27,6 +27,7 @@ import { Route as AuthenticatedIaRouteImport } from './routes/_authenticated.ia'
 import { Route as AuthenticatedFinanceiroRouteImport } from './routes/_authenticated.financeiro'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated.crm'
 import { Route as AuthenticatedAutomacaoRouteImport } from './routes/_authenticated.automacao'
+import { Route as AuthenticatedApiGatewayRouteImport } from './routes/_authenticated.api-gateway'
 import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated.configuracoes.index'
 import { Route as AuthenticatedOnboardingCompanyRouteImport } from './routes/_authenticated.onboarding.company'
 import { Route as AuthenticatedConfiguracoesEmpresaRouteImport } from './routes/_authenticated.configuracoes.empresa'
@@ -126,6 +127,11 @@ const AuthenticatedAutomacaoRoute = AuthenticatedAutomacaoRouteImport.update({
   path: '/automacao',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedApiGatewayRoute = AuthenticatedApiGatewayRouteImport.update({
+  id: '/api-gateway',
+  path: '/api-gateway',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedConfiguracoesIndexRoute =
   AuthenticatedConfiguracoesIndexRouteImport.update({
     id: '/configuracoes/',
@@ -159,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/automacao': typeof AuthenticatedAutomacaoRoute
   '/crm': typeof AuthenticatedCrmRoute
   '/financeiro': typeof AuthenticatedFinanceiroRoute
@@ -182,6 +189,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/automacao': typeof AuthenticatedAutomacaoRoute
   '/crm': typeof AuthenticatedCrmRoute
   '/financeiro': typeof AuthenticatedFinanceiroRoute
@@ -208,6 +216,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/_authenticated/automacao': typeof AuthenticatedAutomacaoRoute
   '/_authenticated/crm': typeof AuthenticatedCrmRoute
   '/_authenticated/financeiro': typeof AuthenticatedFinanceiroRoute
@@ -235,6 +244,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/api-gateway'
     | '/automacao'
     | '/crm'
     | '/financeiro'
@@ -258,6 +268,7 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/reset-password'
+    | '/api-gateway'
     | '/automacao'
     | '/crm'
     | '/financeiro'
@@ -283,6 +294,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
+    | '/_authenticated/api-gateway'
     | '/_authenticated/automacao'
     | '/_authenticated/crm'
     | '/_authenticated/financeiro'
@@ -441,6 +453,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAutomacaoRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/api-gateway': {
+      id: '/_authenticated/api-gateway'
+      path: '/api-gateway'
+      fullPath: '/api-gateway'
+      preLoaderRoute: typeof AuthenticatedApiGatewayRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/configuracoes/': {
       id: '/_authenticated/configuracoes/'
       path: '/configuracoes'
@@ -480,6 +499,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedApiGatewayRoute: typeof AuthenticatedApiGatewayRoute
   AuthenticatedAutomacaoRoute: typeof AuthenticatedAutomacaoRoute
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRoute
   AuthenticatedFinanceiroRoute: typeof AuthenticatedFinanceiroRoute
@@ -501,6 +521,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedApiGatewayRoute: AuthenticatedApiGatewayRoute,
   AuthenticatedAutomacaoRoute: AuthenticatedAutomacaoRoute,
   AuthenticatedCrmRoute: AuthenticatedCrmRoute,
   AuthenticatedFinanceiroRoute: AuthenticatedFinanceiroRoute,
