@@ -10,33 +10,44 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicTestExternalSupabaseRouteImport } from './routes/api/public/test-external-supabase'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicTestExternalSupabaseRoute =
+  ApiPublicTestExternalSupabaseRouteImport.update({
+    id: '/api/public/test-external-supabase',
+    path: '/api/public/test-external-supabase',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/public/test-external-supabase': typeof ApiPublicTestExternalSupabaseRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/public/test-external-supabase': typeof ApiPublicTestExternalSupabaseRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/public/test-external-supabase': typeof ApiPublicTestExternalSupabaseRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/api/public/test-external-supabase'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/api/public/test-external-supabase'
+  id: '__root__' | '/' | '/api/public/test-external-supabase'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiPublicTestExternalSupabaseRoute: typeof ApiPublicTestExternalSupabaseRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +59,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/test-external-supabase': {
+      id: '/api/public/test-external-supabase'
+      path: '/api/public/test-external-supabase'
+      fullPath: '/api/public/test-external-supabase'
+      preLoaderRoute: typeof ApiPublicTestExternalSupabaseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiPublicTestExternalSupabaseRoute: ApiPublicTestExternalSupabaseRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
