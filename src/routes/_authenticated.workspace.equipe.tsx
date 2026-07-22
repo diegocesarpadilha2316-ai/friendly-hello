@@ -46,7 +46,7 @@ function WorkspaceEquipe() {
           data={rows}
           empty={<EmptyState icon={<Users className="h-6 w-6" />} title="Nenhum membro" />}
           columns={[
-            { id: "email", header: "E-mail", cell: (r) => r.email ?? r.user_id },
+            { id: "user", header: "Usuário", cell: (r) => r.user_id },
             { id: "role", header: "Papel", cell: (r) => r.role },
             {
               id: "status",
