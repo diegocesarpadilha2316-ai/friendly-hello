@@ -24,6 +24,7 @@ import { Route as AuthenticatedIaRouteImport } from './routes/_authenticated.ia'
 import { Route as AuthenticatedFinanceiroRouteImport } from './routes/_authenticated.financeiro'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated.crm'
 import { Route as AuthenticatedAutomacaoRouteImport } from './routes/_authenticated.automacao'
+import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated.configuracoes.index'
 import { Route as AuthenticatedOnboardingCompanyRouteImport } from './routes/_authenticated.onboarding.company'
 import { Route as AuthenticatedConfiguracoesEmpresaRouteImport } from './routes/_authenticated.configuracoes.empresa'
 
@@ -104,6 +105,12 @@ const AuthenticatedAutomacaoRoute = AuthenticatedAutomacaoRouteImport.update({
   path: '/automacao',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedConfiguracoesIndexRoute =
+  AuthenticatedConfiguracoesIndexRouteImport.update({
+    id: '/configuracoes/',
+    path: '/configuracoes/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedOnboardingCompanyRoute =
   AuthenticatedOnboardingCompanyRouteImport.update({
     id: '/onboarding/company',
@@ -134,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/storage': typeof AuthenticatedStorageRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
+  '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
@@ -152,6 +160,7 @@ export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
+  '/configuracoes': typeof AuthenticatedConfiguracoesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -172,6 +181,7 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/_authenticated/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
+  '/_authenticated/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/storage'
     | '/configuracoes/empresa'
     | '/onboarding/company'
+    | '/configuracoes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/'
     | '/configuracoes/empresa'
     | '/onboarding/company'
+    | '/configuracoes'
   id:
     | '__root__'
     | '/_authenticated'
@@ -229,6 +241,7 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/configuracoes/empresa'
     | '/_authenticated/onboarding/company'
+    | '/_authenticated/configuracoes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -344,6 +357,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAutomacaoRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/configuracoes/': {
+      id: '/_authenticated/configuracoes/'
+      path: '/configuracoes'
+      fullPath: '/configuracoes/'
+      preLoaderRoute: typeof AuthenticatedConfiguracoesIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/onboarding/company': {
       id: '/_authenticated/onboarding/company'
       path: '/onboarding/company'
@@ -376,6 +396,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedConfiguracoesEmpresaRoute: typeof AuthenticatedConfiguracoesEmpresaRoute
   AuthenticatedOnboardingCompanyRoute: typeof AuthenticatedOnboardingCompanyRoute
+  AuthenticatedConfiguracoesIndexRoute: typeof AuthenticatedConfiguracoesIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -394,6 +415,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedConfiguracoesEmpresaRoute:
     AuthenticatedConfiguracoesEmpresaRoute,
   AuthenticatedOnboardingCompanyRoute: AuthenticatedOnboardingCompanyRoute,
+  AuthenticatedConfiguracoesIndexRoute: AuthenticatedConfiguracoesIndexRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
