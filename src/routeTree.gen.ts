@@ -10,43 +10,44 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiTestExternalSupabaseRouteImport } from './routes/api/test-external-supabase'
+import { Route as ApiPublicTestExternalSupabaseRouteImport } from './routes/api/public/test-external-supabase'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiTestExternalSupabaseRoute = ApiTestExternalSupabaseRouteImport.update({
-  id: '/api/test-external-supabase',
-  path: '/api/test-external-supabase',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const ApiPublicTestExternalSupabaseRoute =
+  ApiPublicTestExternalSupabaseRouteImport.update({
+    id: '/api/public/test-external-supabase',
+    path: '/api/public/test-external-supabase',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/api/test-external-supabase': typeof ApiTestExternalSupabaseRoute
+  '/api/public/test-external-supabase': typeof ApiPublicTestExternalSupabaseRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/api/test-external-supabase': typeof ApiTestExternalSupabaseRoute
+  '/api/public/test-external-supabase': typeof ApiPublicTestExternalSupabaseRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/api/test-external-supabase': typeof ApiTestExternalSupabaseRoute
+  '/api/public/test-external-supabase': typeof ApiPublicTestExternalSupabaseRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/test-external-supabase'
+  fullPaths: '/' | '/api/public/test-external-supabase'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/test-external-supabase'
-  id: '__root__' | '/' | '/api/test-external-supabase'
+  to: '/' | '/api/public/test-external-supabase'
+  id: '__root__' | '/' | '/api/public/test-external-supabase'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ApiTestExternalSupabaseRoute: typeof ApiTestExternalSupabaseRoute
+  ApiPublicTestExternalSupabaseRoute: typeof ApiPublicTestExternalSupabaseRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -58,11 +59,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/test-external-supabase': {
-      id: '/api/test-external-supabase'
-      path: '/api/test-external-supabase'
-      fullPath: '/api/test-external-supabase'
-      preLoaderRoute: typeof ApiTestExternalSupabaseRouteImport
+    '/api/public/test-external-supabase': {
+      id: '/api/public/test-external-supabase'
+      path: '/api/public/test-external-supabase'
+      fullPath: '/api/public/test-external-supabase'
+      preLoaderRoute: typeof ApiPublicTestExternalSupabaseRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -70,7 +71,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ApiTestExternalSupabaseRoute: ApiTestExternalSupabaseRoute,
+  ApiPublicTestExternalSupabaseRoute: ApiPublicTestExternalSupabaseRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

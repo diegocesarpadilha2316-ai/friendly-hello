@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/api/test-external-supabase")({
+export const Route = createFileRoute("/api/public/test-external-supabase")({
   server: {
     handlers: {
       GET: async () => {
