@@ -19,7 +19,14 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export const WORKSPACE_NAV = [
+type NavItem = {
+  to: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  exact?: boolean;
+};
+
+export const WORKSPACE_NAV: readonly NavItem[] = [
   { to: "/workspace", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/workspace/empresa", label: "Minha Empresa", icon: Building2 },
   { to: "/workspace/equipe", label: "Equipe", icon: Users },
@@ -35,7 +42,7 @@ export const WORKSPACE_NAV = [
   { to: "/workspace/api-keys", label: "API Keys", icon: KeyRound },
   { to: "/workspace/integracoes", label: "Integrações", icon: Plug },
   { to: "/workspace/ajuda", label: "Central de Ajuda", icon: LifeBuoy },
-] as const;
+];
 
 export function WorkspaceLayout({ children }: { children: ReactNode }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
@@ -55,7 +62,7 @@ export function WorkspaceLayout({ children }: { children: ReactNode }) {
             return (
               <Link
                 key={item.to}
-                to={item.to}
+                to={item.to as never}
                 className={cn(
                   "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground",
                   active && "bg-primary/10 text-foreground font-medium",
