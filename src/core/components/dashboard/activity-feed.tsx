@@ -1,7 +1,14 @@
 import { DashboardWidget, type WidgetStatus } from "./dashboard-widget";
 import { ListSkeleton } from "./dashboard-skeleton";
 import type { ActivityEntry } from "@/core/dashboard/types";
-import { Clock } from "lucide-react";
+import { Clock, User, Sparkles, CheckCircle2, AlertCircle, type LucideIcon } from "lucide-react";
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  user: User,
+  ai: Sparkles,
+  success: CheckCircle2,
+  warning: AlertCircle,
+};
 
 export interface ActivityFeedProps {
   entries: ReadonlyArray<ActivityEntry>;
@@ -21,7 +28,7 @@ export function ActivityFeed({ entries, status, limit = 6 }: ActivityFeedProps) 
     >
       <ul className="space-y-3">
         {list.map((e) => {
-          const Icon = e.icon ?? Clock;
+          const Icon = (e.iconKey && ICON_MAP[e.iconKey]) ?? Clock;
           return (
             <li key={e.id} className="flex items-start gap-3">
               <span className="mt-0.5 rounded-md bg-muted p-1.5 text-muted-foreground">
