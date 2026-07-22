@@ -14,6 +14,7 @@ import type {
   AIGatewayMetrics,
   AIModel,
   AIProviderHealth,
+  AIProviderId,
   AIResponse,
 } from "./types";
 
@@ -63,7 +64,11 @@ export const aiGenerateText = createServerFn({ method: "POST" })
   .handler(async ({ context, data }): Promise<AIResponse<string>> => {
     const { AIManager } = await import("./manager.server");
     const out = await AIManager.generateText({
-      task: { ...data.task, type: "text" },
+      task: {
+        ...data.task,
+        type: "text",
+        preferProvider: data.task.preferProvider as AIProviderId | undefined,
+      },
       system: data.system,
       prompt: data.prompt,
       temperature: data.temperature,
@@ -83,10 +88,14 @@ export const aiGenerateText = createServerFn({ method: "POST" })
 export const aiGenerateJson = createServerFn({ method: "POST" })
   .middleware([requireTenant])
   .inputValidator((raw: unknown) => requestSchema.parse(raw))
-  .handler(async ({ context, data }): Promise<AIResponse<unknown>> => {
+  .handler(async ({ context, data }): Promise<AIResponse<Record<string, unknown>>> => {
     const { AIManager } = await import("./manager.server");
-    const out = await AIManager.generateJson({
-      task: { ...data.task, type: "json" },
+    const out = await AIManager.generateJson<Record<string, unknown>>({
+      task: {
+        ...data.task,
+        type: "json",
+        preferProvider: data.task.preferProvider as AIProviderId | undefined,
+      },
       system: data.system,
       prompt: data.prompt,
       temperature: data.temperature,
@@ -109,7 +118,11 @@ export const aiGenerateEmbedding = createServerFn({ method: "POST" })
   .handler(async ({ context, data }): Promise<AIResponse<readonly number[][]>> => {
     const { AIManager } = await import("./manager.server");
     const out = await AIManager.generateEmbedding({
-      task: { ...data.task, type: "embedding" },
+      task: {
+        ...data.task,
+        type: "embedding",
+        preferProvider: data.task.preferProvider as AIProviderId | undefined,
+      },
       input: data.input,
     });
     await debitCredits(
