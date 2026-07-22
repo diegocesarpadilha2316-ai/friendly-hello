@@ -167,8 +167,8 @@ function CompanyTab() {
   const save = useUpdateCompanySettings();
   const s = q.data;
   const [form, setForm] = useState<Record<string, string>>({});
-  const get = (k: keyof NonNullable<typeof s>) =>
-    form[k as string] ?? (s ? String(s[k] ?? "") : "");
+  const get = (k: string) =>
+    form[k] ?? (s ? String((s as unknown as Record<string, unknown>)[k] ?? "") : "");
   return (
     <section className="grid gap-4 md:grid-cols-2">
       {[
@@ -181,12 +181,12 @@ function CompanyTab() {
         ["numberFormat", "Formato numérico"],
         ["units", "Unidades"],
       ].map(([k, label]) => (
-        <label key={k} className="space-y-1 text-sm">
+        <label key={k as string} className="space-y-1 text-sm">
           <span className="text-muted-foreground">{label}</span>
           <input
             className="w-full rounded-md border bg-background px-2 py-1.5"
-            value={get(k as keyof NonNullable<typeof s>)}
-            onChange={(e) => setForm((f) => ({ ...f, [k]: e.target.value }))}
+            value={get(k as string)}
+            onChange={(e) => setForm((f) => ({ ...f, [k as string]: e.target.value }))}
           />
         </label>
       ))}
@@ -602,7 +602,7 @@ function ApiKeysTab() {
           <div className="mt-1 break-all font-mono text-xs">{issued}</div>
         </div>
       )}
-      <DataTable data={(q.data ?? []) as ApiKey[]} columns={cols} getRowKey={(r) => r.id} empty="Nenhuma API key emitida." />
+      <DataTable data={[...((q.data ?? []) as readonly ApiKey[])]} columns={cols} getRowKey={(r) => r.id} empty="Nenhuma API key emitida." />
     </section>
   );
 }
