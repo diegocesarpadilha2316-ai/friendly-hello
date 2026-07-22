@@ -1,5 +1,5 @@
 import { DashboardWidget, type WidgetStatus } from "./dashboard-widget";
-import { StatusBadge } from "@/core/components/ui-kit/status-badge";
+import { StatusBadge, type StatusTone } from "@/core/components/ui-kit/status-badge";
 import type { PlanSummary } from "@/core/dashboard/types";
 
 export interface SubscriptionCardProps {
@@ -7,12 +7,12 @@ export interface SubscriptionCardProps {
   status?: WidgetStatus;
 }
 
-const TONE = {
-  active: "positive",
-  trial: "neutral",
+const TONE: Record<PlanSummary["status"], StatusTone> = {
+  active: "success",
+  trial: "info",
   past_due: "warning",
   canceled: "danger",
-} as const;
+};
 
 export function SubscriptionCard({ plan, status }: SubscriptionCardProps) {
   const resolved: WidgetStatus = status ?? (plan ? "ready" : "empty");

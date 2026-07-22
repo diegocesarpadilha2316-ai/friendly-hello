@@ -1,5 +1,7 @@
 /**
- * core/components — componentes compartilhados do Core.
- * Reexporta o Design System (ui-kit) usado por todos os módulos.
+ * core/components — camada de apresentação.
+ * `ui-kit`  → primitivos reutilizáveis do Design System.
+ * `dashboard` → widgets do Dashboard Enterprise (consomem ui-kit).
  */
 export * from "./ui-kit";
+export * as dashboard from "./dashboard";
