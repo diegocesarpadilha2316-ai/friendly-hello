@@ -276,11 +276,11 @@ do $$ begin
     on public.notification_preferences for all to authenticated
     using (
       public.is_company_member(company_id, auth.uid())
-      and (user_id is null or user_id = auth.uid() or public.has_role(auth.uid(), 'admin'))
+      and (user_id is null or user_id = auth.uid() or public.has_min_role(company_id, auth.uid(), 'admin'::public.tenant_role))
     )
     with check (
       public.is_company_member(company_id, auth.uid())
-      and (user_id is null or user_id = auth.uid() or public.has_role(auth.uid(), 'admin'))
+      and (user_id is null or user_id = auth.uid() or public.has_min_role(company_id, auth.uid(), 'admin'::public.tenant_role))
     );
 exception when duplicate_object then null; end $$;
 
@@ -289,7 +289,7 @@ do $$ begin
     on public.notifications for select to authenticated
     using (
       public.is_company_member(company_id, auth.uid())
-      and (user_id is null or user_id = auth.uid() or public.has_role(auth.uid(), 'admin'))
+      and (user_id is null or user_id = auth.uid() or public.has_min_role(company_id, auth.uid(), 'admin'::public.tenant_role))
     );
 exception when duplicate_object then null; end $$;
 
@@ -298,11 +298,11 @@ do $$ begin
     on public.notifications for update to authenticated
     using (
       public.is_company_member(company_id, auth.uid())
-      and (user_id = auth.uid() or public.has_role(auth.uid(), 'admin'))
+      and (user_id = auth.uid() or public.has_min_role(company_id, auth.uid(), 'admin'::public.tenant_role))
     )
     with check (
       public.is_company_member(company_id, auth.uid())
-      and (user_id = auth.uid() or public.has_role(auth.uid(), 'admin'))
+      and (user_id = auth.uid() or public.has_min_role(company_id, auth.uid(), 'admin'::public.tenant_role))
     );
 exception when duplicate_object then null; end $$;
 
@@ -311,7 +311,7 @@ do $$ begin
     on public.notifications for insert to authenticated
     with check (
       public.is_company_member(company_id, auth.uid())
-      and public.has_role(auth.uid(), 'admin')
+      and public.has_min_role(company_id, auth.uid(), 'admin'::public.tenant_role)
     );
 exception when duplicate_object then null; end $$;
 
