@@ -82,7 +82,6 @@ export interface QualityRun {
   durationMs: number | null;
   coveragePct: number | null;
   correlationId: string | null;
-  metadata: Record<string, unknown>;
   createdAt: string;
   completedAt: string | null;
 }
