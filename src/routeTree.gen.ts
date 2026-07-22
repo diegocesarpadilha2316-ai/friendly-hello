@@ -13,6 +13,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.index'
+import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated.workspace'
 import { Route as AuthenticatedStorageRouteImport } from './routes/_authenticated.storage'
 import { Route as AuthenticatedSitesRouteImport } from './routes/_authenticated.sites'
 import { Route as AuthenticatedSistemasRouteImport } from './routes/_authenticated.sistemas'
@@ -57,6 +58,11 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedWorkspaceRoute = AuthenticatedWorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedStorageRoute = AuthenticatedStorageRouteImport.update({
@@ -222,6 +228,7 @@ export interface FileRoutesByFullPath {
   '/sistemas': typeof AuthenticatedSistemasRoute
   '/sites': typeof AuthenticatedSitesRoute
   '/storage': typeof AuthenticatedStorageRoute
+  '/workspace': typeof AuthenticatedWorkspaceRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
   '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
@@ -252,6 +259,7 @@ export interface FileRoutesByTo {
   '/sistemas': typeof AuthenticatedSistemasRoute
   '/sites': typeof AuthenticatedSitesRoute
   '/storage': typeof AuthenticatedStorageRoute
+  '/workspace': typeof AuthenticatedWorkspaceRoute
   '/': typeof AuthenticatedIndexRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
@@ -285,6 +293,7 @@ export interface FileRoutesById {
   '/_authenticated/sistemas': typeof AuthenticatedSistemasRoute
   '/_authenticated/sites': typeof AuthenticatedSitesRoute
   '/_authenticated/storage': typeof AuthenticatedStorageRoute
+  '/_authenticated/workspace': typeof AuthenticatedWorkspaceRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/_authenticated/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
@@ -319,6 +328,7 @@ export interface FileRouteTypes {
     | '/sistemas'
     | '/sites'
     | '/storage'
+    | '/workspace'
     | '/configuracoes/empresa'
     | '/onboarding/company'
     | '/configuracoes/'
@@ -349,6 +359,7 @@ export interface FileRouteTypes {
     | '/sistemas'
     | '/sites'
     | '/storage'
+    | '/workspace'
     | '/'
     | '/configuracoes/empresa'
     | '/onboarding/company'
@@ -381,6 +392,7 @@ export interface FileRouteTypes {
     | '/_authenticated/sistemas'
     | '/_authenticated/sites'
     | '/_authenticated/storage'
+    | '/_authenticated/workspace'
     | '/_authenticated/'
     | '/_authenticated/configuracoes/empresa'
     | '/_authenticated/onboarding/company'
@@ -425,6 +437,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/workspace': {
+      id: '/_authenticated/workspace'
+      path: '/workspace'
+      fullPath: '/workspace'
+      preLoaderRoute: typeof AuthenticatedWorkspaceRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/storage': {
@@ -634,6 +653,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedSistemasRoute: typeof AuthenticatedSistemasRoute
   AuthenticatedSitesRoute: typeof AuthenticatedSitesRoute
   AuthenticatedStorageRoute: typeof AuthenticatedStorageRoute
+  AuthenticatedWorkspaceRoute: typeof AuthenticatedWorkspaceRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedConfiguracoesEmpresaRoute: typeof AuthenticatedConfiguracoesEmpresaRoute
   AuthenticatedOnboardingCompanyRoute: typeof AuthenticatedOnboardingCompanyRoute
@@ -662,6 +682,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedSistemasRoute: AuthenticatedSistemasRoute,
   AuthenticatedSitesRoute: AuthenticatedSitesRoute,
   AuthenticatedStorageRoute: AuthenticatedStorageRoute,
+  AuthenticatedWorkspaceRoute: AuthenticatedWorkspaceRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedConfiguracoesEmpresaRoute:
     AuthenticatedConfiguracoesEmpresaRoute,
