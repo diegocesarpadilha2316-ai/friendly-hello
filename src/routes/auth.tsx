@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { app } from "@/core/config";
+import diorisLogo from "@/assets/dioris-logo.png";
 
 const searchSchema = z.object({ redirect: z.string().optional() });
 
@@ -65,9 +66,18 @@ function AuthPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-md rounded-xl border border-border bg-card p-6 shadow-sm">
-        <div className="mb-6">
-          <h1 className="text-2xl font-semibold tracking-tight">{app.name}</h1>
-          <p className="text-sm text-muted-foreground">Plataforma modular · acesso restrito</p>
+        <div className="mb-6 flex flex-col items-center text-center">
+          <img
+            src={diorisLogo}
+            alt={`${app.name} — Inteligência que conecta tudo`}
+            className="h-14 w-auto"
+          />
+          <p className="mt-3 text-sm text-muted-foreground">
+            Inteligência que conecta tudo
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Plataforma modular · acesso restrito
+          </p>
         </div>
         <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
           <TabsList className="grid w-full grid-cols-3">
