@@ -15,7 +15,8 @@ export type AuditAction =
   | "CONFIG_CHANGE";
 
 export type HealthStatus = "healthy" | "degraded" | "down" | "unknown";
-export type JsonRecord = Record<string, unknown>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type JsonRecord = Record<string, any>;
 
 export interface LogEntry {
   id: string;
