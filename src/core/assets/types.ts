@@ -40,8 +40,10 @@ export interface AssetFolder {
   readonly createdAt: string;
 }
 
+export type JsonScalar = string | number | boolean | null;
+export type JsonValue = JsonScalar | JsonValue[] | { readonly [key: string]: JsonValue };
 export interface AssetMetadata {
-  readonly [key: string]: unknown;
+  readonly [key: string]: JsonValue;
 }
 
 export interface Asset {
@@ -117,7 +119,7 @@ export interface AssetAuditEntry {
   readonly assetId: string | null;
   readonly actorId: string | null;
   readonly action: string;
-  readonly detail: Record<string, unknown>;
+  readonly detail: { readonly [key: string]: JsonValue };
   readonly createdAt: string;
 }
 
