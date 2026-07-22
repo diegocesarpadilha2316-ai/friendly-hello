@@ -9,6 +9,7 @@ import { z } from "zod";
 import { requireTenant } from "@/core/middleware/require-tenant";
 import { AI_MODEL_CATALOG } from "./catalog";
 import { AI_GATEWAY_CONFIG } from "./config";
+import type { Json } from "@/core/types/tenant";
 import type {
   AICapability,
   AIGatewayMetrics,
@@ -88,9 +89,9 @@ export const aiGenerateText = createServerFn({ method: "POST" })
 export const aiGenerateJson = createServerFn({ method: "POST" })
   .middleware([requireTenant])
   .inputValidator((raw: unknown) => requestSchema.parse(raw))
-  .handler(async ({ context, data }): Promise<AIResponse<Record<string, unknown>>> => {
+  .handler(async ({ context, data }): Promise<AIResponse<Json>> => {
     const { AIManager } = await import("./manager.server");
-    const out = await AIManager.generateJson<Record<string, unknown>>({
+    const out = await AIManager.generateJson<Json>({
       task: {
         ...data.task,
         type: "json",
