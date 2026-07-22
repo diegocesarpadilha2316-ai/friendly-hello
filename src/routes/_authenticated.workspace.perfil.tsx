@@ -61,7 +61,7 @@ function WorkspacePerfil() {
             size="sm"
             variant="outline"
             onClick={() =>
-              globalLogout.mutate(undefined, {
+              globalLogout.mutate({}, {
                 onSuccess: () => toast.success("Sessões encerradas"),
                 onError: (e) => toast.error((e as Error).message),
               })
@@ -87,7 +87,7 @@ function WorkspacePerfil() {
         <MetricCard
           icon={<ShieldCheck className="h-4 w-4" />}
           label="MFA ativo"
-          value={mfa.filter((f) => f.status === "active").length.toString()}
+          value={mfa.filter((f) => f.enabled).length.toString()}
           hint={`${mfa.length} fator(es) registrados`}
         />
         <MetricCard
@@ -139,7 +139,7 @@ function WorkspacePerfil() {
                       size="sm"
                       variant="ghost"
                       onClick={() =>
-                        revokeSession.mutate(r.id, {
+                        revokeSession.mutate({ sessionId: r.id }, {
                           onSuccess: () => toast.success("Sessão revogada"),
                           onError: (e) => toast.error((e as Error).message),
                         })
@@ -163,7 +163,7 @@ function WorkspacePerfil() {
               {mfa.map((f) => (
                 <li key={f.id} className="flex items-center justify-between px-4 py-2 text-sm">
                   <span>{f.method}{f.label ? ` · ${f.label}` : ""}</span>
-                  <StatusBadge tone={f.status === "active" ? "success" : "neutral"}>{f.status}</StatusBadge>
+                  <StatusBadge tone={f.enabled ? "success" : "neutral"}>{f.enabled ? "ativo" : "inativo"}</StatusBadge>
                 </li>
               ))}
             </ul>
