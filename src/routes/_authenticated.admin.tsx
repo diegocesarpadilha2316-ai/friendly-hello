@@ -110,7 +110,6 @@ function AdminCenterPage() {
   ];
 
   const quickActions = [
-    { id: "new-company", label: "Criar empresa", to: "/onboarding/company", icon: Building },
     { id: "new-user", label: "Convidar usuário", to: "/configuracoes", icon: UserPlus },
     { id: "grant-credits", label: "Conceder créditos", to: "/configuracoes/empresa", icon: Sparkles },
     { id: "reset-pass", label: "Resetar senha", to: "/security", icon: KeyRound },
