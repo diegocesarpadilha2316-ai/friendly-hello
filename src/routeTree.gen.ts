@@ -49,6 +49,7 @@ import { Route as AuthenticatedAutomacaoRouteImport } from './routes/_authentica
 import { Route as AuthenticatedApiGatewayRouteImport } from './routes/_authenticated.api-gateway'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated.workspace.index'
+import { Route as AuthenticatedPlannerIndexRouteImport } from './routes/_authenticated.planner.index'
 import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated.configuracoes.index'
 import { Route as PublicProdutosPlannerRouteImport } from './routes/_public.produtos.planner'
 import { Route as PublicProdutosCriadorRouteImport } from './routes/_public.produtos.criador'
@@ -67,10 +68,14 @@ import { Route as AuthenticatedWorkspaceAssinaturaRouteImport } from './routes/_
 import { Route as AuthenticatedWorkspaceAssetsRouteImport } from './routes/_authenticated.workspace.assets'
 import { Route as AuthenticatedWorkspaceApiKeysRouteImport } from './routes/_authenticated.workspace.api-keys'
 import { Route as AuthenticatedWorkspaceAjudaRouteImport } from './routes/_authenticated.workspace.ajuda'
+import { Route as AuthenticatedPlannerProjetosRouteImport } from './routes/_authenticated.planner.projetos'
+import { Route as AuthenticatedPlannerIaRouteImport } from './routes/_authenticated.planner.ia'
+import { Route as AuthenticatedPlannerBibliotecaRouteImport } from './routes/_authenticated.planner.biblioteca'
 import { Route as AuthenticatedOnboardingCompanyRouteImport } from './routes/_authenticated.onboarding.company'
 import { Route as AuthenticatedConfiguracoesEmpresaRouteImport } from './routes/_authenticated.configuracoes.empresa'
 import { Route as ApiPublicV1PingRouteImport } from './routes/api/public/v1/ping'
 import { Route as ApiPublicV1OpenapiRouteImport } from './routes/api/public/v1/openapi'
+import { Route as AuthenticatedPlannerProjetosProjectIdRouteImport } from './routes/_authenticated.planner.projetos.$projectId'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -274,6 +279,12 @@ const AuthenticatedWorkspaceIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedWorkspaceRoute,
   } as any)
+const AuthenticatedPlannerIndexRoute =
+  AuthenticatedPlannerIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPlannerRoute,
+  } as any)
 const AuthenticatedConfiguracoesIndexRoute =
   AuthenticatedConfiguracoesIndexRouteImport.update({
     id: '/configuracoes/',
@@ -380,6 +391,23 @@ const AuthenticatedWorkspaceAjudaRoute =
     path: '/ajuda',
     getParentRoute: () => AuthenticatedWorkspaceRoute,
   } as any)
+const AuthenticatedPlannerProjetosRoute =
+  AuthenticatedPlannerProjetosRouteImport.update({
+    id: '/projetos',
+    path: '/projetos',
+    getParentRoute: () => AuthenticatedPlannerRoute,
+  } as any)
+const AuthenticatedPlannerIaRoute = AuthenticatedPlannerIaRouteImport.update({
+  id: '/ia',
+  path: '/ia',
+  getParentRoute: () => AuthenticatedPlannerRoute,
+} as any)
+const AuthenticatedPlannerBibliotecaRoute =
+  AuthenticatedPlannerBibliotecaRouteImport.update({
+    id: '/biblioteca',
+    path: '/biblioteca',
+    getParentRoute: () => AuthenticatedPlannerRoute,
+  } as any)
 const AuthenticatedOnboardingCompanyRoute =
   AuthenticatedOnboardingCompanyRouteImport.update({
     id: '/onboarding/company',
@@ -402,6 +430,12 @@ const ApiPublicV1OpenapiRoute = ApiPublicV1OpenapiRouteImport.update({
   path: '/api/public/v1/openapi',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedPlannerProjetosProjectIdRoute =
+  AuthenticatedPlannerProjetosProjectIdRouteImport.update({
+    id: '/$projectId',
+    path: '/$projectId',
+    getParentRoute: () => AuthenticatedPlannerProjetosRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
@@ -420,7 +454,7 @@ export interface FileRoutesByFullPath {
   '/marketplace': typeof AuthenticatedMarketplaceRoute
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/observabilidade': typeof AuthenticatedObservabilidadeRoute
-  '/planner': typeof AuthenticatedPlannerRoute
+  '/planner': typeof AuthenticatedPlannerRouteWithChildren
   '/quality': typeof AuthenticatedQualityRoute
   '/recovery': typeof AuthenticatedRecoveryRoute
   '/sdk': typeof AuthenticatedSdkRoute
@@ -443,6 +477,9 @@ export interface FileRoutesByFullPath {
   '/termos': typeof PublicTermosRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
+  '/planner/biblioteca': typeof AuthenticatedPlannerBibliotecaRoute
+  '/planner/ia': typeof AuthenticatedPlannerIaRoute
+  '/planner/projetos': typeof AuthenticatedPlannerProjetosRouteWithChildren
   '/workspace/ajuda': typeof AuthenticatedWorkspaceAjudaRoute
   '/workspace/api-keys': typeof AuthenticatedWorkspaceApiKeysRoute
   '/workspace/assets': typeof AuthenticatedWorkspaceAssetsRoute
@@ -461,7 +498,9 @@ export interface FileRoutesByFullPath {
   '/produtos/criador': typeof PublicProdutosCriadorRoute
   '/produtos/planner': typeof PublicProdutosPlannerRoute
   '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
+  '/planner/': typeof AuthenticatedPlannerIndexRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
+  '/planner/projetos/$projectId': typeof AuthenticatedPlannerProjetosProjectIdRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
 }
@@ -482,7 +521,6 @@ export interface FileRoutesByTo {
   '/marketplace': typeof AuthenticatedMarketplaceRoute
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/observabilidade': typeof AuthenticatedObservabilidadeRoute
-  '/planner': typeof AuthenticatedPlannerRoute
   '/quality': typeof AuthenticatedQualityRoute
   '/recovery': typeof AuthenticatedRecoveryRoute
   '/sdk': typeof AuthenticatedSdkRoute
@@ -504,6 +542,9 @@ export interface FileRoutesByTo {
   '/termos': typeof PublicTermosRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
+  '/planner/biblioteca': typeof AuthenticatedPlannerBibliotecaRoute
+  '/planner/ia': typeof AuthenticatedPlannerIaRoute
+  '/planner/projetos': typeof AuthenticatedPlannerProjetosRouteWithChildren
   '/workspace/ajuda': typeof AuthenticatedWorkspaceAjudaRoute
   '/workspace/api-keys': typeof AuthenticatedWorkspaceApiKeysRoute
   '/workspace/assets': typeof AuthenticatedWorkspaceAssetsRoute
@@ -522,7 +563,9 @@ export interface FileRoutesByTo {
   '/produtos/criador': typeof PublicProdutosCriadorRoute
   '/produtos/planner': typeof PublicProdutosPlannerRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesIndexRoute
+  '/planner': typeof AuthenticatedPlannerIndexRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
+  '/planner/projetos/$projectId': typeof AuthenticatedPlannerProjetosProjectIdRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
 }
@@ -545,7 +588,7 @@ export interface FileRoutesById {
   '/_authenticated/marketplace': typeof AuthenticatedMarketplaceRoute
   '/_authenticated/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/_authenticated/observabilidade': typeof AuthenticatedObservabilidadeRoute
-  '/_authenticated/planner': typeof AuthenticatedPlannerRoute
+  '/_authenticated/planner': typeof AuthenticatedPlannerRouteWithChildren
   '/_authenticated/quality': typeof AuthenticatedQualityRoute
   '/_authenticated/recovery': typeof AuthenticatedRecoveryRoute
   '/_authenticated/sdk': typeof AuthenticatedSdkRoute
@@ -569,6 +612,9 @@ export interface FileRoutesById {
   '/_public/': typeof PublicIndexRoute
   '/_authenticated/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/_authenticated/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
+  '/_authenticated/planner/biblioteca': typeof AuthenticatedPlannerBibliotecaRoute
+  '/_authenticated/planner/ia': typeof AuthenticatedPlannerIaRoute
+  '/_authenticated/planner/projetos': typeof AuthenticatedPlannerProjetosRouteWithChildren
   '/_authenticated/workspace/ajuda': typeof AuthenticatedWorkspaceAjudaRoute
   '/_authenticated/workspace/api-keys': typeof AuthenticatedWorkspaceApiKeysRoute
   '/_authenticated/workspace/assets': typeof AuthenticatedWorkspaceAssetsRoute
@@ -587,7 +633,9 @@ export interface FileRoutesById {
   '/_public/produtos/criador': typeof PublicProdutosCriadorRoute
   '/_public/produtos/planner': typeof PublicProdutosPlannerRoute
   '/_authenticated/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
+  '/_authenticated/planner/': typeof AuthenticatedPlannerIndexRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
+  '/_authenticated/planner/projetos/$projectId': typeof AuthenticatedPlannerProjetosProjectIdRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
 }
@@ -633,6 +681,9 @@ export interface FileRouteTypes {
     | '/termos'
     | '/configuracoes/empresa'
     | '/onboarding/company'
+    | '/planner/biblioteca'
+    | '/planner/ia'
+    | '/planner/projetos'
     | '/workspace/ajuda'
     | '/workspace/api-keys'
     | '/workspace/assets'
@@ -651,7 +702,9 @@ export interface FileRouteTypes {
     | '/produtos/criador'
     | '/produtos/planner'
     | '/configuracoes/'
+    | '/planner/'
     | '/workspace/'
+    | '/planner/projetos/$projectId'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
   fileRoutesByTo: FileRoutesByTo
@@ -672,7 +725,6 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/notificacoes'
     | '/observabilidade'
-    | '/planner'
     | '/quality'
     | '/recovery'
     | '/sdk'
@@ -694,6 +746,9 @@ export interface FileRouteTypes {
     | '/termos'
     | '/configuracoes/empresa'
     | '/onboarding/company'
+    | '/planner/biblioteca'
+    | '/planner/ia'
+    | '/planner/projetos'
     | '/workspace/ajuda'
     | '/workspace/api-keys'
     | '/workspace/assets'
@@ -712,7 +767,9 @@ export interface FileRouteTypes {
     | '/produtos/criador'
     | '/produtos/planner'
     | '/configuracoes'
+    | '/planner'
     | '/workspace'
+    | '/planner/projetos/$projectId'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
   id:
@@ -758,6 +815,9 @@ export interface FileRouteTypes {
     | '/_public/'
     | '/_authenticated/configuracoes/empresa'
     | '/_authenticated/onboarding/company'
+    | '/_authenticated/planner/biblioteca'
+    | '/_authenticated/planner/ia'
+    | '/_authenticated/planner/projetos'
     | '/_authenticated/workspace/ajuda'
     | '/_authenticated/workspace/api-keys'
     | '/_authenticated/workspace/assets'
@@ -776,7 +836,9 @@ export interface FileRouteTypes {
     | '/_public/produtos/criador'
     | '/_public/produtos/planner'
     | '/_authenticated/configuracoes/'
+    | '/_authenticated/planner/'
     | '/_authenticated/workspace/'
+    | '/_authenticated/planner/projetos/$projectId'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
   fileRoutesById: FileRoutesById
@@ -1073,6 +1135,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceIndexRouteImport
       parentRoute: typeof AuthenticatedWorkspaceRoute
     }
+    '/_authenticated/planner/': {
+      id: '/_authenticated/planner/'
+      path: '/'
+      fullPath: '/planner/'
+      preLoaderRoute: typeof AuthenticatedPlannerIndexRouteImport
+      parentRoute: typeof AuthenticatedPlannerRoute
+    }
     '/_authenticated/configuracoes/': {
       id: '/_authenticated/configuracoes/'
       path: '/configuracoes'
@@ -1199,6 +1268,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceAjudaRouteImport
       parentRoute: typeof AuthenticatedWorkspaceRoute
     }
+    '/_authenticated/planner/projetos': {
+      id: '/_authenticated/planner/projetos'
+      path: '/projetos'
+      fullPath: '/planner/projetos'
+      preLoaderRoute: typeof AuthenticatedPlannerProjetosRouteImport
+      parentRoute: typeof AuthenticatedPlannerRoute
+    }
+    '/_authenticated/planner/ia': {
+      id: '/_authenticated/planner/ia'
+      path: '/ia'
+      fullPath: '/planner/ia'
+      preLoaderRoute: typeof AuthenticatedPlannerIaRouteImport
+      parentRoute: typeof AuthenticatedPlannerRoute
+    }
+    '/_authenticated/planner/biblioteca': {
+      id: '/_authenticated/planner/biblioteca'
+      path: '/biblioteca'
+      fullPath: '/planner/biblioteca'
+      preLoaderRoute: typeof AuthenticatedPlannerBibliotecaRouteImport
+      parentRoute: typeof AuthenticatedPlannerRoute
+    }
     '/_authenticated/onboarding/company': {
       id: '/_authenticated/onboarding/company'
       path: '/onboarding/company'
@@ -1227,8 +1317,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicV1OpenapiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/planner/projetos/$projectId': {
+      id: '/_authenticated/planner/projetos/$projectId'
+      path: '/$projectId'
+      fullPath: '/planner/projetos/$projectId'
+      preLoaderRoute: typeof AuthenticatedPlannerProjetosProjectIdRouteImport
+      parentRoute: typeof AuthenticatedPlannerProjetosRoute
+    }
   }
 }
+
+interface AuthenticatedPlannerProjetosRouteChildren {
+  AuthenticatedPlannerProjetosProjectIdRoute: typeof AuthenticatedPlannerProjetosProjectIdRoute
+}
+
+const AuthenticatedPlannerProjetosRouteChildren: AuthenticatedPlannerProjetosRouteChildren =
+  {
+    AuthenticatedPlannerProjetosProjectIdRoute:
+      AuthenticatedPlannerProjetosProjectIdRoute,
+  }
+
+const AuthenticatedPlannerProjetosRouteWithChildren =
+  AuthenticatedPlannerProjetosRoute._addFileChildren(
+    AuthenticatedPlannerProjetosRouteChildren,
+  )
+
+interface AuthenticatedPlannerRouteChildren {
+  AuthenticatedPlannerBibliotecaRoute: typeof AuthenticatedPlannerBibliotecaRoute
+  AuthenticatedPlannerIaRoute: typeof AuthenticatedPlannerIaRoute
+  AuthenticatedPlannerProjetosRoute: typeof AuthenticatedPlannerProjetosRouteWithChildren
+  AuthenticatedPlannerIndexRoute: typeof AuthenticatedPlannerIndexRoute
+}
+
+const AuthenticatedPlannerRouteChildren: AuthenticatedPlannerRouteChildren = {
+  AuthenticatedPlannerBibliotecaRoute: AuthenticatedPlannerBibliotecaRoute,
+  AuthenticatedPlannerIaRoute: AuthenticatedPlannerIaRoute,
+  AuthenticatedPlannerProjetosRoute:
+    AuthenticatedPlannerProjetosRouteWithChildren,
+  AuthenticatedPlannerIndexRoute: AuthenticatedPlannerIndexRoute,
+}
+
+const AuthenticatedPlannerRouteWithChildren =
+  AuthenticatedPlannerRoute._addFileChildren(AuthenticatedPlannerRouteChildren)
 
 interface AuthenticatedWorkspaceRouteChildren {
   AuthenticatedWorkspaceAjudaRoute: typeof AuthenticatedWorkspaceAjudaRoute
@@ -1292,7 +1422,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedMarketplaceRoute: typeof AuthenticatedMarketplaceRoute
   AuthenticatedNotificacoesRoute: typeof AuthenticatedNotificacoesRoute
   AuthenticatedObservabilidadeRoute: typeof AuthenticatedObservabilidadeRoute
-  AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRoute
+  AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRouteWithChildren
   AuthenticatedQualityRoute: typeof AuthenticatedQualityRoute
   AuthenticatedRecoveryRoute: typeof AuthenticatedRecoveryRoute
   AuthenticatedSdkRoute: typeof AuthenticatedSdkRoute
@@ -1319,7 +1449,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedMarketplaceRoute: AuthenticatedMarketplaceRoute,
   AuthenticatedNotificacoesRoute: AuthenticatedNotificacoesRoute,
   AuthenticatedObservabilidadeRoute: AuthenticatedObservabilidadeRoute,
-  AuthenticatedPlannerRoute: AuthenticatedPlannerRoute,
+  AuthenticatedPlannerRoute: AuthenticatedPlannerRouteWithChildren,
   AuthenticatedQualityRoute: AuthenticatedQualityRoute,
   AuthenticatedRecoveryRoute: AuthenticatedRecoveryRoute,
   AuthenticatedSdkRoute: AuthenticatedSdkRoute,
