@@ -42,11 +42,25 @@ export interface OpeningDescriptor {
   rotationY: number;
 }
 
+export interface FurnitureDescriptor {
+  id: string;
+  subtype: string;
+  catalogItemId: string;
+  cx: number;
+  cz: number;
+  width: number;   // m (X)
+  depth: number;   // m (Z)
+  height: number;  // m (Y)
+  y: number;       // altura do centro (m)
+  rotationY: number; // rad
+}
+
 export interface Scene3DModel {
   walls: readonly WallDescriptor[];
   floors: readonly SlabDescriptor[];
   ceilings: readonly SlabDescriptor[];
   openings: readonly OpeningDescriptor[];
+  furniture: readonly FurnitureDescriptor[];
   /** bounding box em metros */
   bounds: { minX: number; maxX: number; minZ: number; maxZ: number; maxY: number };
 }
@@ -106,6 +120,7 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
   const floors: SlabDescriptor[] = [];
   const ceilings: SlabDescriptor[] = [];
   const openings: OpeningDescriptor[] = [];
+  const furniture: FurnitureDescriptor[] = [];
   const wallH = wallHeight * MM;
 
   for (const p of primitives) {
@@ -113,6 +128,23 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
     else if (p.kind === "floor") floors.push(extrudeSlab(p, 0));
     else if (p.kind === "ceiling") ceilings.push(extrudeSlab(p, wallH));
     else if (p.kind === "opening") openings.push(extrudeOpening(p));
+    else if (p.kind === "furniture") {
+      const w = p.width * MM;
+      const d = p.depth * MM;
+      const h = p.height * MM;
+      furniture.push({
+        id: p.id,
+        subtype: p.subtype,
+        catalogItemId: p.catalogItemId,
+        cx: (p.x + p.width / 2) * MM,
+        cz: (p.y + p.depth / 2) * MM,
+        width: w,
+        depth: d,
+        height: h,
+        y: h / 2,
+        rotationY: -(p.rotation * Math.PI) / 180,
+      });
+    }
   }
 
   // Fallback: se não há floor/ceiling explícitos, gera a partir das dimensões da sala
@@ -135,10 +167,11 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
   };
   for (const w of walls) consider(w.cx, w.cz, w.length, w.thickness);
   for (const s of floors) consider(s.cx, s.cz, s.width, s.depth);
+  for (const f of furniture) consider(f.cx, f.cz, f.width, f.depth);
   if (!Number.isFinite(minX)) {
     minX = 0; maxX = (room.dimensions.width || 5000) * MM;
     minZ = 0; maxZ = (room.dimensions.depth || 5000) * MM;
   }
 
-  return { walls, floors, ceilings, openings, bounds: { minX, maxX, minZ, maxZ, maxY: wallH } };
+  return { walls, floors, ceilings, openings, furniture, bounds: { minX, maxX, minZ, maxZ, maxY: wallH } };
 }

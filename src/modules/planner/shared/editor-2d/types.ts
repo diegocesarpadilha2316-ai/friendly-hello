@@ -21,7 +21,8 @@ export type Editor2DLayerId =
   | "openings"
   | "floors"
   | "ceilings"
-  | "guides";
+  | "guides"
+  | "furniture";
 
 export interface Editor2DLayerState {
   id: Editor2DLayerId;
@@ -83,6 +84,22 @@ export type Editor2DPrimitive =
       locked: boolean;
       axis: "h" | "v";
       pos: number;
+    }
+  | {
+      id: string;
+      kind: "furniture";
+      layer: Editor2DLayerId;
+      locked: boolean;
+      /** subtipo do catálogo (armario, balcao, gaveta, etc.) — dirige o render */
+      subtype: string;
+      catalogItemId: string;
+      x: number;
+      y: number;
+      width: number;
+      depth: number;
+      height: number;
+      rotation: number;
+      params: Readonly<Record<string, string | number | boolean | null>>;
     };
 
 export interface Editor2DDraft {

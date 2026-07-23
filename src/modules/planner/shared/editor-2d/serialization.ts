@@ -74,6 +74,28 @@ export function toPrimitive(node: PlannerParametricNode): Editor2DPrimitive | nu
         pos: num(node, "pos", 0),
       };
     }
+    case "module": {
+      if (str(node, "role", "") !== "furniture") return null;
+      const params: Record<string, string | number | boolean | null> = {};
+      for (const [k, v] of Object.entries(node.params)) {
+        if (k.startsWith("p:")) params[k.slice(2)] = v;
+      }
+      return {
+        id: node.id,
+        kind: "furniture",
+        layer,
+        locked,
+        subtype: str(node, "subtype", "modulo"),
+        catalogItemId: str(node, "catalogItemId", ""),
+        x: num(node, "x", 0),
+        y: num(node, "y", 0),
+        width: num(node, "width", 600),
+        depth: num(node, "depth", 400),
+        height: num(node, "height", 900),
+        rotation: num(node, "rotation", 0),
+        params,
+      };
+    }
     default:
       return null;
   }
@@ -87,6 +109,8 @@ function defaultLayerFor(kind: PlannerParametricNode["kind"], role: unknown): Ed
     case "ceiling": return "ceilings";
     case "material":
       return role === "guide" ? "guides" : "walls";
+    case "module":
+      return role === "furniture" ? "furniture" : "walls";
     default: return "walls";
   }
 }
@@ -133,6 +157,24 @@ export function fromPrimitive(p: Editor2DPrimitive, label?: string): PlannerPara
           layer: p.layer, locked: p.locked,
         },
       };
+    case "furniture": {
+      const custom: Record<string, string | number | boolean | null> = {};
+      for (const [k, v] of Object.entries(p.params)) custom[`p:${k}`] = v;
+      return {
+        ...base,
+        kind: "module",
+        params: {
+          role: "furniture",
+          subtype: p.subtype,
+          catalogItemId: p.catalogItemId,
+          x: p.x, y: p.y,
+          width: p.width, depth: p.depth, height: p.height,
+          rotation: p.rotation,
+          layer: p.layer, locked: p.locked,
+          ...custom,
+        },
+      };
+    }
   }
 }
 
@@ -143,6 +185,7 @@ function defaultLabel(p: Editor2DPrimitive): string {
     case "floor": return "Piso";
     case "ceiling": return "Teto";
     case "guide": return "Guia";
+    case "furniture": return p.subtype;
   }
 }
 

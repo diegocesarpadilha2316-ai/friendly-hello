@@ -16,7 +16,13 @@ import {
   Bounds,
 } from "@react-three/drei";
 import * as THREE from "three";
-import type { Scene3DModel, WallDescriptor, SlabDescriptor, OpeningDescriptor } from "./extrusion";
+import type {
+  Scene3DModel,
+  WallDescriptor,
+  SlabDescriptor,
+  OpeningDescriptor,
+  FurnitureDescriptor,
+} from "./extrusion";
 import type { Viewport3DState } from "./types";
 
 interface Scene3DProps {
@@ -33,6 +39,8 @@ const COLORS = {
   ceiling: "#6b7280",
   door: "#f59e0b",
   window: "#06b6d4",
+  furniture: "#a78bfa",
+  furnitureSel: "#8b5cf6",
 };
 
 function centerOffset(model: Scene3DModel) {
@@ -162,6 +170,46 @@ function Opening({
   );
 }
 
+function Furniture({
+  f,
+  center,
+  viewport,
+  selected,
+  onSelect,
+}: {
+  f: FurnitureDescriptor;
+  center: THREE.Vector3;
+  viewport: Viewport3DState;
+  selected: boolean;
+  onSelect: (id: string | null) => void;
+}) {
+  const pos = explodeVec(f.cx, f.cz, f.y, center, viewport.explode);
+  const clipped =
+    viewport.sectionHeight != null && f.y - f.height / 2 > viewport.sectionHeight / 1000;
+  if (clipped) return null;
+  const color = selected ? COLORS.furnitureSel : COLORS.furniture;
+  return (
+    <mesh
+      position={[pos.x, pos.y, pos.z]}
+      rotation={[0, f.rotationY, 0]}
+      castShadow
+      receiveShadow
+      onClick={(e: ThreeEvent<MouseEvent>) => {
+        e.stopPropagation();
+        onSelect(f.id);
+      }}
+    >
+      <boxGeometry args={[f.width, f.height, f.depth]} />
+      <meshStandardMaterial
+        color={color}
+        wireframe={viewport.render === "wireframe"}
+        roughness={0.6}
+        metalness={0.05}
+      />
+    </mesh>
+  );
+}
+
 function BoundingBox({ id, model, center, viewport }: { id: string; model: Scene3DModel; center: THREE.Vector3; viewport: Viewport3DState }) {
   const target = useMemo(() => {
     const w = model.walls.find((x) => x.id === id);
@@ -173,6 +221,8 @@ function BoundingBox({ id, model, center, viewport }: { id: string; model: Scene
     }
     const o = model.openings.find((x) => x.id === id);
     if (o) return { pos: explodeVec(o.cx, o.cz, o.y, center, viewport.explode), size: [o.width, o.height, 0.04] as const, rot: o.rotationY };
+    const fu = model.furniture.find((x) => x.id === id);
+    if (fu) return { pos: explodeVec(fu.cx, fu.cz, fu.y, center, viewport.explode), size: [fu.width, fu.height, fu.depth] as const, rot: fu.rotationY };
     return null;
   }, [id, model, center, viewport.explode]);
   if (!target) return null;
@@ -252,6 +302,9 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
           ))}
           {model.openings.map((o) => (
             <Opening key={o.id} o={o} center={center} viewport={viewport} selected={selectedId === o.id} onSelect={onSelect} />
+          ))}
+          {model.furniture.map((f) => (
+            <Furniture key={f.id} f={f} center={center} viewport={viewport} selected={selectedId === f.id} onSelect={onSelect} />
           ))}
           {viewport.sectionHeight == null &&
             model.ceilings.map((s) => (
