@@ -56,6 +56,8 @@ function WorkspaceIA() {
   const health = useAIHealth();
   const billing = useBillingSummary();
   const ledger = useCreditLedger();
+  const billingSummary = billing.summary;
+  const ledgerEntries = ledger.entries;
   const settings = useCompanySettings();
   const updateSettings = useUpdateCompanySettings();
 
@@ -71,12 +73,12 @@ function WorkspaceIA() {
   const [language, setLanguage] = useState<string>(aiSettings?.language ?? "pt-BR");
 
   const aiLedger = useMemo(
-    () => (ledger.data ?? []).filter((e) => (e.reason ?? "").startsWith("ai:")).slice(0, 100),
-    [ledger.data],
+    () => (ledgerEntries ?? []).filter((e) => (e.reason ?? "").startsWith("ai:")).slice(0, 100),
+    [ledgerEntries],
   );
   const spentToday = useMemo(() => {
     const today = new Date().toISOString().slice(0, 10);
-    return aiLedger.filter((e) => e.createdAt.slice(0, 10) === today).reduce((s, e) => s + Math.abs(e.amount), 0);
+    return aiLedger.filter((e) => e.createdAt.slice(0, 10) === today).reduce((s: number, e) => s + Math.abs(e.amount), 0);
   }, [aiLedger]);
   const requestsToday = useMemo(() => {
     const today = new Date().toISOString().slice(0, 10);
@@ -101,7 +103,7 @@ function WorkspaceIA() {
       />
 
       <div className="mt-6 grid gap-3 md:grid-cols-3 lg:grid-cols-5">
-        <MetricCard icon={<DollarSign className="h-4 w-4" />} label="Créditos restantes" value={billing.data?.balance ?? "—"} hint={billing.data?.plan?.label ?? undefined} />
+        <MetricCard icon={<DollarSign className="h-4 w-4" />} label="Créditos restantes" value={billingSummary?.balance ?? "—"} hint={billingSummary?.plan?.label ?? undefined} />
         <MetricCard icon={<Zap className="h-4 w-4" />} label="Consumo hoje" value={spentToday} hint={`${requestsToday} requests`} />
         <MetricCard icon={<Activity className="h-4 w-4" />} label="Requests (total)" value={metrics.data?.requests ?? 0} hint={`${metrics.data?.errors ?? 0} erros`} />
         <MetricCard icon={<Clock className="h-4 w-4" />} label="Latência média" value={`${metrics.data?.avgLatencyMs ?? 0} ms`} />
