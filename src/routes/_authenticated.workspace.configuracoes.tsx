@@ -81,7 +81,7 @@ function WorkspaceConfig() {
   const branding = useBranding();
   const upsertBranding = useUpsertBranding();
   const exportCfg = useConfigurationExport();
-  const { activeTenant } = useTenant();
+  const { activeCompany } = useTenant();
 
   const [displayName, setDisplayName] = useState("");
   const [tradeName, setTradeName] = useState("");
@@ -183,7 +183,7 @@ function WorkspaceConfig() {
       <PageHeader
         eyebrow="Workspace"
         title="Configurações"
-        description={`Personalize completamente o Workspace de ${activeTenant?.name ?? "sua empresa"}.`}
+        description={`Personalize completamente o Workspace de ${activeCompany?.name ?? "sua empresa"}.`}
         actions={
           <Button
             variant="outline"
@@ -625,7 +625,7 @@ function NotificationsPanel() {
   const metrics = useNotificationMetrics();
   const list = prefs.data ?? [];
   const grouped = useMemo(() => {
-    const byChannel: Record<string, typeof list> = {};
+    const byChannel: Record<string, Array<typeof list[number]>> = {};
     for (const p of list) {
       const arr = byChannel[p.channel] ?? [];
       arr.push(p);
@@ -637,10 +637,10 @@ function NotificationsPanel() {
     <div className="space-y-6">
       <FormSection title="Notificações — Métricas" description="Volume e canais utilizados nos últimos períodos.">
         <div className="grid gap-3 md:grid-cols-4 text-sm">
-          <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Enviadas</div><div className="text-xl font-semibold">{metrics.data?.totalSent ?? 0}</div></div>
-          <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Entregues</div><div className="text-xl font-semibold">{metrics.data?.totalDelivered ?? 0}</div></div>
-          <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Falhas</div><div className="text-xl font-semibold">{metrics.data?.totalFailed ?? 0}</div></div>
+          <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Total</div><div className="text-xl font-semibold">{metrics.data?.total ?? 0}</div></div>
           <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Não lidas</div><div className="text-xl font-semibold">{metrics.data?.unread ?? 0}</div></div>
+          <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Pendentes</div><div className="text-xl font-semibold">{metrics.data?.deliveriesPending ?? 0}</div></div>
+          <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Falhas</div><div className="text-xl font-semibold">{metrics.data?.deliveriesFailed ?? 0}</div></div>
         </div>
       </FormSection>
       <FormSection title="Preferências por canal" description="Email, Push, In-App e Webhook. Gerenciadas pelo NotificationManager.">
@@ -655,7 +655,7 @@ function NotificationsPanel() {
                   {items.map((p) => (
                     <div key={p.id} className="flex items-center justify-between px-4 py-3">
                       <div className="text-sm">{p.category}</div>
-                      <StatusBadge tone={p.enabled ? "success" : "muted"}>{p.enabled ? "Ativo" : "Silenciado"}</StatusBadge>
+                      <StatusBadge tone={p.enabled ? "success" : "neutral"}>{p.enabled ? "Ativo" : "Silenciado"}</StatusBadge>
                     </div>
                   ))}
                 </div>
@@ -675,28 +675,32 @@ function AIPanel() {
     <div className="space-y-6">
       <FormSection title="IA — Consumo" description="Requisições, tokens e custo consumidos pelo AI Gateway.">
         <div className="grid gap-3 md:grid-cols-4 text-sm">
-          <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Requisições</div><div className="text-xl font-semibold">{metrics.data?.totalRequests ?? 0}</div></div>
-          <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Tokens</div><div className="text-xl font-semibold">{metrics.data?.totalTokens ?? 0}</div></div>
-          <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Custo (USD)</div><div className="text-xl font-semibold">${(metrics.data?.totalCostUsd ?? 0).toFixed(2)}</div></div>
-          <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Falhas</div><div className="text-xl font-semibold">{metrics.data?.failures ?? 0}</div></div>
+          <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Requisições</div><div className="text-xl font-semibold">{metrics.data?.requests ?? 0}</div></div>
+          <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Latência média</div><div className="text-xl font-semibold">{Math.round(metrics.data?.avgLatencyMs ?? 0)}ms</div></div>
+          <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Créditos</div><div className="text-xl font-semibold">{(metrics.data?.creditsSpent ?? 0).toFixed(2)}</div></div>
+          <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Erros</div><div className="text-xl font-semibold">{metrics.data?.errors ?? 0}</div></div>
         </div>
       </FormSection>
       <FormSection title="Modelos disponíveis" description="Catálogo do Core AI Gateway.">
-        {(models.data ?? []).length === 0 ? (
-          <EmptyState title="Nenhum modelo listado" description="Configure provedores em Admin › IA." />
-        ) : (
-          <div className="divide-y divide-border rounded-lg border border-border">
-            {(models.data ?? []).slice(0, 12).map((m) => (
-              <div key={m.id} className="flex items-center justify-between px-4 py-3 text-sm">
-                <div>
-                  <div className="font-medium">{m.name ?? m.id}</div>
-                  <div className="text-xs text-muted-foreground">{m.provider} · {m.capability}</div>
+        {(() => {
+          const modelsList = models.data?.models ?? [];
+          if (modelsList.length === 0) {
+            return <EmptyState title="Nenhum modelo listado" description="Configure provedores em Admin › IA." />;
+          }
+          return (
+            <div className="divide-y divide-border rounded-lg border border-border">
+              {modelsList.slice(0, 12).map((m) => (
+                <div key={m.id} className="flex items-center justify-between px-4 py-3 text-sm">
+                  <div>
+                    <div className="font-medium">{m.label ?? m.id}</div>
+                    <div className="text-xs text-muted-foreground">{m.provider} · {m.capabilities.join(", ")}</div>
+                  </div>
+                  <StatusBadge tone={m.enabled ? "success" : "neutral"}>{m.enabled ? "Disponível" : "Desativado"}</StatusBadge>
                 </div>
-                <StatusBadge tone={m.enabled ? "success" : "muted"}>{m.enabled ? "Disponível" : "Desativado"}</StatusBadge>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          );
+        })()}
       </FormSection>
     </div>
   );
@@ -707,11 +711,10 @@ function AssetsPanel() {
   const s = stats.data;
   return (
     <FormSection title="Assets" description="Storage, compressão, organização e versionamento do módulo Assets.">
-      <div className="grid gap-3 md:grid-cols-4 text-sm">
-        <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Total de assets</div><div className="text-xl font-semibold">{s?.totalAssets ?? 0}</div></div>
-        <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Storage usado</div><div className="text-xl font-semibold">{((s?.totalBytes ?? 0) / 1_048_576).toFixed(1)} MB</div></div>
-        <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Pastas</div><div className="text-xl font-semibold">{s?.totalFolders ?? 0}</div></div>
-        <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Versões</div><div className="text-xl font-semibold">{s?.totalVersions ?? 0}</div></div>
+      <div className="grid gap-3 md:grid-cols-3 text-sm">
+        <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Total de assets</div><div className="text-xl font-semibold">{s?.assetCount ?? 0}</div></div>
+        <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Storage usado</div><div className="text-xl font-semibold">{((s?.usedBytes ?? 0) / 1_048_576).toFixed(1)} MB</div></div>
+        <div className="rounded-lg border border-border p-3"><div className="text-xs text-muted-foreground">Cota</div><div className="text-xl font-semibold">{s?.quotaBytes ? `${(s.quotaBytes / 1_048_576).toFixed(0)} MB` : "—"}</div></div>
       </div>
       <div className="mt-4 flex justify-end">
         <Button variant="outline" size="sm" asChild><Link to="/admin">Abrir gestor de Assets</Link></Button>
