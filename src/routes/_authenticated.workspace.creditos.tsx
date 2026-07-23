@@ -17,7 +17,7 @@ import {
   MetricCard,
   EmptyState,
   StatusBadge,
-  DioButton,
+  Button,
 } from "@/core/components/ui-kit";
 import {
   useBillingSummary,
@@ -79,9 +79,8 @@ function WorkspaceCreditos() {
   const usagePct =
     totalGranted > 0 ? Math.min(100, Math.round((totalConsumed / totalGranted) * 100)) : 0;
 
-  const aiTokens = aiMetrics.data
-    ? aiMetrics.data.reduce((a, m) => a + (m.tokensIn + m.tokensOut), 0)
-    : 0;
+  const aiRequests = aiMetrics.data?.requests ?? 0;
+  const aiCreditsSpent = aiMetrics.data?.creditsSpent ?? 0;
 
   return (
     <PageContainer>
@@ -91,14 +90,14 @@ function WorkspaceCreditos() {
         description="Acompanhe o saldo, o histórico e o plano ativo da sua empresa."
         actions={
           <div className="flex items-center gap-2">
-            <DioButton variant="ghost" onClick={() => refetch()}>
+            <Button variant="ghost" onClick={() => refetch()}>
               <RefreshCw className="mr-2 h-4 w-4" />
               Atualizar
-            </DioButton>
-            <DioButton variant="primary">
+            </Button>
+            <Button>
               <Sparkles className="mr-2 h-4 w-4" />
               Comprar créditos
-            </DioButton>
+            </Button>
           </div>
         }
       />
@@ -234,10 +233,10 @@ function WorkspaceCreditos() {
                     : "—"}
                 </span>
               </div>
-              <DioButton className="mt-2 w-full" variant="secondary">
+              <Button className="mt-2 w-full" variant="secondary">
                 <ArrowUpRight className="mr-2 h-4 w-4" />
                 Ver planos disponíveis
-              </DioButton>
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -334,9 +333,11 @@ function WorkspaceCreditos() {
                     <Sparkles className="h-3.5 w-3.5" /> IA Gateway
                   </div>
                   <p className="mt-1 text-2xl font-semibold">
-                    {aiTokens.toLocaleString("pt-BR")}
+                    {aiRequests.toLocaleString("pt-BR")}
                   </p>
-                  <p className="text-xs text-muted-foreground">tokens processados</p>
+                  <p className="text-xs text-muted-foreground">
+                    requisições · {aiCreditsSpent.toLocaleString("pt-BR")} créditos
+                  </p>
                 </div>
                 <div className="rounded-lg border border-border/60 bg-card/60 p-4">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -405,13 +406,13 @@ function PlanCard({ plan, current }: { plan: PlanDefinition; current: boolean })
             ))}
           </ul>
         ) : null}
-        <DioButton
+        <Button
           className="w-full"
-          variant={current ? "ghost" : "primary"}
+          variant={current ? "ghost" : "default"}
           disabled={current}
         >
           {current ? "Plano atual" : "Selecionar plano"}
-        </DioButton>
+        </Button>
       </CardContent>
     </Card>
   );
