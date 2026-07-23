@@ -258,13 +258,13 @@ function WorkspaceEmpresa() {
       ? Math.min(100, Math.round((assets.data.usedBytes / assets.data.quotaBytes) * 100))
       : 0;
 
-  const mfaEnabled = (security.data?.mfaFactors ?? []).some((f) => f.status === "verified");
+  const mfaEnabled = (security.data?.mfaFactors ?? []).some((f) => f.enabled);
   const sessionsCount = (security.data?.sessions ?? []).length;
   const devicesCount = (security.data?.devices ?? []).length;
 
   return (
     <PageContainer>
-      <LoadingOverlay show={updateCompany.isPending || updateSettings.isPending} />
+      <LoadingOverlay visible={updateCompany.isPending || updateSettings.isPending} />
       <PageHeader
         eyebrow="Workspace"
         title={activeCompany.name}
@@ -451,7 +451,7 @@ function WorkspaceEmpresa() {
                     <li key={a.id} className="flex items-center justify-between px-4 py-2 text-sm">
                       <span className="font-medium">{a.action}</span>
                       <span className="text-xs text-muted-foreground">
-                        {new Date(a.created_at).toLocaleString("pt-BR")}
+                        {new Date(a.createdAt).toLocaleString("pt-BR")}
                       </span>
                     </li>
                   ))}
