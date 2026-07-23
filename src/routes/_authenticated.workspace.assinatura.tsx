@@ -386,7 +386,7 @@ function WorkspaceAssinatura() {
                             <StatusBadge tone="info">{e.action}</StatusBadge>
                           </td>
                           <td className="py-2 text-muted-foreground">
-                            {e.actorId?.slice(0, 8) ?? "sistema"}
+                            {e.userId?.slice(0, 8) ?? "sistema"}
                           </td>
                           <td className="py-2 text-xs text-muted-foreground">
                             {e.entityId ?? "—"}
