@@ -1,11 +1,11 @@
 import {
   createFileRoute,
   Outlet,
-  useRouterState,
   useNavigate,
+  useRouterState,
 } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
-import { useAuth, useOptionalTenant } from "@/core/hooks";
+import { useAuth } from "@/core/hooks";
 import { AppLayout } from "@/core/components/AppLayout";
 
 /**
@@ -21,7 +21,6 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthenticatedLayout() {
   const { user, loading } = useAuth();
-  const tenant = useOptionalTenant();
   const navigate = useNavigate();
   const href = useRouterState({ select: (s) => s.location.href });
   const redirectedRef = useRef(false);
@@ -32,17 +31,8 @@ function AuthenticatedLayout() {
     const safe = href.startsWith("/auth") ? "/" : href;
     navigate({ to: "/auth", search: { redirect: safe }, replace: true });
   }, [loading, user, navigate, href]);
-  // Sem empresa cadastrada → força onboarding (exceto na própria página).
-  useEffect(() => {
-    if (!user) return;
-    if (tenant && !tenant.loading && tenant.companies.length === 0) {
-      if (!href.startsWith("/onboarding")) {
-        navigate({ to: "/onboarding/company", replace: true });
-      }
-    }
-  }, [user, tenant, href, navigate]);
 
-  if (loading || tenant?.loading) {
+  if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">
         Carregando…
