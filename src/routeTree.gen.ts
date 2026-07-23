@@ -15,6 +15,7 @@ import { Route as PublicRouteImport } from './routes/_public'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as PublicIndexRouteImport } from './routes/_public.index'
 import { Route as PublicSobreRouteImport } from './routes/_public.sobre'
+import { Route as PublicRecursosRouteImport } from './routes/_public.recursos'
 import { Route as PublicProdutosRouteImport } from './routes/_public.produtos'
 import { Route as PublicPlanosRouteImport } from './routes/_public.planos'
 import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated.workspace'
@@ -89,6 +90,11 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
 const PublicSobreRoute = PublicSobreRouteImport.update({
   id: '/sobre',
   path: '/sobre',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicRecursosRoute = PublicRecursosRouteImport.update({
+  id: '/recursos',
+  path: '/recursos',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicProdutosRoute = PublicProdutosRouteImport.update({
@@ -378,6 +384,7 @@ export interface FileRoutesByFullPath {
   '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/planos': typeof PublicPlanosRoute
   '/produtos': typeof PublicProdutosRouteWithChildren
+  '/recursos': typeof PublicRecursosRoute
   '/sobre': typeof PublicSobreRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
@@ -430,6 +437,7 @@ export interface FileRoutesByTo {
   '/storage': typeof AuthenticatedStorageRoute
   '/planos': typeof PublicPlanosRoute
   '/produtos': typeof PublicProdutosRouteWithChildren
+  '/recursos': typeof PublicRecursosRoute
   '/sobre': typeof PublicSobreRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
@@ -485,6 +493,7 @@ export interface FileRoutesById {
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/_public/planos': typeof PublicPlanosRoute
   '/_public/produtos': typeof PublicProdutosRouteWithChildren
+  '/_public/recursos': typeof PublicRecursosRoute
   '/_public/sobre': typeof PublicSobreRoute
   '/_public/': typeof PublicIndexRoute
   '/_authenticated/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
@@ -541,6 +550,7 @@ export interface FileRouteTypes {
     | '/workspace'
     | '/planos'
     | '/produtos'
+    | '/recursos'
     | '/sobre'
     | '/configuracoes/empresa'
     | '/onboarding/company'
@@ -593,6 +603,7 @@ export interface FileRouteTypes {
     | '/storage'
     | '/planos'
     | '/produtos'
+    | '/recursos'
     | '/sobre'
     | '/configuracoes/empresa'
     | '/onboarding/company'
@@ -647,6 +658,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace'
     | '/_public/planos'
     | '/_public/produtos'
+    | '/_public/recursos'
     | '/_public/sobre'
     | '/_public/'
     | '/_authenticated/configuracoes/empresa'
@@ -725,6 +737,13 @@ declare module '@tanstack/react-router' {
       path: '/sobre'
       fullPath: '/sobre'
       preLoaderRoute: typeof PublicSobreRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/recursos': {
+      id: '/_public/recursos'
+      path: '/recursos'
+      fullPath: '/recursos'
+      preLoaderRoute: typeof PublicRecursosRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/produtos': {
@@ -1186,6 +1205,7 @@ const PublicProdutosRouteWithChildren = PublicProdutosRoute._addFileChildren(
 interface PublicRouteChildren {
   PublicPlanosRoute: typeof PublicPlanosRoute
   PublicProdutosRoute: typeof PublicProdutosRouteWithChildren
+  PublicRecursosRoute: typeof PublicRecursosRoute
   PublicSobreRoute: typeof PublicSobreRoute
   PublicIndexRoute: typeof PublicIndexRoute
 }
@@ -1193,6 +1213,7 @@ interface PublicRouteChildren {
 const PublicRouteChildren: PublicRouteChildren = {
   PublicPlanosRoute: PublicPlanosRoute,
   PublicProdutosRoute: PublicProdutosRouteWithChildren,
+  PublicRecursosRoute: PublicRecursosRoute,
   PublicSobreRoute: PublicSobreRoute,
   PublicIndexRoute: PublicIndexRoute,
 }
