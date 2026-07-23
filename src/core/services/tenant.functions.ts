@@ -81,7 +81,7 @@ export const createCompany = createServerFn({ method: "POST" })
 export const ensureDefaultCompany = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .handler(async ({ context }) => {
-    const { supabase, userId, user } = context;
+    const { supabase, userId, email } = context;
     const { data: existing, error: exErr } = await supabase
       .from("company_members")
       .select("id")
@@ -90,8 +90,7 @@ export const ensureDefaultCompany = createServerFn({ method: "POST" })
       .limit(1);
     if (exErr) throw new Error(exErr.message);
     if (existing && existing.length > 0) return { created: false };
-    const email = (user?.email as string | undefined) ?? "";
-    const nick = email.includes("@") ? email.split("@")[0] : "meu-espaco";
+    const nick = email && email.includes("@") ? email.split("@")[0] : "meu-espaco";
     const name = `Espaço ${nick.charAt(0).toUpperCase()}${nick.slice(1)}`;
     const slug = `${slugify(nick)}-${Math.random().toString(36).slice(2, 6)}`;
     const { error } = await supabase
