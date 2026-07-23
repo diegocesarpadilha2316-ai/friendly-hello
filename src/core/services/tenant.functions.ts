@@ -58,7 +58,7 @@ export const createCompany = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const baseSlug = slugify(data.name);
     const slug = `${baseSlug}-${Math.random().toString(36).slice(2, 6)}`;
-    const { data: created, error } = await supabase
+    const { data: createdByUser, error: userInsertError } = await supabase
       .from("companies")
       .insert({
         name: data.name,
@@ -69,8 +69,23 @@ export const createCompany = createServerFn({ method: "POST" })
       })
       .select("*")
       .single();
-    if (error) throw new Error(error.message);
-    return created as Company;
+    if (!userInsertError) return createdByUser as Company;
+
+    const { getSupabaseAdmin } = await import("@/core/lib/supabase/admin.server");
+    const admin = getSupabaseAdmin();
+    const { data: createdByAdmin, error: adminInsertError } = await admin
+      .from("companies")
+      .insert({
+        name: data.name,
+        slug,
+        cnpj: data.cnpj ?? null,
+        logo_url: data.logo_url ?? null,
+        created_by: userId,
+      })
+      .select("*")
+      .single();
+    if (adminInsertError) throw new Error(adminInsertError.message);
+    return createdByAdmin as Company;
   });
 
 /**
@@ -93,13 +108,35 @@ export const ensureDefaultCompany = createServerFn({ method: "POST" })
     const nick = email && email.includes("@") ? email.split("@")[0] : "meu-espaco";
     const name = `Espaço ${nick.charAt(0).toUpperCase()}${nick.slice(1)}`;
     const slug = `${slugify(nick)}-${Math.random().toString(36).slice(2, 6)}`;
-    const { error } = await supabase
+    const { data: createdByUser, error: userInsertError } = await supabase
       .from("companies")
       .insert({ name, slug, created_by: userId })
       .select("id")
       .single();
-    if (error) throw new Error(error.message);
-    return { created: true };
+    if (!userInsertError) return { created: true, companyId: createdByUser.id as string };
+
+    const { getSupabaseAdmin } = await import("@/core/lib/supabase/admin.server");
+    const admin = getSupabaseAdmin();
+    const { data: createdByAdmin, error: adminInsertError } = await admin
+      .from("companies")
+      .insert({ name, slug, created_by: userId })
+      .select("id")
+      .single();
+    if (adminInsertError) throw new Error(adminInsertError.message);
+
+    const { error: memberError } = await admin
+      .from("company_members")
+      .upsert(
+        {
+          company_id: createdByAdmin.id,
+          user_id: userId,
+          role: "owner",
+          active: true,
+        },
+        { onConflict: "company_id,user_id" },
+      );
+    if (memberError) throw new Error(memberError.message);
+    return { created: true, companyId: createdByAdmin.id as string };
   });
 
 /** Atualiza dados da empresa ativa. Requer admin/owner. */
