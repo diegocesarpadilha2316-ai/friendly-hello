@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/core/hooks";
-import { listMyCompanies } from "@/core/services/tenant.functions";
+import { ensureDefaultCompany, listMyCompanies } from "@/core/services/tenant.functions";
 import type { CompanyId, CompanyWithRole, TenantRole } from "@/core/types/tenant";
 import { can as canPermission, type Permission } from "@/core/types/rbac";
 
@@ -59,6 +59,25 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
   });
 
   const companies = React.useMemo(() => query.data ?? [], [query.data]);
+
+  // Auto-provisiona empresa "Espaço {nick}" no primeiro login — o cliente
+  // entra direto na plataforma sem passar por qualquer onboarding.
+  const provisionedRef = React.useRef(false);
+  React.useEffect(() => {
+    if (!user) {
+      provisionedRef.current = false;
+      return;
+    }
+    if (query.isLoading || query.isFetching) return;
+    if (companies.length > 0) return;
+    if (provisionedRef.current) return;
+    provisionedRef.current = true;
+    ensureDefaultCompany()
+      .then(() => query.refetch())
+      .catch(() => {
+        provisionedRef.current = false;
+      });
+  }, [user, query.isLoading, query.isFetching, companies.length, query]);
 
   // Resolve empresa ativa: preferência do storage → primeira disponível.
   const activeCompany = React.useMemo(() => {
