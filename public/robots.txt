@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /workspace
+Disallow: /_authenticated
+Disallow: /api/

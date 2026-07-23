@@ -9,10 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as PublicRouteImport } from './routes/_public'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
-import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.index'
+import { Route as PublicIndexRouteImport } from './routes/_public.index'
+import { Route as PublicTermosRouteImport } from './routes/_public.termos'
+import { Route as PublicStatusRouteImport } from './routes/_public.status'
+import { Route as PublicSobreRouteImport } from './routes/_public.sobre'
+import { Route as PublicRecursosRouteImport } from './routes/_public.recursos'
+import { Route as PublicProdutosRouteImport } from './routes/_public.produtos'
+import { Route as PublicPrivacidadeRouteImport } from './routes/_public.privacidade'
+import { Route as PublicPlanosRouteImport } from './routes/_public.planos'
+import { Route as PublicIntegracoesRouteImport } from './routes/_public.integracoes'
+import { Route as PublicFaqRouteImport } from './routes/_public.faq'
+import { Route as PublicDocsRouteImport } from './routes/_public.docs'
+import { Route as PublicContatoRouteImport } from './routes/_public.contato'
+import { Route as PublicBlogRouteImport } from './routes/_public.blog'
 import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated.workspace'
 import { Route as AuthenticatedStorageRouteImport } from './routes/_authenticated.storage'
 import { Route as AuthenticatedSitesRouteImport } from './routes/_authenticated.sites'
@@ -26,7 +40,6 @@ import { Route as AuthenticatedObservabilidadeRouteImport } from './routes/_auth
 import { Route as AuthenticatedNotificacoesRouteImport } from './routes/_authenticated.notificacoes'
 import { Route as AuthenticatedMarketplaceRouteImport } from './routes/_authenticated.marketplace'
 import { Route as AuthenticatedJobsRouteImport } from './routes/_authenticated.jobs'
-import { Route as AuthenticatedIntegracoesRouteImport } from './routes/_authenticated.integracoes'
 import { Route as AuthenticatedIaRouteImport } from './routes/_authenticated.ia'
 import { Route as AuthenticatedFinanceiroRouteImport } from './routes/_authenticated.financeiro'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated.crm'
@@ -37,6 +50,8 @@ import { Route as AuthenticatedApiGatewayRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated.workspace.index'
 import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated.configuracoes.index'
+import { Route as PublicProdutosPlannerRouteImport } from './routes/_public.produtos.planner'
+import { Route as PublicProdutosCriadorRouteImport } from './routes/_public.produtos.criador'
 import { Route as AuthenticatedWorkspacePerfilRouteImport } from './routes/_authenticated.workspace.perfil'
 import { Route as AuthenticatedWorkspaceNotificacoesRouteImport } from './routes/_authenticated.workspace.notificacoes'
 import { Route as AuthenticatedWorkspaceModulosRouteImport } from './routes/_authenticated.workspace.modulos'
@@ -57,6 +72,11 @@ import { Route as AuthenticatedConfiguracoesEmpresaRouteImport } from './routes/
 import { Route as ApiPublicV1PingRouteImport } from './routes/api/public/v1/ping'
 import { Route as ApiPublicV1OpenapiRouteImport } from './routes/api/public/v1/openapi'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -67,14 +87,78 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PublicRoute = PublicRouteImport.update({
+  id: '/_public',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AuthenticatedRoute,
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicTermosRoute = PublicTermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicStatusRoute = PublicStatusRouteImport.update({
+  id: '/status',
+  path: '/status',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicSobreRoute = PublicSobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicRecursosRoute = PublicRecursosRouteImport.update({
+  id: '/recursos',
+  path: '/recursos',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicProdutosRoute = PublicProdutosRouteImport.update({
+  id: '/produtos',
+  path: '/produtos',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicPrivacidadeRoute = PublicPrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicPlanosRoute = PublicPlanosRouteImport.update({
+  id: '/planos',
+  path: '/planos',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicIntegracoesRoute = PublicIntegracoesRouteImport.update({
+  id: '/integracoes',
+  path: '/integracoes',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicFaqRoute = PublicFaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicDocsRoute = PublicDocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicContatoRoute = PublicContatoRouteImport.update({
+  id: '/contato',
+  path: '/contato',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicBlogRoute = PublicBlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => PublicRoute,
 } as any)
 const AuthenticatedWorkspaceRoute = AuthenticatedWorkspaceRouteImport.update({
   id: '/workspace',
@@ -144,12 +228,6 @@ const AuthenticatedJobsRoute = AuthenticatedJobsRouteImport.update({
   path: '/jobs',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedIntegracoesRoute =
-  AuthenticatedIntegracoesRouteImport.update({
-    id: '/integracoes',
-    path: '/integracoes',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
 const AuthenticatedIaRoute = AuthenticatedIaRouteImport.update({
   id: '/ia',
   path: '/ia',
@@ -202,6 +280,16 @@ const AuthenticatedConfiguracoesIndexRoute =
     path: '/configuracoes/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const PublicProdutosPlannerRoute = PublicProdutosPlannerRouteImport.update({
+  id: '/planner',
+  path: '/planner',
+  getParentRoute: () => PublicProdutosRoute,
+} as any)
+const PublicProdutosCriadorRoute = PublicProdutosCriadorRouteImport.update({
+  id: '/criador',
+  path: '/criador',
+  getParentRoute: () => PublicProdutosRoute,
+} as any)
 const AuthenticatedWorkspacePerfilRoute =
   AuthenticatedWorkspacePerfilRouteImport.update({
     id: '/perfil',
@@ -316,9 +404,10 @@ const ApiPublicV1OpenapiRoute = ApiPublicV1OpenapiRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AuthenticatedIndexRoute
+  '/': typeof PublicIndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/automacao': typeof AuthenticatedAutomacaoRoute
@@ -327,7 +416,6 @@ export interface FileRoutesByFullPath {
   '/crm': typeof AuthenticatedCrmRoute
   '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/ia': typeof AuthenticatedIaRoute
-  '/integracoes': typeof AuthenticatedIntegracoesRoute
   '/jobs': typeof AuthenticatedJobsRoute
   '/marketplace': typeof AuthenticatedMarketplaceRoute
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
@@ -341,6 +429,18 @@ export interface FileRoutesByFullPath {
   '/sites': typeof AuthenticatedSitesRoute
   '/storage': typeof AuthenticatedStorageRoute
   '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
+  '/blog': typeof PublicBlogRoute
+  '/contato': typeof PublicContatoRoute
+  '/docs': typeof PublicDocsRoute
+  '/faq': typeof PublicFaqRoute
+  '/integracoes': typeof PublicIntegracoesRoute
+  '/planos': typeof PublicPlanosRoute
+  '/privacidade': typeof PublicPrivacidadeRoute
+  '/produtos': typeof PublicProdutosRouteWithChildren
+  '/recursos': typeof PublicRecursosRoute
+  '/sobre': typeof PublicSobreRoute
+  '/status': typeof PublicStatusRoute
+  '/termos': typeof PublicTermosRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
   '/workspace/ajuda': typeof AuthenticatedWorkspaceAjudaRoute
@@ -358,14 +458,18 @@ export interface FileRoutesByFullPath {
   '/workspace/modulos': typeof AuthenticatedWorkspaceModulosRoute
   '/workspace/notificacoes': typeof AuthenticatedWorkspaceNotificacoesRoute
   '/workspace/perfil': typeof AuthenticatedWorkspacePerfilRoute
+  '/produtos/criador': typeof PublicProdutosCriadorRoute
+  '/produtos/planner': typeof PublicProdutosPlannerRoute
   '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof PublicIndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/automacao': typeof AuthenticatedAutomacaoRoute
@@ -374,7 +478,6 @@ export interface FileRoutesByTo {
   '/crm': typeof AuthenticatedCrmRoute
   '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/ia': typeof AuthenticatedIaRoute
-  '/integracoes': typeof AuthenticatedIntegracoesRoute
   '/jobs': typeof AuthenticatedJobsRoute
   '/marketplace': typeof AuthenticatedMarketplaceRoute
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
@@ -387,7 +490,18 @@ export interface FileRoutesByTo {
   '/sistemas': typeof AuthenticatedSistemasRoute
   '/sites': typeof AuthenticatedSitesRoute
   '/storage': typeof AuthenticatedStorageRoute
-  '/': typeof AuthenticatedIndexRoute
+  '/blog': typeof PublicBlogRoute
+  '/contato': typeof PublicContatoRoute
+  '/docs': typeof PublicDocsRoute
+  '/faq': typeof PublicFaqRoute
+  '/integracoes': typeof PublicIntegracoesRoute
+  '/planos': typeof PublicPlanosRoute
+  '/privacidade': typeof PublicPrivacidadeRoute
+  '/produtos': typeof PublicProdutosRouteWithChildren
+  '/recursos': typeof PublicRecursosRoute
+  '/sobre': typeof PublicSobreRoute
+  '/status': typeof PublicStatusRoute
+  '/termos': typeof PublicTermosRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
   '/workspace/ajuda': typeof AuthenticatedWorkspaceAjudaRoute
@@ -405,6 +519,8 @@ export interface FileRoutesByTo {
   '/workspace/modulos': typeof AuthenticatedWorkspaceModulosRoute
   '/workspace/notificacoes': typeof AuthenticatedWorkspaceNotificacoesRoute
   '/workspace/perfil': typeof AuthenticatedWorkspacePerfilRoute
+  '/produtos/criador': typeof PublicProdutosCriadorRoute
+  '/produtos/planner': typeof PublicProdutosPlannerRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesIndexRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
@@ -413,8 +529,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/_public': typeof PublicRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/_authenticated/automacao': typeof AuthenticatedAutomacaoRoute
@@ -423,7 +541,6 @@ export interface FileRoutesById {
   '/_authenticated/crm': typeof AuthenticatedCrmRoute
   '/_authenticated/financeiro': typeof AuthenticatedFinanceiroRoute
   '/_authenticated/ia': typeof AuthenticatedIaRoute
-  '/_authenticated/integracoes': typeof AuthenticatedIntegracoesRoute
   '/_authenticated/jobs': typeof AuthenticatedJobsRoute
   '/_authenticated/marketplace': typeof AuthenticatedMarketplaceRoute
   '/_authenticated/notificacoes': typeof AuthenticatedNotificacoesRoute
@@ -437,7 +554,19 @@ export interface FileRoutesById {
   '/_authenticated/sites': typeof AuthenticatedSitesRoute
   '/_authenticated/storage': typeof AuthenticatedStorageRoute
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
-  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_public/blog': typeof PublicBlogRoute
+  '/_public/contato': typeof PublicContatoRoute
+  '/_public/docs': typeof PublicDocsRoute
+  '/_public/faq': typeof PublicFaqRoute
+  '/_public/integracoes': typeof PublicIntegracoesRoute
+  '/_public/planos': typeof PublicPlanosRoute
+  '/_public/privacidade': typeof PublicPrivacidadeRoute
+  '/_public/produtos': typeof PublicProdutosRouteWithChildren
+  '/_public/recursos': typeof PublicRecursosRoute
+  '/_public/sobre': typeof PublicSobreRoute
+  '/_public/status': typeof PublicStatusRoute
+  '/_public/termos': typeof PublicTermosRoute
+  '/_public/': typeof PublicIndexRoute
   '/_authenticated/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/_authenticated/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
   '/_authenticated/workspace/ajuda': typeof AuthenticatedWorkspaceAjudaRoute
@@ -455,6 +584,8 @@ export interface FileRoutesById {
   '/_authenticated/workspace/modulos': typeof AuthenticatedWorkspaceModulosRoute
   '/_authenticated/workspace/notificacoes': typeof AuthenticatedWorkspaceNotificacoesRoute
   '/_authenticated/workspace/perfil': typeof AuthenticatedWorkspacePerfilRoute
+  '/_public/produtos/criador': typeof PublicProdutosCriadorRoute
+  '/_public/produtos/planner': typeof PublicProdutosPlannerRoute
   '/_authenticated/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
@@ -466,6 +597,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/admin'
     | '/api-gateway'
     | '/automacao'
@@ -474,7 +606,6 @@ export interface FileRouteTypes {
     | '/crm'
     | '/financeiro'
     | '/ia'
-    | '/integracoes'
     | '/jobs'
     | '/marketplace'
     | '/notificacoes'
@@ -488,6 +619,18 @@ export interface FileRouteTypes {
     | '/sites'
     | '/storage'
     | '/workspace'
+    | '/blog'
+    | '/contato'
+    | '/docs'
+    | '/faq'
+    | '/integracoes'
+    | '/planos'
+    | '/privacidade'
+    | '/produtos'
+    | '/recursos'
+    | '/sobre'
+    | '/status'
+    | '/termos'
     | '/configuracoes/empresa'
     | '/onboarding/company'
     | '/workspace/ajuda'
@@ -505,14 +648,18 @@ export interface FileRouteTypes {
     | '/workspace/modulos'
     | '/workspace/notificacoes'
     | '/workspace/perfil'
+    | '/produtos/criador'
+    | '/produtos/planner'
     | '/configuracoes/'
     | '/workspace/'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/auth'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/admin'
     | '/api-gateway'
     | '/automacao'
@@ -521,7 +668,6 @@ export interface FileRouteTypes {
     | '/crm'
     | '/financeiro'
     | '/ia'
-    | '/integracoes'
     | '/jobs'
     | '/marketplace'
     | '/notificacoes'
@@ -534,7 +680,18 @@ export interface FileRouteTypes {
     | '/sistemas'
     | '/sites'
     | '/storage'
-    | '/'
+    | '/blog'
+    | '/contato'
+    | '/docs'
+    | '/faq'
+    | '/integracoes'
+    | '/planos'
+    | '/privacidade'
+    | '/produtos'
+    | '/recursos'
+    | '/sobre'
+    | '/status'
+    | '/termos'
     | '/configuracoes/empresa'
     | '/onboarding/company'
     | '/workspace/ajuda'
@@ -552,6 +709,8 @@ export interface FileRouteTypes {
     | '/workspace/modulos'
     | '/workspace/notificacoes'
     | '/workspace/perfil'
+    | '/produtos/criador'
+    | '/produtos/planner'
     | '/configuracoes'
     | '/workspace'
     | '/api/public/v1/openapi'
@@ -559,8 +718,10 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_authenticated'
+    | '/_public'
     | '/auth'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/_authenticated/admin'
     | '/_authenticated/api-gateway'
     | '/_authenticated/automacao'
@@ -569,7 +730,6 @@ export interface FileRouteTypes {
     | '/_authenticated/crm'
     | '/_authenticated/financeiro'
     | '/_authenticated/ia'
-    | '/_authenticated/integracoes'
     | '/_authenticated/jobs'
     | '/_authenticated/marketplace'
     | '/_authenticated/notificacoes'
@@ -583,7 +743,19 @@ export interface FileRouteTypes {
     | '/_authenticated/sites'
     | '/_authenticated/storage'
     | '/_authenticated/workspace'
-    | '/_authenticated/'
+    | '/_public/blog'
+    | '/_public/contato'
+    | '/_public/docs'
+    | '/_public/faq'
+    | '/_public/integracoes'
+    | '/_public/planos'
+    | '/_public/privacidade'
+    | '/_public/produtos'
+    | '/_public/recursos'
+    | '/_public/sobre'
+    | '/_public/status'
+    | '/_public/termos'
+    | '/_public/'
     | '/_authenticated/configuracoes/empresa'
     | '/_authenticated/onboarding/company'
     | '/_authenticated/workspace/ajuda'
@@ -601,6 +773,8 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/modulos'
     | '/_authenticated/workspace/notificacoes'
     | '/_authenticated/workspace/perfil'
+    | '/_public/produtos/criador'
+    | '/_public/produtos/planner'
     | '/_authenticated/configuracoes/'
     | '/_authenticated/workspace/'
     | '/api/public/v1/openapi'
@@ -609,14 +783,23 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  PublicRoute: typeof PublicRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiPublicV1OpenapiRoute: typeof ApiPublicV1OpenapiRoute
   ApiPublicV1PingRoute: typeof ApiPublicV1PingRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -631,6 +814,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_public': {
+      id: '/_public'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PublicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -638,12 +828,96 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/': {
-      id: '/_authenticated/'
+    '/_public/': {
+      id: '/_public/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedIndexRouteImport
-      parentRoute: typeof AuthenticatedRoute
+      preLoaderRoute: typeof PublicIndexRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/termos': {
+      id: '/_public/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof PublicTermosRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/status': {
+      id: '/_public/status'
+      path: '/status'
+      fullPath: '/status'
+      preLoaderRoute: typeof PublicStatusRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/sobre': {
+      id: '/_public/sobre'
+      path: '/sobre'
+      fullPath: '/sobre'
+      preLoaderRoute: typeof PublicSobreRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/recursos': {
+      id: '/_public/recursos'
+      path: '/recursos'
+      fullPath: '/recursos'
+      preLoaderRoute: typeof PublicRecursosRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/produtos': {
+      id: '/_public/produtos'
+      path: '/produtos'
+      fullPath: '/produtos'
+      preLoaderRoute: typeof PublicProdutosRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/privacidade': {
+      id: '/_public/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PublicPrivacidadeRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/planos': {
+      id: '/_public/planos'
+      path: '/planos'
+      fullPath: '/planos'
+      preLoaderRoute: typeof PublicPlanosRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/integracoes': {
+      id: '/_public/integracoes'
+      path: '/integracoes'
+      fullPath: '/integracoes'
+      preLoaderRoute: typeof PublicIntegracoesRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/faq': {
+      id: '/_public/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof PublicFaqRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/docs': {
+      id: '/_public/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof PublicDocsRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/contato': {
+      id: '/_public/contato'
+      path: '/contato'
+      fullPath: '/contato'
+      preLoaderRoute: typeof PublicContatoRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/blog': {
+      id: '/_public/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof PublicBlogRouteImport
+      parentRoute: typeof PublicRoute
     }
     '/_authenticated/workspace': {
       id: '/_authenticated/workspace'
@@ -736,13 +1010,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedJobsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/integracoes': {
-      id: '/_authenticated/integracoes'
-      path: '/integracoes'
-      fullPath: '/integracoes'
-      preLoaderRoute: typeof AuthenticatedIntegracoesRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/ia': {
       id: '/_authenticated/ia'
       path: '/ia'
@@ -812,6 +1079,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/configuracoes/'
       preLoaderRoute: typeof AuthenticatedConfiguracoesIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/_public/produtos/planner': {
+      id: '/_public/produtos/planner'
+      path: '/planner'
+      fullPath: '/produtos/planner'
+      preLoaderRoute: typeof PublicProdutosPlannerRouteImport
+      parentRoute: typeof PublicProdutosRoute
+    }
+    '/_public/produtos/criador': {
+      id: '/_public/produtos/criador'
+      path: '/criador'
+      fullPath: '/produtos/criador'
+      preLoaderRoute: typeof PublicProdutosCriadorRouteImport
+      parentRoute: typeof PublicProdutosRoute
     }
     '/_authenticated/workspace/perfil': {
       id: '/_authenticated/workspace/perfil'
@@ -1007,7 +1288,6 @@ interface AuthenticatedRouteChildren {
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRoute
   AuthenticatedFinanceiroRoute: typeof AuthenticatedFinanceiroRoute
   AuthenticatedIaRoute: typeof AuthenticatedIaRoute
-  AuthenticatedIntegracoesRoute: typeof AuthenticatedIntegracoesRoute
   AuthenticatedJobsRoute: typeof AuthenticatedJobsRoute
   AuthenticatedMarketplaceRoute: typeof AuthenticatedMarketplaceRoute
   AuthenticatedNotificacoesRoute: typeof AuthenticatedNotificacoesRoute
@@ -1021,7 +1301,6 @@ interface AuthenticatedRouteChildren {
   AuthenticatedSitesRoute: typeof AuthenticatedSitesRoute
   AuthenticatedStorageRoute: typeof AuthenticatedStorageRoute
   AuthenticatedWorkspaceRoute: typeof AuthenticatedWorkspaceRouteWithChildren
-  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedConfiguracoesEmpresaRoute: typeof AuthenticatedConfiguracoesEmpresaRoute
   AuthenticatedOnboardingCompanyRoute: typeof AuthenticatedOnboardingCompanyRoute
   AuthenticatedConfiguracoesIndexRoute: typeof AuthenticatedConfiguracoesIndexRoute
@@ -1036,7 +1315,6 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCrmRoute: AuthenticatedCrmRoute,
   AuthenticatedFinanceiroRoute: AuthenticatedFinanceiroRoute,
   AuthenticatedIaRoute: AuthenticatedIaRoute,
-  AuthenticatedIntegracoesRoute: AuthenticatedIntegracoesRoute,
   AuthenticatedJobsRoute: AuthenticatedJobsRoute,
   AuthenticatedMarketplaceRoute: AuthenticatedMarketplaceRoute,
   AuthenticatedNotificacoesRoute: AuthenticatedNotificacoesRoute,
@@ -1050,7 +1328,6 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedSitesRoute: AuthenticatedSitesRoute,
   AuthenticatedStorageRoute: AuthenticatedStorageRoute,
   AuthenticatedWorkspaceRoute: AuthenticatedWorkspaceRouteWithChildren,
-  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedConfiguracoesEmpresaRoute:
     AuthenticatedConfiguracoesEmpresaRoute,
   AuthenticatedOnboardingCompanyRoute: AuthenticatedOnboardingCompanyRoute,
@@ -1061,23 +1338,64 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface PublicProdutosRouteChildren {
+  PublicProdutosCriadorRoute: typeof PublicProdutosCriadorRoute
+  PublicProdutosPlannerRoute: typeof PublicProdutosPlannerRoute
+}
+
+const PublicProdutosRouteChildren: PublicProdutosRouteChildren = {
+  PublicProdutosCriadorRoute: PublicProdutosCriadorRoute,
+  PublicProdutosPlannerRoute: PublicProdutosPlannerRoute,
+}
+
+const PublicProdutosRouteWithChildren = PublicProdutosRoute._addFileChildren(
+  PublicProdutosRouteChildren,
+)
+
+interface PublicRouteChildren {
+  PublicBlogRoute: typeof PublicBlogRoute
+  PublicContatoRoute: typeof PublicContatoRoute
+  PublicDocsRoute: typeof PublicDocsRoute
+  PublicFaqRoute: typeof PublicFaqRoute
+  PublicIntegracoesRoute: typeof PublicIntegracoesRoute
+  PublicPlanosRoute: typeof PublicPlanosRoute
+  PublicPrivacidadeRoute: typeof PublicPrivacidadeRoute
+  PublicProdutosRoute: typeof PublicProdutosRouteWithChildren
+  PublicRecursosRoute: typeof PublicRecursosRoute
+  PublicSobreRoute: typeof PublicSobreRoute
+  PublicStatusRoute: typeof PublicStatusRoute
+  PublicTermosRoute: typeof PublicTermosRoute
+  PublicIndexRoute: typeof PublicIndexRoute
+}
+
+const PublicRouteChildren: PublicRouteChildren = {
+  PublicBlogRoute: PublicBlogRoute,
+  PublicContatoRoute: PublicContatoRoute,
+  PublicDocsRoute: PublicDocsRoute,
+  PublicFaqRoute: PublicFaqRoute,
+  PublicIntegracoesRoute: PublicIntegracoesRoute,
+  PublicPlanosRoute: PublicPlanosRoute,
+  PublicPrivacidadeRoute: PublicPrivacidadeRoute,
+  PublicProdutosRoute: PublicProdutosRouteWithChildren,
+  PublicRecursosRoute: PublicRecursosRoute,
+  PublicSobreRoute: PublicSobreRoute,
+  PublicStatusRoute: PublicStatusRoute,
+  PublicTermosRoute: PublicTermosRoute,
+  PublicIndexRoute: PublicIndexRoute,
+}
+
+const PublicRouteWithChildren =
+  PublicRoute._addFileChildren(PublicRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  PublicRoute: PublicRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiPublicV1OpenapiRoute: ApiPublicV1OpenapiRoute,
   ApiPublicV1PingRoute: ApiPublicV1PingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
