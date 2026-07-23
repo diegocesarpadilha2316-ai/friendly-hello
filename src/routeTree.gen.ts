@@ -39,6 +39,7 @@ import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated.configuracoes.index'
 import { Route as AuthenticatedWorkspacePerfilRouteImport } from './routes/_authenticated.workspace.perfil'
 import { Route as AuthenticatedWorkspaceNotificacoesRouteImport } from './routes/_authenticated.workspace.notificacoes'
+import { Route as AuthenticatedWorkspaceModulosRouteImport } from './routes/_authenticated.workspace.modulos'
 import { Route as AuthenticatedWorkspaceIntegracoesRouteImport } from './routes/_authenticated.workspace.integracoes'
 import { Route as AuthenticatedWorkspaceIaRouteImport } from './routes/_authenticated.workspace.ia'
 import { Route as AuthenticatedWorkspaceHistoricoRouteImport } from './routes/_authenticated.workspace.historico'
@@ -213,6 +214,12 @@ const AuthenticatedWorkspaceNotificacoesRoute =
     path: '/notificacoes',
     getParentRoute: () => AuthenticatedWorkspaceRoute,
   } as any)
+const AuthenticatedWorkspaceModulosRoute =
+  AuthenticatedWorkspaceModulosRouteImport.update({
+    id: '/modulos',
+    path: '/modulos',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
 const AuthenticatedWorkspaceIntegracoesRoute =
   AuthenticatedWorkspaceIntegracoesRouteImport.update({
     id: '/integracoes',
@@ -348,6 +355,7 @@ export interface FileRoutesByFullPath {
   '/workspace/historico': typeof AuthenticatedWorkspaceHistoricoRoute
   '/workspace/ia': typeof AuthenticatedWorkspaceIaRoute
   '/workspace/integracoes': typeof AuthenticatedWorkspaceIntegracoesRoute
+  '/workspace/modulos': typeof AuthenticatedWorkspaceModulosRoute
   '/workspace/notificacoes': typeof AuthenticatedWorkspaceNotificacoesRoute
   '/workspace/perfil': typeof AuthenticatedWorkspacePerfilRoute
   '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
@@ -394,6 +402,7 @@ export interface FileRoutesByTo {
   '/workspace/historico': typeof AuthenticatedWorkspaceHistoricoRoute
   '/workspace/ia': typeof AuthenticatedWorkspaceIaRoute
   '/workspace/integracoes': typeof AuthenticatedWorkspaceIntegracoesRoute
+  '/workspace/modulos': typeof AuthenticatedWorkspaceModulosRoute
   '/workspace/notificacoes': typeof AuthenticatedWorkspaceNotificacoesRoute
   '/workspace/perfil': typeof AuthenticatedWorkspacePerfilRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesIndexRoute
@@ -443,6 +452,7 @@ export interface FileRoutesById {
   '/_authenticated/workspace/historico': typeof AuthenticatedWorkspaceHistoricoRoute
   '/_authenticated/workspace/ia': typeof AuthenticatedWorkspaceIaRoute
   '/_authenticated/workspace/integracoes': typeof AuthenticatedWorkspaceIntegracoesRoute
+  '/_authenticated/workspace/modulos': typeof AuthenticatedWorkspaceModulosRoute
   '/_authenticated/workspace/notificacoes': typeof AuthenticatedWorkspaceNotificacoesRoute
   '/_authenticated/workspace/perfil': typeof AuthenticatedWorkspacePerfilRoute
   '/_authenticated/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
@@ -492,6 +502,7 @@ export interface FileRouteTypes {
     | '/workspace/historico'
     | '/workspace/ia'
     | '/workspace/integracoes'
+    | '/workspace/modulos'
     | '/workspace/notificacoes'
     | '/workspace/perfil'
     | '/configuracoes/'
@@ -538,6 +549,7 @@ export interface FileRouteTypes {
     | '/workspace/historico'
     | '/workspace/ia'
     | '/workspace/integracoes'
+    | '/workspace/modulos'
     | '/workspace/notificacoes'
     | '/workspace/perfil'
     | '/configuracoes'
@@ -586,6 +598,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/historico'
     | '/_authenticated/workspace/ia'
     | '/_authenticated/workspace/integracoes'
+    | '/_authenticated/workspace/modulos'
     | '/_authenticated/workspace/notificacoes'
     | '/_authenticated/workspace/perfil'
     | '/_authenticated/configuracoes/'
@@ -814,6 +827,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceNotificacoesRouteImport
       parentRoute: typeof AuthenticatedWorkspaceRoute
     }
+    '/_authenticated/workspace/modulos': {
+      id: '/_authenticated/workspace/modulos'
+      path: '/modulos'
+      fullPath: '/workspace/modulos'
+      preLoaderRoute: typeof AuthenticatedWorkspaceModulosRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
     '/_authenticated/workspace/integracoes': {
       id: '/_authenticated/workspace/integracoes'
       path: '/integracoes'
@@ -942,6 +962,7 @@ interface AuthenticatedWorkspaceRouteChildren {
   AuthenticatedWorkspaceHistoricoRoute: typeof AuthenticatedWorkspaceHistoricoRoute
   AuthenticatedWorkspaceIaRoute: typeof AuthenticatedWorkspaceIaRoute
   AuthenticatedWorkspaceIntegracoesRoute: typeof AuthenticatedWorkspaceIntegracoesRoute
+  AuthenticatedWorkspaceModulosRoute: typeof AuthenticatedWorkspaceModulosRoute
   AuthenticatedWorkspaceNotificacoesRoute: typeof AuthenticatedWorkspaceNotificacoesRoute
   AuthenticatedWorkspacePerfilRoute: typeof AuthenticatedWorkspacePerfilRoute
   AuthenticatedWorkspaceIndexRoute: typeof AuthenticatedWorkspaceIndexRoute
@@ -965,6 +986,7 @@ const AuthenticatedWorkspaceRouteChildren: AuthenticatedWorkspaceRouteChildren =
     AuthenticatedWorkspaceIaRoute: AuthenticatedWorkspaceIaRoute,
     AuthenticatedWorkspaceIntegracoesRoute:
       AuthenticatedWorkspaceIntegracoesRoute,
+    AuthenticatedWorkspaceModulosRoute: AuthenticatedWorkspaceModulosRoute,
     AuthenticatedWorkspaceNotificacoesRoute:
       AuthenticatedWorkspaceNotificacoesRoute,
     AuthenticatedWorkspacePerfilRoute: AuthenticatedWorkspacePerfilRoute,
