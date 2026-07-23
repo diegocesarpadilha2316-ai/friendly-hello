@@ -29,9 +29,7 @@ export const Route = createFileRoute("/_authenticated/workspace/notificacoes")({
 
 const STATUS_TONE: Record<NotificationStatus, "success" | "warning" | "danger" | "info" | "neutral"> = {
   pending: "warning",
-  queued: "info",
-  sent: "info",
-  delivered: "success",
+  sent: "success",
   failed: "danger",
   read: "neutral",
   archived: "neutral",
@@ -69,9 +67,9 @@ function WorkspaceNotifs() {
 
       <div className="mt-6 grid gap-3 md:grid-cols-4">
         <MetricCard label="Total" value={metrics.data?.total ?? list.length} icon={<Bell className="h-4 w-4" />} />
-        <MetricCard label="Não lidas" value={metrics.data?.unread ?? unread} tone={unread > 0 ? "warning" : "default"} />
+        <MetricCard label="Não lidas" value={metrics.data?.unread ?? unread} />
         <MetricCard label="Entregas pendentes" value={metrics.data?.deliveriesPending ?? 0} />
-        <MetricCard label="Entregas falhas" value={metrics.data?.deliveriesFailed ?? 0} tone={(metrics.data?.deliveriesFailed ?? 0) > 0 ? "danger" : "default"} />
+        <MetricCard label="Entregas falhas" value={metrics.data?.deliveriesFailed ?? 0} />
       </div>
 
       <Tabs defaultValue="inbox" className="mt-6">
@@ -85,7 +83,7 @@ function WorkspaceNotifs() {
         </TabsList>
 
         <TabsContent value="inbox" className="mt-6">
-          <div className="mb-3 max-w-md"><SearchInput value={query} onChange={setQuery} placeholder="Buscar por título, corpo ou categoria…" /></div>
+          <div className="mb-3 max-w-md"><SearchInput value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar por título, corpo ou categoria…" /></div>
           {notifications.isLoading ? (
             <Skeleton className="h-40 w-full" />
           ) : filtered.length === 0 ? (
