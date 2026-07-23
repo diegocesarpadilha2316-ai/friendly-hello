@@ -596,7 +596,7 @@ function WorkspaceDashboard() {
             >
               {events.isLoading ? (
                 <p className="text-sm text-muted-foreground">Carregando…</p>
-              ) : (events.data ?? []).length === 0 ? (
+              ) : eventsList.length === 0 ? (
                 <EmptyState
                   icon={<ListTodo className="h-6 w-6" />}
                   title="Sem eventos"
@@ -604,7 +604,7 @@ function WorkspaceDashboard() {
                 />
               ) : (
                 <ul className="divide-y divide-border/60">
-                  {(events.data ?? []).slice(0, 6).map((e) => (
+                  {eventsList.slice(0, 6).map((e) => (
                     <li
                       key={e.id}
                       className="flex items-center justify-between py-2 text-sm"
