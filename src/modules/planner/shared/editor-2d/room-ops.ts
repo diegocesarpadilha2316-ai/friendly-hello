@@ -18,6 +18,7 @@ export function makePrimitiveId(kind: Editor2DPrimitive["kind"]): string {
     kind === "opening" ? "op" :
     kind === "floor" ? "fl" :
     kind === "ceiling" ? "cl" :
+    kind === "furniture" ? "fn" :
     "gd";
   return newId(p);
 }
