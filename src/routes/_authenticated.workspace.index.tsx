@@ -207,7 +207,7 @@ function WorkspaceDashboard() {
                   {company.status}
                 </StatusBadge>
               ) : null}
-              <StatusBadge tone="default">
+              <StatusBadge tone="info" dot={false}>
                 {subscribed.size} módulo{subscribed.size === 1 ? "" : "s"} assinado{subscribed.size === 1 ? "" : "s"}
               </StatusBadge>
             </div>
