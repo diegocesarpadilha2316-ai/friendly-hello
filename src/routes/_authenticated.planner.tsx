@@ -1,42 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CalendarRange } from "lucide-react";
-import {
-  PageContainer,
-  PageHeader,
-  EmptyState,
-  StatusBadge,
-} from "@/core/components/ui-kit";
+import { PlannerEditorProvider, PlannerLayout } from "@/modules/planner/shared";
 
 export const Route = createFileRoute("/_authenticated/planner")({
   head: () => ({
     meta: [
-      { title: "Planner — Dioris Hub" },
-      { name: "description", content: "Planejamento, tarefas e cronogramas colaborativos da Dioris Hub." },
-      { property: "og:title", content: "Planner — Dioris Hub" },
-      { property: "og:description", content: "Planejamento, tarefas e cronogramas colaborativos." },
+      { title: "Dioris Planner — Projeto 3D + IA + Produção" },
+      { name: "description", content: "Editor paramétrico, ambientes, cômodos, IA e produção — o núcleo do Dioris Planner." },
+      { property: "og:title", content: "Dioris Planner" },
+      { property: "og:description", content: "Editor paramétrico com IA, ambientes e produção conectados." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex" },
     ],
   }),
-  component: PlannerPage,
+  component: PlannerShell,
 });
 
-function PlannerPage() {
+function PlannerShell() {
   return (
-    <PageContainer>
-      <PageHeader
-        eyebrow="Módulo"
-        title="Planner"
-        description="Planejamento, tarefas e cronogramas colaborativos."
-        actions={<StatusBadge tone="neutral">planejado</StatusBadge>}
-      />
-      <div className="mt-8">
-        <EmptyState
-          icon={<CalendarRange className="h-6 w-6" />}
-          title="Módulo Planner em preparação"
-          description="A funcionalidade será implementada na próxima fase. Esta é apenas a estrutura de rota."
-        />
-      </div>
-    </PageContainer>
+    <PlannerEditorProvider>
+      <PlannerLayout />
+    </PlannerEditorProvider>
   );
 }

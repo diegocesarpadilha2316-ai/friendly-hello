@@ -1,0 +1,269 @@
+/**
+ * Editor Store do Planner (Fase 3.1).
+ *
+ * Estado local e efêmero do editor: projeto ativo, seleção, histórico
+ * de undo/redo, autosave. NÃO é um provider paralelo ao Core — o Core
+ * cuida de Auth, Tenant, RBAC, Cache, Billing, IA, Storage, Eventos e
+ * Jobs. Aqui vive apenas o estado de edição in-memory específico do
+ * Planner (equivalente a um "scene state" de editor).
+ *
+ * Regras:
+ *  - Consumido via `usePlannerEditor()` dentro de rotas do Planner.
+ *  - Persistência via `localStorage` até a migration SQL da Fase 3.2.
+ *  - Undo/Redo em pilhas limitadas (50 estados).
+ */
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  type ReactNode,
+} from "react";
+import { useTenant } from "@/core/providers/TenantProvider";
+import type {
+  PlannerProject,
+  PlannerProjectVersion,
+} from "../types/project";
+import {
+  appendVersion,
+  loadProject,
+  loadVersions,
+  upsertProject,
+} from "../persistence/local-store";
+
+const HISTORY_LIMIT = 50;
+
+interface EditorState {
+  project: PlannerProject | null;
+  past: readonly PlannerProject[];
+  future: readonly PlannerProject[];
+  selectedEnvironmentId: string | null;
+  selectedRoomId: string | null;
+  dirty: boolean;
+  lastSavedAt: string | null;
+}
+
+type EditorAction =
+  | { type: "load"; project: PlannerProject | null }
+  | { type: "update"; project: PlannerProject }
+  | { type: "select"; environmentId?: string | null; roomId?: string | null }
+  | { type: "undo" }
+  | { type: "redo" }
+  | { type: "saved"; at: string };
+
+function bump(project: PlannerProject): PlannerProject {
+  return {
+    ...project,
+    updatedAt: new Date().toISOString(),
+    version: project.version + 1,
+  };
+}
+
+function reducer(state: EditorState, action: EditorAction): EditorState {
+  switch (action.type) {
+    case "load":
+      return {
+        project: action.project,
+        past: [],
+        future: [],
+        selectedEnvironmentId: action.project?.environments[0]?.id ?? null,
+        selectedRoomId: action.project?.environments[0]?.rooms[0]?.id ?? null,
+        dirty: false,
+        lastSavedAt: action.project?.updatedAt ?? null,
+      };
+    case "update": {
+      if (!state.project) return state;
+      const next = bump(action.project);
+      const past = [...state.past, state.project].slice(-HISTORY_LIMIT);
+      return { ...state, project: next, past, future: [], dirty: true };
+    }
+    case "select":
+      return {
+        ...state,
+        selectedEnvironmentId:
+          action.environmentId !== undefined ? action.environmentId : state.selectedEnvironmentId,
+        selectedRoomId:
+          action.roomId !== undefined ? action.roomId : state.selectedRoomId,
+      };
+    case "undo": {
+      if (!state.project || state.past.length === 0) return state;
+      const previous = state.past[state.past.length - 1];
+      return {
+        ...state,
+        project: previous,
+        past: state.past.slice(0, -1),
+        future: [state.project, ...state.future].slice(0, HISTORY_LIMIT),
+        dirty: true,
+      };
+    }
+    case "redo": {
+      if (!state.project || state.future.length === 0) return state;
+      const next = state.future[0];
+      return {
+        ...state,
+        project: next,
+        past: [...state.past, state.project].slice(-HISTORY_LIMIT),
+        future: state.future.slice(1),
+        dirty: true,
+      };
+    }
+    case "saved":
+      return { ...state, dirty: false, lastSavedAt: action.at };
+    default:
+      return state;
+  }
+}
+
+interface EditorContextValue {
+  state: EditorState;
+  loadProjectById: (projectId: string) => void;
+  updateProject: (updater: (p: PlannerProject) => PlannerProject) => void;
+  select: (patch: { environmentId?: string | null; roomId?: string | null }) => void;
+  undo: () => void;
+  redo: () => void;
+  saveNow: () => void;
+  snapshotVersion: (label: string) => void;
+  versions: readonly PlannerProjectVersion[];
+  canUndo: boolean;
+  canRedo: boolean;
+}
+
+const EditorContext = createContext<EditorContextValue | null>(null);
+
+const initialState: EditorState = {
+  project: null,
+  past: [],
+  future: [],
+  selectedEnvironmentId: null,
+  selectedRoomId: null,
+  dirty: false,
+  lastSavedAt: null,
+};
+
+export function PlannerEditorProvider({ children }: { children: ReactNode }) {
+  const { activeCompany } = useTenant();
+  const tenantId = activeCompany?.id ?? "anonymous";
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const persist = useCallback(
+    (project: PlannerProject) => {
+      upsertProject(tenantId, project);
+      dispatch({ type: "saved", at: new Date().toISOString() });
+    },
+    [tenantId],
+  );
+
+  // Autosave — debounced 800ms após qualquer mudança "dirty".
+  useEffect(() => {
+    if (!state.dirty || !state.project) return;
+    if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+    const project = state.project;
+    autosaveTimer.current = setTimeout(() => persist(project), 800);
+    return () => {
+      if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+    };
+  }, [state.dirty, state.project, persist]);
+
+  const loadProjectById = useCallback(
+    (projectId: string) => {
+      const p = loadProject(tenantId, projectId);
+      dispatch({ type: "load", project: p });
+    },
+    [tenantId],
+  );
+
+  const updateProject = useCallback(
+    (updater: (p: PlannerProject) => PlannerProject) => {
+      if (!state.project) return;
+      dispatch({ type: "update", project: updater(state.project) });
+    },
+    [state.project],
+  );
+
+  const select = useCallback(
+    (patch: { environmentId?: string | null; roomId?: string | null }) => {
+      dispatch({ type: "select", ...patch });
+    },
+    [],
+  );
+
+  const undo = useCallback(() => dispatch({ type: "undo" }), []);
+  const redo = useCallback(() => dispatch({ type: "redo" }), []);
+
+  const saveNow = useCallback(() => {
+    if (state.project) persist(state.project);
+  }, [state.project, persist]);
+
+  const snapshotVersion = useCallback(
+    (label: string) => {
+      if (!state.project) return;
+      const version: PlannerProjectVersion = {
+        id: `${state.project.id}-v${state.project.version}-${Date.now()}`,
+        projectId: state.project.id,
+        version: state.project.version,
+        label,
+        createdAt: new Date().toISOString(),
+        snapshot: state.project,
+      };
+      appendVersion(tenantId, version);
+      persist(state.project);
+    },
+    [state.project, tenantId, persist],
+  );
+
+  const versions = useMemo<readonly PlannerProjectVersion[]>(() => {
+    if (!state.project) return [];
+    return loadVersions(tenantId, state.project.id);
+  }, [tenantId, state.project?.id, state.lastSavedAt]);
+
+  // Atalhos de teclado — Ctrl/Cmd+Z / Shift+Z / Ctrl+S.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handler = (e: KeyboardEvent) => {
+      const mod = e.ctrlKey || e.metaKey;
+      if (!mod) return;
+      const key = e.key.toLowerCase();
+      if (key === "z" && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      } else if ((key === "z" && e.shiftKey) || key === "y") {
+        e.preventDefault();
+        redo();
+      } else if (key === "s") {
+        e.preventDefault();
+        saveNow();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [undo, redo, saveNow]);
+
+  const value = useMemo<EditorContextValue>(
+    () => ({
+      state,
+      loadProjectById,
+      updateProject,
+      select,
+      undo,
+      redo,
+      saveNow,
+      snapshotVersion,
+      versions,
+      canUndo: state.past.length > 0,
+      canRedo: state.future.length > 0,
+    }),
+    [state, loadProjectById, updateProject, select, undo, redo, saveNow, snapshotVersion, versions],
+  );
+
+  return <EditorContext.Provider value={value}>{children}</EditorContext.Provider>;
+}
+
+export function usePlannerEditor(): EditorContextValue {
+  const ctx = useContext(EditorContext);
+  if (!ctx) throw new Error("usePlannerEditor deve ser usado dentro de <PlannerEditorProvider>.");
+  return ctx;
+}

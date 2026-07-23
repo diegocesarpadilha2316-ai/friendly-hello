@@ -3,3 +3,8 @@ export * from "./contracts";
 export * from "./registry";
 export * from "./events";
 export * from "./extensions";
+export * from "./state/editor-context";
+export * from "./parametric/engine";
+export * from "./components";
+export * from "./factories/project";
+export * from "./persistence/local-store";

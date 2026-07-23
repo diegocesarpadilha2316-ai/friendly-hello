@@ -17,3 +17,5 @@ export type PlannerDomain =
   | "ia" | "render" | "catalog" | "production" | "cnc"
   | "executive" | "budget" | "library" | "rooms"
   | "materials" | "hardware" | "marketplace" | "api";
+
+export * from "./project";
