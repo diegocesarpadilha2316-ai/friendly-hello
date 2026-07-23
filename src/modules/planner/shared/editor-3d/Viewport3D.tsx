@@ -128,6 +128,11 @@ export function Viewport3D() {
         label: `${o.role === "door" ? "Porta" : "Janela"} ${o.id.slice(-4)}`,
         kind: o.role,
       })),
+      ...model.furniture.map((f) => ({
+        id: f.id,
+        label: `${f.subtype} ${f.id.slice(-4)}`,
+        kind: f.subtype,
+      })),
     ];
   }, [model]);
 
@@ -244,7 +249,7 @@ export function Viewport3D() {
           </span>
           <span>
             {model.walls.length} paredes · {model.floors.length + model.ceilings.length} lajes ·{" "}
-            {model.openings.length} aberturas
+            {model.openings.length} aberturas · {model.furniture.length} móveis
           </span>
           <span className="inline-flex items-center gap-1">
             <Pointer className="h-3 w-3" /> {selected ? selected.label : "Nenhuma seleção"}
