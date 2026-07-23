@@ -170,20 +170,34 @@ ALTER TABLE public.distributed_locks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.dead_letter_queue ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.retry_queue ENABLE ROW LEVEL SECURITY;
 
-DO $$
-DECLARE t TEXT;
-BEGIN
-  FOREACH t IN ARRAY ARRAY[
+DO $jobs_workers_policies$
+DECLARE
+  t TEXT;
+  policy_name TEXT;
+  tables TEXT[] := ARRAY[
     'jobs','job_queue','job_logs','job_history','job_metrics','cron_jobs',
     'job_schedule','worker_nodes','distributed_locks','dead_letter_queue','retry_queue'
-  ]
+  ];
+BEGIN
+  FOREACH t IN ARRAY tables
   LOOP
-    EXECUTE format($p$
-      CREATE POLICY %I ON public.%I FOR ALL TO authenticated
-      USING (EXISTS (SELECT 1 FROM public.company_members m
-        WHERE m.company_id = %I.company_id AND m.user_id = auth.uid() AND m.active = true))
-      WITH CHECK (EXISTS (SELECT 1 FROM public.company_members m
-        WHERE m.company_id = %I.company_id AND m.user_id = auth.uid() AND m.active = true));
-    $p$, t || '_tenant', t, t, t);
+    policy_name := t || '_tenant';
+
+    IF to_regclass('public.' || t) IS NOT NULL
+      AND NOT EXISTS (
+        SELECT 1
+        FROM pg_policies
+        WHERE schemaname = 'public'
+          AND tablename = t
+          AND policyname = policy_name
+      )
+    THEN
+      EXECUTE 'CREATE POLICY ' || quote_ident(policy_name) ||
+        ' ON public.' || quote_ident(t) ||
+        ' FOR ALL TO authenticated' ||
+        ' USING (EXISTS (SELECT 1 FROM public.company_members m WHERE m.company_id = ' || quote_ident(t) || '.company_id AND m.user_id = auth.uid() AND m.active = true))' ||
+        ' WITH CHECK (EXISTS (SELECT 1 FROM public.company_members m WHERE m.company_id = ' || quote_ident(t) || '.company_id AND m.user_id = auth.uid() AND m.active = true))';
+    END IF;
   END LOOP;
-END $$;
+END
+$jobs_workers_policies$;
