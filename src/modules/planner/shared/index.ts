@@ -10,3 +10,4 @@ export * from "./factories/project";
 export * from "./persistence/local-store";
 export * from "./editor-2d";
 export * from "./editor-3d";
+export * from "./library";
