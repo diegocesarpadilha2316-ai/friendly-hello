@@ -94,24 +94,27 @@ function WorkspaceDashboard() {
   const integrationsHealth = useIntegrationsHealth();
 
   const company = tenant?.activeCompany;
-  const notifList = notifs.data ?? [];
+  const notifList = Array.isArray(notifs.data) ? notifs.data : [];
   const unread = notifList.filter((n) => !n.readAt).length;
   const jobsData = jobs.data;
-  const activeJobs =
-    jobsData?.jobs?.filter((j) =>
-      ["pending", "queued", "running", "retrying"].includes(String(j.status)),
-    ).length ?? 0;
-  const eventsTotal = eventMetrics.data?.total ?? events.data?.length ?? 0;
+  const jobsList = Array.isArray(jobsData?.jobs) ? jobsData!.jobs : [];
+  const activeJobs = jobsList.filter((j) =>
+    ["pending", "queued", "running", "retrying"].includes(String(j.status)),
+  ).length;
+  const eventsList = Array.isArray(events.data) ? events.data : [];
+  const eventsTotal = eventMetrics.data?.total ?? eventsList.length;
   const eventsFailed = eventMetrics.data?.failed ?? 0;
   const openErrors = observability.data?.summary.errorsOpen ?? 0;
   const errorRate = observability.data?.errorRatePct ?? 0;
-  const healthList = health.data ?? [];
+  const healthList = Array.isArray(health.data) ? health.data : [];
   const healthy = healthList.filter((h) => h.status === "healthy").length;
   const degraded = healthList.filter(
     (h) => h.status === "degraded" || h.status === "down",
   ).length;
   const teamCount = tenant?.companies.length ?? 0;
-  const integrationsCount = integrationsHealth.data?.length ?? 0;
+  const integrationsCount = Array.isArray(integrationsHealth.data)
+    ? integrationsHealth.data.length
+    : 0;
 
   const aiChart: ChartSeries[] = [
     {
