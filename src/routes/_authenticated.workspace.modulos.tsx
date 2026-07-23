@@ -547,15 +547,22 @@ function EventsPanel() {
 // -----------------------------------------------------------------------------
 function HealthPanel({ enriched }: { enriched: EnrichedModule[] }) {
   const health = useHealth();
+  const rows = health.data ?? [];
+  const healthyN = rows.filter((h) => h.status === "healthy").length;
+  const overall = rows.some((h) => h.status === "down")
+    ? "DOWN"
+    : rows.some((h) => h.status === "degraded")
+      ? "DEGRADED"
+      : "HEALTHY";
+  const uptime = rows.length ? (healthyN / rows.length) * 100 : 100;
   const activeCount = enriched.filter((m) => m.extStatus === "ativo").length;
-  const uptime = health.data?.uptime ?? 99.9;
   return (
     <div className="space-y-4">
       <div className="grid gap-3 md:grid-cols-4">
         <MetricCard label="Módulos monitorados" value={activeCount} />
         <MetricCard label="Uptime" value={`${uptime.toFixed(2)}%`} />
-        <MetricCard label="Incidentes 24h" value={health.data?.incidents24h ?? 0} />
-        <MetricCard label="Status geral" value={(health.data?.status ?? "healthy").toUpperCase()} />
+        <MetricCard label="Componentes" value={rows.length} />
+        <MetricCard label="Status geral" value={overall} />
       </div>
       <FormSection title="Saúde por módulo">
         <ul className="divide-y divide-border rounded-lg border border-border">
