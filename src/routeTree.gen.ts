@@ -16,6 +16,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as PublicIndexRouteImport } from './routes/_public.index'
 import { Route as PublicSobreRouteImport } from './routes/_public.sobre'
 import { Route as PublicProdutosRouteImport } from './routes/_public.produtos'
+import { Route as PublicPlanosRouteImport } from './routes/_public.planos'
 import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated.workspace'
 import { Route as AuthenticatedStorageRouteImport } from './routes/_authenticated.storage'
 import { Route as AuthenticatedSitesRouteImport } from './routes/_authenticated.sites'
@@ -93,6 +94,11 @@ const PublicSobreRoute = PublicSobreRouteImport.update({
 const PublicProdutosRoute = PublicProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicPlanosRoute = PublicPlanosRouteImport.update({
+  id: '/planos',
+  path: '/planos',
   getParentRoute: () => PublicRoute,
 } as any)
 const AuthenticatedWorkspaceRoute = AuthenticatedWorkspaceRouteImport.update({
@@ -370,6 +376,7 @@ export interface FileRoutesByFullPath {
   '/sites': typeof AuthenticatedSitesRoute
   '/storage': typeof AuthenticatedStorageRoute
   '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
+  '/planos': typeof PublicPlanosRoute
   '/produtos': typeof PublicProdutosRouteWithChildren
   '/sobre': typeof PublicSobreRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
@@ -421,6 +428,7 @@ export interface FileRoutesByTo {
   '/sistemas': typeof AuthenticatedSistemasRoute
   '/sites': typeof AuthenticatedSitesRoute
   '/storage': typeof AuthenticatedStorageRoute
+  '/planos': typeof PublicPlanosRoute
   '/produtos': typeof PublicProdutosRouteWithChildren
   '/sobre': typeof PublicSobreRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
@@ -475,6 +483,7 @@ export interface FileRoutesById {
   '/_authenticated/sites': typeof AuthenticatedSitesRoute
   '/_authenticated/storage': typeof AuthenticatedStorageRoute
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
+  '/_public/planos': typeof PublicPlanosRoute
   '/_public/produtos': typeof PublicProdutosRouteWithChildren
   '/_public/sobre': typeof PublicSobreRoute
   '/_public/': typeof PublicIndexRoute
@@ -530,6 +539,7 @@ export interface FileRouteTypes {
     | '/sites'
     | '/storage'
     | '/workspace'
+    | '/planos'
     | '/produtos'
     | '/sobre'
     | '/configuracoes/empresa'
@@ -581,6 +591,7 @@ export interface FileRouteTypes {
     | '/sistemas'
     | '/sites'
     | '/storage'
+    | '/planos'
     | '/produtos'
     | '/sobre'
     | '/configuracoes/empresa'
@@ -634,6 +645,7 @@ export interface FileRouteTypes {
     | '/_authenticated/sites'
     | '/_authenticated/storage'
     | '/_authenticated/workspace'
+    | '/_public/planos'
     | '/_public/produtos'
     | '/_public/sobre'
     | '/_public/'
@@ -720,6 +732,13 @@ declare module '@tanstack/react-router' {
       path: '/produtos'
       fullPath: '/produtos'
       preLoaderRoute: typeof PublicProdutosRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/planos': {
+      id: '/_public/planos'
+      path: '/planos'
+      fullPath: '/planos'
+      preLoaderRoute: typeof PublicPlanosRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_authenticated/workspace': {
@@ -1165,12 +1184,14 @@ const PublicProdutosRouteWithChildren = PublicProdutosRoute._addFileChildren(
 )
 
 interface PublicRouteChildren {
+  PublicPlanosRoute: typeof PublicPlanosRoute
   PublicProdutosRoute: typeof PublicProdutosRouteWithChildren
   PublicSobreRoute: typeof PublicSobreRoute
   PublicIndexRoute: typeof PublicIndexRoute
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
+  PublicPlanosRoute: PublicPlanosRoute,
   PublicProdutosRoute: PublicProdutosRouteWithChildren,
   PublicSobreRoute: PublicSobreRoute,
   PublicIndexRoute: PublicIndexRoute,
