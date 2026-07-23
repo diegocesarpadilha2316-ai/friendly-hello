@@ -72,7 +72,6 @@ import { Route as AuthenticatedPlannerProjetosRouteImport } from './routes/_auth
 import { Route as AuthenticatedPlannerIaRouteImport } from './routes/_authenticated.planner.ia'
 import { Route as AuthenticatedPlannerEngenhariaRouteImport } from './routes/_authenticated.planner.engenharia'
 import { Route as AuthenticatedPlannerBibliotecaRouteImport } from './routes/_authenticated.planner.biblioteca'
-import { Route as AuthenticatedOnboardingCompanyRouteImport } from './routes/_authenticated.onboarding.company'
 import { Route as AuthenticatedConfiguracoesEmpresaRouteImport } from './routes/_authenticated.configuracoes.empresa'
 import { Route as ApiPublicV1PingRouteImport } from './routes/api/public/v1/ping'
 import { Route as ApiPublicV1OpenapiRouteImport } from './routes/api/public/v1/openapi'
@@ -415,12 +414,6 @@ const AuthenticatedPlannerBibliotecaRoute =
     path: '/biblioteca',
     getParentRoute: () => AuthenticatedPlannerRoute,
   } as any)
-const AuthenticatedOnboardingCompanyRoute =
-  AuthenticatedOnboardingCompanyRouteImport.update({
-    id: '/onboarding/company',
-    path: '/onboarding/company',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
 const AuthenticatedConfiguracoesEmpresaRoute =
   AuthenticatedConfiguracoesEmpresaRouteImport.update({
     id: '/configuracoes/empresa',
@@ -483,7 +476,6 @@ export interface FileRoutesByFullPath {
   '/status': typeof PublicStatusRoute
   '/termos': typeof PublicTermosRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
-  '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
   '/planner/biblioteca': typeof AuthenticatedPlannerBibliotecaRoute
   '/planner/engenharia': typeof AuthenticatedPlannerEngenhariaRoute
   '/planner/ia': typeof AuthenticatedPlannerIaRoute
@@ -549,7 +541,6 @@ export interface FileRoutesByTo {
   '/status': typeof PublicStatusRoute
   '/termos': typeof PublicTermosRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
-  '/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
   '/planner/biblioteca': typeof AuthenticatedPlannerBibliotecaRoute
   '/planner/engenharia': typeof AuthenticatedPlannerEngenhariaRoute
   '/planner/ia': typeof AuthenticatedPlannerIaRoute
@@ -620,7 +611,6 @@ export interface FileRoutesById {
   '/_public/termos': typeof PublicTermosRoute
   '/_public/': typeof PublicIndexRoute
   '/_authenticated/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
-  '/_authenticated/onboarding/company': typeof AuthenticatedOnboardingCompanyRoute
   '/_authenticated/planner/biblioteca': typeof AuthenticatedPlannerBibliotecaRoute
   '/_authenticated/planner/engenharia': typeof AuthenticatedPlannerEngenhariaRoute
   '/_authenticated/planner/ia': typeof AuthenticatedPlannerIaRoute
@@ -690,7 +680,6 @@ export interface FileRouteTypes {
     | '/status'
     | '/termos'
     | '/configuracoes/empresa'
-    | '/onboarding/company'
     | '/planner/biblioteca'
     | '/planner/engenharia'
     | '/planner/ia'
@@ -756,7 +745,6 @@ export interface FileRouteTypes {
     | '/status'
     | '/termos'
     | '/configuracoes/empresa'
-    | '/onboarding/company'
     | '/planner/biblioteca'
     | '/planner/engenharia'
     | '/planner/ia'
@@ -826,7 +814,6 @@ export interface FileRouteTypes {
     | '/_public/termos'
     | '/_public/'
     | '/_authenticated/configuracoes/empresa'
-    | '/_authenticated/onboarding/company'
     | '/_authenticated/planner/biblioteca'
     | '/_authenticated/planner/engenharia'
     | '/_authenticated/planner/ia'
@@ -1309,13 +1296,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlannerBibliotecaRouteImport
       parentRoute: typeof AuthenticatedPlannerRoute
     }
-    '/_authenticated/onboarding/company': {
-      id: '/_authenticated/onboarding/company'
-      path: '/onboarding/company'
-      fullPath: '/onboarding/company'
-      preLoaderRoute: typeof AuthenticatedOnboardingCompanyRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/configuracoes/empresa': {
       id: '/_authenticated/configuracoes/empresa'
       path: '/configuracoes/empresa'
@@ -1454,7 +1434,6 @@ interface AuthenticatedRouteChildren {
   AuthenticatedStorageRoute: typeof AuthenticatedStorageRoute
   AuthenticatedWorkspaceRoute: typeof AuthenticatedWorkspaceRouteWithChildren
   AuthenticatedConfiguracoesEmpresaRoute: typeof AuthenticatedConfiguracoesEmpresaRoute
-  AuthenticatedOnboardingCompanyRoute: typeof AuthenticatedOnboardingCompanyRoute
   AuthenticatedConfiguracoesIndexRoute: typeof AuthenticatedConfiguracoesIndexRoute
 }
 
@@ -1482,7 +1461,6 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedWorkspaceRoute: AuthenticatedWorkspaceRouteWithChildren,
   AuthenticatedConfiguracoesEmpresaRoute:
     AuthenticatedConfiguracoesEmpresaRoute,
-  AuthenticatedOnboardingCompanyRoute: AuthenticatedOnboardingCompanyRoute,
   AuthenticatedConfiguracoesIndexRoute: AuthenticatedConfiguracoesIndexRoute,
 }
 
