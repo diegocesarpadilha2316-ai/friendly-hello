@@ -167,3 +167,29 @@ export const consumeCredits = createServerFn({ method: "POST" })
     const { data: balance } = await supabase.rpc("credit_balance", { _company_id: tenantId });
     return { ok: true, balance: typeof balance === "number" ? balance : 0 };
   });
+
+/** Lista movimentos do ledger da empresa ativa (ordenados desc por data). */
+export const listCreditLedger = createServerFn({ method: "GET" })
+  .middleware([requireTenant])
+  .handler(async ({ context }) => {
+    const { supabase, tenantId } = context;
+    const { data, error } = await supabase
+      .from("credit_ledger")
+      .select("id, company_id, kind, amount, reason, reference, created_at")
+      .eq("company_id", tenantId)
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (error) {
+      if (isMissingTable(error.message)) return [];
+      throw new Error(error.message);
+    }
+    return (data ?? []).map((r) => ({
+      id: r.id as string,
+      companyId: r.company_id as string,
+      kind: r.kind as import("./types").CreditKind,
+      amount: r.amount as number,
+      reason: (r.reason as string | null) ?? null,
+      reference: (r.reference as string | null) ?? null,
+      createdAt: r.created_at as string,
+    }));
+  });
