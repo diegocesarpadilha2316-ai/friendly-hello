@@ -493,16 +493,7 @@ function WorkspaceDashboard() {
           </DashboardGridItem>
           <DashboardGridItem size="md">
             <SubscriptionCard
-              plan={
-                billingSummary.plan
-                  ? {
-                      key: typeof billingSummary.plan.key === "string" ? billingSummary.plan.key : "free",
-                      label: typeof billingSummary.plan.label === "string" ? billingSummary.plan.label : "Free",
-                      status: typeof billingSummary.subscription?.status === "string" ? billingSummary.subscription.status : "active",
-                      renewsAt: typeof billingSummary.subscription?.currentPeriodEnd === "string" ? billingSummary.subscription.currentPeriodEnd : null,
-                    }
-                  : null
-              }
+              plan={subscriptionPlan}
               status={billing.isLoading ? "loading" : "ready"}
             />
           </DashboardGridItem>
