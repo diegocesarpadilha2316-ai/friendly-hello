@@ -85,11 +85,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "Plataforma enterprise Dioris — Planner, Sites, Sistemas, CRM, Financeiro, Marketplace, Automação e IA em um único hub." },
       { name: "author", content: "Dioris" },
       { name: "theme-color", content: "#6D28D9" },
-      { property: "og:title", content: "Dioris Hub" },
-      { property: "og:description", content: "Inteligência que conecta tudo." },
+      { property: "og:title", content: "Dioris Hub — Inteligência que conecta tudo" },
+      { property: "og:description", content: "Plataforma enterprise Dioris — Planner, Sites, Sistemas, CRM, Financeiro, Marketplace, Automação e IA em um único hub." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Dioris" },
+      { name: "twitter:title", content: "Dioris Hub — Inteligência que conecta tudo" },
+      { name: "twitter:description", content: "Plataforma enterprise Dioris — Planner, Sites, Sistemas, CRM, Financeiro, Marketplace, Automação e IA em um único hub." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e6e8837a-b0e3-4e2f-8598-88254f91154e/id-preview-7ad1afce--50509ef7-e326-4f32-878a-6b18a7c7ea39.lovable.app-1784834740481.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e6e8837a-b0e3-4e2f-8598-88254f91154e/id-preview-7ad1afce--50509ef7-e326-4f32-878a-6b18a7c7ea39.lovable.app-1784834740481.png" },
     ],
     links: [
       {
