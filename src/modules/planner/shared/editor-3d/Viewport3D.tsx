@@ -1,0 +1,347 @@
+/**
+ * Viewport 3D — Fase 3.3.
+ *
+ * Componente cliente, isolado por `React.lazy` + `<ClientOnly>` no
+ * `EditorCanvas`. Lê o mesmo `PlannerRoom` do `PlannerEditorProvider`
+ * (Fase 3.1) — nenhum store novo. A cena 3D é montada a partir dos
+ * descritores puros gerados em `extrusion.ts`.
+ */
+import { useEffect, useMemo, useState } from "react";
+import {
+  Axis3d,
+  Boxes,
+  Camera,
+  Compass,
+  Eye,
+  EyeOff,
+  Grid3x3,
+  Layers,
+  Move3D,
+  Pointer,
+  Scissors,
+  Sparkles,
+  ZapOff,
+} from "lucide-react";
+import { Button } from "@/core/components/ui-kit";
+import { cn } from "@/lib/utils";
+import { usePlannerEditor } from "../state/editor-context";
+import { buildScene3D } from "./extrusion";
+import { DEFAULT_VIEWPORT_3D, type Camera3DMode, type Render3DMode, type Viewport3DState } from "./types";
+import { Scene3D } from "./Scene3D";
+
+const CAM_LABEL: Record<Camera3DMode, string> = {
+  orbit: "Orbit",
+  "first-person": "1ª Pessoa",
+  fly: "Fly",
+};
+
+const RENDER_LABEL: Record<Render3DMode, string> = {
+  solid: "Solid",
+  wireframe: "Wireframe",
+  material: "Material",
+};
+
+function ToolbarButton({
+  active,
+  onClick,
+  children,
+  title,
+}: {
+  active?: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+  title: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title={title}
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors",
+        active
+          ? "bg-primary/20 text-primary"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+function SceneTree({
+  ids,
+  selectedId,
+  onSelect,
+}: {
+  ids: readonly { id: string; label: string; kind: string }[];
+  selectedId: string | null;
+  onSelect: (id: string | null) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-0.5 overflow-auto text-xs">
+      {ids.length === 0 ? (
+        <p className="px-2 py-3 text-muted-foreground">Sem elementos na cena.</p>
+      ) : (
+        ids.map((n) => (
+          <button
+            key={n.id}
+            type="button"
+            onClick={() => onSelect(n.id)}
+            className={cn(
+              "flex items-center justify-between rounded px-2 py-1 text-left transition-colors",
+              selectedId === n.id
+                ? "bg-primary/15 text-primary"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
+            )}
+          >
+            <span className="truncate">{n.label}</span>
+            <span className="ml-2 shrink-0 rounded bg-background/60 px-1.5 py-0.5 text-[10px] uppercase tracking-wide">
+              {n.kind}
+            </span>
+          </button>
+        ))
+      )}
+    </div>
+  );
+}
+
+export function Viewport3D() {
+  const { state } = usePlannerEditor();
+  const room = state.project?.environments
+    .find((e) => e.id === state.selectedEnvironmentId)
+    ?.rooms.find((r) => r.id === state.selectedRoomId);
+
+  const [viewport, setViewport] = useState<Viewport3DState>(DEFAULT_VIEWPORT_3D);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const model = useMemo(() => (room ? buildScene3D(room, viewport.wallHeight) : null), [room, viewport.wallHeight]);
+
+  const sceneNodes = useMemo(() => {
+    if (!model) return [] as { id: string; label: string; kind: string }[];
+    return [
+      ...model.walls.map((w) => ({ id: w.id, label: `Parede ${w.id.slice(-4)}`, kind: "wall" })),
+      ...model.floors.map((f) => ({ id: f.id, label: `Piso ${f.id.slice(-4)}`, kind: "floor" })),
+      ...model.ceilings.map((c) => ({ id: c.id, label: `Teto ${c.id.slice(-4)}`, kind: "ceiling" })),
+      ...model.openings.map((o) => ({
+        id: o.id,
+        label: `${o.role === "door" ? "Porta" : "Janela"} ${o.id.slice(-4)}`,
+        kind: o.role,
+      })),
+    ];
+  }, [model]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.target as HTMLElement | null)?.tagName === "INPUT") return;
+      switch (e.key.toLowerCase()) {
+        case "1": setViewport((v) => ({ ...v, camera: "orbit" })); break;
+        case "2": setViewport((v) => ({ ...v, camera: "first-person" })); break;
+        case "3": setViewport((v) => ({ ...v, camera: "fly" })); break;
+        case "w": setViewport((v) => ({ ...v, render: v.render === "wireframe" ? "solid" : "wireframe" })); break;
+        case "m": setViewport((v) => ({ ...v, render: v.render === "material" ? "solid" : "material" })); break;
+        case "g": setViewport((v) => ({ ...v, showGrid: !v.showGrid })); break;
+        case "escape": setSelectedId(null); break;
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  if (!room || !model) {
+    return (
+      <div className="grid h-[560px] place-items-center rounded-xl border border-border/60 bg-muted/20 text-sm text-muted-foreground">
+        Selecione um cômodo para visualizar em 3D.
+      </div>
+    );
+  }
+
+  const selected = selectedId
+    ? sceneNodes.find((n) => n.id === selectedId) ?? null
+    : null;
+
+  return (
+    <div className="grid h-[620px] grid-cols-[220px_1fr_260px] gap-2 rounded-xl border border-border/60 bg-background/40 p-2">
+      {/* Árvore da cena */}
+      <aside className="flex min-h-0 flex-col rounded-md border border-border/60 bg-background/60 p-2">
+        <header className="mb-2 flex items-center gap-2 px-1 text-xs font-medium text-foreground">
+          <Layers className="h-3.5 w-3.5" /> Árvore da cena
+        </header>
+        <SceneTree ids={sceneNodes} selectedId={selectedId} onSelect={setSelectedId} />
+      </aside>
+
+      {/* Viewport principal */}
+      <div className="relative flex min-h-0 flex-col overflow-hidden rounded-md border border-border/60 bg-[#0b0f1a]">
+        <div className="absolute inset-x-0 top-0 z-10 flex flex-wrap items-center justify-between gap-1 border-b border-border/40 bg-background/40 px-2 py-1.5 backdrop-blur">
+          <div className="flex items-center gap-1">
+            {(Object.keys(CAM_LABEL) as Camera3DMode[]).map((m) => (
+              <ToolbarButton
+                key={m}
+                active={viewport.camera === m}
+                onClick={() => setViewport((v) => ({ ...v, camera: m }))}
+                title={`Câmera ${CAM_LABEL[m]}`}
+              >
+                <Camera className="h-3.5 w-3.5" /> {CAM_LABEL[m]}
+              </ToolbarButton>
+            ))}
+            <span className="mx-1 h-4 w-px bg-border/60" />
+            {(Object.keys(RENDER_LABEL) as Render3DMode[]).map((m) => (
+              <ToolbarButton
+                key={m}
+                active={viewport.render === m}
+                onClick={() => setViewport((v) => ({ ...v, render: m }))}
+                title={`Modo ${RENDER_LABEL[m]}`}
+              >
+                {m === "wireframe" ? <ZapOff className="h-3.5 w-3.5" /> : m === "material" ? <Sparkles className="h-3.5 w-3.5" /> : <Boxes className="h-3.5 w-3.5" />}
+                {RENDER_LABEL[m]}
+              </ToolbarButton>
+            ))}
+          </div>
+          <div className="flex items-center gap-1">
+            <ToolbarButton
+              active={viewport.showGrid}
+              onClick={() => setViewport((v) => ({ ...v, showGrid: !v.showGrid }))}
+              title="Grid (G)"
+            >
+              <Grid3x3 className="h-3.5 w-3.5" /> Grid
+            </ToolbarButton>
+            <ToolbarButton
+              active={viewport.showAxes}
+              onClick={() => setViewport((v) => ({ ...v, showAxes: !v.showAxes }))}
+              title="Eixos"
+            >
+              <Axis3d className="h-3.5 w-3.5" /> Eixos
+            </ToolbarButton>
+            <ToolbarButton
+              active={viewport.sectionHeight != null}
+              onClick={() =>
+                setViewport((v) => ({
+                  ...v,
+                  sectionHeight: v.sectionHeight == null ? Math.round(v.wallHeight / 2) : null,
+                }))
+              }
+              title="Corte horizontal"
+            >
+              <Scissors className="h-3.5 w-3.5" /> Corte
+            </ToolbarButton>
+          </div>
+        </div>
+
+        <div className="absolute inset-0 pt-9">
+          <Scene3D
+            model={model}
+            viewport={viewport}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+          />
+        </div>
+
+        {/* Status bar */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-center justify-between gap-2 border-t border-border/40 bg-background/50 px-3 py-1 text-[11px] text-muted-foreground backdrop-blur">
+          <span className="inline-flex items-center gap-1">
+            <Compass className="h-3 w-3" /> {CAM_LABEL[viewport.camera]} · {RENDER_LABEL[viewport.render]}
+          </span>
+          <span>
+            {model.walls.length} paredes · {model.floors.length + model.ceilings.length} lajes ·{" "}
+            {model.openings.length} aberturas
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <Pointer className="h-3 w-3" /> {selected ? selected.label : "Nenhuma seleção"}
+          </span>
+        </div>
+      </div>
+
+      {/* Inspector + parâmetros do viewport */}
+      <aside className="flex min-h-0 flex-col gap-2 overflow-auto rounded-md border border-border/60 bg-background/60 p-3 text-xs">
+        <section>
+          <header className="mb-2 flex items-center gap-2 text-xs font-medium text-foreground">
+            <Move3D className="h-3.5 w-3.5" /> Parâmetros do 3D
+          </header>
+          <label className="mb-2 flex flex-col gap-1">
+            <span className="text-muted-foreground">Altura da parede (mm)</span>
+            <input
+              type="number"
+              min={1000}
+              max={6000}
+              step={50}
+              value={viewport.wallHeight}
+              onChange={(e) =>
+                setViewport((v) => ({ ...v, wallHeight: Number(e.target.value) || v.wallHeight }))
+              }
+              className="rounded border border-border/60 bg-background px-2 py-1 text-foreground"
+            />
+          </label>
+          <label className="mb-2 flex flex-col gap-1">
+            <span className="text-muted-foreground">Opacidade paredes</span>
+            <input
+              type="range"
+              min={0.2}
+              max={1}
+              step={0.05}
+              value={viewport.wallOpacity}
+              onChange={(e) => setViewport((v) => ({ ...v, wallOpacity: Number(e.target.value) }))}
+            />
+          </label>
+          <label className="mb-2 flex flex-col gap-1">
+            <span className="text-muted-foreground">Explodir</span>
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.05}
+              value={viewport.explode}
+              onChange={(e) => setViewport((v) => ({ ...v, explode: Number(e.target.value) }))}
+            />
+          </label>
+          {viewport.sectionHeight != null ? (
+            <label className="mb-2 flex flex-col gap-1">
+              <span className="text-muted-foreground">Altura do corte (mm)</span>
+              <input
+                type="range"
+                min={100}
+                max={viewport.wallHeight}
+                step={50}
+                value={viewport.sectionHeight}
+                onChange={(e) =>
+                  setViewport((v) => ({ ...v, sectionHeight: Number(e.target.value) }))
+                }
+              />
+              <span className="text-[10px] text-muted-foreground">{viewport.sectionHeight} mm</span>
+            </label>
+          ) : null}
+        </section>
+
+        <section className="border-t border-border/60 pt-2">
+          <header className="mb-2 flex items-center gap-2 text-xs font-medium text-foreground">
+            {selected ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />} Inspector
+          </header>
+          {selected ? (
+            <div className="flex flex-col gap-1 text-muted-foreground">
+              <div className="flex justify-between"><span>ID</span><span className="text-foreground">{selected.id.slice(-8)}</span></div>
+              <div className="flex justify-between"><span>Tipo</span><span className="text-foreground">{selected.kind}</span></div>
+              <div className="flex justify-between"><span>Rótulo</span><span className="text-foreground">{selected.label}</span></div>
+              <Button size="sm" variant="ghost" className="mt-2" onClick={() => setSelectedId(null)}>
+                Limpar seleção
+              </Button>
+            </div>
+          ) : (
+            <p className="text-muted-foreground">Clique num elemento da cena para inspecionar.</p>
+          )}
+        </section>
+
+        <section className="mt-auto border-t border-border/60 pt-2 text-muted-foreground">
+          <p className="text-[11px] leading-relaxed">
+            Atalhos: <kbd className="rounded bg-muted px-1">1/2/3</kbd> câmera ·{" "}
+            <kbd className="rounded bg-muted px-1">W</kbd> wireframe ·{" "}
+            <kbd className="rounded bg-muted px-1">M</kbd> material ·{" "}
+            <kbd className="rounded bg-muted px-1">G</kbd> grid ·{" "}
+            <kbd className="rounded bg-muted px-1">Esc</kbd> desmarcar.
+          </p>
+        </section>
+      </aside>
+    </div>
+  );
+}
+
+export default Viewport3D;
