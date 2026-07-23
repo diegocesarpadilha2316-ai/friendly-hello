@@ -8,3 +8,4 @@ export * from "./parametric/engine";
 export * from "./components";
 export * from "./factories/project";
 export * from "./persistence/local-store";
+export * from "./editor-2d";
