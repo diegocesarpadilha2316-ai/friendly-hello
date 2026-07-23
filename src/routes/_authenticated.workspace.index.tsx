@@ -104,7 +104,7 @@ function WorkspaceDashboard() {
   const eventsList = Array.isArray(events.data) ? events.data : [];
   const eventsTotal = eventMetrics.data?.total ?? eventsList.length;
   const eventsFailed = eventMetrics.data?.failed ?? 0;
-  const openErrors = observability.data?.summary.errorsOpen ?? 0;
+  const openErrors = observability.data?.summary?.errorsOpen ?? 0;
   const errorRate = observability.data?.errorRatePct ?? 0;
   const healthList = Array.isArray(health.data) ? health.data : [];
   const healthy = healthList.filter((h) => h.status === "healthy").length;
