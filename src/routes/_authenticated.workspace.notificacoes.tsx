@@ -33,6 +33,8 @@ const STATUS_TONE: Record<NotificationStatus, "success" | "warning" | "danger" |
   failed: "danger",
   read: "neutral",
   archived: "neutral",
+  muted: "neutral",
+  skipped: "neutral",
 };
 
 function WorkspaceNotifs() {
