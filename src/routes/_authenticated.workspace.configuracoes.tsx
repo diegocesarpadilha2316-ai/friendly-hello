@@ -242,7 +242,7 @@ function WorkspaceConfig() {
         </TabsContent>
 
         <TabsContent value="security" className="mt-6">
-          <SecurityPanel data={security.data} onSave={(p) => upsertSecurity.mutate(p, { onSuccess: () => toast.success("Segurança atualizada"), onError: (e) => toast.error((e as Error).message) })} pending={upsertSecurity.isPending} />
+          <SecurityPanel data={security.data ?? undefined} onSave={(p) => upsertSecurity.mutate(p, { onSuccess: () => toast.success("Segurança atualizada"), onError: (e) => toast.error((e as Error).message) })} pending={upsertSecurity.isPending} />
         </TabsContent>
 
         <TabsContent value="integrations" className="mt-6">
@@ -278,10 +278,11 @@ function WorkspaceConfig() {
                   createApiKey.mutate(
                     { name: newKeyName.trim(), scopes: ["read"] },
                     {
-                      onSuccess: (r: { secret?: string } | undefined) => {
+                      onSuccess: (r) => {
                         setNewKeyName("");
-                        if (r?.secret) {
-                          navigator.clipboard?.writeText(r.secret).catch(() => {});
+                        const token = (r as { plainToken?: string } | undefined)?.plainToken;
+                        if (token) {
+                          navigator.clipboard?.writeText(token).catch(() => {});
                           toast.success("Chave criada e copiada");
                         } else toast.success("Chave criada");
                       },
@@ -345,7 +346,7 @@ function WorkspaceConfig() {
 
         <TabsContent value="branding" className="mt-6">
           <BrandingPanel
-            data={branding.data}
+            data={branding.data ?? undefined}
             onSave={(p) => upsertBranding.mutate(p, { onSuccess: () => toast.success("Branding atualizado"), onError: (e) => toast.error((e as Error).message) })}
             pending={upsertBranding.isPending}
           />
@@ -353,7 +354,7 @@ function WorkspaceConfig() {
 
         <TabsContent value="backup" className="mt-6">
           <BackupPanel
-            data={backup.data}
+            data={backup.data ?? undefined}
             onSave={(p) => upsertBackup.mutate(p, { onSuccess: () => toast.success("Backup atualizado"), onError: (e) => toast.error((e as Error).message) })}
             pending={upsertBackup.isPending}
           />
