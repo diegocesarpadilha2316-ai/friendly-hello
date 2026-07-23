@@ -20,6 +20,7 @@ import {
   Upload,
   Settings,
   CreditCard,
+  Lock,
 } from "lucide-react";
 import {
   PageContainer,
@@ -30,6 +31,7 @@ import {
 } from "@/core/components/ui-kit";
 import { useOptionalTenant } from "@/core/providers/TenantProvider";
 import { useOptionalAuth } from "@/core/hooks";
+import { modules as MODULES, getPlanModules, PLAN_LABEL, firstPlanWithModule } from "@/core/config";
 import { useDashboardSnapshot } from "@/core/dashboard/use-dashboard";
 import { useBillingSummary } from "@/core/billing/use-billing";
 import { useAssetsStats } from "@/core/assets/use-assets";
@@ -168,24 +170,131 @@ function WorkspaceDashboard() {
 
   const storageMb = ((assets.data?.usedBytes ?? 0) / (1024 * 1024)).toFixed(1);
 
+  const planKey = (billing.summary.plan?.key ?? "free") as
+    | "free" | "starter" | "pro" | "business" | "enterprise";
+  const subscribed = new Set(getPlanModules(planKey));
+  const firstName = auth?.user?.email?.split("@")[0] ?? "";
+
   return (
     <PageContainer>
-      <PageHeader
-        eyebrow="Workspace"
-        title={`Bem-vindo${auth?.user?.email ? `, ${auth.user.email.split("@")[0]}` : ""}`}
-        description={
-          company
-            ? `Você está operando ${company.name} · plano ${company.plan}`
-            : "Selecione uma empresa para começar."
-        }
-        actions={
-          company ? (
-            <StatusBadge tone={company.status === "active" ? "success" : "warning"}>
-              {company.status}
-            </StatusBadge>
-          ) : null
-        }
-      />
+      {/* Hero ecossistema — visual convidativo, foco imediato nos módulos. */}
+      <section
+        className="relative overflow-hidden rounded-3xl border border-border/60 p-6 sm:p-10"
+        style={{
+          background:
+            "radial-gradient(1200px 400px at 100% 0%, color-mix(in oklab, var(--accent) 24%, transparent), transparent 60%), radial-gradient(900px 400px at 0% 100%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 60%), var(--gradient-brand, linear-gradient(135deg, oklch(0.22 0.12 290), oklch(0.18 0.10 240)))",
+        }}
+      >
+        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/20 blur-3xl" />
+        <div className="pointer-events-none absolute -left-20 bottom-0 h-64 w-64 rounded-full bg-accent/20 blur-3xl" />
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-primary-foreground/70">
+              Ecossistema Dioris
+            </p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-primary-foreground sm:text-4xl">
+              Olá{firstName ? `, ${firstName}` : ""} — bem-vindo(a) ao seu espaço.
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm text-primary-foreground/80 sm:text-base">
+              {company
+                ? `${company.name} · Plano ${PLAN_LABEL[planKey]} · Uma única plataforma para operar Planner, CRM, Financeiro, IA e muito mais.`
+                : "Uma única plataforma para operar todos os módulos do seu negócio."}
+            </p>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <StatusBadge tone="info">Plano {PLAN_LABEL[planKey]}</StatusBadge>
+              {company?.status ? (
+                <StatusBadge tone={company.status === "active" ? "success" : "warning"}>
+                  {company.status}
+                </StatusBadge>
+              ) : null}
+              <StatusBadge tone="default">
+                {subscribed.size} módulo{subscribed.size === 1 ? "" : "s"} assinado{subscribed.size === 1 ? "" : "s"}
+              </StatusBadge>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              to="/workspace/assinatura"
+              className="inline-flex items-center gap-2 rounded-full bg-background/90 px-4 py-2 text-sm font-medium text-foreground shadow-lg backdrop-blur transition-colors hover:bg-background"
+            >
+              <CreditCard className="h-4 w-4" /> Ver plano
+            </Link>
+            <Link
+              to="/workspace/modulos"
+              className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/30 px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-foreground/10"
+            >
+              Explorar módulos <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Grade de módulos — ecossistema. Assinados destacados; demais em CTA. */}
+      <section className="mt-6">
+        <div className="mb-3 flex items-end justify-between">
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight">Seus módulos</h2>
+            <p className="text-sm text-muted-foreground">
+              {subscribed.size > 0
+                ? "Acesse rapidamente os módulos incluídos no seu plano."
+                : "Assine um plano para ativar módulos e começar a operar."}
+            </p>
+          </div>
+          <Link
+            to="/workspace/modulos"
+            className="hidden text-xs text-primary hover:underline sm:inline-flex"
+          >
+            Ver todos
+          </Link>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {MODULES.map((m) => {
+            const active = subscribed.has(m.id);
+            const Icon = m.icon;
+            const unlockPlan = active ? null : PLAN_LABEL[firstPlanWithModule(m.id)];
+            const target = active ? m.path : "/workspace/assinatura";
+            return (
+              <Link
+                key={m.id}
+                to={target as never}
+                className={
+                  "group relative overflow-hidden rounded-2xl border p-4 transition-all " +
+                  (active
+                    ? "border-primary/40 bg-card hover:-translate-y-0.5 hover:border-primary hover:shadow-xl hover:shadow-primary/10"
+                    : "border-border/60 bg-card/40 hover:bg-card")
+                }
+              >
+                <div className="flex items-start justify-between">
+                  <div
+                    className={
+                      "flex h-11 w-11 items-center justify-center rounded-xl " +
+                      (active
+                        ? "bg-gradient-to-br from-primary/30 to-accent/30 text-primary-foreground ring-1 ring-primary/40"
+                        : "bg-muted text-muted-foreground")
+                    }
+                  >
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  {active ? (
+                    <StatusBadge tone="success" dot={false}>Ativo</StatusBadge>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-border/60 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                      <Lock className="h-3 w-3" /> {unlockPlan}
+                    </span>
+                  )}
+                </div>
+                <p className="mt-3 text-sm font-semibold">{m.label}</p>
+                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                  {m.description}
+                </p>
+                <div className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                  {active ? "Abrir" : "Fazer upgrade"} <ArrowRight className="h-3 w-3" />
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
 
       {/* KPIs — linha superior (10 métricas essenciais) */}
       <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
