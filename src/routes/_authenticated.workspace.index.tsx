@@ -54,22 +54,27 @@ import {
   DashboardGrid,
   DashboardGridItem,
 } from "@/core/components/dashboard";
-import type { ChartSeries, QuickAction } from "@/core/dashboard/types";
+import type {
+  ActivityEntry,
+  AiUsageToday,
+  ChartSeries,
+  PlanSummary,
+  QuickAction,
+  RecentProject,
+} from "@/core/dashboard/types";
+import type { BillingSummary, SubscriptionStatus } from "@/core/billing/types";
+import type { StorageStats } from "@/core/assets/types";
+import type { Notification } from "@/core/notifications/types";
+import type { Event } from "@/core/events/types";
+import type { Job, JobQueue } from "@/core/jobs/types";
+import type { HealthCheckEntry } from "@/core/observability/types";
 
-const EMPTY_BILLING_SUMMARY = {
+const EMPTY_BILLING_SUMMARY: BillingSummary = {
   plan: null,
   subscription: null,
   balance: 0,
   usedThisPeriod: 0,
   resetsAt: null,
-};
-
-const EMPTY_OBSERVABILITY_SUMMARY = {
-  logsTotal: 0,
-  logsErrors: 0,
-  auditTotal: 0,
-  errorsOpen: 0,
-  tracesTotal: 0,
 };
 
 const toNumber = (value: unknown, fallback = 0) =>
@@ -81,11 +86,42 @@ const toList = <T,>(value: readonly T[] | unknown): readonly T[] =>
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
-const asBillingSummary = (value: unknown) => {
+const isSubscriptionStatus = (value: unknown): value is SubscriptionStatus =>
+  value === "trial" || value === "active" || value === "past_due" || value === "canceled";
+
+const asBillingSummary = (value: unknown): BillingSummary => {
   if (!isRecord(value)) return EMPTY_BILLING_SUMMARY;
+  const plan = isRecord(value.plan)
+    ? {
+        key: typeof value.plan.key === "string" ? value.plan.key : "free",
+        label: typeof value.plan.label === "string" ? value.plan.label : "Free",
+        monthlyCredits: toNumber(value.plan.monthlyCredits),
+        priceCents: toNumber(value.plan.priceCents),
+        currency: typeof value.plan.currency === "string" ? value.plan.currency : "BRL",
+        features: toList<string>(value.plan.features).filter((feature) => typeof feature === "string"),
+        sortOrder: toNumber(value.plan.sortOrder),
+      }
+    : null;
+  const subscription = isRecord(value.subscription)
+    ? {
+        id: typeof value.subscription.id === "string" ? value.subscription.id : "",
+        companyId: typeof value.subscription.companyId === "string" ? value.subscription.companyId : "",
+        planKey: typeof value.subscription.planKey === "string" ? value.subscription.planKey : plan?.key ?? "free",
+        status: isSubscriptionStatus(value.subscription.status) ? value.subscription.status : "active",
+        trialEndsAt: typeof value.subscription.trialEndsAt === "string" ? value.subscription.trialEndsAt : null,
+        currentPeriodStart:
+          typeof value.subscription.currentPeriodStart === "string" ? value.subscription.currentPeriodStart : "",
+        currentPeriodEnd:
+          typeof value.subscription.currentPeriodEnd === "string" ? value.subscription.currentPeriodEnd : "",
+        cancelAtPeriodEnd:
+          typeof value.subscription.cancelAtPeriodEnd === "boolean" ? value.subscription.cancelAtPeriodEnd : false,
+        externalProvider:
+          typeof value.subscription.externalProvider === "string" ? value.subscription.externalProvider : null,
+      }
+    : null;
   return {
-    plan: isRecord(value.plan) ? value.plan : null,
-    subscription: isRecord(value.subscription) ? value.subscription : null,
+    plan,
+    subscription,
     balance: toNumber(value.balance),
     usedThisPeriod: toNumber(value.usedThisPeriod),
     resetsAt: typeof value.resetsAt === "string" ? value.resetsAt : null,
@@ -107,12 +143,22 @@ const asObservability = (value: unknown) => {
   };
 };
 
-const asAssetsStats = (value: unknown) => {
+const asAssetsStats = (value: unknown): StorageStats => {
   if (!isRecord(value)) return { usedBytes: 0, assetCount: 0, quotaBytes: null };
   return {
     usedBytes: toNumber(value.usedBytes),
     assetCount: toNumber(value.assetCount),
     quotaBytes: typeof value.quotaBytes === "number" ? value.quotaBytes : null,
+  };
+};
+
+const asPlanSummary = (summary: BillingSummary): PlanSummary | null => {
+  if (!summary.plan) return null;
+  return {
+    key: summary.plan.key,
+    label: summary.plan.label,
+    status: summary.subscription?.status ?? "active",
+    renewsAt: summary.subscription?.currentPeriodEnd ?? null,
   };
 };
 
@@ -158,16 +204,16 @@ function WorkspaceDashboard() {
   const observabilityData = asObservability(observability.data);
   const assetsStats = asAssetsStats(assets.data);
   const companiesList = toList(tenant?.companies);
-  const notifList = toList(notifs.data);
+  const notifList = toList<Notification>(notifs.data);
   const unread = notifList.filter((n) => !n.readAt).length;
   const jobsData = jobs.data;
-  const jobsList = toList(jobsData?.jobs);
-  const jobsQueues = toList(jobsData?.queues);
+  const jobsList = toList<Job>(jobsData?.jobs);
+  const jobsQueues = toList<JobQueue>(jobsData?.queues);
   const activeJobs = jobsList.filter((j) =>
     ["pending", "queued", "running", "retrying"].includes(String(j.status)),
   ).length;
-  const eventsList = toList(events.data);
-  const eventMetricsData = isRecord(eventMetrics.data) ? eventMetrics.data : {};
+  const eventsList = toList<Event>(events.data);
+  const eventMetricsData: Record<string, unknown> = isRecord(eventMetrics.data) ? eventMetrics.data : {};
   const eventsTotal = toNumber(eventMetricsData.total, eventsList.length);
   const eventsPending = toNumber(eventMetricsData.pending);
   const eventsDelivered = toNumber(eventMetricsData.delivered);
@@ -176,7 +222,7 @@ function WorkspaceDashboard() {
   const openErrors = observabilityData.summary.errorsOpen;
   const errorRate = observabilityData.errorRatePct;
   const tracesTotal = observabilityData.summary.tracesTotal;
-  const healthList = toList(health.data);
+  const healthList = toList<HealthCheckEntry>(health.data);
   const healthy = healthList.filter((h) => h.status === "healthy").length;
   const degraded = healthList.filter(
     (h) => h.status === "degraded" || h.status === "down",
@@ -184,10 +230,11 @@ function WorkspaceDashboard() {
   const teamCount = companiesList.length;
   const integrationsList = toList(integrationsHealth.data);
   const integrationsCount = integrationsList.length;
-  const aiToday = snapshot?.aiToday ?? { requests: 0, creditsSpent: 0, byCapability: [] };
-  const aiCapabilityList = toList(aiToday.byCapability);
-  const recentProjects = toList(snapshot?.recentProjects);
-  const activity = toList(snapshot?.activity);
+  const aiToday: AiUsageToday = snapshot?.aiToday ?? { requests: 0, creditsSpent: 0, byCapability: [] };
+  const aiCapabilityList = toList<{ capability: string; count: number }>(aiToday.byCapability);
+  const recentProjects = toList<RecentProject>(snapshot?.recentProjects);
+  const activity = toList<ActivityEntry>(snapshot?.activity);
+  const subscriptionPlan = asPlanSummary(billingSummary);
 
   const aiChart: ChartSeries[] = [
     {
