@@ -58,7 +58,10 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
     staleTime: 60_000,
   });
 
-  const companies = React.useMemo(() => query.data ?? [], [query.data]);
+  const companies = React.useMemo(
+    () => (Array.isArray(query.data) ? query.data : []),
+    [query.data],
+  );
 
   // Auto-provisiona empresa "Espaço {nick}" no primeiro login — o cliente
   // entra direto na plataforma sem passar por qualquer onboarding.
