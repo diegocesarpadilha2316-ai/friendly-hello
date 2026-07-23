@@ -38,8 +38,8 @@ function ModulosPage() {
   const [tab, setTab] = useState<"all" | "contracted" | "available" | "roadmap">("all");
 
   const planFeatures = useMemo(
-    () => new Set((billing.data?.plan?.features ?? []).map((f) => f.toLowerCase())),
-    [billing.data],
+    () => new Set((billing.summary.plan?.features ?? []).map((f: string) => f.toLowerCase())),
+    [billing.summary],
   );
 
   const enriched = useMemo(() => modules.map((m) => {
@@ -72,7 +72,7 @@ function ModulosPage() {
 
       <div className="mt-6 grid gap-3 md:grid-cols-4">
         <MetricCard icon={<Boxes className="h-4 w-4" />} label="Módulos totais" value={kpis.total} />
-        <MetricCard icon={<CheckCircle2 className="h-4 w-4" />} label="Contratados" value={kpis.contracted} hint={billing.data?.plan?.label ?? "Sem plano"} />
+        <MetricCard icon={<CheckCircle2 className="h-4 w-4" />} label="Contratados" value={kpis.contracted} hint={billing.summary.plan?.label ?? "Sem plano"} />
         <MetricCard icon={<Sparkles className="h-4 w-4" />} label="Disponíveis" value={kpis.available} />
         <MetricCard icon={<Clock className="h-4 w-4" />} label="No roadmap" value={kpis.dev} />
       </div>
@@ -121,18 +121,18 @@ function ModulosPage() {
         <FormSection title="Comparativo de planos" description="Veja como cada plano libera diferentes módulos e recursos.">
           {plans.isLoading ? (
             <Skeleton className="h-32 w-full" />
-          ) : (plans.data ?? []).length === 0 ? (
+          ) : plans.plans.length === 0 ? (
             <EmptyState icon={<Sparkles className="h-6 w-6" />} title="Nenhum plano cadastrado" />
           ) : (
             <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-              {(plans.data ?? []).map((p) => (
-                <div key={p.key} className={`rounded-lg border p-4 ${billing.data?.plan?.key === p.key ? "border-primary bg-primary/5" : "border-border"}`}>
+              {plans.plans.map((p) => (
+                <div key={p.key} className={`rounded-lg border p-4 ${billing.summary.plan?.key === p.key ? "border-primary bg-primary/5" : "border-border"}`}>
                   <div className="flex items-baseline justify-between">
                     <h3 className="text-sm font-semibold">{p.label}</h3>
                     <span className="text-xs text-muted-foreground">{p.monthlyCredits.toLocaleString("pt-BR")} créd/mês</span>
                   </div>
                   <ul className="mt-3 space-y-1 text-xs text-muted-foreground">
-                    {p.features.map((f) => (<li key={f} className="flex items-center gap-1.5"><CheckCircle2 className="h-3 w-3 text-success" />{f}</li>))}
+                    {p.features.map((f: string) => (<li key={f} className="flex items-center gap-1.5"><CheckCircle2 className="h-3 w-3 text-success" />{f}</li>))}
                   </ul>
                 </div>
               ))}
