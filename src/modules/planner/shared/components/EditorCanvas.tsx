@@ -1,10 +1,11 @@
 import { lazy, Suspense, useState } from "react";
 import { ClientOnly } from "@tanstack/react-router";
-import { Ruler, Move3D, Undo2, Redo2, Save, PanelLeftOpen, PanelLeftClose, Boxes } from "lucide-react";
+import { Ruler, Move3D, Undo2, Redo2, Save, PanelLeftOpen, PanelLeftClose, Boxes, Wrench } from "lucide-react";
 import { Button } from "@/core/components/ui-kit";
 import { usePlannerEditor } from "../state/editor-context";
 import { Editor2D } from "../editor-2d";
 import { LibraryPanel, findCatalogItem, insertItemIntoProject } from "../library";
+import { Inspector } from "../engineering";
 
 const Viewport3D = lazy(() =>
   import("../editor-3d/Viewport3D").then((m) => ({ default: m.Viewport3D })),
@@ -15,6 +16,7 @@ type Mode = "2d" | "3d";
 export function EditorCanvas({ mode }: { mode: Mode }) {
   const { state, canUndo, canRedo, undo, redo, saveNow, updateProject } = usePlannerEditor();
   const [libraryOpen, setLibraryOpen] = useState(false);
+  const [inspectorOpen, setInspectorOpen] = useState(false);
   const room = state.project?.environments
     .find((e) => e.id === state.selectedEnvironmentId)
     ?.rooms.find((r) => r.id === state.selectedRoomId);
@@ -57,6 +59,14 @@ export function EditorCanvas({ mode }: { mode: Mode }) {
               {libraryOpen ? <PanelLeftClose className="mr-1 h-4 w-4" /> : <PanelLeftOpen className="mr-1 h-4 w-4" />}
               <Boxes className="mr-1 h-4 w-4" /> Biblioteca
             </Button>
+            <Button
+              size="sm"
+              variant={inspectorOpen ? "secondary" : "ghost"}
+              onClick={() => setInspectorOpen((v) => !v)}
+              title="Inspector de engenharia do móvel selecionado"
+            >
+              <Wrench className="mr-1 h-4 w-4" /> Engenharia
+            </Button>
             <Button size="sm" variant="ghost" onClick={undo} disabled={!canUndo}>
               <Undo2 className="mr-1 h-4 w-4" /> Desfazer
             </Button>
@@ -68,16 +78,10 @@ export function EditorCanvas({ mode }: { mode: Mode }) {
             </Button>
           </div>
         </div>
-        {libraryOpen ? (
-          <div className="grid min-h-0 gap-2 lg:grid-cols-[360px_1fr]">
-            <div className="h-[720px] min-h-0">
-              <LibraryPanel variant="compact" />
-            </div>
-            <Editor2D />
-          </div>
-        ) : (
-          <Editor2D />
-        )}
+        <EditorLayout
+          libraryOpen={libraryOpen}
+          inspectorOpen={inspectorOpen}
+        />
       </div>
     );
   }
@@ -118,6 +122,33 @@ export function EditorCanvas({ mode }: { mode: Mode }) {
           <Viewport3D />
         </Suspense>
       </ClientOnly>
+    </div>
+  );
+}
+
+function EditorLayout({
+  libraryOpen,
+  inspectorOpen,
+}: {
+  libraryOpen: boolean;
+  inspectorOpen: boolean;
+}) {
+  const left = libraryOpen ? "360px" : null;
+  const right = inspectorOpen ? "340px" : null;
+  const cols = [left, "1fr", right].filter(Boolean).join(" ");
+  return (
+    <div className="grid min-h-0 gap-2" style={{ gridTemplateColumns: cols }}>
+      {libraryOpen ? (
+        <div className="h-[720px] min-h-0">
+          <LibraryPanel variant="compact" />
+        </div>
+      ) : null}
+      <Editor2D />
+      {inspectorOpen ? (
+        <div className="h-[720px] min-h-0">
+          <Inspector />
+        </div>
+      ) : null}
     </div>
   );
 }
