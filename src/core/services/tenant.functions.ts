@@ -73,6 +73,36 @@ export const createCompany = createServerFn({ method: "POST" })
     return created as Company;
   });
 
+/**
+ * Garante que o usuário logado tenha ao menos uma empresa própria.
+ * Chamado pelo `TenantProvider` no primeiro login — remove a etapa de
+ * onboarding "Criar empresa" e permite o cliente entrar direto.
+ */
+export const ensureDefaultCompany = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId, user } = context;
+    const { data: existing, error: exErr } = await supabase
+      .from("company_members")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("active", true)
+      .limit(1);
+    if (exErr) throw new Error(exErr.message);
+    if (existing && existing.length > 0) return { created: false };
+    const email = (user?.email as string | undefined) ?? "";
+    const nick = email.includes("@") ? email.split("@")[0] : "meu-espaco";
+    const name = `Espaço ${nick.charAt(0).toUpperCase()}${nick.slice(1)}`;
+    const slug = `${slugify(nick)}-${Math.random().toString(36).slice(2, 6)}`;
+    const { error } = await supabase
+      .from("companies")
+      .insert({ name, slug, created_by: userId })
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message);
+    return { created: true };
+  });
+
 /** Atualiza dados da empresa ativa. Requer admin/owner. */
 export const updateActiveCompany = createServerFn({ method: "POST" })
   .middleware([requireTenant])
