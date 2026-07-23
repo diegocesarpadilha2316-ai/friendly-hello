@@ -181,9 +181,9 @@ BEGIN
     EXECUTE format($p$
       CREATE POLICY %I ON public.%I FOR ALL TO authenticated
       USING (EXISTS (SELECT 1 FROM public.company_members m
-        WHERE m.company_id = %I.company_id AND m.user_id = auth.uid() AND m.status = 'active'))
+        WHERE m.company_id = %I.company_id AND m.user_id = auth.uid() AND m.active = true))
       WITH CHECK (EXISTS (SELECT 1 FROM public.company_members m
-        WHERE m.company_id = %I.company_id AND m.user_id = auth.uid() AND m.status = 'active'));
+        WHERE m.company_id = %I.company_id AND m.user_id = auth.uid() AND m.active = true));
     $p$, t || '_tenant', t, t, t);
   END LOOP;
 END $$;
