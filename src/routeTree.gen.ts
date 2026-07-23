@@ -41,6 +41,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated.workspace.index'
 import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated.configuracoes.index'
 import { Route as PublicProdutosPlannerRouteImport } from './routes/_public.produtos.planner'
+import { Route as PublicProdutosCriadorRouteImport } from './routes/_public.produtos.criador'
 import { Route as AuthenticatedWorkspacePerfilRouteImport } from './routes/_authenticated.workspace.perfil'
 import { Route as AuthenticatedWorkspaceNotificacoesRouteImport } from './routes/_authenticated.workspace.notificacoes'
 import { Route as AuthenticatedWorkspaceModulosRouteImport } from './routes/_authenticated.workspace.modulos'
@@ -225,6 +226,11 @@ const PublicProdutosPlannerRoute = PublicProdutosPlannerRouteImport.update({
   path: '/planner',
   getParentRoute: () => PublicProdutosRoute,
 } as any)
+const PublicProdutosCriadorRoute = PublicProdutosCriadorRouteImport.update({
+  id: '/criador',
+  path: '/criador',
+  getParentRoute: () => PublicProdutosRoute,
+} as any)
 const AuthenticatedWorkspacePerfilRoute =
   AuthenticatedWorkspacePerfilRouteImport.update({
     id: '/perfil',
@@ -383,6 +389,7 @@ export interface FileRoutesByFullPath {
   '/workspace/modulos': typeof AuthenticatedWorkspaceModulosRoute
   '/workspace/notificacoes': typeof AuthenticatedWorkspaceNotificacoesRoute
   '/workspace/perfil': typeof AuthenticatedWorkspacePerfilRoute
+  '/produtos/criador': typeof PublicProdutosCriadorRoute
   '/produtos/planner': typeof PublicProdutosPlannerRoute
   '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
@@ -433,6 +440,7 @@ export interface FileRoutesByTo {
   '/workspace/modulos': typeof AuthenticatedWorkspaceModulosRoute
   '/workspace/notificacoes': typeof AuthenticatedWorkspaceNotificacoesRoute
   '/workspace/perfil': typeof AuthenticatedWorkspacePerfilRoute
+  '/produtos/criador': typeof PublicProdutosCriadorRoute
   '/produtos/planner': typeof PublicProdutosPlannerRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesIndexRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
@@ -487,6 +495,7 @@ export interface FileRoutesById {
   '/_authenticated/workspace/modulos': typeof AuthenticatedWorkspaceModulosRoute
   '/_authenticated/workspace/notificacoes': typeof AuthenticatedWorkspaceNotificacoesRoute
   '/_authenticated/workspace/perfil': typeof AuthenticatedWorkspacePerfilRoute
+  '/_public/produtos/criador': typeof PublicProdutosCriadorRoute
   '/_public/produtos/planner': typeof PublicProdutosPlannerRoute
   '/_authenticated/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
@@ -540,6 +549,7 @@ export interface FileRouteTypes {
     | '/workspace/modulos'
     | '/workspace/notificacoes'
     | '/workspace/perfil'
+    | '/produtos/criador'
     | '/produtos/planner'
     | '/configuracoes/'
     | '/workspace/'
@@ -590,6 +600,7 @@ export interface FileRouteTypes {
     | '/workspace/modulos'
     | '/workspace/notificacoes'
     | '/workspace/perfil'
+    | '/produtos/criador'
     | '/produtos/planner'
     | '/configuracoes'
     | '/workspace'
@@ -643,6 +654,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/modulos'
     | '/_authenticated/workspace/notificacoes'
     | '/_authenticated/workspace/perfil'
+    | '/_public/produtos/criador'
     | '/_public/produtos/planner'
     | '/_authenticated/configuracoes/'
     | '/_authenticated/workspace/'
@@ -883,6 +895,13 @@ declare module '@tanstack/react-router' {
       path: '/planner'
       fullPath: '/produtos/planner'
       preLoaderRoute: typeof PublicProdutosPlannerRouteImport
+      parentRoute: typeof PublicProdutosRoute
+    }
+    '/_public/produtos/criador': {
+      id: '/_public/produtos/criador'
+      path: '/criador'
+      fullPath: '/produtos/criador'
+      preLoaderRoute: typeof PublicProdutosCriadorRouteImport
       parentRoute: typeof PublicProdutosRoute
     }
     '/_authenticated/workspace/perfil': {
@@ -1132,10 +1151,12 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 )
 
 interface PublicProdutosRouteChildren {
+  PublicProdutosCriadorRoute: typeof PublicProdutosCriadorRoute
   PublicProdutosPlannerRoute: typeof PublicProdutosPlannerRoute
 }
 
 const PublicProdutosRouteChildren: PublicProdutosRouteChildren = {
+  PublicProdutosCriadorRoute: PublicProdutosCriadorRoute,
   PublicProdutosPlannerRoute: PublicProdutosPlannerRoute,
 }
 
