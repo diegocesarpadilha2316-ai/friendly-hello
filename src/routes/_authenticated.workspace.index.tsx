@@ -56,6 +56,66 @@ import {
 } from "@/core/components/dashboard";
 import type { ChartSeries, QuickAction } from "@/core/dashboard/types";
 
+const EMPTY_BILLING_SUMMARY = {
+  plan: null,
+  subscription: null,
+  balance: 0,
+  usedThisPeriod: 0,
+  resetsAt: null,
+};
+
+const EMPTY_OBSERVABILITY_SUMMARY = {
+  logsTotal: 0,
+  logsErrors: 0,
+  auditTotal: 0,
+  errorsOpen: 0,
+  tracesTotal: 0,
+};
+
+const toNumber = (value: unknown, fallback = 0) =>
+  typeof value === "number" && Number.isFinite(value) ? value : fallback;
+
+const toList = <T,>(value: readonly T[] | unknown): readonly T[] =>
+  Array.isArray(value) ? value : [];
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const asBillingSummary = (value: unknown) => {
+  if (!isRecord(value)) return EMPTY_BILLING_SUMMARY;
+  return {
+    plan: isRecord(value.plan) ? value.plan : null,
+    subscription: isRecord(value.subscription) ? value.subscription : null,
+    balance: toNumber(value.balance),
+    usedThisPeriod: toNumber(value.usedThisPeriod),
+    resetsAt: typeof value.resetsAt === "string" ? value.resetsAt : null,
+  };
+};
+
+const asObservability = (value: unknown) => {
+  const data = isRecord(value) ? value : {};
+  const summary = isRecord(data.summary) ? data.summary : {};
+  return {
+    summary: {
+      logsTotal: toNumber(summary.logsTotal),
+      logsErrors: toNumber(summary.logsErrors),
+      auditTotal: toNumber(summary.auditTotal),
+      errorsOpen: toNumber(summary.errorsOpen),
+      tracesTotal: toNumber(summary.tracesTotal),
+    },
+    errorRatePct: toNumber(data.errorRatePct),
+  };
+};
+
+const asAssetsStats = (value: unknown) => {
+  if (!isRecord(value)) return { usedBytes: 0, assetCount: 0, quotaBytes: null };
+  return {
+    usedBytes: toNumber(value.usedBytes),
+    assetCount: toNumber(value.assetCount),
+    quotaBytes: typeof value.quotaBytes === "number" ? value.quotaBytes : null,
+  };
+};
+
 export const Route = createFileRoute("/_authenticated/workspace/")({
   head: () => ({
     meta: [
@@ -94,46 +154,59 @@ function WorkspaceDashboard() {
   const integrationsHealth = useIntegrationsHealth();
 
   const company = tenant?.activeCompany;
-  const notifList = Array.isArray(notifs.data) ? notifs.data : [];
+  const billingSummary = asBillingSummary(billing.summary);
+  const observabilityData = asObservability(observability.data);
+  const assetsStats = asAssetsStats(assets.data);
+  const companiesList = toList(tenant?.companies);
+  const notifList = toList(notifs.data);
   const unread = notifList.filter((n) => !n.readAt).length;
   const jobsData = jobs.data;
-  const jobsList = Array.isArray(jobsData?.jobs) ? jobsData!.jobs : [];
+  const jobsList = toList(jobsData?.jobs);
+  const jobsQueues = toList(jobsData?.queues);
   const activeJobs = jobsList.filter((j) =>
     ["pending", "queued", "running", "retrying"].includes(String(j.status)),
   ).length;
-  const eventsList = Array.isArray(events.data) ? events.data : [];
-  const eventsTotal = eventMetrics.data?.total ?? eventsList.length;
-  const eventsFailed = eventMetrics.data?.failed ?? 0;
-  const openErrors = observability.data?.summary?.errorsOpen ?? 0;
-  const errorRate = observability.data?.errorRatePct ?? 0;
-  const healthList = Array.isArray(health.data) ? health.data : [];
+  const eventsList = toList(events.data);
+  const eventMetricsData = isRecord(eventMetrics.data) ? eventMetrics.data : {};
+  const eventsTotal = toNumber(eventMetricsData.total, eventsList.length);
+  const eventsPending = toNumber(eventMetricsData.pending);
+  const eventsDelivered = toNumber(eventMetricsData.delivered);
+  const eventsFailed = toNumber(eventMetricsData.failed);
+  const eventsDead = toNumber(eventMetricsData.dead);
+  const openErrors = observabilityData.summary.errorsOpen;
+  const errorRate = observabilityData.errorRatePct;
+  const tracesTotal = observabilityData.summary.tracesTotal;
+  const healthList = toList(health.data);
   const healthy = healthList.filter((h) => h.status === "healthy").length;
   const degraded = healthList.filter(
     (h) => h.status === "degraded" || h.status === "down",
   ).length;
-  const teamCount = tenant?.companies.length ?? 0;
-  const integrationsCount = Array.isArray(integrationsHealth.data)
-    ? integrationsHealth.data.length
-    : 0;
+  const teamCount = companiesList.length;
+  const integrationsList = toList(integrationsHealth.data);
+  const integrationsCount = integrationsList.length;
+  const aiToday = snapshot?.aiToday ?? { requests: 0, creditsSpent: 0, byCapability: [] };
+  const aiCapabilityList = toList(aiToday.byCapability);
+  const recentProjects = toList(snapshot?.recentProjects);
+  const activity = toList(snapshot?.activity);
 
   const aiChart: ChartSeries[] = [
     {
       name: "IA por capacidade",
-      points: snapshot.aiToday.byCapability.map((c) => ({
+      points: aiCapabilityList.map((c) => ({
         x: c.capability,
-        y: c.count,
+        y: toNumber(c.count),
       })),
     },
   ];
-  const eventsChart: ChartSeries[] = eventMetrics.data
+  const eventsChart: ChartSeries[] = isRecord(eventMetrics.data)
     ? [
         {
           name: "Eventos",
           points: [
-            { x: "pendentes", y: eventMetrics.data.pending },
-            { x: "entregues", y: eventMetrics.data.delivered },
-            { x: "falhas", y: eventMetrics.data.failed },
-            { x: "dead", y: eventMetrics.data.dead },
+            { x: "pendentes", y: eventsPending },
+            { x: "entregues", y: eventsDelivered },
+            { x: "falhas", y: eventsFailed },
+            { x: "dead", y: eventsDead },
           ],
         },
       ]
@@ -169,9 +242,9 @@ function WorkspaceDashboard() {
     { id: "settings", label: "Configurações", to: "/workspace/configuracoes", icon: Settings },
   ];
 
-  const storageMb = ((assets.data?.usedBytes ?? 0) / (1024 * 1024)).toFixed(1);
+  const storageMb = (assetsStats.usedBytes / (1024 * 1024)).toFixed(1);
 
-  const planKey = (billing.summary.plan?.key ?? "free") as
+  const planKey = (typeof billingSummary.plan?.key === "string" ? billingSummary.plan.key : "free") as
     | "free" | "starter" | "pro" | "business" | "enterprise";
   const subscribed = new Set(getPlanModules(planKey));
   const firstName = auth?.user?.email?.split("@")[0] ?? "";
@@ -301,26 +374,26 @@ function WorkspaceDashboard() {
       <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         <MetricCard
           label="Créditos disponíveis"
-          value={billing.summary.balance.toLocaleString("pt-BR")}
-          hint={`Consumido no período: ${billing.summary.usedThisPeriod}`}
+          value={billingSummary.balance.toLocaleString("pt-BR")}
+          hint={`Consumido no período: ${billingSummary.usedThisPeriod}`}
           icon={<Coins className="h-4 w-4" />}
         />
         <MetricCard
           label="Plano ativo"
-          value={billing.summary.plan?.label ?? "—"}
-          hint={billing.summary.subscription?.status ?? "sem assinatura"}
+          value={typeof billingSummary.plan?.label === "string" ? billingSummary.plan.label : "—"}
+          hint={typeof billingSummary.subscription?.status === "string" ? billingSummary.subscription.status : "sem assinatura"}
           icon={<Building2 className="h-4 w-4" />}
         />
         <MetricCard
           label="IA hoje"
-          value={snapshot.aiToday.requests.toLocaleString("pt-BR")}
-          hint={`${snapshot.aiToday.creditsSpent} créditos`}
+          value={toNumber(aiToday.requests).toLocaleString("pt-BR")}
+          hint={`${toNumber(aiToday.creditsSpent)} créditos`}
           icon={<Sparkles className="h-4 w-4" />}
         />
         <MetricCard
           label="Storage"
           value={assets.data ? `${storageMb} MB` : "—"}
-          hint={`${assets.data?.assetCount ?? 0} arquivos`}
+          hint={`${assetsStats.assetCount} arquivos`}
           icon={<HardDrive className="h-4 w-4" />}
         />
         <MetricCard
@@ -332,7 +405,7 @@ function WorkspaceDashboard() {
         <MetricCard
           label="Jobs ativos"
           value={activeJobs.toLocaleString("pt-BR")}
-          hint={`${jobsData?.queues?.length ?? 0} filas`}
+          hint={`${jobsQueues.length} filas`}
           icon={<Zap className="h-4 w-4" />}
         />
         <MetricCard
@@ -366,20 +439,20 @@ function WorkspaceDashboard() {
         <DashboardGrid>
           <DashboardGridItem size="md">
             <CreditsCard credits={{
-              available: billing.summary.balance,
-              used: billing.summary.usedThisPeriod,
-              resetsAt: billing.summary.resetsAt,
+              available: billingSummary.balance,
+              used: billingSummary.usedThisPeriod,
+              resetsAt: billingSummary.resetsAt,
             }} status={billing.isLoading ? "loading" : "ready"} />
           </DashboardGridItem>
           <DashboardGridItem size="md">
             <SubscriptionCard
               plan={
-                billing.summary.plan
+                billingSummary.plan
                   ? {
-                      key: billing.summary.plan.key,
-                      label: billing.summary.plan.label,
-                      status: billing.summary.subscription?.status ?? "active",
-                      renewsAt: billing.summary.subscription?.currentPeriodEnd ?? null,
+                      key: typeof billingSummary.plan.key === "string" ? billingSummary.plan.key : "free",
+                      label: typeof billingSummary.plan.label === "string" ? billingSummary.plan.label : "Free",
+                      status: typeof billingSummary.subscription?.status === "string" ? billingSummary.subscription.status : "active",
+                      renewsAt: typeof billingSummary.subscription?.currentPeriodEnd === "string" ? billingSummary.subscription.currentPeriodEnd : null,
                     }
                   : null
               }
@@ -394,16 +467,16 @@ function WorkspaceDashboard() {
               metrics={[
                 {
                   label: "Créditos",
-                  used: billing.summary.usedThisPeriod,
+                  used: billingSummary.usedThisPeriod,
                   total:
-                    billing.summary.usedThisPeriod + billing.summary.balance || 1,
+                    billingSummary.usedThisPeriod + billingSummary.balance || 1,
                   unit: "cr",
                 },
                 {
                   label: "IA (req)",
-                  used: aiMetrics.data?.requests ?? snapshot.aiToday.requests,
+                  used: toNumber(aiMetrics.data?.requests, toNumber(aiToday.requests)),
                   total: Math.max(
-                    aiMetrics.data?.requests ?? snapshot.aiToday.requests,
+                    toNumber(aiMetrics.data?.requests, toNumber(aiToday.requests)),
                     1000,
                   ),
                   unit: "req",
@@ -425,7 +498,7 @@ function WorkspaceDashboard() {
               description="Requisições por capacidade (hoje)"
               series={aiChart}
               status={
-                snapshot.aiToday.byCapability.length === 0 ? "empty" : "ready"
+                aiCapabilityList.length === 0 ? "empty" : "ready"
               }
               renderer={(s) => <BarSeries series={s} />}
             />
@@ -489,7 +562,7 @@ function WorkspaceDashboard() {
 
           {/* Coluna: atividades + notificações + projetos */}
           <DashboardGridItem size="lg">
-            <ActivityFeed entries={snapshot.activity} status={isLoading ? "loading" : undefined} />
+            <ActivityFeed entries={activity} status={isLoading ? "loading" : undefined} />
           </DashboardGridItem>
           <DashboardGridItem size="lg">
             <DashboardCard
@@ -547,7 +620,7 @@ function WorkspaceDashboard() {
           </DashboardGridItem>
           <DashboardGridItem size="lg">
             <RecentProjects
-              projects={snapshot.recentProjects}
+              projects={recentProjects}
               status={isLoading ? "loading" : undefined}
             />
           </DashboardGridItem>
@@ -565,7 +638,7 @@ function WorkspaceDashboard() {
                 </Link>
               }
             >
-              {(assets.data?.assetCount ?? 0) === 0 ? (
+              {assetsStats.assetCount === 0 ? (
                 <EmptyState
                   icon={<Upload className="h-6 w-6" />}
                   title="Nenhum upload"
@@ -573,7 +646,7 @@ function WorkspaceDashboard() {
                 />
               ) : (
                 <div className="text-sm text-muted-foreground">
-                  {assets.data?.assetCount} arquivo(s) · {storageMb} MB usados
+                  {assetsStats.assetCount} arquivo(s) · {storageMb} MB usados
                 </div>
               )}
             </DashboardCard>
@@ -646,7 +719,7 @@ function WorkspaceDashboard() {
                 </div>
                 <div>
                   <p className="text-2xl font-semibold">
-                    {observability.data?.summary.tracesTotal ?? 0}
+                    {tracesTotal}
                   </p>
                   <p className="text-xs text-muted-foreground">Traces</p>
                 </div>
