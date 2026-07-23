@@ -99,9 +99,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
       topbar={
         <Topbar
           left={
-            <CompanySwitcher
-              onCreateNew={() => navigate({ to: "/onboarding/company" })}
-            />
+            <CompanySwitcher />
           }
           right={
             auth?.user ? (
