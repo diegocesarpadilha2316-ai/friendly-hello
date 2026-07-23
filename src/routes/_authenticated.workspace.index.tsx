@@ -147,14 +147,12 @@ function WorkspaceDashboard() {
             {
               x: "concluídos",
               y:
-                jobsData.jobs?.filter((j) => String(j.status) === "completed")
-                  .length ?? 0,
+                jobsList.filter((j) => String(j.status) === "completed").length,
             },
             {
               x: "falhas",
               y:
-                jobsData.jobs?.filter((j) => String(j.status) === "failed")
-                  .length ?? 0,
+                jobsList.filter((j) => String(j.status) === "failed").length,
             },
           ],
         },
