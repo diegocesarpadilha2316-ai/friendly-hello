@@ -3,3 +3,4 @@
  */
 export * from "./app";
 export * from "./modules";
+export * from "./plan-modules";
