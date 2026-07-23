@@ -195,3 +195,55 @@ export const setMemberActive = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+/** Lista convites da empresa ativa. */
+export const listCompanyInvitations = createServerFn({ method: "GET" })
+  .middleware([requireTenant])
+  .handler(async ({ context }) => {
+    const { supabase, tenantId } = context;
+    const { data, error } = await supabase
+      .from("company_invitations")
+      .select("*")
+      .eq("company_id", tenantId)
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+/** Cancela (deleta) um convite pendente. */
+export const cancelInvitation = createServerFn({ method: "POST" })
+  .middleware([requireTenant])
+  .inputValidator((input) => z.object({ invitationId: z.string().uuid() }).parse(input))
+  .handler(async ({ context, data }) => {
+    const { supabase, role } = context;
+    if (role !== "owner" && role !== "admin") {
+      throw new Response("Forbidden", { status: 403 });
+    }
+    const { error } = await supabase
+      .from("company_invitations")
+      .delete()
+      .eq("id", data.invitationId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/** Reenvia convite: gera novo token e prorroga expiração. */
+export const resendInvitation = createServerFn({ method: "POST" })
+  .middleware([requireTenant])
+  .inputValidator((input) => z.object({ invitationId: z.string().uuid() }).parse(input))
+  .handler(async ({ context, data }) => {
+    const { supabase, role } = context;
+    if (role !== "owner" && role !== "admin") {
+      throw new Response("Forbidden", { status: 403 });
+    }
+    const token = crypto.randomUUID().replace(/-/g, "");
+    const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    const { data: updated, error } = await supabase
+      .from("company_invitations")
+      .update({ token, expires_at: expires })
+      .eq("id", data.invitationId)
+      .select("*")
+      .single();
+    if (error) throw new Error(error.message);
+    return updated;
+  });
