@@ -607,7 +607,7 @@ function AuditTab() {
   if (isLoading) {
     return <div className="h-40 animate-pulse rounded-lg border border-border bg-muted/30" />;
   }
-  const entries = data ?? [];
+  const entries = [...(data ?? [])];
   return (
     <DataTable
       data={entries}
