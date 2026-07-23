@@ -43,6 +43,7 @@ const DEFAULT_LAYERS: readonly Editor2DLayerState[] = [
   { id: "openings", label: "Aberturas", visible: true, locked: false },
   { id: "floors", label: "Pisos", visible: true, locked: false },
   { id: "ceilings", label: "Tetos", visible: true, locked: false },
+  { id: "furniture", label: "Móveis", visible: true, locked: false },
   { id: "guides", label: "Guias", visible: true, locked: false },
 ];
 
@@ -760,6 +761,27 @@ function PrimitiveShape({ p, selected, locked }: {
           stroke={selected ? "hsl(var(--primary))" : "hsl(var(--accent))"}
           strokeWidth={sw} strokeDasharray="40 40" opacity={opacity} />
       );
+    case "furniture": {
+      const cx = p.x + p.width / 2;
+      const cy = p.y + p.depth / 2;
+      const fill = selected ? "hsl(var(--primary) / 0.28)" : "hsl(var(--accent) / 0.18)";
+      return (
+        <g opacity={opacity} transform={`rotate(${p.rotation} ${cx} ${cy})`}>
+          <rect x={p.x} y={p.y} width={p.width} height={p.depth}
+            fill={fill} stroke={stroke} strokeWidth={sw} rx={20} ry={20} />
+          <line x1={p.x} y1={p.y} x2={p.x + p.width} y2={p.y + p.depth}
+            stroke={stroke} strokeOpacity={0.35} strokeWidth={sw / 2} />
+          <text x={cx} y={cy - 40} textAnchor="middle" dominantBaseline="middle"
+            fill="hsl(var(--foreground))" fontSize={100} fontWeight={600}>
+            {p.subtype}
+          </text>
+          <text x={cx} y={cy + 80} textAnchor="middle" dominantBaseline="middle"
+            fill="hsl(var(--muted-foreground))" fontSize={70}>
+            {formatMm(p.width)} × {formatMm(p.depth)}
+          </text>
+        </g>
+      );
+    }
   }
 }
 
@@ -1043,6 +1065,8 @@ function primitiveBBox(p: Editor2DPrimitive) {
     case "floor":
     case "ceiling":
       return { x: p.x, y: p.y, width: p.width, height: p.depth };
+    case "furniture":
+      return { x: p.x, y: p.y, width: p.width, height: p.depth };
     case "guide":
       return p.axis === "h"
         ? { x: -1e5, y: p.pos - 20, width: 2e5, height: 40 }
@@ -1068,6 +1092,8 @@ function translatePrimitive(p: Editor2DPrimitive, dx: number, dy: number): Edito
     case "floor":
     case "ceiling":
       return { ...p, x: p.x + dx, y: p.y + dy };
+    case "furniture":
+      return { ...p, x: p.x + dx, y: p.y + dy };
     case "guide":
       return { ...p, pos: p.pos + (p.axis === "h" ? dy : dx) };
   }
@@ -1087,6 +1113,7 @@ function rotatePrimitive(p: Editor2DPrimitive, deg: number): Editor2DPrimitive {
   if (p.kind === "opening") return { ...p, rotation: (p.rotation + deg) % 360 };
   if (p.kind === "floor" || p.kind === "ceiling")
     return { ...p, width: p.depth, depth: p.width };
+  if (p.kind === "furniture") return { ...p, rotation: (p.rotation + deg) % 360 };
   if (p.kind === "guide") return { ...p, axis: p.axis === "h" ? "v" : "h" };
   return p;
 }
@@ -1099,6 +1126,8 @@ function mirrorPrimitive(p: Editor2DPrimitive, axisX: number): Editor2DPrimitive
     case "floor":
     case "ceiling":
       return { ...p, x: reflect(p.x + (p.kind === "opening" ? p.width : p.width), axisX) };
+    case "furniture":
+      return { ...p, x: reflect(p.x + p.width, axisX) };
     case "guide":
       return p.axis === "v" ? { ...p, pos: reflect(p.pos, axisX) } : p;
   }
