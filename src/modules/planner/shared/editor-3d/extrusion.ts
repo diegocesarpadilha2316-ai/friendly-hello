@@ -19,6 +19,7 @@ export interface WallDescriptor {
   thickness: number; // m
   height: number; // m
   rotationY: number; // rad
+  materialId?: string;
 }
 
 export interface SlabDescriptor {
@@ -29,6 +30,7 @@ export interface SlabDescriptor {
   depth: number;
   y: number;
   thickness: number;
+  materialId?: string;
 }
 
 export interface OpeningDescriptor {
@@ -40,6 +42,7 @@ export interface OpeningDescriptor {
   height: number;
   y: number;
   rotationY: number;
+  materialId?: string;
 }
 
 export interface FurnitureDescriptor {
@@ -53,6 +56,7 @@ export interface FurnitureDescriptor {
   height: number;  // m (Y)
   y: number;       // altura do centro (m)
   rotationY: number; // rad
+  materialId?: string;
 }
 
 export interface Scene3DModel {
@@ -81,6 +85,7 @@ function extrudeWall(p: Extract<Editor2DPrimitive, { kind: "wall" }>, wallHeight
     thickness: p.thickness * MM,
     height: wallHeight * MM,
     rotationY: -Math.atan2(dz, dx),
+    materialId: p.materialId,
   };
 }
 
@@ -96,6 +101,7 @@ function extrudeSlab(
     depth: p.depth * MM,
     y,
     thickness: 0.02,
+    materialId: p.materialId,
   };
 }
 
@@ -111,6 +117,7 @@ function extrudeOpening(p: Extract<Editor2DPrimitive, { kind: "opening" }>): Ope
     height,
     y: p.role === "door" ? height / 2 : 1.0 + height / 2,
     rotationY: -(p.rotation * Math.PI) / 180,
+    materialId: p.materialId,
   };
 }
 
@@ -143,6 +150,7 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
         height: h,
         y: h / 2,
         rotationY: -(p.rotation * Math.PI) / 180,
+        materialId: p.materialId,
       });
     }
   }
