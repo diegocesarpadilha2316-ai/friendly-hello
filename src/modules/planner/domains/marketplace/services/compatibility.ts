@@ -16,10 +16,10 @@ function compare(a: string, b: string): number {
   return 0;
 }
 
-export function isCompatible(item: MarketplaceItem, plannerVersion = PLANNER_VERSION): boolean {
+export function isCompatible(item: MarketplaceItem, plannerVersion: string = PLANNER_VERSION): boolean {
   return compare(plannerVersion, item.compatibility.plannerMin) >= 0;
 }
 
-export function isRecommended(item: MarketplaceItem, plannerVersion = PLANNER_VERSION): boolean {
+export function isRecommended(item: MarketplaceItem, plannerVersion: string = PLANNER_VERSION): boolean {
   return compare(plannerVersion, item.compatibility.plannerRecommended) >= 0;
 }
