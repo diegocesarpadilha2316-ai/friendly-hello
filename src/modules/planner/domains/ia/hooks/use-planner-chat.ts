@@ -26,6 +26,28 @@ import type {
 
 const uid = () => `m_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 
+/** Prompt de sistema mínimo que dá contexto do projeto/cômodo ativo ao LLM. */
+function buildPlannerSystemPrompt(
+  p: PlannerProject,
+  ctx: ToolContext,
+): string {
+  const env = p.environments.find((e) => e.id === ctx.environmentId);
+  const room = env?.rooms.find((r) => r.id === ctx.roomId);
+  const briefing = p.briefing
+    ? `Briefing: estilo=${p.briefing.style ?? "—"}, ambiente=${p.briefing.environmentType ?? "—"}, área=${p.briefing.areaM2 ?? "—"}m², orçamento=${p.briefing.budget ?? "—"}.`
+    : "";
+  return [
+    "Você é a IA Copiloto do Dioris Planner — um sistema paramétrico de marcenaria em pt-BR.",
+    "Responda em português, de forma objetiva e prática, focando marcenaria, ergonomia e produção.",
+    `Projeto ativo: "${p.name}" (v${p.version}).`,
+    env ? `Ambiente ativo: "${env.name}".` : "Nenhum ambiente selecionado.",
+    room ? `Cômodo ativo: "${room.name}" (${room.dimensions.width}×${room.dimensions.depth}×${room.dimensions.height} mm).` : "Nenhum cômodo selecionado.",
+    briefing,
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
 export const PLANNER_QUICK_ACTIONS: readonly PlannerAIQuickAction[] = [
   { id: "kitchen", label: "Crie uma cozinha moderna", prompt: "Crie uma cozinha moderna com ilha e LED." },
   { id: "closet", label: "Crie um closet", prompt: "Crie um closet completo minimalista." },
