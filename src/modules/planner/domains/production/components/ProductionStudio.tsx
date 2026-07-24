@@ -13,6 +13,7 @@ import { useProduction } from "../hooks/use-production";
 import { FabricationPanel } from "./FabricationPanel";
 import { IndustrialPanel } from "./IndustrialPanel";
 import { FactoryPanel } from "./FactoryPanel";
+import { PlanningPanel } from "./PlanningPanel";
 import {
   CNC_MACHINES,
   ERP_PROVIDERS,
@@ -52,6 +53,7 @@ const TABS = [
   { id: "fabricacao", label: "Fabricação" },
   { id: "industrial", label: "Industrial" },
   { id: "fabrica", label: "Fábrica 4.0" },
+  { id: "pcp", label: "PCP / MRP" },
   { id: "erp", label: "ERP" },
   { id: "exportar", label: "Exportar" },
   { id: "ia", label: "IA" },
@@ -234,6 +236,7 @@ export function ProductionStudio() {
       {tab === "fabricacao" && <FabricationPanel />}
       {tab === "industrial" && <IndustrialPanel />}
       {tab === "fabrica" && <FactoryPanel />}
+      {tab === "pcp" && <PlanningPanel />}
       {tab === "erp" && <ErpPanel />}
       {tab === "exportar" && <ExportPanel onDownload={downloadFile} />}
       {tab === "ia" && (
