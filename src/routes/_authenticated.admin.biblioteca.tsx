@@ -353,8 +353,10 @@ function MaterialsPanel({ onChanged }: { onChanged: () => void }) {
     reload();
   }, [reload]);
 
+  const [report, setReport] = useState<ImportReportShape | null>(null);
   const handleImport = async (file: File) => {
     setBusy(true);
+    setReport(null);
     setStatus({ tone: "info", text: `Lendo ${file.name}…` });
     try {
       const text = await file.text();
@@ -367,11 +369,14 @@ function MaterialsPanel({ onChanged }: { onChanged: () => void }) {
         setBusy(false);
         return;
       }
-      setStatus({ tone: "info", text: `Enviando ${parsed.length} materiais…` });
-      const r = await adminImportMaterials({ data: { rows: parsed } as never });
+      setStatus({ tone: "info", text: `Processando ${parsed.length} materiais em lote…` });
+      const r = (await importPlannerLibrary({
+        data: { kind: "materials", filename: file.name, rows: parsed } as never,
+      })) as ImportReportShape;
+      setReport(r);
       setStatus({
-        tone: "success",
-        text: `${(r as { imported: number }).imported} materiais importados/atualizados.`,
+        tone: r.errors.length > 0 ? "danger" : "success",
+        text: `+${r.inserted} novos · ${r.updated} atualizados · ${r.skipped} duplicados · ${r.errors.length} erros`,
       });
       onChanged();
       reload();
@@ -421,6 +426,7 @@ function MaterialsPanel({ onChanged }: { onChanged: () => void }) {
       </div>
 
       {status && <StatusLine tone={status.tone}>{status.text}</StatusLine>}
+      {report && <ImportReportCard report={report} />}
 
       <div className="rounded-2xl border border-border/60 bg-card">
         <div className="border-b border-border/60 px-4 py-3 text-xs text-muted-foreground">
