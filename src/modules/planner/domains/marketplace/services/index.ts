@@ -1,3 +1,22 @@
-// Server functions do domínio — consumir sempre middlewares do Core
-// (requireAuth/requireTenant/requirePermission). Nada nesta fase.
-export {};
+export * from "./authors";
+export * from "./categories";
+export * from "./collections";
+export * from "./compatibility";
+export * from "./download";
+export * from "./export";
+export * from "./favorites";
+export * from "./featured";
+export * from "./import";
+export * from "./install";
+export * from "./licenses";
+export * from "./pricing";
+export * from "./publish";
+export * from "./ratings";
+export * from "./recommendations";
+export * from "./reviews";
+export * from "./search";
+export * from "./sync";
+export * from "./updates";
+export * from "./verification";
+export * from "./analytics";
+export * from "./ai-hooks";
