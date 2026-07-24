@@ -64,21 +64,63 @@ function AuthPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md rounded-xl border border-border bg-card p-6 shadow-sm">
-        <div className="mb-6 flex flex-col items-center text-center">
-          <img
-            src={diorisLogo}
-            alt={`${app.name} — Inteligência que conecta tudo`}
-            className="h-14 w-auto"
-          />
-          <p className="mt-3 text-sm text-muted-foreground">
-            Inteligência que conecta tudo
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Plataforma modular · acesso restrito
-          </p>
-        </div>
+    <div className="dark relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-12 text-foreground">
+      {/* Aurora + grid background */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_oklch(0.16_0.06_285_/_0.9),_oklch(0.09_0.04_275)_75%)]" />
+        <div className="dioris-aurora" />
+        <div className="dioris-aurora-2" />
+        <div
+          className="absolute inset-0 opacity-[0.05]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)",
+            backgroundSize: "72px 72px",
+            maskImage: "radial-gradient(ellipse at center, black 40%, transparent 78%)",
+          }}
+        />
+      </div>
+      {/* Floating cubes */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-[5] hidden sm:block">
+        <div
+          className="dioris-cube left-[6%] top-[12%] h-28 w-28 lg:h-40 lg:w-40"
+          style={{ transform: "rotate(-14deg)" }}
+        />
+        <div
+          className="dioris-cube right-[7%] top-[16%] h-24 w-24 lg:h-36 lg:w-36"
+          style={{ transform: "rotate(18deg)", animationDelay: "1.4s" }}
+        />
+        <div
+          className="dioris-cube left-[8%] bottom-[10%] h-24 w-24 lg:h-36 lg:w-36"
+          style={{ transform: "rotate(10deg)", animationDelay: "2.2s" }}
+        />
+        <div
+          className="dioris-cube right-[6%] bottom-[12%] h-28 w-28 lg:h-40 lg:w-40"
+          style={{ transform: "rotate(-20deg)", animationDelay: "0.7s" }}
+        />
+      </div>
+
+      <div className="relative w-full max-w-md">
+        {/* Glow behind card */}
+        <div className="pointer-events-none absolute -inset-[2px] -z-10 rounded-[28px] bg-gradient-to-br from-primary/60 via-secondary/40 to-accent/60 opacity-70 blur-2xl" />
+        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-8 shadow-[0_40px_100px_-30px_rgba(0,0,0,0.7)] backdrop-blur-2xl">
+          {/* Top gradient hairline */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
+
+          <div className="mb-8 flex flex-col items-center text-center">
+            <img
+              src={diorisLogo}
+              alt={`${app.name} — Inteligência que conecta tudo`}
+              className="h-16 w-auto drop-shadow-[0_0_28px_rgba(139,92,246,0.4)]"
+            />
+            <p className="mt-4 text-[11px] font-medium uppercase tracking-[0.32em] text-foreground/70">
+              Inteligência que conecta tudo
+            </p>
+            <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-gradient-to-r from-primary to-accent" />
+              Plataforma modular · acesso restrito
+            </div>
+          </div>
         <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="signin">Entrar</TabsTrigger>
@@ -149,8 +191,9 @@ function AuthPage() {
             Ao continuar você concorda com os termos da plataforma.
           </p>
           <Link to="/" className="text-center text-xs text-primary hover:underline">
-            Voltar
+            ← Voltar ao início
           </Link>
+        </div>
         </div>
       </div>
     </div>
