@@ -113,43 +113,49 @@ export function useCatalog(): UseCatalog {
     setRecents(clearRecents());
   }, []);
 
-  const canInsert = Boolean(editor.project && editor.selectedRoomId && selected && variant);
+  const canInsert = Boolean(editor.state.project && editor.state.selectedRoomId && selected && variant);
 
   const insertSelected = useCallback((): boolean => {
-    if (!editor.project || !editor.selectedRoomId || !selected || !variant) return false;
+    const roomId = editor.state.selectedRoomId;
+    if (!editor.state.project || !roomId || !selected || !variant) return false;
     const price = priceVariant(selected, variant);
     const rules = evaluateRules(selected, variant);
-    const roomId = editor.selectedRoomId;
+    const nodeId = `catalog-${variant.id}`;
     editor.updateProject((project) => ({
       ...project,
       environments: project.environments.map((env) => ({
         ...env,
-        rooms: env.rooms.map((room) =>
-          room.id === roomId
-            ? {
-                ...room,
-                catalogInsertions: [
-                  ...(room.catalogInsertions ?? []),
-                  {
-                    id: `${variant.id}`,
-                    itemId: selected.id,
-                    sku: selected.sku,
-                    variantId: variant.id,
-                    widthMm: variant.widthMm,
-                    heightMm: variant.heightMm,
-                    depthMm: variant.depthMm,
-                    materialId: variant.materialId,
-                    handleId: variant.handleId,
-                    price: price.total,
-                    warnings: rules.map((r) => r.message),
-                    insertedAt: new Date().toISOString(),
-                  },
-                ],
-              }
-            : room,
-        ),
+        rooms: env.rooms.map((room) => {
+          if (room.id !== roomId) return room;
+          return {
+            ...room,
+            nodes: {
+              ...room.nodes,
+              [nodeId]: {
+                id: nodeId,
+                kind: "module",
+                label: selected.name,
+                params: {
+                  itemId: selected.id,
+                  sku: selected.sku,
+                  variantId: variant.id,
+                  widthMm: variant.widthMm,
+                  heightMm: variant.heightMm,
+                  depthMm: variant.depthMm,
+                  materialId: variant.materialId ?? null,
+                  handleId: variant.handleId ?? null,
+                  price: price.total,
+                  warnings: rules.map((r) => r.message).join(" | "),
+                  insertedAt: new Date().toISOString(),
+                },
+              },
+            },
+            nodeOrder: [...room.nodeOrder, nodeId],
+            updatedAt: new Date().toISOString(),
+          };
+        }),
       })),
-    }) as unknown as void);
+    }));
     return true;
   }, [editor, selected, variant]);
 
