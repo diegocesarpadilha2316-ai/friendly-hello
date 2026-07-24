@@ -125,7 +125,7 @@ function DashboardSub({ kpis, alerts }: { kpis: readonly FactoryKPI[]; alerts: r
       </div>
       <div className="flex flex-wrap gap-2 rounded-lg border border-border bg-card p-3 text-xs text-muted-foreground">
         <StatusBadge tone={critical > 0 ? "danger" : "success"}>{critical} críticos</StatusBadge>
-        <StatusBadge tone={warnings > 0 ? "warning" : "muted"}>{warnings} avisos</StatusBadge>
+        <StatusBadge tone={warnings > 0 ? "warning" : "neutral"}>{warnings} avisos</StatusBadge>
         <span>KPIs em tempo real — derivados do projeto ativo.</span>
       </div>
     </div>
@@ -218,7 +218,7 @@ function CapacitySub({
             { id: "k", header: "Tipo", cell: (r) => <span className="text-muted-foreground text-xs">{r.kind}</span> },
             { id: "l", header: "Carga (min)", cell: (r) => <span className="tabular-nums">{r.loadMinutes}</span>, align: "right" },
             { id: "c", header: "Capacidade (min)", cell: (r) => <span className="tabular-nums">{r.capacityMinutes}</span>, align: "right" },
-            { id: "u", header: "Utilização", cell: (r) => <StatusBadge tone={r.status === "sobrecarregada" ? "danger" : r.status === "atenção" ? "warning" : r.status === "ociosa" ? "muted" : "success"}>{r.utilizationPct}%</StatusBadge> },
+            { id: "u", header: "Utilização", cell: (r) => <StatusBadge tone={r.status === "sobrecarregada" ? "danger" : r.status === "atenção" ? "warning" : r.status === "ociosa" ? "neutral" : "success"}>{r.utilizationPct}%</StatusBadge> },
           ] satisfies DataTableColumn<MachineLoad>[]}
           data={[...balance]}
           getRowKey={(r) => r.machineId}
