@@ -28,6 +28,17 @@ export interface AgentInput {
   ctx: ToolContext;
   rules: CompanyManufacturingRules;
   signal?: AbortSignal;
+  /**
+   * Callback opcional — quando fornecido, respostas conversacionais
+   * (smalltalk/unknown/question) passam por um LLM real (AI Gateway).
+   * Retornar `null` mantém a resposta heurística local.
+   */
+  llmReply?: (prompt: {
+    userMessage: string;
+    role: "smalltalk" | "unknown" | "question";
+    project: PlannerProject;
+    ctx: ToolContext;
+  }) => Promise<string | null>;
 }
 
 export interface AgentChunk {
@@ -67,13 +78,17 @@ export async function* runAgent(input: AgentInput): AsyncGenerator<AgentChunk, v
   const parsed = interpret(input.message);
 
   if (parsed.type === "smalltalk" || parsed.type === "unknown") {
-    yield* streamText(parsed.reply, input.signal);
+    const reply =
+      (await tryLLM(input, parsed.type, input.message)) ?? parsed.reply;
+    yield* streamText(reply, input.signal);
     yield { kind: "done" };
     return;
   }
 
   if (parsed.type === "question") {
-    const answer = answerQuestion(parsed.question, input.project, input.ctx, input.rules);
+    const local = answerQuestion(parsed.question, input.project, input.ctx, input.rules);
+    const remote = await tryLLM(input, "question", input.message);
+    const answer = remote ? `${local}\n\n${remote}` : local;
     yield* streamText(answer, input.signal);
     yield { kind: "done" };
     return;
@@ -104,6 +119,25 @@ export async function* runAgent(input: AgentInput): AsyncGenerator<AgentChunk, v
   const finalText = `${header}${summaries.join("\n")}`;
   yield* streamText(finalText, input.signal);
   yield { kind: "done", toolResult: { project, summary: finalText, affectedIds: [] } };
+}
+
+async function tryLLM(
+  input: AgentInput,
+  role: "smalltalk" | "unknown" | "question",
+  userMessage: string,
+): Promise<string | null> {
+  if (!input.llmReply) return null;
+  try {
+    const text = await input.llmReply({
+      userMessage,
+      role,
+      project: input.project,
+      ctx: input.ctx,
+    });
+    return text && text.trim().length > 0 ? text : null;
+  } catch {
+    return null;
+  }
 }
 
 async function* streamText(text: string, signal?: AbortSignal): AsyncGenerator<AgentChunk> {

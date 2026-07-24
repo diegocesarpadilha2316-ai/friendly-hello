@@ -2,6 +2,7 @@ import type {
   PlannerEnvironment,
   PlannerProject,
   PlannerProjectId,
+  PlannerProjectBriefing,
   PlannerRoom,
   PlannerRoomType,
 } from "../types";
@@ -52,6 +53,7 @@ export function createProject(input: {
   ownerId: string;
   name: string;
   client?: string;
+  briefing?: PlannerProjectBriefing;
 }): PlannerProject {
   const now = new Date().toISOString();
   return {
@@ -65,5 +67,6 @@ export function createProject(input: {
     createdAt: now,
     updatedAt: now,
     version: 1,
+    briefing: input.briefing,
   };
 }

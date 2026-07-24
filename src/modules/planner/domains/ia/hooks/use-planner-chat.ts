@@ -7,12 +7,16 @@
  * a sincronização 2D/3D/Engenharia.
  */
 import { useCallback, useMemo, useRef, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { aiGenerateText } from "@/core/ai";
 import { useTenant } from "@/core/providers/TenantProvider";
 import {
   usePlannerEditor,
   loadRules,
 } from "@/modules/planner/shared";
 import { runAgent } from "../services/agent";
+import type { PlannerProject } from "@/modules/planner/shared";
+import type { ToolContext } from "../services/tools";
 import type {
   PlannerAIMessage,
   PlannerAIStatus,
@@ -21,6 +25,28 @@ import type {
 } from "../types";
 
 const uid = () => `m_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+
+/** Prompt de sistema mínimo que dá contexto do projeto/cômodo ativo ao LLM. */
+function buildPlannerSystemPrompt(
+  p: PlannerProject,
+  ctx: ToolContext,
+): string {
+  const env = p.environments.find((e) => e.id === ctx.environmentId);
+  const room = env?.rooms.find((r) => r.id === ctx.roomId);
+  const briefing = p.briefing
+    ? `Briefing: estilo=${p.briefing.style ?? "—"}, ambiente=${p.briefing.environmentType ?? "—"}, área=${p.briefing.areaM2 ?? "—"}m², orçamento=${p.briefing.budget ?? "—"}.`
+    : "";
+  return [
+    "Você é a IA Copiloto do Dioris Planner — um sistema paramétrico de marcenaria em pt-BR.",
+    "Responda em português, de forma objetiva e prática, focando marcenaria, ergonomia e produção.",
+    `Projeto ativo: "${p.name}" (v${p.version}).`,
+    env ? `Ambiente ativo: "${env.name}".` : "Nenhum ambiente selecionado.",
+    room ? `Cômodo ativo: "${room.name}" (${room.dimensions.width}×${room.dimensions.depth}×${room.dimensions.height} mm).` : "Nenhum cômodo selecionado.",
+    briefing,
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
 
 export const PLANNER_QUICK_ACTIONS: readonly PlannerAIQuickAction[] = [
   { id: "kitchen", label: "Crie uma cozinha moderna", prompt: "Crie uma cozinha moderna com ilha e LED." },
@@ -42,6 +68,7 @@ export function usePlannerChat() {
   const editor = usePlannerEditor();
   const { activeCompany } = useTenant();
   const tenantId = activeCompany?.id ?? "anonymous";
+  const runAI = useServerFn(aiGenerateText);
 
   const [state, setState] = useState<ChatState>({
     messages: [
@@ -125,6 +152,26 @@ export function usePlannerChat() {
           },
           rules,
           signal: controller.signal,
+          llmReply: async ({ userMessage, role, project: p, ctx }) => {
+            // Consulta o AI Gateway real do Core (com créditos e auditoria).
+            // Falha silenciosa → o agent volta ao intérprete heurístico.
+            try {
+              const res = await runAI({
+                data: {
+                  task: { type: "text", quality: "standard", speed: "balanced" },
+                  system: buildPlannerSystemPrompt(p, ctx),
+                  prompt: `Usuário (${role}): ${userMessage}`,
+                  temperature: 0.4,
+                  maxTokens: 500,
+                },
+              });
+              return typeof res?.output === "string" && res.output.trim().length > 0
+                ? res.output
+                : null;
+            } catch {
+              return null;
+            }
+          },
         })) {
           if (controller.signal.aborted) break;
           if (chunk.kind === "text" && chunk.text) {

@@ -75,6 +75,29 @@ export type PlannerProjectStatus =
   | "approved"
   | "archived";
 
+export type PlannerProjectStyle =
+  | "moderno"
+  | "minimalista"
+  | "escandinavo"
+  | "industrial"
+  | "classico"
+  | "rustico"
+  | "contemporaneo"
+  | "boho"
+  | "japandi"
+  | "luxo"
+  | "provencal"
+  | "outro";
+
+export interface PlannerProjectBriefing {
+  environmentType?: PlannerRoomType;
+  style?: PlannerProjectStyle;
+  areaM2?: number;
+  budget?: number;
+  deadline?: string;
+  notes?: string;
+}
+
 export interface PlannerProject {
   id: PlannerProjectId;
   tenantId: string;
@@ -86,6 +109,7 @@ export interface PlannerProject {
   createdAt: string;
   updatedAt: string;
   version: number;
+  briefing?: PlannerProjectBriefing;
 }
 
 export interface PlannerProjectVersion {
