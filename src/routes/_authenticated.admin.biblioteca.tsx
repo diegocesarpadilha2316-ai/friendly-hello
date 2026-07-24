@@ -390,7 +390,6 @@ function MaterialsPanel({ onChanged }: { onChanged: () => void }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar por padrão (Carvalho, Branco TX…)"
-            icon={<Search className="h-4 w-4" />}
           />
         </div>
         <div className="flex items-center gap-2">
@@ -634,7 +633,6 @@ function HardwarePanel({ onChanged }: { onChanged: () => void }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar por modelo (Clip Top, Movento…)"
-            icon={<Search className="h-4 w-4" />}
           />
         </div>
         <div className="flex items-center gap-2">
