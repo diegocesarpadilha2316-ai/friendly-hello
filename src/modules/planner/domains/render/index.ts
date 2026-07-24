@@ -13,4 +13,7 @@
  *
  * Nenhuma funcionalidade nesta fase — apenas estrutura.
  */
-export {};
+export * from "./types";
+export * from "./services";
+export * from "./hooks";
+export * from "./components";
