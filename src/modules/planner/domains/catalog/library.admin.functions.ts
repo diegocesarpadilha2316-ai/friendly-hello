@@ -266,3 +266,187 @@ export const adminDeleteHardware = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
+
+// ============================================================================
+// importPlannerLibrary — Importação protegida com relatório e histórico
+// ============================================================================
+// - Somente admin executa (assertPlatformAdmin + RLS).
+// - Processamento em lote (500 linhas).
+// - Validação por Zod (linhas inválidas viram erros no relatório, sem abortar).
+// - Deduplicação: linhas com mesmo id na mesma importação → mantém a última;
+//   ids já existentes no banco viram "updated"; novos, "inserted".
+// - Relatório: inserted / updated / skipped / errors[] com linha + motivo.
+// - Histórico: 1 registro em planner_library_imports por importação.
+// ============================================================================
+
+const ImportInput = z
+  .object({
+    kind: z.enum(["materials", "hardware"]),
+    filename: z.string().trim().max(240).optional(),
+    rows: z.array(z.unknown()).min(1).max(20000),
+  })
+  .strict();
+
+type ImportError = { row: number; id?: string; reason: string };
+type ImportReport = {
+  importId: string | null;
+  kind: "materials" | "hardware";
+  total: number;
+  inserted: number;
+  updated: number;
+  skipped: number;
+  errors: ImportError[];
+};
+
+export const importPlannerLibrary = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .inputValidator((i) => ImportInput.parse(i))
+  .handler(async ({ context, data }): Promise<ImportReport> => {
+    const { supabase, userId, email } = context;
+    await assertPlatformAdmin(supabase, userId);
+
+    const { getSupabaseAdmin } = await import("@/core/lib/supabase/admin.server");
+    const admin = getSupabaseAdmin();
+
+    const schema = data.kind === "materials" ? MaterialRow : HardwareRow;
+    const table = data.kind === "materials" ? "planner_materials" : "planner_hardware";
+
+    // 1) Validação + deduplicação por id (última ocorrência vence).
+    const errors: ImportError[] = [];
+    const seen = new Map<string, Record<string, unknown>>();
+    data.rows.forEach((raw, idx) => {
+      const parsed = schema.safeParse(raw);
+      if (!parsed.success) {
+        errors.push({
+          row: idx + 1,
+          id: (raw as { id?: string })?.id,
+          reason: parsed.error.issues.map((e) => `${e.path.join(".")}: ${e.message}`).join("; "),
+        });
+        return;
+      }
+      seen.set(parsed.data.id, parsed.data as Record<string, unknown>);
+    });
+    const skipped = data.rows.length - seen.size - errors.length; // duplicatas internas
+    const validRows = Array.from(seen.values());
+
+    if (validRows.length === 0) {
+      // Registra histórico mesmo sem linhas válidas
+      const { data: hist } = await admin
+        .from("planner_library_imports")
+        .insert({
+          kind: data.kind,
+          filename: data.filename ?? null,
+          total_rows: data.rows.length,
+          inserted_count: 0,
+          updated_count: 0,
+          skipped_count: skipped,
+          error_count: errors.length,
+          errors: errors.slice(0, 500),
+          admin_user_id: userId,
+          admin_email: email ?? null,
+        })
+        .select("id")
+        .single();
+      return {
+        importId: hist?.id ?? null,
+        kind: data.kind,
+        total: data.rows.length,
+        inserted: 0,
+        updated: 0,
+        skipped,
+        errors,
+      };
+    }
+
+    // 2) Descobre quais IDs já existem para separar inserted/updated.
+    const ids = validRows.map((r) => r.id as string);
+    const existing = new Set<string>();
+    const CHK_BATCH = 500;
+    for (let i = 0; i < ids.length; i += CHK_BATCH) {
+      const slice = ids.slice(i, i + CHK_BATCH);
+      const { data: rows, error } = await admin
+        .from(table)
+        .select("id")
+        .in("id", slice);
+      if (error) throw new Error(`Lookup falhou: ${error.message}`);
+      for (const r of rows ?? []) existing.add((r as { id: string }).id);
+    }
+
+    let inserted = 0;
+    let updated = 0;
+
+    // 3) Upsert em lotes.
+    const UPS_BATCH = 500;
+    for (let i = 0; i < validRows.length; i += UPS_BATCH) {
+      const chunk = validRows.slice(i, i + UPS_BATCH);
+      const { error } = await admin.from(table).upsert(chunk, { onConflict: "id" });
+      if (error) {
+        // Falha do lote inteiro: registra e continua.
+        for (const r of chunk) {
+          errors.push({ row: -1, id: r.id as string, reason: error.message });
+        }
+        continue;
+      }
+      for (const r of chunk) {
+        if (existing.has(r.id as string)) updated += 1;
+        else inserted += 1;
+      }
+    }
+
+    // 4) Registra histórico.
+    const { data: hist, error: histErr } = await admin
+      .from("planner_library_imports")
+      .insert({
+        kind: data.kind,
+        filename: data.filename ?? null,
+        total_rows: data.rows.length,
+        inserted_count: inserted,
+        updated_count: updated,
+        skipped_count: skipped,
+        error_count: errors.length,
+        errors: errors.slice(0, 500),
+        admin_user_id: userId,
+        admin_email: email ?? null,
+      })
+      .select("id")
+      .single();
+    if (histErr) {
+      // Falha ao registrar histórico não invalida a importação, mas registramos no relatório.
+      errors.push({ row: -1, reason: `Histórico falhou: ${histErr.message}` });
+    }
+
+    return {
+      importId: hist?.id ?? null,
+      kind: data.kind,
+      total: data.rows.length,
+      inserted,
+      updated,
+      skipped,
+      errors,
+    };
+  });
+
+/** Lista o histórico de importações (mais recente primeiro). */
+export const adminListImportHistory = createServerFn({ method: "GET" })
+  .middleware([requireAuth])
+  .inputValidator((i) =>
+    z
+      .object({
+        kind: z.enum(["materials", "hardware"]).optional(),
+        limit: z.number().int().min(1).max(200).optional(),
+      })
+      .parse(i ?? {}),
+  )
+  .handler(async ({ context, data }) => {
+    const { supabase, userId } = context;
+    await assertPlatformAdmin(supabase, userId);
+    let q = supabase
+      .from("planner_library_imports")
+      .select("id, kind, filename, total_rows, inserted_count, updated_count, skipped_count, error_count, admin_email, admin_user_id, created_at")
+      .order("created_at", { ascending: false })
+      .limit(data.limit ?? 50);
+    if (data.kind) q = q.eq("kind", data.kind);
+    const { data: rows, error } = await q;
+    if (error) throw new Error(error.message);
+    return rows ?? [];
+  });

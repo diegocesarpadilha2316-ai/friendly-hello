@@ -12,6 +12,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   Loader2,
+  History,
+  FileSpreadsheet,
 } from "lucide-react";
 import { app } from "@/core/config";
 import {
@@ -24,8 +26,8 @@ import {
 } from "@/core/components/ui-kit";
 import { useIsPlatformAdmin } from "@/core/hooks";
 import {
-  adminImportHardware,
-  adminImportMaterials,
+  importPlannerLibrary,
+  adminListImportHistory,
   adminLibraryStats,
   adminListHardware,
   adminListMaterials,
@@ -241,7 +243,17 @@ function AccessDenied() {
   );
 }
 
-type Tab = "materiais" | "ferragens";
+type Tab = "materiais" | "ferragens" | "historico";
+
+type ImportReportShape = {
+  importId: string | null;
+  kind: "materials" | "hardware";
+  total: number;
+  inserted: number;
+  updated: number;
+  skipped: number;
+  errors: Array<{ row: number; id?: string; reason: string }>;
+};
 
 function AdminLibraryContent() {
   const [tab, setTab] = useState<Tab>("materiais");
@@ -294,14 +306,15 @@ function AdminLibraryContent() {
         <TabButton active={tab === "ferragens"} onClick={() => setTab("ferragens")}>
           <Wrench className="h-4 w-4" /> Ferragens
         </TabButton>
+        <TabButton active={tab === "historico"} onClick={() => setTab("historico")}>
+          <History className="h-4 w-4" /> Histórico
+        </TabButton>
       </div>
 
       <div className="mt-6">
-        {tab === "materiais" ? (
-          <MaterialsPanel onChanged={refreshStats} />
-        ) : (
-          <HardwarePanel onChanged={refreshStats} />
-        )}
+        {tab === "materiais" && <MaterialsPanel onChanged={refreshStats} />}
+        {tab === "ferragens" && <HardwarePanel onChanged={refreshStats} />}
+        {tab === "historico" && <HistoryPanel />}
       </div>
     </PageContainer>
   );
@@ -351,8 +364,10 @@ function MaterialsPanel({ onChanged }: { onChanged: () => void }) {
     reload();
   }, [reload]);
 
+  const [report, setReport] = useState<ImportReportShape | null>(null);
   const handleImport = async (file: File) => {
     setBusy(true);
+    setReport(null);
     setStatus({ tone: "info", text: `Lendo ${file.name}…` });
     try {
       const text = await file.text();
@@ -365,11 +380,14 @@ function MaterialsPanel({ onChanged }: { onChanged: () => void }) {
         setBusy(false);
         return;
       }
-      setStatus({ tone: "info", text: `Enviando ${parsed.length} materiais…` });
-      const r = await adminImportMaterials({ data: { rows: parsed } as never });
+      setStatus({ tone: "info", text: `Processando ${parsed.length} materiais em lote…` });
+      const r = (await importPlannerLibrary({
+        data: { kind: "materials", filename: file.name, rows: parsed } as never,
+      })) as ImportReportShape;
+      setReport(r);
       setStatus({
-        tone: "success",
-        text: `${(r as { imported: number }).imported} materiais importados/atualizados.`,
+        tone: r.errors.length > 0 ? "danger" : "success",
+        text: `+${r.inserted} novos · ${r.updated} atualizados · ${r.skipped} duplicados · ${r.errors.length} erros`,
       });
       onChanged();
       reload();
@@ -419,6 +437,7 @@ function MaterialsPanel({ onChanged }: { onChanged: () => void }) {
       </div>
 
       {status && <StatusLine tone={status.tone}>{status.text}</StatusLine>}
+      {report && <ImportReportCard report={report} />}
 
       <div className="rounded-2xl border border-border/60 bg-card">
         <div className="border-b border-border/60 px-4 py-3 text-xs text-muted-foreground">
@@ -594,8 +613,10 @@ function HardwarePanel({ onChanged }: { onChanged: () => void }) {
     reload();
   }, [reload]);
 
+  const [report, setReport] = useState<ImportReportShape | null>(null);
   const handleImport = async (file: File) => {
     setBusy(true);
+    setReport(null);
     setStatus({ tone: "info", text: `Lendo ${file.name}…` });
     try {
       const text = await file.text();
@@ -608,11 +629,14 @@ function HardwarePanel({ onChanged }: { onChanged: () => void }) {
         setBusy(false);
         return;
       }
-      setStatus({ tone: "info", text: `Enviando ${parsed.length} ferragens…` });
-      const r = await adminImportHardware({ data: { rows: parsed } as never });
+      setStatus({ tone: "info", text: `Processando ${parsed.length} ferragens em lote…` });
+      const r = (await importPlannerLibrary({
+        data: { kind: "hardware", filename: file.name, rows: parsed } as never,
+      })) as ImportReportShape;
+      setReport(r);
       setStatus({
-        tone: "success",
-        text: `${(r as { imported: number }).imported} ferragens importadas/atualizadas.`,
+        tone: r.errors.length > 0 ? "danger" : "success",
+        text: `+${r.inserted} novos · ${r.updated} atualizados · ${r.skipped} duplicados · ${r.errors.length} erros`,
       });
       onChanged();
       reload();
@@ -662,6 +686,7 @@ function HardwarePanel({ onChanged }: { onChanged: () => void }) {
       </div>
 
       {status && <StatusLine tone={status.tone}>{status.text}</StatusLine>}
+      {report && <ImportReportCard report={report} />}
 
       <div className="rounded-2xl border border-border/60 bg-card">
         <div className="border-b border-border/60 px-4 py-3 text-xs text-muted-foreground">
@@ -834,6 +859,172 @@ function StatusLine({
         {tone}
       </StatusBadge>
       <span>{children}</span>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Relatório de importação
+// ---------------------------------------------------------------------------
+function ImportReportCard({ report }: { report: ImportReportShape }) {
+  const [showErrors, setShowErrors] = useState(false);
+  return (
+    <div className="rounded-2xl border border-border/60 bg-card p-4">
+      <div className="mb-3 flex items-center gap-2 text-sm font-semibold">
+        <FileSpreadsheet className="h-4 w-4 text-primary" />
+        Relatório da importação
+        {report.importId && (
+          <span className="ml-auto font-mono text-[10px] text-muted-foreground">
+            #{report.importId.slice(0, 8)}
+          </span>
+        )}
+      </div>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+        <ReportStat label="Total" value={report.total} />
+        <ReportStat label="Adicionados" value={report.inserted} tone="success" />
+        <ReportStat label="Atualizados" value={report.updated} tone="info" />
+        <ReportStat label="Duplicados" value={report.skipped} tone="muted" />
+        <ReportStat label="Erros" value={report.errors.length} tone={report.errors.length > 0 ? "danger" : "muted"} />
+      </div>
+      {report.errors.length > 0 && (
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={() => setShowErrors((v) => !v)}
+            className="text-xs font-medium text-destructive hover:underline"
+          >
+            {showErrors ? "Ocultar" : "Ver"} {report.errors.length} erro(s)
+          </button>
+          {showErrors && (
+            <ul className="mt-2 max-h-56 space-y-1 overflow-auto rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-xs">
+              {report.errors.slice(0, 200).map((e, i) => (
+                <li key={i} className="font-mono">
+                  <span className="text-destructive">Linha {e.row}</span>
+                  {e.id && <span className="text-muted-foreground"> · {e.id}</span>}
+                  <span className="text-foreground/80"> — {e.reason}</span>
+                </li>
+              ))}
+              {report.errors.length > 200 && (
+                <li className="text-muted-foreground">
+                  … +{report.errors.length - 200} erros omitidos
+                </li>
+              )}
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ReportStat({
+  label,
+  value,
+  tone = "muted",
+}: {
+  label: string;
+  value: number;
+  tone?: "muted" | "success" | "info" | "danger";
+}) {
+  const colors = {
+    muted: "text-foreground",
+    success: "text-emerald-500",
+    info: "text-sky-500",
+    danger: "text-destructive",
+  }[tone];
+  return (
+    <div className="rounded-lg border border-border/50 bg-background/40 px-3 py-2">
+      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className={`mt-1 text-lg font-semibold ${colors}`}>{value.toLocaleString("pt-BR")}</div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Histórico de importações
+// ---------------------------------------------------------------------------
+type HistoryRow = {
+  id: string;
+  kind: "materials" | "hardware";
+  filename: string | null;
+  total_rows: number;
+  inserted_count: number;
+  updated_count: number;
+  skipped_count: number;
+  error_count: number;
+  admin_email: string | null;
+  admin_user_id: string | null;
+  created_at: string;
+};
+
+function HistoryPanel() {
+  const [rows, setRows] = useState<HistoryRow[] | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    adminListImportHistory({ data: { limit: 100 } as never })
+      .then((r) => setRows(r as HistoryRow[]))
+      .catch((e) => setErr((e as Error).message));
+  }, []);
+
+  if (err) return <StatusLine tone="danger">{err}</StatusLine>;
+  if (!rows) {
+    return (
+      <div className="flex items-center justify-center rounded-2xl border border-border/60 bg-card p-8 text-sm text-muted-foreground">
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Carregando histórico…
+      </div>
+    );
+  }
+  if (rows.length === 0) {
+    return (
+      <EmptyState
+        icon={<History className="h-8 w-8" />}
+        title="Nenhuma importação registrada"
+        description="O histórico de importações da Biblioteca Dioris aparecerá aqui."
+      />
+    );
+  }
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-border/60 bg-card">
+      <table className="w-full text-sm">
+        <thead className="bg-background/40 text-xs uppercase tracking-wide text-muted-foreground">
+          <tr>
+            <th className="px-4 py-2 text-left">Data</th>
+            <th className="px-4 py-2 text-left">Tipo</th>
+            <th className="px-4 py-2 text-left">Arquivo</th>
+            <th className="px-4 py-2 text-left">Admin</th>
+            <th className="px-4 py-2 text-right">Total</th>
+            <th className="px-4 py-2 text-right">Novos</th>
+            <th className="px-4 py-2 text-right">Atualizados</th>
+            <th className="px-4 py-2 text-right">Duplicados</th>
+            <th className="px-4 py-2 text-right">Erros</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={r.id} className="border-t border-border/40 hover:bg-background/40">
+              <td className="px-4 py-2 whitespace-nowrap text-xs text-muted-foreground">
+                {new Date(r.created_at).toLocaleString("pt-BR")}
+              </td>
+              <td className="px-4 py-2">
+                <StatusBadge tone={r.kind === "materials" ? "info" : "warning"}>
+                  {r.kind === "materials" ? "Materiais" : "Ferragens"}
+                </StatusBadge>
+              </td>
+              <td className="px-4 py-2 font-mono text-xs">{r.filename ?? "—"}</td>
+              <td className="px-4 py-2 text-xs">{r.admin_email ?? r.admin_user_id?.slice(0, 8) ?? "—"}</td>
+              <td className="px-4 py-2 text-right">{r.total_rows.toLocaleString("pt-BR")}</td>
+              <td className="px-4 py-2 text-right text-emerald-500">+{r.inserted_count}</td>
+              <td className="px-4 py-2 text-right text-sky-500">{r.updated_count}</td>
+              <td className="px-4 py-2 text-right text-muted-foreground">{r.skipped_count}</td>
+              <td className={`px-4 py-2 text-right ${r.error_count > 0 ? "text-destructive" : "text-muted-foreground"}`}>
+                {r.error_count}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
