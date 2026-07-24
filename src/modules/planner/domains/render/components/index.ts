@@ -5,3 +5,4 @@ export * from "./MaterialLibrary";
 export * from "./PostProcessingPanel";
 export * from "./RenderQueue";
 export * from "./RenderStudio";
+export * from "./UltraPanel";

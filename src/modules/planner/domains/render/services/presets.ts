@@ -140,6 +140,24 @@ export const RENDER_PRESETS: readonly RenderPreset[] = [
       denoise: "ai",
     },
   },
+  {
+    id: "cinema",
+    label: "Cinema",
+    description: "Look cinematográfico: DoF anamórfico, motion blur, grade Kodak-like.",
+    usage: ["hero shots", "campanhas premium", "abertura de vídeo"],
+    recommendedFor: ["still", "video", "marketing"],
+    quality: {
+      shadows: "ultra",
+      reflections: "ultra",
+      globalIllumination: "ultra",
+      ambientOcclusion: "ultra",
+      quality: "ultra",
+      antialiasing: "msaa8x",
+      resolution: RES.uhd,
+      samples: 6144,
+      denoise: "ai",
+    },
+  },
 ];
 
 const INDEX = new Map(RENDER_PRESETS.map((p) => [p.id, p]));

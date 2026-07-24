@@ -15,7 +15,8 @@ export type RenderPresetId =
   | "alta"
   | "ultra"
   | "fotografica"
-  | "marketing";
+  | "marketing"
+  | "cinema";
 
 export type RenderQualityLevel = "off" | "baixa" | "media" | "alta" | "ultra";
 export type RenderAAMode = "off" | "fxaa" | "taa" | "msaa2x" | "msaa4x" | "msaa8x";
