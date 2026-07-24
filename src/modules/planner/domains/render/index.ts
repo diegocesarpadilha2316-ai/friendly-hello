@@ -17,3 +17,4 @@ export * from "./types";
 export * from "./services";
 export * from "./hooks";
 export * from "./components";
+export * as Realtime from "./realtime";
