@@ -5,7 +5,7 @@
  * Toda a arquitetura descreve como qualquer backend futuro (Local, IA,
  * Nuvem, Vídeo, Marketing) receberá o mesmo `RenderJob`.
  */
-import type { PlannerProject, PlannerRoomId } from "@/modules/planner/shared/types/project";
+import type { PlannerProject } from "@/modules/planner/shared/types/project";
 
 // ————— Qualidade / presets —————
 export type RenderPresetId =
@@ -205,7 +205,7 @@ export interface RenderJobConfig {
   readonly postProcessing: RenderPostProcessing;
   readonly target: RenderTargetKind;
   readonly providerId: RenderProviderId;
-  readonly roomId: PlannerRoomId | null;
+  readonly roomId: string | null;
   readonly environmentId: string | null;
   readonly durationSec?: number;
   readonly notes?: string;
