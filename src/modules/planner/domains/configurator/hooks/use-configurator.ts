@@ -89,8 +89,8 @@ export function useConfigurator() {
   }, [modules, state.layerVisible, state.layerLocked]);
 
   const history = useMemo(
-    () => buildHistory(editor.state.past, project, auth.session?.user?.email ?? "usuário"),
-    [editor.state.past, project, auth.session?.user?.email],
+    () => buildHistory(editor.state.past, project, auth.user?.email ?? "usuário"),
+    [editor.state.past, project, auth.user?.email],
   );
 
   const snapshot: ConfiguratorSnapshot = {
