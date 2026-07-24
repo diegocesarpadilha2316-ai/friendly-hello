@@ -137,21 +137,15 @@ export function usePlannerChat() {
               const res = await runAI({
                 data: {
                   task: { type: "text", quality: "standard", speed: "balanced" },
-                  system: buildSystemPrompt(p, ctx),
+                  system: buildPlannerSystemPrompt(p, ctx),
                   prompt: `Usuário (${role}): ${userMessage}`,
                   temperature: 0.4,
                   maxTokens: 500,
-                  reason: "planner:chat",
-                  reference: p.id,
                 },
               });
-              const text =
-                typeof res?.data === "string"
-                  ? res.data
-                  : typeof (res as { text?: string })?.text === "string"
-                    ? (res as { text: string }).text
-                    : null;
-              return text;
+              return typeof res?.output === "string" && res.output.trim().length > 0
+                ? res.output
+                : null;
             } catch {
               return null;
             }
