@@ -10,6 +10,7 @@ import {
 } from "@/core/components/ui-kit";
 import { cn } from "@/lib/utils";
 import { useProduction } from "../hooks/use-production";
+import { FabricationPanel } from "./FabricationPanel";
 import {
   CNC_MACHINES,
   ERP_PROVIDERS,
@@ -46,6 +47,7 @@ const TABS = [
   { id: "producao", label: "Produção" },
   { id: "etiquetas", label: "Etiquetas" },
   { id: "cnc", label: "CNC" },
+  { id: "fabricacao", label: "Fabricação" },
   { id: "erp", label: "ERP" },
   { id: "exportar", label: "Exportar" },
   { id: "ia", label: "IA" },
@@ -225,6 +227,7 @@ export function ProductionStudio() {
           onMachineChange={setMachineId}
         />
       )}
+      {tab === "fabricacao" && <FabricationPanel />}
       {tab === "erp" && <ErpPanel />}
       {tab === "exportar" && <ExportPanel onDownload={downloadFile} />}
       {tab === "ia" && (

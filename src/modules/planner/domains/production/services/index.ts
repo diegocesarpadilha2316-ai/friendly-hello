@@ -11,3 +11,4 @@ export * from "./cnc";
 export * from "./erp";
 export * from "./ai-commands";
 export * from "./report";
+export * from "./fabrication";
