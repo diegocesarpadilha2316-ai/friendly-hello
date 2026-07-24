@@ -23,6 +23,7 @@ function bool(node: PlannerParametricNode, key: string, def: boolean): boolean {
 export function toPrimitive(node: PlannerParametricNode): Editor2DPrimitive | null {
   const layer = (str(node, "layer", "") || defaultLayerFor(node.kind, node.params["role"])) as Editor2DLayerId;
   const locked = bool(node, "locked", false);
+  const materialId = str(node, "materialId", "") || undefined;
   switch (node.kind) {
     case "wall":
       return {
@@ -35,6 +36,7 @@ export function toPrimitive(node: PlannerParametricNode): Editor2DPrimitive | nu
         x2: num(node, "x2", 0),
         y2: num(node, "y2", 0),
         thickness: num(node, "thickness", 100),
+        materialId,
       };
     case "opening": {
       const role = str(node, "role", "door") === "window" ? "window" : "door";
@@ -49,6 +51,7 @@ export function toPrimitive(node: PlannerParametricNode): Editor2DPrimitive | nu
         width: num(node, "width", role === "door" ? 800 : 1200),
         height: num(node, "height", role === "door" ? 2100 : 1200),
         rotation: num(node, "rotation", 0),
+        materialId,
       };
     }
     case "floor":
@@ -62,6 +65,7 @@ export function toPrimitive(node: PlannerParametricNode): Editor2DPrimitive | nu
         y: num(node, "y", 0),
         width: num(node, "width", 1000),
         depth: num(node, "depth", 1000),
+        materialId,
       };
     case "material": {
       if (str(node, "role", "") !== "guide") return null;
@@ -93,6 +97,7 @@ export function toPrimitive(node: PlannerParametricNode): Editor2DPrimitive | nu
         depth: num(node, "depth", 400),
         height: num(node, "height", 900),
         rotation: num(node, "rotation", 0),
+        materialId,
         params,
       };
     }
@@ -125,6 +130,7 @@ export function fromPrimitive(p: Editor2DPrimitive, label?: string): PlannerPara
         params: {
           x1: p.x1, y1: p.y1, x2: p.x2, y2: p.y2,
           thickness: p.thickness, layer: p.layer, locked: p.locked,
+          materialId: p.materialId ?? null,
         },
       };
     case "opening":
@@ -135,6 +141,7 @@ export function fromPrimitive(p: Editor2DPrimitive, label?: string): PlannerPara
           role: p.role,
           x: p.x, y: p.y, width: p.width, height: p.height,
           rotation: p.rotation, layer: p.layer, locked: p.locked,
+          materialId: p.materialId ?? null,
         },
       };
     case "floor":
@@ -145,6 +152,7 @@ export function fromPrimitive(p: Editor2DPrimitive, label?: string): PlannerPara
         params: {
           x: p.x, y: p.y, width: p.width, depth: p.depth,
           layer: p.layer, locked: p.locked,
+          materialId: p.materialId ?? null,
         },
       };
     case "guide":
@@ -171,6 +179,7 @@ export function fromPrimitive(p: Editor2DPrimitive, label?: string): PlannerPara
           width: p.width, depth: p.depth, height: p.height,
           rotation: p.rotation,
           layer: p.layer, locked: p.locked,
+          materialId: p.materialId ?? null,
           ...custom,
         },
       };
