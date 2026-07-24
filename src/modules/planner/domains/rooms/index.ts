@@ -11,6 +11,8 @@
  * `@/modules/planner/shared` (PlannerRegistry + PlannerEventBus).
  * Não importe outros domínios diretamente.
  *
- * Fase 3.7 — Vision (foto → PlannerRoom) publicado abaixo.
+ * Fase 3.7 — Vision (foto → PlannerRoom).
+ * Fase 3.8 — Decor (estilos, sugestões, aceitar/rejeitar).
  */
 export * from "./vision";
+export * from "./decor";
