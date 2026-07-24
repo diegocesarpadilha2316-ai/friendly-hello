@@ -12,7 +12,7 @@ export function buildQualityChecklist(report: ProductionReport): QualityChecklis
       title: `Conferir dimensões ${p.label}`,
       description: `Medidas nominais ${p.widthMm}×${p.heightMm}×${p.thicknessMm} mm — tolerância ±0,5 mm.`,
       required: true,
-      targetPartCode: p.code,
+      targetPartCode: p.id,
       severity: "critical",
     });
   }
@@ -25,7 +25,7 @@ export function buildQualityChecklist(report: ProductionReport): QualityChecklis
       title: `Fita de borda ${p.label}`,
       description: `Verificar adesão e alinhamento de ${p.edgeMetersEach.toFixed(2)} m por peça.`,
       required: true,
-      targetPartCode: p.code,
+      targetPartCode: p.id,
       severity: "warn",
     });
   }
