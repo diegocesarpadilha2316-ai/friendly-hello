@@ -1,5 +1,5 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, FolderKanban, Boxes, Sparkles, Wrench } from "lucide-react";
+import { LayoutDashboard, FolderKanban, Boxes, Sparkles, Wrench, ScanEye } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { PlannerAIFab } from "@/modules/planner/domains/ia";
@@ -11,6 +11,7 @@ const NAV: readonly Item[] = [
   { to: "/planner/projetos", label: "Projetos", icon: FolderKanban },
   { to: "/planner/biblioteca", label: "Biblioteca", icon: Boxes },
   { to: "/planner/engenharia", label: "Engenharia", icon: Wrench },
+  { to: "/planner/visao", label: "IA Visão", icon: ScanEye },
   { to: "/planner/ia", label: "IA de Projeto", icon: Sparkles },
 ];
 

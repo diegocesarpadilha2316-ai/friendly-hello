@@ -11,6 +11,6 @@
  * `@/modules/planner/shared` (PlannerRegistry + PlannerEventBus).
  * Não importe outros domínios diretamente.
  *
- * Nenhuma funcionalidade nesta fase — apenas estrutura.
+ * Fase 3.7 — Vision (foto → PlannerRoom) publicado abaixo.
  */
-export {};
+export * from "./vision";
