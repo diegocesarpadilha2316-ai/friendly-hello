@@ -120,7 +120,7 @@ export function ProductionStudio() {
   const downloadFile = (format: ProductionExportFormat) => {
     let content = "";
     let mime = "text/plain";
-    let ext = format;
+    let ext: string = format;
     if (format === "csv") {
       content = serializeCutListCsv(report.cutList);
       mime = "text/csv";
