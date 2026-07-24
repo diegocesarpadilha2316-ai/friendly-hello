@@ -45,8 +45,9 @@ import { CameraPanel } from "./CameraPanel";
 import { MaterialLibrary } from "./MaterialLibrary";
 import { PostProcessingPanel } from "./PostProcessingPanel";
 import { RenderQueue } from "./RenderQueue";
+import { UltraPanel } from "./UltraPanel";
 
-type Tab = "iluminacao" | "camera" | "materiais" | "pos";
+type Tab = "iluminacao" | "camera" | "materiais" | "pos" | "ultra";
 
 const TARGETS: readonly { id: RenderTargetKind; label: string; icon: typeof Camera }[] = [
   { id: "still", label: "Still", icon: Camera },
@@ -225,6 +226,7 @@ export function RenderStudio() {
                 { id: "camera", label: "Câmera" },
                 { id: "materiais", label: "Materiais" },
                 { id: "pos", label: "Pós" },
+                { id: "ultra", label: "Ultra" },
               ] as const
             ).map((t) => (
               <button
@@ -254,6 +256,7 @@ export function RenderStudio() {
             {tab === "camera" && <CameraPanel cameraId={cameraId} onSelect={setCameraId} />}
             {tab === "materiais" && <MaterialLibrary />}
             {tab === "pos" && <PostProcessingPanel pp={pp} />}
+            {tab === "ultra" && <UltraPanel presetId={presetId} />}
           </div>
         </div>
 
