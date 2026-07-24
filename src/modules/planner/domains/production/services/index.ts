@@ -12,3 +12,5 @@ export * from "./erp";
 export * from "./ai-commands";
 export * from "./report";
 export * from "./fabrication";
+export * from "./industrial";
+export * from "./intelligence";
