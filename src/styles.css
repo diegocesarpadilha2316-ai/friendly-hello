@@ -254,3 +254,19 @@
 .dioris-pulse-dot {
   animation: dioris-pulse-dot 2.6s ease-in-out infinite;
 }
+
+/* Bokeh orbs (glowing spheres) for auth/onboarding backgrounds */
+@keyframes dioris-orb-float {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33%      { transform: translate3d(24px, -18px, 0) scale(1.08); }
+  66%      { transform: translate3d(-18px, 22px, 0) scale(0.94); }
+}
+.dioris-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(28px);
+  opacity: 0.75;
+  mix-blend-mode: screen;
+  animation: dioris-orb-float 14s ease-in-out infinite;
+  will-change: transform;
+}
