@@ -12,6 +12,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   Loader2,
+  History,
+  FileSpreadsheet,
 } from "lucide-react";
 import { app } from "@/core/config";
 import {
@@ -24,8 +26,8 @@ import {
 } from "@/core/components/ui-kit";
 import { useIsPlatformAdmin } from "@/core/hooks";
 import {
-  adminImportHardware,
-  adminImportMaterials,
+  importPlannerLibrary,
+  adminListImportHistory,
   adminLibraryStats,
   adminListHardware,
   adminListMaterials,
