@@ -3,7 +3,7 @@
  * ferramenta incompatível, veio, etc.
  */
 import type { CutListRow } from "../../types";
-import { findMachine } from "./machines";
+import { findCncMachine } from "./machines";
 import { findTool } from "./tooling";
 import type { CncIssue, CncOperation } from "./types";
 
@@ -13,7 +13,7 @@ export function verifyOperations(
   machineId?: string,
 ): readonly CncIssue[] {
   const issues: CncIssue[] = [];
-  const machine = machineId ? findMachine(machineId) : undefined;
+  const machine = machineId ? findCncMachine(machineId) : undefined;
 
   // duplicados
   const seen = new Map<string, CncOperation>();

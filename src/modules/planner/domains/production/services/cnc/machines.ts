@@ -98,6 +98,6 @@ export const CNC_MACHINE_CATALOG: readonly CncMachine[] = [
   },
 ];
 
-export function findMachine(id: string): CncMachine | undefined {
+export function findCncMachine(id: string): CncMachine | undefined {
   return CNC_MACHINE_CATALOG.find((m) => m.id === id);
 }

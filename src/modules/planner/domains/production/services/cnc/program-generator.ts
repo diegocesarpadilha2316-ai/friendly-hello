@@ -2,7 +2,7 @@
  * Geração real de programas CNC — encadeia operações → post processor.
  */
 import type { CutListRow } from "../../types";
-import { findMachine } from "./machines";
+import { findCncMachine } from "./machines";
 import { buildOperationsForPart } from "./operations";
 import { postProcessor } from "./postprocessors";
 import { findTool } from "./tooling";
@@ -13,7 +13,7 @@ export function generateProgram(
   machineId: string,
   format?: CncFormat,
 ): CncProgram | null {
-  const machine = findMachine(machineId);
+  const machine = findCncMachine(machineId);
   if (!machine) return null;
   const chosenFormat: CncFormat = format ?? machine.formats[0];
   if (!machine.formats.includes(chosenFormat)) return null;
