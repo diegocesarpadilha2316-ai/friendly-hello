@@ -76,6 +76,7 @@ import { Route as AuthenticatedPlannerProducaoRouteImport } from './routes/_auth
 import { Route as AuthenticatedPlannerIaRouteImport } from './routes/_authenticated.planner.ia'
 import { Route as AuthenticatedPlannerEngenhariaRouteImport } from './routes/_authenticated.planner.engenharia'
 import { Route as AuthenticatedPlannerDecoradoraRouteImport } from './routes/_authenticated.planner.decoradora'
+import { Route as AuthenticatedPlannerConfiguradorRouteImport } from './routes/_authenticated.planner.configurador'
 import { Route as AuthenticatedPlannerBibliotecaRouteImport } from './routes/_authenticated.planner.biblioteca'
 import { Route as AuthenticatedConfiguracoesEmpresaRouteImport } from './routes/_authenticated.configuracoes.empresa'
 import { Route as ApiPublicV1PingRouteImport } from './routes/api/public/v1/ping'
@@ -443,6 +444,12 @@ const AuthenticatedPlannerDecoradoraRoute =
     path: '/decoradora',
     getParentRoute: () => AuthenticatedPlannerRoute,
   } as any)
+const AuthenticatedPlannerConfiguradorRoute =
+  AuthenticatedPlannerConfiguradorRouteImport.update({
+    id: '/configurador',
+    path: '/configurador',
+    getParentRoute: () => AuthenticatedPlannerRoute,
+  } as any)
 const AuthenticatedPlannerBibliotecaRoute =
   AuthenticatedPlannerBibliotecaRouteImport.update({
     id: '/biblioteca',
@@ -512,6 +519,7 @@ export interface FileRoutesByFullPath {
   '/termos': typeof PublicTermosRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/planner/biblioteca': typeof AuthenticatedPlannerBibliotecaRoute
+  '/planner/configurador': typeof AuthenticatedPlannerConfiguradorRoute
   '/planner/decoradora': typeof AuthenticatedPlannerDecoradoraRoute
   '/planner/engenharia': typeof AuthenticatedPlannerEngenhariaRoute
   '/planner/ia': typeof AuthenticatedPlannerIaRoute
@@ -582,6 +590,7 @@ export interface FileRoutesByTo {
   '/termos': typeof PublicTermosRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/planner/biblioteca': typeof AuthenticatedPlannerBibliotecaRoute
+  '/planner/configurador': typeof AuthenticatedPlannerConfiguradorRoute
   '/planner/decoradora': typeof AuthenticatedPlannerDecoradoraRoute
   '/planner/engenharia': typeof AuthenticatedPlannerEngenhariaRoute
   '/planner/ia': typeof AuthenticatedPlannerIaRoute
@@ -657,6 +666,7 @@ export interface FileRoutesById {
   '/_public/': typeof PublicIndexRoute
   '/_authenticated/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/_authenticated/planner/biblioteca': typeof AuthenticatedPlannerBibliotecaRoute
+  '/_authenticated/planner/configurador': typeof AuthenticatedPlannerConfiguradorRoute
   '/_authenticated/planner/decoradora': typeof AuthenticatedPlannerDecoradoraRoute
   '/_authenticated/planner/engenharia': typeof AuthenticatedPlannerEngenhariaRoute
   '/_authenticated/planner/ia': typeof AuthenticatedPlannerIaRoute
@@ -731,6 +741,7 @@ export interface FileRouteTypes {
     | '/termos'
     | '/configuracoes/empresa'
     | '/planner/biblioteca'
+    | '/planner/configurador'
     | '/planner/decoradora'
     | '/planner/engenharia'
     | '/planner/ia'
@@ -801,6 +812,7 @@ export interface FileRouteTypes {
     | '/termos'
     | '/configuracoes/empresa'
     | '/planner/biblioteca'
+    | '/planner/configurador'
     | '/planner/decoradora'
     | '/planner/engenharia'
     | '/planner/ia'
@@ -875,6 +887,7 @@ export interface FileRouteTypes {
     | '/_public/'
     | '/_authenticated/configuracoes/empresa'
     | '/_authenticated/planner/biblioteca'
+    | '/_authenticated/planner/configurador'
     | '/_authenticated/planner/decoradora'
     | '/_authenticated/planner/engenharia'
     | '/_authenticated/planner/ia'
@@ -1389,6 +1402,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlannerDecoradoraRouteImport
       parentRoute: typeof AuthenticatedPlannerRoute
     }
+    '/_authenticated/planner/configurador': {
+      id: '/_authenticated/planner/configurador'
+      path: '/configurador'
+      fullPath: '/planner/configurador'
+      preLoaderRoute: typeof AuthenticatedPlannerConfiguradorRouteImport
+      parentRoute: typeof AuthenticatedPlannerRoute
+    }
     '/_authenticated/planner/biblioteca': {
       id: '/_authenticated/planner/biblioteca'
       path: '/biblioteca'
@@ -1444,6 +1464,7 @@ const AuthenticatedPlannerProjetosRouteWithChildren =
 
 interface AuthenticatedPlannerRouteChildren {
   AuthenticatedPlannerBibliotecaRoute: typeof AuthenticatedPlannerBibliotecaRoute
+  AuthenticatedPlannerConfiguradorRoute: typeof AuthenticatedPlannerConfiguradorRoute
   AuthenticatedPlannerDecoradoraRoute: typeof AuthenticatedPlannerDecoradoraRoute
   AuthenticatedPlannerEngenhariaRoute: typeof AuthenticatedPlannerEngenhariaRoute
   AuthenticatedPlannerIaRoute: typeof AuthenticatedPlannerIaRoute
@@ -1457,6 +1478,7 @@ interface AuthenticatedPlannerRouteChildren {
 
 const AuthenticatedPlannerRouteChildren: AuthenticatedPlannerRouteChildren = {
   AuthenticatedPlannerBibliotecaRoute: AuthenticatedPlannerBibliotecaRoute,
+  AuthenticatedPlannerConfiguradorRoute: AuthenticatedPlannerConfiguradorRoute,
   AuthenticatedPlannerDecoradoraRoute: AuthenticatedPlannerDecoradoraRoute,
   AuthenticatedPlannerEngenhariaRoute: AuthenticatedPlannerEngenhariaRoute,
   AuthenticatedPlannerIaRoute: AuthenticatedPlannerIaRoute,
