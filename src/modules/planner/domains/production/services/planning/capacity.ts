@@ -14,7 +14,7 @@ export function computeCapacityWindow(
 ): CapacityWindow {
   const days = scope === "diaria" ? 1 : scope === "semanal" ? 7 : 30;
   const cal = buildIndustrialCalendar(startISO, days);
-  const wd = workdaysBetween(cal);
+  void workdaysBetween(cal);
   const availableHours = totalCalendarHours(cal);
   const usedHours = Math.min(availableHours, totalHoursDemand);
   const idleHours = Math.max(0, availableHours - usedHours);
@@ -29,8 +29,6 @@ export function computeCapacityWindow(
     usedHours: +usedHours.toFixed(1),
     idleHours: +idleHours.toFixed(1),
     utilizationPct: Math.min(100, Math.max(0, utilizationPct)),
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ...({ _wd: wd } as Record<string, never>),
   } satisfies CapacityWindow;
 }
 
