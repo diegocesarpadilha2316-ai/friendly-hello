@@ -10,7 +10,6 @@ import { decomposeFurniture } from "@/modules/planner/shared/engineering/decompo
 import type { CompanyManufacturingRules, FurniturePart } from "@/modules/planner/shared/engineering/types";
 import type { ProductionPart, ProductionPartCategory } from "../types";
 
-/** Densidade média MDF/MDP 18 mm → 720 kg/m³ (aprox.). */
 const DENSITY_KG_M3 = 720;
 
 const CATEGORY_MAP: Record<FurniturePart["kind"], ProductionPartCategory> = {
