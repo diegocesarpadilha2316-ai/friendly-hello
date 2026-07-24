@@ -64,7 +64,7 @@ export interface VegetationAsset {
   readonly kind: VegetationKind;
   readonly label: string;
   readonly heightMm: number;
-  readonly tags: readonly string[];
+  readonly tags?: readonly string[];
 }
 
 export type PeoplePose =
@@ -90,7 +90,7 @@ export interface PropAsset {
   readonly category: PropCategory;
   readonly label: string;
   readonly dimensionsMm: readonly [number, number, number];
-  readonly tags: readonly string[];
+  readonly tags?: readonly string[];
 }
 
 // ————— Reflexos físicos / GI / RT —————
