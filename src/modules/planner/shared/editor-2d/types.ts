@@ -54,6 +54,7 @@ export type Editor2DPrimitive =
       x2: number;
       y2: number;
       thickness: number;
+      materialId?: string;
     }
   | {
       id: string;
@@ -66,6 +67,7 @@ export type Editor2DPrimitive =
       width: number;
       height: number;
       rotation: number;
+      materialId?: string;
     }
   | {
       id: string;
@@ -76,6 +78,7 @@ export type Editor2DPrimitive =
       y: number;
       width: number;
       depth: number;
+      materialId?: string;
     }
   | {
       id: string;
@@ -99,6 +102,7 @@ export type Editor2DPrimitive =
       depth: number;
       height: number;
       rotation: number;
+      materialId?: string;
       params: Readonly<Record<string, string | number | boolean | null>>;
     };
 
