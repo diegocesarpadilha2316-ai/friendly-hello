@@ -68,6 +68,7 @@ import { Route as AuthenticatedWorkspaceAssinaturaRouteImport } from './routes/_
 import { Route as AuthenticatedWorkspaceAssetsRouteImport } from './routes/_authenticated.workspace.assets'
 import { Route as AuthenticatedWorkspaceApiKeysRouteImport } from './routes/_authenticated.workspace.api-keys'
 import { Route as AuthenticatedWorkspaceAjudaRouteImport } from './routes/_authenticated.workspace.ajuda'
+import { Route as AuthenticatedPlannerVisaoRouteImport } from './routes/_authenticated.planner.visao'
 import { Route as AuthenticatedPlannerProjetosRouteImport } from './routes/_authenticated.planner.projetos'
 import { Route as AuthenticatedPlannerIaRouteImport } from './routes/_authenticated.planner.ia'
 import { Route as AuthenticatedPlannerEngenhariaRouteImport } from './routes/_authenticated.planner.engenharia'
@@ -391,6 +392,12 @@ const AuthenticatedWorkspaceAjudaRoute =
     path: '/ajuda',
     getParentRoute: () => AuthenticatedWorkspaceRoute,
   } as any)
+const AuthenticatedPlannerVisaoRoute =
+  AuthenticatedPlannerVisaoRouteImport.update({
+    id: '/visao',
+    path: '/visao',
+    getParentRoute: () => AuthenticatedPlannerRoute,
+  } as any)
 const AuthenticatedPlannerProjetosRoute =
   AuthenticatedPlannerProjetosRouteImport.update({
     id: '/projetos',
@@ -480,6 +487,7 @@ export interface FileRoutesByFullPath {
   '/planner/engenharia': typeof AuthenticatedPlannerEngenhariaRoute
   '/planner/ia': typeof AuthenticatedPlannerIaRoute
   '/planner/projetos': typeof AuthenticatedPlannerProjetosRouteWithChildren
+  '/planner/visao': typeof AuthenticatedPlannerVisaoRoute
   '/workspace/ajuda': typeof AuthenticatedWorkspaceAjudaRoute
   '/workspace/api-keys': typeof AuthenticatedWorkspaceApiKeysRoute
   '/workspace/assets': typeof AuthenticatedWorkspaceAssetsRoute
@@ -545,6 +553,7 @@ export interface FileRoutesByTo {
   '/planner/engenharia': typeof AuthenticatedPlannerEngenhariaRoute
   '/planner/ia': typeof AuthenticatedPlannerIaRoute
   '/planner/projetos': typeof AuthenticatedPlannerProjetosRouteWithChildren
+  '/planner/visao': typeof AuthenticatedPlannerVisaoRoute
   '/workspace/ajuda': typeof AuthenticatedWorkspaceAjudaRoute
   '/workspace/api-keys': typeof AuthenticatedWorkspaceApiKeysRoute
   '/workspace/assets': typeof AuthenticatedWorkspaceAssetsRoute
@@ -615,6 +624,7 @@ export interface FileRoutesById {
   '/_authenticated/planner/engenharia': typeof AuthenticatedPlannerEngenhariaRoute
   '/_authenticated/planner/ia': typeof AuthenticatedPlannerIaRoute
   '/_authenticated/planner/projetos': typeof AuthenticatedPlannerProjetosRouteWithChildren
+  '/_authenticated/planner/visao': typeof AuthenticatedPlannerVisaoRoute
   '/_authenticated/workspace/ajuda': typeof AuthenticatedWorkspaceAjudaRoute
   '/_authenticated/workspace/api-keys': typeof AuthenticatedWorkspaceApiKeysRoute
   '/_authenticated/workspace/assets': typeof AuthenticatedWorkspaceAssetsRoute
@@ -684,6 +694,7 @@ export interface FileRouteTypes {
     | '/planner/engenharia'
     | '/planner/ia'
     | '/planner/projetos'
+    | '/planner/visao'
     | '/workspace/ajuda'
     | '/workspace/api-keys'
     | '/workspace/assets'
@@ -749,6 +760,7 @@ export interface FileRouteTypes {
     | '/planner/engenharia'
     | '/planner/ia'
     | '/planner/projetos'
+    | '/planner/visao'
     | '/workspace/ajuda'
     | '/workspace/api-keys'
     | '/workspace/assets'
@@ -818,6 +830,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planner/engenharia'
     | '/_authenticated/planner/ia'
     | '/_authenticated/planner/projetos'
+    | '/_authenticated/planner/visao'
     | '/_authenticated/workspace/ajuda'
     | '/_authenticated/workspace/api-keys'
     | '/_authenticated/workspace/assets'
@@ -1268,6 +1281,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceAjudaRouteImport
       parentRoute: typeof AuthenticatedWorkspaceRoute
     }
+    '/_authenticated/planner/visao': {
+      id: '/_authenticated/planner/visao'
+      path: '/visao'
+      fullPath: '/planner/visao'
+      preLoaderRoute: typeof AuthenticatedPlannerVisaoRouteImport
+      parentRoute: typeof AuthenticatedPlannerRoute
+    }
     '/_authenticated/planner/projetos': {
       id: '/_authenticated/planner/projetos'
       path: '/projetos'
@@ -1347,6 +1367,7 @@ interface AuthenticatedPlannerRouteChildren {
   AuthenticatedPlannerEngenhariaRoute: typeof AuthenticatedPlannerEngenhariaRoute
   AuthenticatedPlannerIaRoute: typeof AuthenticatedPlannerIaRoute
   AuthenticatedPlannerProjetosRoute: typeof AuthenticatedPlannerProjetosRouteWithChildren
+  AuthenticatedPlannerVisaoRoute: typeof AuthenticatedPlannerVisaoRoute
   AuthenticatedPlannerIndexRoute: typeof AuthenticatedPlannerIndexRoute
 }
 
@@ -1356,6 +1377,7 @@ const AuthenticatedPlannerRouteChildren: AuthenticatedPlannerRouteChildren = {
   AuthenticatedPlannerIaRoute: AuthenticatedPlannerIaRoute,
   AuthenticatedPlannerProjetosRoute:
     AuthenticatedPlannerProjetosRouteWithChildren,
+  AuthenticatedPlannerVisaoRoute: AuthenticatedPlannerVisaoRoute,
   AuthenticatedPlannerIndexRoute: AuthenticatedPlannerIndexRoute,
 }
 
