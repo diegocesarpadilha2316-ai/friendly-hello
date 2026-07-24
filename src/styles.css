@@ -163,3 +163,94 @@
     color: var(--color-foreground);
   }
 }
+
+/* ===========================================================
+ * Dioris — Hero cinematográfico (aurora + cubos flutuantes)
+ * =========================================================== */
+@keyframes dioris-aurora {
+  0%   { transform: translate3d(-8%, -4%, 0) rotate(-8deg) scale(1.05); opacity: 0.65; }
+  50%  { transform: translate3d(6%, 3%, 0) rotate(6deg) scale(1.15);   opacity: 0.9;  }
+  100% { transform: translate3d(-8%, -4%, 0) rotate(-8deg) scale(1.05); opacity: 0.65; }
+}
+@keyframes dioris-aurora-alt {
+  0%   { transform: translate3d(10%, 6%, 0) rotate(12deg) scale(1.1); opacity: 0.55; }
+  50%  { transform: translate3d(-4%, -8%, 0) rotate(-4deg) scale(1.2); opacity: 0.85; }
+  100% { transform: translate3d(10%, 6%, 0) rotate(12deg) scale(1.1); opacity: 0.55; }
+}
+@keyframes dioris-float-slow {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(var(--rot, 0deg)); }
+  50%      { transform: translate3d(0, -18px, 0) rotate(calc(var(--rot, 0deg) + 4deg)); }
+}
+@keyframes dioris-scanline {
+  0%   { transform: translateX(-40%); opacity: 0; }
+  50%  { opacity: 1; }
+  100% { transform: translateX(140%); opacity: 0; }
+}
+@keyframes dioris-pulse-dot {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent) 60%, transparent); }
+  50%      { transform: scale(1.15); box-shadow: 0 0 0 12px color-mix(in oklab, var(--accent) 0%, transparent); }
+}
+
+.dioris-aurora {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(45% 40% at 30% 40%, color-mix(in oklab, var(--brand-purple) 55%, transparent) 0%, transparent 70%),
+    radial-gradient(50% 45% at 65% 55%, color-mix(in oklab, var(--brand-cyan) 45%, transparent) 0%, transparent 70%),
+    radial-gradient(35% 40% at 55% 30%, color-mix(in oklab, var(--brand-blue) 40%, transparent) 0%, transparent 65%);
+  filter: blur(60px) saturate(140%);
+  animation: dioris-aurora 18s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+.dioris-aurora-2 {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(40% 45% at 70% 30%, color-mix(in oklab, var(--brand-cyan) 55%, transparent) 0%, transparent 70%),
+    radial-gradient(35% 40% at 25% 65%, color-mix(in oklab, var(--brand-purple) 45%, transparent) 0%, transparent 70%);
+  filter: blur(80px) saturate(140%);
+  animation: dioris-aurora-alt 22s ease-in-out infinite;
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+}
+
+.dioris-cube {
+  position: absolute;
+  border-radius: 14px;
+  border: 1px solid color-mix(in oklab, var(--accent) 45%, transparent);
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--brand-purple) 18%, transparent), color-mix(in oklab, var(--brand-cyan) 12%, transparent));
+  box-shadow:
+    inset 0 0 30px color-mix(in oklab, var(--brand-cyan) 22%, transparent),
+    0 20px 60px -20px color-mix(in oklab, var(--brand-purple) 55%, transparent),
+    0 0 0 1px color-mix(in oklab, var(--accent) 25%, transparent);
+  backdrop-filter: blur(4px);
+  animation: dioris-float-slow 9s ease-in-out infinite;
+  will-change: transform;
+}
+.dioris-cube::before,
+.dioris-cube::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.dioris-cube::before {
+  border: 1px solid color-mix(in oklab, var(--brand-purple) 55%, transparent);
+  transform: translate3d(6px, 6px, 0);
+  opacity: 0.55;
+}
+.dioris-cube::after {
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--brand-cyan) 30%, transparent), transparent 55%);
+  mix-blend-mode: screen;
+  opacity: 0.6;
+}
+
+.dioris-scanline {
+  animation: dioris-scanline 5.5s ease-in-out infinite;
+}
+.dioris-pulse-dot {
+  animation: dioris-pulse-dot 2.6s ease-in-out infinite;
+}
