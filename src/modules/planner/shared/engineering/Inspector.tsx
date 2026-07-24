@@ -31,6 +31,7 @@ import { loadRules } from "./company-rules";
 import { applyEngineeringOverride, resolveEngineering } from "./parameters";
 import type { FurnitureEngineeringParams, HardwareKind } from "./types";
 import { decomposeFurniture } from "./decompose";
+import { LibraryMaterialPicker } from "./LibraryMaterialPicker";
 
 type Furniture = Extract<Editor2DPrimitive, { kind: "furniture" }>;
 
@@ -102,6 +103,34 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
     }));
   }
 
+  function applyLibraryMaterial(materialId: string | null) {
+    if (!current || !environmentId || !roomId) return;
+    const id = current.id;
+    updateProject((project) => ({
+      ...project,
+      environments: project.environments.map((env) =>
+        env.id !== environmentId
+          ? env
+          : {
+              ...env,
+              rooms: env.rooms.map((r) => {
+                if (r.id !== roomId) return r;
+                const n = r.nodes[id];
+                if (!n) return r;
+                return {
+                  ...r,
+                  updatedAt: new Date().toISOString(),
+                  nodes: {
+                    ...r.nodes,
+                    [id]: { ...n, params: { ...n.params, materialId: materialId ?? null } },
+                  },
+                };
+              }),
+            },
+      ),
+    }));
+  }
+
   const brand = findBrand(eng.brandId);
   const finishes = brand?.finishes ?? [];
   const thicknesses = brand?.thicknesses.map((t) => t.mm) ?? [15, 18, 25];
@@ -130,6 +159,13 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
       </header>
 
       <div className="flex-1 space-y-4 overflow-y-auto pr-1">
+        <Section icon={LayersIcon} title="Biblioteca Dioris">
+          <LibraryMaterialPicker
+            materialId={current.materialId}
+            onApply={applyLibraryMaterial}
+          />
+        </Section>
+
         <Section icon={Ruler} title="Dimensões (mm)">
           <NumberRow label="Largura" value={current.width} onChange={(v) => patchDim(current, v, "width", updateProject, environmentId, roomId)} />
           <NumberRow label="Profundidade" value={current.depth} onChange={(v) => patchDim(current, v, "depth", updateProject, environmentId, roomId)} />
