@@ -7,3 +7,4 @@ export * from "./pipeline";
 export * from "./providers";
 export * from "./adapter";
 export * from "./queue";
+export * as ultra from "./ultra";
