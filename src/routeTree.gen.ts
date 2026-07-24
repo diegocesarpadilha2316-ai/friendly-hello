@@ -80,6 +80,7 @@ import { Route as AuthenticatedPlannerDecoradoraRouteImport } from './routes/_au
 import { Route as AuthenticatedPlannerConfiguradorRouteImport } from './routes/_authenticated.planner.configurador'
 import { Route as AuthenticatedPlannerBibliotecaRouteImport } from './routes/_authenticated.planner.biblioteca'
 import { Route as AuthenticatedConfiguracoesEmpresaRouteImport } from './routes/_authenticated.configuracoes.empresa'
+import { Route as AuthenticatedAdminBibliotecaRouteImport } from './routes/_authenticated.admin.biblioteca'
 import { Route as ApiPublicV1PingRouteImport } from './routes/api/public/v1/ping'
 import { Route as ApiPublicV1OpenapiRouteImport } from './routes/api/public/v1/openapi'
 import { Route as AuthenticatedPlannerProjetosNovoRouteImport } from './routes/_authenticated.planner.projetos.novo'
@@ -470,6 +471,12 @@ const AuthenticatedConfiguracoesEmpresaRoute =
     path: '/configuracoes/empresa',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdminBibliotecaRoute =
+  AuthenticatedAdminBibliotecaRouteImport.update({
+    id: '/biblioteca',
+    path: '/biblioteca',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const ApiPublicV1PingRoute = ApiPublicV1PingRouteImport.update({
   id: '/api/public/v1/ping',
   path: '/api/public/v1/ping',
@@ -498,7 +505,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/admin': typeof AuthenticatedAdminRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/automacao': typeof AuthenticatedAutomacaoRoute
   '/cache': typeof AuthenticatedCacheRoute
@@ -531,6 +538,7 @@ export interface FileRoutesByFullPath {
   '/sobre': typeof PublicSobreRoute
   '/status': typeof PublicStatusRoute
   '/termos': typeof PublicTermosRoute
+  '/admin/biblioteca': typeof AuthenticatedAdminBibliotecaRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/planner/biblioteca': typeof AuthenticatedPlannerBibliotecaRoute
   '/planner/configurador': typeof AuthenticatedPlannerConfiguradorRoute
@@ -573,7 +581,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/admin': typeof AuthenticatedAdminRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/automacao': typeof AuthenticatedAutomacaoRoute
   '/cache': typeof AuthenticatedCacheRoute
@@ -604,6 +612,7 @@ export interface FileRoutesByTo {
   '/sobre': typeof PublicSobreRoute
   '/status': typeof PublicStatusRoute
   '/termos': typeof PublicTermosRoute
+  '/admin/biblioteca': typeof AuthenticatedAdminBibliotecaRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/planner/biblioteca': typeof AuthenticatedPlannerBibliotecaRoute
   '/planner/configurador': typeof AuthenticatedPlannerConfiguradorRoute
@@ -648,7 +657,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/_authenticated/automacao': typeof AuthenticatedAutomacaoRoute
   '/_authenticated/cache': typeof AuthenticatedCacheRoute
@@ -682,6 +691,7 @@ export interface FileRoutesById {
   '/_public/status': typeof PublicStatusRoute
   '/_public/termos': typeof PublicTermosRoute
   '/_public/': typeof PublicIndexRoute
+  '/_authenticated/admin/biblioteca': typeof AuthenticatedAdminBibliotecaRoute
   '/_authenticated/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/_authenticated/planner/biblioteca': typeof AuthenticatedPlannerBibliotecaRoute
   '/_authenticated/planner/configurador': typeof AuthenticatedPlannerConfiguradorRoute
@@ -759,6 +769,7 @@ export interface FileRouteTypes {
     | '/sobre'
     | '/status'
     | '/termos'
+    | '/admin/biblioteca'
     | '/configuracoes/empresa'
     | '/planner/biblioteca'
     | '/planner/configurador'
@@ -832,6 +843,7 @@ export interface FileRouteTypes {
     | '/sobre'
     | '/status'
     | '/termos'
+    | '/admin/biblioteca'
     | '/configuracoes/empresa'
     | '/planner/biblioteca'
     | '/planner/configurador'
@@ -909,6 +921,7 @@ export interface FileRouteTypes {
     | '/_public/status'
     | '/_public/termos'
     | '/_public/'
+    | '/_authenticated/admin/biblioteca'
     | '/_authenticated/configuracoes/empresa'
     | '/_authenticated/planner/biblioteca'
     | '/_authenticated/planner/configurador'
@@ -1456,6 +1469,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConfiguracoesEmpresaRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/biblioteca': {
+      id: '/_authenticated/admin/biblioteca'
+      path: '/biblioteca'
+      fullPath: '/admin/biblioteca'
+      preLoaderRoute: typeof AuthenticatedAdminBibliotecaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/api/public/v1/ping': {
       id: '/api/public/v1/ping'
       path: '/api/public/v1/ping'
@@ -1486,6 +1506,17 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminBibliotecaRoute: typeof AuthenticatedAdminBibliotecaRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminBibliotecaRoute: AuthenticatedAdminBibliotecaRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
 interface AuthenticatedPlannerProjetosRouteChildren {
   AuthenticatedPlannerProjetosProjectIdRoute: typeof AuthenticatedPlannerProjetosProjectIdRoute
@@ -1589,7 +1620,7 @@ const AuthenticatedWorkspaceRouteWithChildren =
   )
 
 interface AuthenticatedRouteChildren {
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedApiGatewayRoute: typeof AuthenticatedApiGatewayRoute
   AuthenticatedAutomacaoRoute: typeof AuthenticatedAutomacaoRoute
   AuthenticatedCacheRoute: typeof AuthenticatedCacheRoute
@@ -1615,7 +1646,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedApiGatewayRoute: AuthenticatedApiGatewayRoute,
   AuthenticatedAutomacaoRoute: AuthenticatedAutomacaoRoute,
   AuthenticatedCacheRoute: AuthenticatedCacheRoute,
