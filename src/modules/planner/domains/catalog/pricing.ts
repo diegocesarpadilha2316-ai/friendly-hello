@@ -7,11 +7,17 @@ import { getMaterial } from "./materials";
 import { getHandle } from "./handles";
 import { getHinge } from "./hinges";
 import { getSlide } from "./drawers";
+import { getCachedLibraryMaterial } from "./services/library-supabase";
 
 export function priceVariant(item: CatalogItem, variant: CatalogVariant): CatalogPricingBreakdown {
   const base = item.basePrice;
-  const mat = variant.materialId ? getMaterial(variant.materialId) : undefined;
-  const material = mat ? Math.round(mat.pricePerM2 * surfaceM2(variant) * 100) / 100 : 0;
+  // Prioriza a Biblioteca Dioris (Supabase) e faz fallback para a semente local.
+  const lib = variant.materialId ? getCachedLibraryMaterial(variant.materialId) : null;
+  const seed = !lib && variant.materialId ? getMaterial(variant.materialId) : undefined;
+  const pricePerM2 = lib?.pricePerM2 ?? seed?.pricePerM2 ?? 0;
+  const material = pricePerM2
+    ? Math.round(pricePerM2 * surfaceM2(variant) * 100) / 100
+    : 0;
   const handle = variant.handleId ? getHandle(variant.handleId)?.price ?? 0 : 0;
   const hinge = item.defaults.hingeId ? getHinge(item.defaults.hingeId)?.price ?? 0 : 0;
   const slide = item.defaults.slideId ? getSlide(item.defaults.slideId)?.price ?? 0 : 0;
