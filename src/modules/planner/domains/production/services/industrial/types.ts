@@ -2,7 +2,6 @@
  * Fase 3.14 — Produção Industrial (aditivo).
  * Nenhum tipo persistido. Deriva de ProductionReport + FabricationPlan.
  */
-import type { CutListRow } from "../../types";
 
 export interface OffcutInventoryItem {
   id: string;
@@ -105,4 +104,3 @@ export interface BoardPieceState {
   rotated: boolean;
 }
 
-export type { CutListRow };
