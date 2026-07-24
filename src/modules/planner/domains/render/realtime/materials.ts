@@ -14,12 +14,12 @@ import {
 } from "../services/ultra/materials";
 
 export const REALTIME_MATERIALS: readonly PbrMaterial[] = [
-  ...ULTRA_WOODS,
-  ...ULTRA_STONES,
-  ...ULTRA_METALS,
-  ...ULTRA_GLASSES,
-  ...ULTRA_PAINTS,
-  ...ULTRA_FABRICS,
+  ...Object.values(ULTRA_WOODS),
+  ...Object.values(ULTRA_STONES),
+  ...Object.values(ULTRA_METALS),
+  ...Object.values(ULTRA_GLASSES),
+  ...Object.values(ULTRA_PAINTS),
+  ...Object.values(ULTRA_FABRICS),
 ];
 
 export function findRealtimeMaterial(id: string): PbrMaterial | undefined {
