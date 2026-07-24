@@ -243,7 +243,17 @@ function AccessDenied() {
   );
 }
 
-type Tab = "materiais" | "ferragens";
+type Tab = "materiais" | "ferragens" | "historico";
+
+type ImportReportShape = {
+  importId: string | null;
+  kind: "materials" | "hardware";
+  total: number;
+  inserted: number;
+  updated: number;
+  skipped: number;
+  errors: Array<{ row: number; id?: string; reason: string }>;
+};
 
 function AdminLibraryContent() {
   const [tab, setTab] = useState<Tab>("materiais");
@@ -296,14 +306,15 @@ function AdminLibraryContent() {
         <TabButton active={tab === "ferragens"} onClick={() => setTab("ferragens")}>
           <Wrench className="h-4 w-4" /> Ferragens
         </TabButton>
+        <TabButton active={tab === "historico"} onClick={() => setTab("historico")}>
+          <History className="h-4 w-4" /> Histórico
+        </TabButton>
       </div>
 
       <div className="mt-6">
-        {tab === "materiais" ? (
-          <MaterialsPanel onChanged={refreshStats} />
-        ) : (
-          <HardwarePanel onChanged={refreshStats} />
-        )}
+        {tab === "materiais" && <MaterialsPanel onChanged={refreshStats} />}
+        {tab === "ferragens" && <HardwarePanel onChanged={refreshStats} />}
+        {tab === "historico" && <HistoryPanel />}
       </div>
     </PageContainer>
   );
