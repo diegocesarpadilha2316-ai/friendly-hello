@@ -2,6 +2,7 @@ import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { LayoutDashboard, FolderKanban, Boxes, Sparkles, Wrench } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { PlannerAIFab } from "@/modules/planner/domains/ia";
 
 type Item = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean };
 
@@ -42,6 +43,7 @@ export function PlannerLayout({ children }: { children?: ReactNode }) {
         </div>
       </nav>
       <div className="flex-1">{children ?? <Outlet />}</div>
+      <PlannerAIFab />
     </div>
   );
 }
