@@ -51,8 +51,8 @@ export function simulateProgram(row: CutListRow, machineId: string): CncSimulati
   };
 }
 
-function detectCollisions(ops: readonly CncOperation[]): CncSimulation["issues"] {
-  const out: CncSimulation["issues"] = [];
+function detectCollisions(ops: readonly CncOperation[]): readonly import("./types").CncIssue[] {
+  const out: import("./types").CncIssue[] = [];
   for (let i = 0; i < ops.length; i++) {
     for (let j = i + 1; j < ops.length; j++) {
       const a = ops[i], b = ops[j];
