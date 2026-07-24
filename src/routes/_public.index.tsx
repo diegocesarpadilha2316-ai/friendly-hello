@@ -72,98 +72,139 @@ function HomePage() {
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden px-4 pb-24 pt-20 sm:px-6 lg:px-8 lg:pt-32">
-      <div className="mx-auto max-w-7xl">
-        <div className="mx-auto max-w-4xl text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <SectionEyebrow>
-              <Sparkles className="h-3 w-3" /> Novo · Ecossistema Dioris
-            </SectionEyebrow>
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.05 }}
-            className="mt-6 text-balance text-5xl font-black leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl"
-          >
-            Inteligência que <GradientText>conecta tudo</GradientText>.
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.15 }}
-            className="mx-auto mt-6 max-w-2xl text-balance text-lg text-foreground/70 sm:text-xl"
-          >
-            A Dioris é um ecossistema modular que unifica Projeto 3D, Sites, CRM,
-            Financeiro, Marketplace e Automação — com IA nativa no núcleo.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.25 }}
-            className="mt-10 flex flex-wrap items-center justify-center gap-3"
-          >
-            <Link
-              to="/auth"
-              search={{ redirect: "/workspace" }}
-              className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary via-secondary to-accent px-6 py-3 text-sm font-semibold text-primary-foreground shadow-2xl shadow-primary/40 transition-transform hover:scale-[1.03]"
-            >
-              Começar grátis
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-            <Link
-              to="/produtos"
-              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-foreground backdrop-blur transition-colors hover:bg-white/10"
-            >
-              Ver o ecossistema
-            </Link>
-          </motion.div>
-        </div>
+    <section className="relative overflow-hidden px-4 pb-28 pt-24 sm:px-6 lg:px-8 lg:pt-36">
+      {/* Aurora background */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_oklch(0.16_0.06_285_/_0.9),_oklch(0.10_0.04_275)_75%)]" />
+        <div className="dioris-aurora" />
+        <div className="dioris-aurora-2" />
+        <div
+          className="absolute inset-0 opacity-[0.05]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)",
+            backgroundSize: "72px 72px",
+            maskImage:
+              "radial-gradient(ellipse at center, black 40%, transparent 75%)",
+          }}
+        />
+      </div>
+
+      {/* Floating glass cubes */}
+      <FloatingCubes />
+
+      <div className="relative mx-auto max-w-6xl text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="flex justify-center"
+        >
+          <SectionEyebrow>
+            <Sparkles className="h-3 w-3" /> Ecossistema Dioris 2026
+          </SectionEyebrow>
+        </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-8 text-balance text-[2.75rem] font-black uppercase leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-[6.5rem]"
+          style={{ letterSpacing: "-0.02em" }}
+        >
+          Uma plataforma.
+          <br />
+          Um ecossistema.
+          <br />
+          <GradientText>Infinitas possibilidades.</GradientText>
+        </motion.h1>
+
+        {/* Scanline separator */}
+        <motion.div
+          initial={{ opacity: 0, scaleX: 0 }}
+          animate={{ opacity: 1, scaleX: 1 }}
+          transition={{ duration: 1.1, delay: 0.4 }}
+          className="relative mx-auto mt-10 h-px w-full max-w-2xl overflow-hidden bg-gradient-to-r from-transparent via-primary/60 to-transparent"
+        >
+          <span className="absolute left-1/2 top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_20px_6px_color-mix(in_oklab,var(--accent)_65%,transparent)] dioris-pulse-dot" />
+          <span className="dioris-scanline absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/70 to-transparent" />
+        </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.55 }}
+          className="mx-auto mt-8 max-w-2xl text-sm font-medium uppercase tracking-[0.3em] text-foreground/60 sm:text-base"
+        >
+          Ecossistema modular · IA nativa · Enterprise ready
+        </motion.p>
 
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.35 }}
-          className="relative mx-auto mt-20 max-w-6xl"
+          transition={{ duration: 0.7, delay: 0.7 }}
+          className="mt-10 flex flex-wrap items-center justify-center gap-3"
         >
-          <div className="relative rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] p-2 shadow-2xl backdrop-blur-xl">
-            <div className="absolute -inset-px -z-10 rounded-3xl bg-gradient-to-r from-primary via-secondary to-accent opacity-40 blur-2xl" />
-            <div className="rounded-2xl border border-white/10 bg-background/60 p-6 sm:p-8">
-              <div className="grid gap-4 sm:grid-cols-3">
-                {[
-                  { icon: Brain, t: "IA Gateway", v: "Multi-modelo unificado" },
-                  { icon: Cpu, t: "Núcleo modular", v: "16 domínios enterprise" },
-                  { icon: Shield, t: "RLS por tenant", v: "Segurança nativa" },
-                ].map((k, i) => (
-                  <div key={i} className="rounded-xl border border-white/10 bg-white/5 p-4">
-                    <k.icon className="h-5 w-5 text-primary" />
-                    <div className="mt-3 text-xs uppercase tracking-wider text-muted-foreground">{k.t}</div>
-                    <div className="mt-1 font-semibold text-foreground">{k.v}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 grid gap-2 sm:grid-cols-7">
-                {ecosystem.map((e) => (
-                  <div
-                    key={e.name}
-                    className="group flex flex-col items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] p-3 transition-colors hover:border-primary/40 hover:bg-white/5"
-                  >
-                    <div className="grid h-9 w-9 place-items-center rounded-md bg-gradient-to-br from-primary/30 to-accent/30">
-                      <e.icon className="h-4 w-4" />
-                    </div>
-                    <div className="text-[11px] font-medium text-foreground/80">{e.name}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <Link
+            to="/auth"
+            search={{ redirect: "/workspace" }}
+            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-primary via-secondary to-accent px-8 py-4 text-sm font-semibold text-primary-foreground shadow-[0_20px_60px_-20px_color-mix(in_oklab,var(--primary)_70%,transparent)] transition-transform hover:scale-[1.03]"
+          >
+            <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+            Explorar o ecossistema
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+          <Link
+            to="/produtos"
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-6 py-4 text-sm font-semibold text-foreground/90 backdrop-blur-md transition-colors hover:bg-white/10"
+          >
+            Ver produtos
+          </Link>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 1 }}
+          className="mt-14 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-[11px] uppercase tracking-[0.28em] text-muted-foreground/70"
+        >
+          <span>77+ tabelas core</span>
+          <span className="hidden h-1 w-1 rounded-full bg-muted-foreground/40 sm:inline-block" />
+          <span>16+ domínios enterprise</span>
+          <span className="hidden h-1 w-1 rounded-full bg-muted-foreground/40 sm:inline-block" />
+          <span>RLS por tenant</span>
+          <span className="hidden h-1 w-1 rounded-full bg-muted-foreground/40 sm:inline-block" />
+          <span>MFA nativo</span>
+          <span className="hidden h-1 w-1 rounded-full bg-muted-foreground/40 sm:inline-block" />
+          <span>API pública</span>
         </motion.div>
       </div>
     </section>
+  );
+}
+
+function FloatingCubes() {
+  const cubes = [
+    { className: "left-[4%] top-[14%] h-24 w-24 sm:h-40 sm:w-40", rot: "-14deg", delay: "0s" },
+    { className: "right-[5%] top-[10%] h-28 w-28 sm:h-44 sm:w-44", rot: "18deg", delay: "1.4s" },
+    { className: "left-[7%] bottom-[10%] h-20 w-20 sm:h-36 sm:w-36", rot: "10deg", delay: "2.2s" },
+    { className: "right-[6%] bottom-[14%] h-24 w-24 sm:h-40 sm:w-40", rot: "-20deg", delay: "0.7s" },
+  ];
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 -z-[5] hidden sm:block">
+      {cubes.map((c, i) => (
+        <div
+          key={i}
+          className={`dioris-cube ${c.className}`}
+          style={{
+            // @ts-expect-error CSS custom property
+            "--rot": c.rot,
+            animationDelay: c.delay,
+            transform: `rotate(${c.rot})`,
+          }}
+        />
+      ))}
+    </div>
   );
 }
 
