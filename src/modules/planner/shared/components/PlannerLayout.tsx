@@ -11,6 +11,7 @@ import {
   Film,
   Factory,
   Menu,
+  Store,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -41,6 +42,7 @@ const GROUPS: readonly Group[] = [
     items: [
       { to: "/planner/engenharia", label: "Engenharia", icon: Wrench },
       { to: "/planner/producao", label: "Produção", icon: Factory },
+      { to: "/planner/marketplace", label: "Marketplace", icon: Store },
     ],
   },
   {

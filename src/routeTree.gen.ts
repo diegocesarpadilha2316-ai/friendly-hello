@@ -73,6 +73,7 @@ import { Route as AuthenticatedPlannerVideoRouteImport } from './routes/_authent
 import { Route as AuthenticatedPlannerRenderRouteImport } from './routes/_authenticated.planner.render'
 import { Route as AuthenticatedPlannerProjetosRouteImport } from './routes/_authenticated.planner.projetos'
 import { Route as AuthenticatedPlannerProducaoRouteImport } from './routes/_authenticated.planner.producao'
+import { Route as AuthenticatedPlannerMarketplaceRouteImport } from './routes/_authenticated.planner.marketplace'
 import { Route as AuthenticatedPlannerIaRouteImport } from './routes/_authenticated.planner.ia'
 import { Route as AuthenticatedPlannerEngenhariaRouteImport } from './routes/_authenticated.planner.engenharia'
 import { Route as AuthenticatedPlannerDecoradoraRouteImport } from './routes/_authenticated.planner.decoradora'
@@ -428,6 +429,12 @@ const AuthenticatedPlannerProducaoRoute =
     path: '/producao',
     getParentRoute: () => AuthenticatedPlannerRoute,
   } as any)
+const AuthenticatedPlannerMarketplaceRoute =
+  AuthenticatedPlannerMarketplaceRouteImport.update({
+    id: '/marketplace',
+    path: '/marketplace',
+    getParentRoute: () => AuthenticatedPlannerRoute,
+  } as any)
 const AuthenticatedPlannerIaRoute = AuthenticatedPlannerIaRouteImport.update({
   id: '/ia',
   path: '/ia',
@@ -530,6 +537,7 @@ export interface FileRoutesByFullPath {
   '/planner/decoradora': typeof AuthenticatedPlannerDecoradoraRoute
   '/planner/engenharia': typeof AuthenticatedPlannerEngenhariaRoute
   '/planner/ia': typeof AuthenticatedPlannerIaRoute
+  '/planner/marketplace': typeof AuthenticatedPlannerMarketplaceRoute
   '/planner/producao': typeof AuthenticatedPlannerProducaoRoute
   '/planner/projetos': typeof AuthenticatedPlannerProjetosRouteWithChildren
   '/planner/render': typeof AuthenticatedPlannerRenderRoute
@@ -602,6 +610,7 @@ export interface FileRoutesByTo {
   '/planner/decoradora': typeof AuthenticatedPlannerDecoradoraRoute
   '/planner/engenharia': typeof AuthenticatedPlannerEngenhariaRoute
   '/planner/ia': typeof AuthenticatedPlannerIaRoute
+  '/planner/marketplace': typeof AuthenticatedPlannerMarketplaceRoute
   '/planner/producao': typeof AuthenticatedPlannerProducaoRoute
   '/planner/projetos': typeof AuthenticatedPlannerProjetosRouteWithChildren
   '/planner/render': typeof AuthenticatedPlannerRenderRoute
@@ -679,6 +688,7 @@ export interface FileRoutesById {
   '/_authenticated/planner/decoradora': typeof AuthenticatedPlannerDecoradoraRoute
   '/_authenticated/planner/engenharia': typeof AuthenticatedPlannerEngenhariaRoute
   '/_authenticated/planner/ia': typeof AuthenticatedPlannerIaRoute
+  '/_authenticated/planner/marketplace': typeof AuthenticatedPlannerMarketplaceRoute
   '/_authenticated/planner/producao': typeof AuthenticatedPlannerProducaoRoute
   '/_authenticated/planner/projetos': typeof AuthenticatedPlannerProjetosRouteWithChildren
   '/_authenticated/planner/render': typeof AuthenticatedPlannerRenderRoute
@@ -755,6 +765,7 @@ export interface FileRouteTypes {
     | '/planner/decoradora'
     | '/planner/engenharia'
     | '/planner/ia'
+    | '/planner/marketplace'
     | '/planner/producao'
     | '/planner/projetos'
     | '/planner/render'
@@ -827,6 +838,7 @@ export interface FileRouteTypes {
     | '/planner/decoradora'
     | '/planner/engenharia'
     | '/planner/ia'
+    | '/planner/marketplace'
     | '/planner/producao'
     | '/planner/projetos'
     | '/planner/render'
@@ -903,6 +915,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planner/decoradora'
     | '/_authenticated/planner/engenharia'
     | '/_authenticated/planner/ia'
+    | '/_authenticated/planner/marketplace'
     | '/_authenticated/planner/producao'
     | '/_authenticated/planner/projetos'
     | '/_authenticated/planner/render'
@@ -1394,6 +1407,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlannerProducaoRouteImport
       parentRoute: typeof AuthenticatedPlannerRoute
     }
+    '/_authenticated/planner/marketplace': {
+      id: '/_authenticated/planner/marketplace'
+      path: '/marketplace'
+      fullPath: '/planner/marketplace'
+      preLoaderRoute: typeof AuthenticatedPlannerMarketplaceRouteImport
+      parentRoute: typeof AuthenticatedPlannerRoute
+    }
     '/_authenticated/planner/ia': {
       id: '/_authenticated/planner/ia'
       path: '/ia'
@@ -1491,6 +1511,7 @@ interface AuthenticatedPlannerRouteChildren {
   AuthenticatedPlannerDecoradoraRoute: typeof AuthenticatedPlannerDecoradoraRoute
   AuthenticatedPlannerEngenhariaRoute: typeof AuthenticatedPlannerEngenhariaRoute
   AuthenticatedPlannerIaRoute: typeof AuthenticatedPlannerIaRoute
+  AuthenticatedPlannerMarketplaceRoute: typeof AuthenticatedPlannerMarketplaceRoute
   AuthenticatedPlannerProducaoRoute: typeof AuthenticatedPlannerProducaoRoute
   AuthenticatedPlannerProjetosRoute: typeof AuthenticatedPlannerProjetosRouteWithChildren
   AuthenticatedPlannerRenderRoute: typeof AuthenticatedPlannerRenderRoute
@@ -1505,6 +1526,7 @@ const AuthenticatedPlannerRouteChildren: AuthenticatedPlannerRouteChildren = {
   AuthenticatedPlannerDecoradoraRoute: AuthenticatedPlannerDecoradoraRoute,
   AuthenticatedPlannerEngenhariaRoute: AuthenticatedPlannerEngenhariaRoute,
   AuthenticatedPlannerIaRoute: AuthenticatedPlannerIaRoute,
+  AuthenticatedPlannerMarketplaceRoute: AuthenticatedPlannerMarketplaceRoute,
   AuthenticatedPlannerProducaoRoute: AuthenticatedPlannerProducaoRoute,
   AuthenticatedPlannerProjetosRoute:
     AuthenticatedPlannerProjetosRouteWithChildren,
