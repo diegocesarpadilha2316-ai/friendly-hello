@@ -7,12 +7,16 @@
  * a sincronização 2D/3D/Engenharia.
  */
 import { useCallback, useMemo, useRef, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { aiGenerateText } from "@/core/ai";
 import { useTenant } from "@/core/providers/TenantProvider";
 import {
   usePlannerEditor,
   loadRules,
 } from "@/modules/planner/shared";
 import { runAgent } from "../services/agent";
+import type { PlannerProject } from "@/modules/planner/shared";
+import type { ToolContext } from "../services/tools";
 import type {
   PlannerAIMessage,
   PlannerAIStatus,
@@ -42,6 +46,7 @@ export function usePlannerChat() {
   const editor = usePlannerEditor();
   const { activeCompany } = useTenant();
   const tenantId = activeCompany?.id ?? "anonymous";
+  const runAI = useServerFn(aiGenerateText);
 
   const [state, setState] = useState<ChatState>({
     messages: [
@@ -125,6 +130,32 @@ export function usePlannerChat() {
           },
           rules,
           signal: controller.signal,
+          llmReply: async ({ userMessage, role, project: p, ctx }) => {
+            // Consulta o AI Gateway real do Core (com créditos e auditoria).
+            // Falha silenciosa → o agent volta ao intérprete heurístico.
+            try {
+              const res = await runAI({
+                data: {
+                  task: { type: "text", quality: "standard", speed: "balanced" },
+                  system: buildSystemPrompt(p, ctx),
+                  prompt: `Usuário (${role}): ${userMessage}`,
+                  temperature: 0.4,
+                  maxTokens: 500,
+                  reason: "planner:chat",
+                  reference: p.id,
+                },
+              });
+              const text =
+                typeof res?.data === "string"
+                  ? res.data
+                  : typeof (res as { text?: string })?.text === "string"
+                    ? (res as { text: string }).text
+                    : null;
+              return text;
+            } catch {
+              return null;
+            }
+          },
         })) {
           if (controller.signal.aborted) break;
           if (chunk.kind === "text" && chunk.text) {

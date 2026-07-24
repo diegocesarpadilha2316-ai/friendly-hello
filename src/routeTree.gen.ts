@@ -81,6 +81,7 @@ import { Route as AuthenticatedPlannerBibliotecaRouteImport } from './routes/_au
 import { Route as AuthenticatedConfiguracoesEmpresaRouteImport } from './routes/_authenticated.configuracoes.empresa'
 import { Route as ApiPublicV1PingRouteImport } from './routes/api/public/v1/ping'
 import { Route as ApiPublicV1OpenapiRouteImport } from './routes/api/public/v1/openapi'
+import { Route as AuthenticatedPlannerProjetosNovoRouteImport } from './routes/_authenticated.planner.projetos.novo'
 import { Route as AuthenticatedPlannerProjetosProjectIdRouteImport } from './routes/_authenticated.planner.projetos.$projectId'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -472,6 +473,12 @@ const ApiPublicV1OpenapiRoute = ApiPublicV1OpenapiRouteImport.update({
   path: '/api/public/v1/openapi',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedPlannerProjetosNovoRoute =
+  AuthenticatedPlannerProjetosNovoRouteImport.update({
+    id: '/novo',
+    path: '/novo',
+    getParentRoute: () => AuthenticatedPlannerProjetosRoute,
+  } as any)
 const AuthenticatedPlannerProjetosProjectIdRoute =
   AuthenticatedPlannerProjetosProjectIdRouteImport.update({
     id: '/$projectId',
@@ -549,6 +556,7 @@ export interface FileRoutesByFullPath {
   '/planner/': typeof AuthenticatedPlannerIndexRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/planner/projetos/$projectId': typeof AuthenticatedPlannerProjetosProjectIdRoute
+  '/planner/projetos/novo': typeof AuthenticatedPlannerProjetosNovoRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
 }
@@ -620,6 +628,7 @@ export interface FileRoutesByTo {
   '/planner': typeof AuthenticatedPlannerIndexRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
   '/planner/projetos/$projectId': typeof AuthenticatedPlannerProjetosProjectIdRoute
+  '/planner/projetos/novo': typeof AuthenticatedPlannerProjetosNovoRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
 }
@@ -696,6 +705,7 @@ export interface FileRoutesById {
   '/_authenticated/planner/': typeof AuthenticatedPlannerIndexRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/_authenticated/planner/projetos/$projectId': typeof AuthenticatedPlannerProjetosProjectIdRoute
+  '/_authenticated/planner/projetos/novo': typeof AuthenticatedPlannerProjetosNovoRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
 }
@@ -771,6 +781,7 @@ export interface FileRouteTypes {
     | '/planner/'
     | '/workspace/'
     | '/planner/projetos/$projectId'
+    | '/planner/projetos/novo'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
   fileRoutesByTo: FileRoutesByTo
@@ -842,6 +853,7 @@ export interface FileRouteTypes {
     | '/planner'
     | '/workspace'
     | '/planner/projetos/$projectId'
+    | '/planner/projetos/novo'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
   id:
@@ -917,6 +929,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planner/'
     | '/_authenticated/workspace/'
     | '/_authenticated/planner/projetos/$projectId'
+    | '/_authenticated/planner/projetos/novo'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
   fileRoutesById: FileRoutesById
@@ -1437,6 +1450,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicV1OpenapiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/planner/projetos/novo': {
+      id: '/_authenticated/planner/projetos/novo'
+      path: '/novo'
+      fullPath: '/planner/projetos/novo'
+      preLoaderRoute: typeof AuthenticatedPlannerProjetosNovoRouteImport
+      parentRoute: typeof AuthenticatedPlannerProjetosRoute
+    }
     '/_authenticated/planner/projetos/$projectId': {
       id: '/_authenticated/planner/projetos/$projectId'
       path: '/$projectId'
@@ -1449,12 +1469,15 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedPlannerProjetosRouteChildren {
   AuthenticatedPlannerProjetosProjectIdRoute: typeof AuthenticatedPlannerProjetosProjectIdRoute
+  AuthenticatedPlannerProjetosNovoRoute: typeof AuthenticatedPlannerProjetosNovoRoute
 }
 
 const AuthenticatedPlannerProjetosRouteChildren: AuthenticatedPlannerProjetosRouteChildren =
   {
     AuthenticatedPlannerProjetosProjectIdRoute:
       AuthenticatedPlannerProjetosProjectIdRoute,
+    AuthenticatedPlannerProjetosNovoRoute:
+      AuthenticatedPlannerProjetosNovoRoute,
   }
 
 const AuthenticatedPlannerProjetosRouteWithChildren =
