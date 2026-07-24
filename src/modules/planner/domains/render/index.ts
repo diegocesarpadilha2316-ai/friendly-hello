@@ -18,3 +18,5 @@ export * from "./services";
 export * from "./hooks";
 export * from "./components";
 export * as Realtime from "./realtime";
+export * as LocalEngine from "./local-engine";
+export { LocalRenderPanel, useLocalRender } from "./local-engine";
