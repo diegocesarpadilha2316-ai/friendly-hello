@@ -39,7 +39,7 @@ function AuthPage() {
 
   useEffect(() => {
     if (!loading && user) {
-      navigate({ to: search.redirect ?? "/", replace: true });
+      navigate({ to: search.redirect ?? "/workspace", replace: true });
     }
   }, [loading, user, navigate, search.redirect]);
 
