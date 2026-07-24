@@ -5,7 +5,7 @@
  * locais ao Viewport3D. Persistência e Undo/Redo continuam sob o
  * `PlannerEditorProvider` da Fase 3.1.
  */
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, type ThreeEvent } from "@react-three/fiber";
 import {
   OrbitControls,
@@ -24,6 +24,12 @@ import type {
   FurnitureDescriptor,
 } from "./extrusion";
 import type { Viewport3DState } from "./types";
+import {
+  getCachedLibraryMaterial,
+  requestLibraryMaterial,
+  subscribeLibrary,
+  type LibraryMaterial,
+} from "../../domains/catalog/services/library-supabase";
 
 interface Scene3DProps {
   model: Scene3DModel;
@@ -43,6 +49,88 @@ const COLORS = {
   furnitureSel: "#8b5cf6",
 };
 
+// -----------------------------------------------------------------------------
+// Biblioteca Dioris → materiais 3D (carregamento sob demanda + cache).
+// -----------------------------------------------------------------------------
+
+const textureLoader = new THREE.TextureLoader();
+textureLoader.setCrossOrigin("anonymous");
+const textureCache = new Map<string, THREE.Texture>();
+
+function loadTexture(url: string): THREE.Texture {
+  const cached = textureCache.get(url);
+  if (cached) return cached;
+  const tex = textureLoader.load(url);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.anisotropy = 4;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  textureCache.set(url, tex);
+  return tex;
+}
+
+function useLibraryMaterial(id: string | undefined): LibraryMaterial | null {
+  const [, force] = useState(0);
+  useEffect(() => {
+    if (!id) return;
+    if (!getCachedLibraryMaterial(id)) requestLibraryMaterial(id);
+    const unsub = subscribeLibrary(() => force((n) => n + 1));
+    return () => unsub();
+  }, [id]);
+  return id ? getCachedLibraryMaterial(id) : null;
+}
+
+/**
+ * Retorna props para `<meshStandardMaterial>` aplicando cor + textura da
+ * Biblioteca Dioris quando disponível, respeitando escala real e veio.
+ */
+function useTexturedMaterialProps(
+  materialId: string | undefined,
+  meshSizeM: readonly [number, number],
+  fallbackColor: string,
+  overrides: { roughness?: number; metalness?: number; wireframe?: boolean; transparent?: boolean; opacity?: number } = {},
+) {
+  const lib = useLibraryMaterial(materialId);
+  return useMemo(() => {
+    const props: {
+      color: string;
+      map?: THREE.Texture;
+      roughness: number;
+      metalness: number;
+      wireframe: boolean;
+      transparent: boolean;
+      opacity: number;
+    } = {
+      color: lib?.colorHex || fallbackColor,
+      roughness: overrides.roughness ?? 0.75,
+      metalness: overrides.metalness ?? 0.05,
+      wireframe: overrides.wireframe ?? false,
+      transparent: overrides.transparent ?? false,
+      opacity: overrides.opacity ?? 1,
+    };
+    if (lib?.textureUrl && !props.wireframe) {
+      const base = loadTexture(lib.textureUrl);
+      const tex = base.clone();
+      tex.needsUpdate = true;
+      // Tile em metros a partir da largura/comprimento da chapa (padrão 1m×2m).
+      const tileX = (lib.widthMm ?? 1000) / 1000;
+      const tileY = (lib.lengthMm ?? 2000) / 1000;
+      const [sizeX, sizeY] = meshSizeM;
+      let repX = Math.max(0.1, sizeX / Math.max(tileX, 0.05));
+      let repY = Math.max(0.1, sizeY / Math.max(tileY, 0.05));
+      // Veio horizontal → gira o mapa em 90°.
+      if (lib.grain === "horizontal") {
+        tex.center.set(0.5, 0.5);
+        tex.rotation = Math.PI / 2;
+        [repX, repY] = [repY, repX];
+      }
+      tex.repeat.set(repX, repY);
+      props.map = tex;
+    }
+    return props;
+  }, [lib?.id, lib?.colorHex, lib?.textureUrl, lib?.widthMm, lib?.lengthMm, lib?.grain, meshSizeM[0], meshSizeM[1], fallbackColor, overrides.roughness, overrides.metalness, overrides.wireframe, overrides.transparent, overrides.opacity]);
+}
+
 function centerOffset(model: Scene3DModel) {
   const cx = (model.bounds.minX + model.bounds.maxX) / 2;
   const cz = (model.bounds.minZ + model.bounds.maxZ) / 2;
@@ -54,13 +142,6 @@ function explodeVec(cx: number, cz: number, cy: number, center: THREE.Vector3, f
   const dir = new THREE.Vector3(cx - center.x, cy - center.y, cz - center.z);
   dir.multiplyScalar(factor);
   return new THREE.Vector3(cx + dir.x, cy + dir.y, cz + dir.z);
-}
-
-function wallMaterialProps(mode: Viewport3DState["render"], selected: boolean, opacity: number) {
-  const color = selected ? COLORS.wallSel : COLORS.wall;
-  const wireframe = mode === "wireframe";
-  const transparent = opacity < 1;
-  return { color, wireframe, transparent, opacity };
 }
 
 function Wall({
@@ -80,7 +161,14 @@ function Wall({
   const clipped =
     viewport.sectionHeight != null && w.height / 2 > (viewport.sectionHeight / 1000);
   if (clipped) return null;
-  const props = wallMaterialProps(viewport.render, selected, viewport.wallOpacity);
+  const wireframe = viewport.render === "wireframe";
+  const opacity = viewport.wallOpacity;
+  const props = useTexturedMaterialProps(
+    w.materialId,
+    [w.length, w.height],
+    selected ? COLORS.wallSel : COLORS.wall,
+    { wireframe, transparent: opacity < 1, opacity, roughness: 0.85, metalness: 0.05 },
+  );
   return (
     <mesh
       position={[pos.x, pos.y, pos.z]}
@@ -93,7 +181,7 @@ function Wall({
       }}
     >
       <boxGeometry args={[w.length, w.height, w.thickness]} />
-      <meshStandardMaterial {...props} roughness={0.85} metalness={0.05} />
+      <meshStandardMaterial {...props} />
     </mesh>
   );
 }
@@ -114,7 +202,13 @@ function Slab({
   onSelect: (id: string | null) => void;
 }) {
   const pos = explodeVec(s.cx, s.cz, s.y, center, viewport.explode);
-  const color = selected ? COLORS.wallSel : kind === "floor" ? COLORS.floor : COLORS.ceiling;
+  const fallback = selected ? COLORS.wallSel : kind === "floor" ? COLORS.floor : COLORS.ceiling;
+  const props = useTexturedMaterialProps(
+    s.materialId,
+    [s.width, s.depth],
+    fallback,
+    { wireframe: viewport.render === "wireframe", roughness: 0.9, metalness: 0.02 },
+  );
   return (
     <mesh
       position={[pos.x, pos.y, pos.z]}
@@ -125,11 +219,7 @@ function Slab({
       }}
     >
       <boxGeometry args={[s.width, s.thickness, s.depth]} />
-      <meshStandardMaterial
-        color={color}
-        wireframe={viewport.render === "wireframe"}
-        roughness={0.9}
-      />
+      <meshStandardMaterial {...props} />
     </mesh>
   );
 }
@@ -187,7 +277,13 @@ function Furniture({
   const clipped =
     viewport.sectionHeight != null && f.y - f.height / 2 > viewport.sectionHeight / 1000;
   if (clipped) return null;
-  const color = selected ? COLORS.furnitureSel : COLORS.furniture;
+  const fallback = selected ? COLORS.furnitureSel : COLORS.furniture;
+  const props = useTexturedMaterialProps(
+    f.materialId,
+    [f.width, f.height],
+    fallback,
+    { wireframe: viewport.render === "wireframe", roughness: 0.6, metalness: 0.05 },
+  );
   return (
     <mesh
       position={[pos.x, pos.y, pos.z]}
@@ -200,12 +296,7 @@ function Furniture({
       }}
     >
       <boxGeometry args={[f.width, f.height, f.depth]} />
-      <meshStandardMaterial
-        color={color}
-        wireframe={viewport.render === "wireframe"}
-        roughness={0.6}
-        metalness={0.05}
-      />
+      <meshStandardMaterial {...props} />
     </mesh>
   );
 }
