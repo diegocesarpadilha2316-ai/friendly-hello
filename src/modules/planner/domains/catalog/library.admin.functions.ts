@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireAuth } from "@/core/middleware/require-auth";
 
@@ -14,9 +15,7 @@ import { requireAuth } from "@/core/middleware/require-auth";
  * client autenticado do middleware (`context.supabase`), com RLS aplicada.
  */
 
-async function assertPlatformAdmin(supabase: {
-  rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
-}, userId: string): Promise<void> {
+async function assertPlatformAdmin(supabase: SupabaseClient, userId: string): Promise<void> {
   const { data, error } = await supabase.rpc("is_platform_admin", { _user: userId });
   if (error) throw new Response("Forbidden", { status: 403 });
   if (data !== true) throw new Response("Forbidden — admin only", { status: 403 });
