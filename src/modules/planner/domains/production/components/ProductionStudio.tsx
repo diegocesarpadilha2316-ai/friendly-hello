@@ -198,7 +198,7 @@ export function ProductionStudio() {
       {(tab === "pecas" || tab === "corte" || tab === "etiquetas") && (
         <SearchInput
           value={query}
-          onValueChange={setQuery}
+          onChange={(e) => setQuery(e.target.value)}
           placeholder={
             tab === "pecas"
               ? "Buscar peça, material, ambiente…"
