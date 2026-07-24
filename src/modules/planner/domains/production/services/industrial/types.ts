@@ -1,12 +1,8 @@
 /**
  * Fase 3.14 — Produção Industrial (aditivo).
- *
- * Nenhum tipo persistido em BD. Nenhum provider/store novo. Tudo derivado
- * de `ProductionReport` + `FabricationPlan` já existentes.
+ * Nenhum tipo persistido. Deriva de ProductionReport + FabricationPlan.
  */
 import type { CutListRow } from "../../types";
-
-// ─── Sobras (offcuts) — inventário local por tenant ─────────────
 
 export interface OffcutInventoryItem {
   id: string;
@@ -25,8 +21,6 @@ export interface OffcutInventoryItem {
   status: "disponivel" | "reservado" | "consumido";
   notes?: string;
 }
-
-// ─── Sequência de montagem ──────────────────────────────────────
 
 export type AssemblyStepKind =
   | "separacao"
@@ -61,8 +55,6 @@ export interface AssemblyPlan {
   totalSteps: number;
 }
 
-// ─── Custo industrial (breakdown estendido) ─────────────────────
-
 export interface IndustrialCostRow {
   id: string;
   group: "material" | "ferragens" | "mao-obra" | "tempo" | "desperdicio" | "overhead" | "lucro" | "imposto";
@@ -83,16 +75,12 @@ export interface IndustrialCostSummary {
   pricePerM2: number;
 }
 
-// ─── Re-otimização (comparativo) ────────────────────────────────
-
 export interface OptimizerCompare {
   before: { boards: number; usagePct: number; wasteM2: number };
   after: { boards: number; usagePct: number; wasteM2: number };
   diff: { boards: number; usagePct: number; wasteM2: number };
   economyBRL: number;
 }
-
-// ─── IA industrial ──────────────────────────────────────────────
 
 export type IndustrialIntentId =
   | "ind.pior-peca"
@@ -109,8 +97,6 @@ export interface IndustrialIntent {
   patterns: readonly string[];
   answer: string;
 }
-
-// ─── Estado UI (sem persistência global) ────────────────────────
 
 export interface BoardPieceState {
   code: string;
