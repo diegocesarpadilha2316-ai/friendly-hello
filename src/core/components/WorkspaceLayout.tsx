@@ -47,23 +47,27 @@ type NavGroup = { label: string; items: readonly NavItem[] };
 
 export const WORKSPACE_NAV_GROUPS: readonly NavGroup[] = [
   {
-    label: "Visão Geral",
+    label: "Perfil & Conta",
     items: [
       { to: "/workspace", label: "Dashboard", icon: LayoutDashboard, exact: true },
-      { to: "/workspace/modulos", label: "Módulos", icon: Puzzle },
-      { to: "/workspace/atividades", label: "Atividades", icon: Activity },
+      { to: "/workspace/perfil", label: "Perfil", icon: UserCircle },
+      { to: "/workspace/notificacoes", label: "Notificações", icon: Bell },
     ],
   },
   {
-    label: "Empresa",
+    label: "Workspace & Equipe",
     items: [
       { to: "/workspace/empresa", label: "Minha Empresa", icon: Building2 },
       { to: "/workspace/equipe", label: "Equipe", icon: Users },
-      { to: "/workspace/perfil", label: "Perfil", icon: UserCircle },
+      { to: "/workspace/modulos", label: "Módulos", icon: Puzzle },
+      { to: "/workspace/atividades", label: "Atividades", icon: Activity },
+      { to: "/workspace/assets", label: "Assets", icon: HardDrive },
+      { to: "/workspace/integracoes", label: "Integrações", icon: Plug },
+      { to: "/workspace/api-keys", label: "API Keys", icon: KeyRound },
     ],
   },
   {
-    label: "Financeiro",
+    label: "Assinatura & Faturamento",
     items: [
       { to: "/workspace/creditos", label: "Créditos", icon: Coins },
       { to: "/workspace/assinatura", label: "Assinatura", icon: CreditCard },
@@ -71,18 +75,9 @@ export const WORKSPACE_NAV_GROUPS: readonly NavGroup[] = [
     ],
   },
   {
-    label: "Plataforma",
+    label: "Preferências",
     items: [
       { to: "/workspace/ia", label: "IA", icon: Sparkles },
-      { to: "/workspace/assets", label: "Assets", icon: HardDrive },
-      { to: "/workspace/integracoes", label: "Integrações", icon: Plug },
-      { to: "/workspace/api-keys", label: "API Keys", icon: KeyRound },
-      { to: "/workspace/notificacoes", label: "Notificações", icon: Bell },
-    ],
-  },
-  {
-    label: "Sistema",
-    items: [
       { to: "/workspace/configuracoes", label: "Configurações", icon: Settings },
       { to: "/workspace/ajuda", label: "Central de Ajuda", icon: LifeBuoy },
     ],
