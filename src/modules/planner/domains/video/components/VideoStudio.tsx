@@ -42,6 +42,7 @@ import { BrandingPanel } from "./BrandingPanel";
 import { NarrationPanel } from "./NarrationPanel";
 import { Timeline } from "./Timeline";
 import { VideoQueue } from "./VideoQueue";
+import { LocalVideoPanel } from "../local-engine";
 
 type Tab = "cenas" | "motor" | "camera" | "animacoes" | "export" | "marca" | "narracao";
 
@@ -49,6 +50,7 @@ export function VideoStudio() {
   const { state } = usePlannerEditor();
   const project = state.project;
 
+  const [mode, setMode] = useState<"studio" | "local">("studio");
   const [sceneKind, setSceneKind] = useState<VideoSceneKind>("apresentacao");
   const [presetId, setPresetId] = useState<VideoPresetId>(DEFAULT_VIDEO_PRESET_ID);
   const [engineId, setEngineId] = useState<VideoEngineId>(DEFAULT_VIDEO_ENGINE_ID);
@@ -58,6 +60,38 @@ export function VideoStudio() {
   const [tab, setTab] = useState<Tab>("cenas");
 
   const { queue, active, history, enqueue, cancel, retry, clearHistory } = useVideoQueue();
+
+  const modeTabs = (
+    <div className="mb-4 inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/40 p-1 backdrop-blur">
+      {([
+        { id: "studio", label: "Video Studio" },
+        { id: "local", label: "Vídeo Local" },
+      ] as const).map((m) => (
+        <button
+          key={m.id}
+          type="button"
+          onClick={() => setMode(m.id)}
+          className={cn(
+            "rounded-full px-3 py-1 text-[11px] transition",
+            mode === m.id
+              ? "bg-primary/20 text-foreground ring-1 ring-inset ring-primary/40"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          {m.label}
+        </button>
+      ))}
+    </div>
+  );
+
+  if (mode === "local") {
+    return (
+      <div>
+        {modeTabs}
+        <LocalVideoPanel />
+      </div>
+    );
+  }
 
   const preset = getVideoPreset(presetId);
   const engine = getVideoEngine(engineId);
@@ -89,6 +123,8 @@ export function VideoStudio() {
   };
 
   return (
+    <>
+    {modeTabs}
     <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
       {/* Coluna central: viewport + timeline */}
       <section className="space-y-4">
@@ -250,6 +286,7 @@ export function VideoStudio() {
         </FormSection>
       </section>
     </div>
+    </>
   );
 }
 
