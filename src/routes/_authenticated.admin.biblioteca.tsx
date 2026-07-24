@@ -5,7 +5,6 @@ import {
   Database,
   Package,
   Wrench,
-  Search,
   Trash2,
   Save,
   ShieldAlert,
