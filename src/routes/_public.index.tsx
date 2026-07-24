@@ -13,7 +13,6 @@ import {
   Shield,
   Zap,
   Globe,
-  Cpu,
   Boxes,
   Check,
 } from "lucide-react";
