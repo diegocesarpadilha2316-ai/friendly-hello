@@ -28,6 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAIMetrics } from "@/core/ai/use-ai";
 import type { CreditKind, PlanDefinition } from "@/core/billing/types";
+import { CheckoutDialog } from "@/core/billing/CheckoutDialog";
 
 export const Route = createFileRoute("/_authenticated/workspace/creditos")({
   head: () => ({
@@ -94,10 +95,14 @@ function WorkspaceCreditos() {
               <RefreshCw className="mr-2 h-4 w-4" />
               Atualizar
             </Button>
-            <Button>
-              <Sparkles className="mr-2 h-4 w-4" />
-              Comprar créditos
-            </Button>
+            <CheckoutDialog
+              trigger={
+                <Button>
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Comprar créditos
+                </Button>
+              }
+            />
           </div>
         }
       />
