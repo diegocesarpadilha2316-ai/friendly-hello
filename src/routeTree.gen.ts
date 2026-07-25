@@ -84,6 +84,7 @@ import { Route as AuthenticatedPlannerConfiguradorRouteImport } from './routes/_
 import { Route as AuthenticatedPlannerBibliotecaRouteImport } from './routes/_authenticated.planner.biblioteca'
 import { Route as AuthenticatedPlannerAssetsRouteImport } from './routes/_authenticated.planner.assets'
 import { Route as AuthenticatedConfiguracoesEmpresaRouteImport } from './routes/_authenticated.configuracoes.empresa'
+import { Route as AuthenticatedAdminObservabilidadeRouteImport } from './routes/_authenticated.admin.observabilidade'
 import { Route as AuthenticatedAdminBillingRouteImport } from './routes/_authenticated.admin.billing'
 import { Route as AuthenticatedAdminBibliotecaRouteImport } from './routes/_authenticated.admin.biblioteca'
 import { Route as ApiPublicV1PingRouteImport } from './routes/api/public/v1/ping'
@@ -503,6 +504,12 @@ const AuthenticatedConfiguracoesEmpresaRoute =
     path: '/configuracoes/empresa',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdminObservabilidadeRoute =
+  AuthenticatedAdminObservabilidadeRouteImport.update({
+    id: '/observabilidade',
+    path: '/observabilidade',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminBillingRoute =
   AuthenticatedAdminBillingRouteImport.update({
     id: '/billing',
@@ -595,6 +602,7 @@ export interface FileRoutesByFullPath {
   '/termos': typeof PublicTermosRoute
   '/admin/biblioteca': typeof AuthenticatedAdminBibliotecaRoute
   '/admin/billing': typeof AuthenticatedAdminBillingRoute
+  '/admin/observabilidade': typeof AuthenticatedAdminObservabilidadeRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/planner/assets': typeof AuthenticatedPlannerAssetsRoute
   '/planner/biblioteca': typeof AuthenticatedPlannerBibliotecaRoute
@@ -677,6 +685,7 @@ export interface FileRoutesByTo {
   '/termos': typeof PublicTermosRoute
   '/admin/biblioteca': typeof AuthenticatedAdminBibliotecaRoute
   '/admin/billing': typeof AuthenticatedAdminBillingRoute
+  '/admin/observabilidade': typeof AuthenticatedAdminObservabilidadeRoute
   '/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/planner/assets': typeof AuthenticatedPlannerAssetsRoute
   '/planner/biblioteca': typeof AuthenticatedPlannerBibliotecaRoute
@@ -764,6 +773,7 @@ export interface FileRoutesById {
   '/_public/': typeof PublicIndexRoute
   '/_authenticated/admin/biblioteca': typeof AuthenticatedAdminBibliotecaRoute
   '/_authenticated/admin/billing': typeof AuthenticatedAdminBillingRoute
+  '/_authenticated/admin/observabilidade': typeof AuthenticatedAdminObservabilidadeRoute
   '/_authenticated/configuracoes/empresa': typeof AuthenticatedConfiguracoesEmpresaRoute
   '/_authenticated/planner/assets': typeof AuthenticatedPlannerAssetsRoute
   '/_authenticated/planner/biblioteca': typeof AuthenticatedPlannerBibliotecaRoute
@@ -850,6 +860,7 @@ export interface FileRouteTypes {
     | '/termos'
     | '/admin/biblioteca'
     | '/admin/billing'
+    | '/admin/observabilidade'
     | '/configuracoes/empresa'
     | '/planner/assets'
     | '/planner/biblioteca'
@@ -932,6 +943,7 @@ export interface FileRouteTypes {
     | '/termos'
     | '/admin/biblioteca'
     | '/admin/billing'
+    | '/admin/observabilidade'
     | '/configuracoes/empresa'
     | '/planner/assets'
     | '/planner/biblioteca'
@@ -1018,6 +1030,7 @@ export interface FileRouteTypes {
     | '/_public/'
     | '/_authenticated/admin/biblioteca'
     | '/_authenticated/admin/billing'
+    | '/_authenticated/admin/observabilidade'
     | '/_authenticated/configuracoes/empresa'
     | '/_authenticated/planner/assets'
     | '/_authenticated/planner/biblioteca'
@@ -1603,6 +1616,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConfiguracoesEmpresaRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/observabilidade': {
+      id: '/_authenticated/admin/observabilidade'
+      path: '/observabilidade'
+      fullPath: '/admin/observabilidade'
+      preLoaderRoute: typeof AuthenticatedAdminObservabilidadeRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/billing': {
       id: '/_authenticated/admin/billing'
       path: '/billing'
@@ -1672,11 +1692,14 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminBibliotecaRoute: typeof AuthenticatedAdminBibliotecaRoute
   AuthenticatedAdminBillingRoute: typeof AuthenticatedAdminBillingRoute
+  AuthenticatedAdminObservabilidadeRoute: typeof AuthenticatedAdminObservabilidadeRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminBibliotecaRoute: AuthenticatedAdminBibliotecaRoute,
   AuthenticatedAdminBillingRoute: AuthenticatedAdminBillingRoute,
+  AuthenticatedAdminObservabilidadeRoute:
+    AuthenticatedAdminObservabilidadeRoute,
 }
 
 const AuthenticatedAdminRouteWithChildren =
