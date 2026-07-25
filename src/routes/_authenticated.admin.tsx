@@ -85,7 +85,7 @@ const SECTIONS: ReadonlyArray<AdminSection> = [
   { id: "quality", title: "Qualidade", description: "Cobertura, suites, gates e regressão.", to: "/quality", icon: Gauge, tag: "Qualidade" },
   { id: "cicd", title: "CI/CD", description: "Pipelines, builds, deploys e releases.", to: "/cicd", icon: Rocket, tag: "Entrega" },
   { id: "recovery", title: "Recovery", description: "Backups, snapshots, PITR e DR plans.", to: "/recovery", icon: LifeBuoy, tag: "Continuidade" },
-  { id: "observability", title: "Observabilidade", description: "Logs, traces, métricas e health.", to: "/observabilidade", icon: Activity, tag: "Operação" },
+  { id: "observability", title: "Observabilidade", description: "Logs, traces, métricas e health.", to: "/admin/observabilidade", icon: Activity, tag: "Operação" },
   { id: "settings", title: "Configurações", description: "Configuração global e por tenant.", to: "/configuracoes", icon: Settings, tag: "Plataforma" },
 ];
 
