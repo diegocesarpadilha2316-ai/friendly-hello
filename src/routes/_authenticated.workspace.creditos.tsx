@@ -335,11 +335,6 @@ function WorkspaceCreditos() {
           </Card>
         </TabsContent>
 
-        {/* Plans */}
-        <TabsContent value="plans" className="mt-6">
-          {/* placeholder anchor */}
-        </TabsContent>
-
         {/* Payments */}
         <TabsContent value="payments" className="mt-6">
           <Card className="border-border/60 bg-card/80">
