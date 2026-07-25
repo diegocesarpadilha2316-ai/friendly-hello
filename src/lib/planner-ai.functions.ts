@@ -10,6 +10,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireTenant } from "@/core/middleware/require-tenant";
+import { debitCreditsBestEffort } from "@/core/billing/debit.server";
+import { priceAiAssistantMessage, CREDIT_PRICES } from "@/core/billing/pricing";
 
 export type AiRole = "system" | "user" | "assistant" | "tool";
 export type AiMemoryScope = "project" | "user" | "company";
@@ -206,6 +208,24 @@ export const appendAiMessage = createServerFn({ method: "POST" })
       .select("*")
       .single();
     if (error) throw new Response(error.message, { status: 400 });
+
+    // Débito automático apenas em mensagens do assistente (respostas do modelo).
+    if (data.role === "assistant" && (data.status ?? "ok") === "ok") {
+      const charge = priceAiAssistantMessage({
+        tokensIn: data.tokensIn ?? 0,
+        tokensOut: data.tokensOut ?? 0,
+      });
+      await debitCreditsBestEffort(context.supabase, context.tenantId, context.userId, {
+        amount: charge,
+        reason: "ai.message.assistant",
+        reference: data.sessionId,
+        metadata: {
+          messageId: row.id,
+          tokensIn: data.tokensIn ?? 0,
+          tokensOut: data.tokensOut ?? 0,
+        },
+      });
+    }
 
     await context.supabase
       .from("planner_ai_sessions")
