@@ -93,12 +93,13 @@ function AdminBillingContent() {
   return (
     <PageContainer>
       <PageHeader
+        eyebrow={
+          <Link to="/admin" className="inline-flex items-center gap-1 hover:text-primary">
+            <ArrowLeft className="h-3 w-3" /> Admin Center
+          </Link>
+        }
         title="Cobrança & Provedores de Pagamento"
         description="Configure os provedores que a plataforma vai oferecer aos clientes. Pix, boleto, cartão e assinatura recorrente."
-        breadcrumbs={[
-          { label: "Admin", to: "/admin" },
-          { label: "Cobrança" },
-        ]}
       />
 
       <div className="mt-6 rounded-2xl border border-border/50 bg-card/30 p-4 text-sm text-muted-foreground">
@@ -168,13 +169,13 @@ function ProviderCard({ provider }: { provider: PaymentProviderDTO }) {
   const webhookUrl = provider.webhookUrl ??
     `${typeof window !== "undefined" ? window.location.origin : ""}/api/public/webhooks/${provider.code}`;
 
-  const statusTone: "success" | "warning" | "error" | "neutral" =
+  const statusTone: "success" | "warning" | "danger" | "neutral" =
     provider.status === "live"
       ? "success"
       : provider.status === "test"
         ? "warning"
         : provider.status === "error"
-          ? "error"
+          ? "danger"
           : "neutral";
 
   const statusLabel =
