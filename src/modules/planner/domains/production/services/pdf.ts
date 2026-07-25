@@ -43,7 +43,16 @@ export async function buildProductionPdf(input: ProductionPdfInput): Promise<Blo
 
   const { projectName, clientName, report } = input;
 
-  // ── Cabeçalho com barra de gradiente Dioris ───────────────────────
+  // ── Página 1: Capa executiva ──────────────────────────────────────
+  drawCover(doc, pageW, pageH, projectName, clientName, report);
+
+  // ── Página 2: Sumário executivo ───────────────────────────────────
+  doc.addPage();
+  drawHeader(doc, pageW, projectName, clientName, report.generatedAt);
+  drawTOC(doc, pageW, report);
+
+  // ── Página 3+: Conteúdo ───────────────────────────────────────────
+  doc.addPage();
   drawHeader(doc, pageW, projectName, clientName, report.generatedAt);
 
   // ── KPIs em cards ────────────────────────────────────────────────
@@ -226,6 +235,157 @@ export async function buildProductionPdf(input: ProductionPdfInput): Promise<Blo
   drawFooter(doc, pageW, pageH);
 
   return doc.output("blob");
+}
+
+function drawCover(
+  doc: import("jspdf").jsPDF,
+  pageW: number,
+  pageH: number,
+  projectName: string,
+  clientName: string,
+  report: ProductionReport,
+) {
+  // Fundo navy total
+  doc.setFillColor(...BRAND.navy);
+  doc.rect(0, 0, pageW, pageH, "F");
+
+  // Faixa de gradiente Dioris (3 blocos horizontais)
+  const bandH = 14;
+  const step = pageW / 3;
+  doc.setFillColor(...BRAND.purple);
+  doc.rect(0, 0, step, bandH, "F");
+  doc.setFillColor(...BRAND.blue);
+  doc.rect(step, 0, step, bandH, "F");
+  doc.setFillColor(...BRAND.cyan);
+  doc.rect(step * 2, 0, step, bandH, "F");
+
+  // Marca d'água em bloco (mark "D" estilizado)
+  doc.setFillColor(139, 92, 246);
+  doc.roundedRect(pageW - 180, pageH - 220, 120, 120, 18, 18, "F");
+  doc.setFillColor(37, 99, 235);
+  doc.roundedRect(pageW - 160, pageH - 200, 120, 120, 18, 18, "F");
+  doc.setFillColor(6, 182, 212);
+  doc.roundedRect(pageW - 140, pageH - 180, 120, 120, 18, 18, "F");
+
+  // Eyebrow
+  doc.setTextColor(200, 200, 220);
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "bold");
+  doc.text("DIORIS · PLANNER · PRODUÇÃO INTELIGENTE", 40, 90);
+
+  // Título grande
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(34);
+  doc.setFont("helvetica", "bold");
+  doc.text("Relatório executivo", 40, 150);
+  doc.setFontSize(34);
+  doc.text("de produção", 40, 188);
+
+  // Projeto / cliente
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(200, 200, 220);
+  doc.text("Projeto", 40, 240);
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(16);
+  doc.setFont("helvetica", "bold");
+  doc.text(projectName || "—", 40, 260);
+
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(200, 200, 220);
+  doc.text("Cliente", 40, 290);
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(16);
+  doc.setFont("helvetica", "bold");
+  doc.text(clientName || "—", 40, 310);
+
+  // Métricas rápidas no rodapé da capa
+  const metrics: Array<[string, string]> = [
+    ["Módulos", String(report.totals.modules)],
+    ["Peças", String(report.totals.parts)],
+    ["Total final", fmtBRL(report.budget.summary.final)],
+    ["Horas", `${report.time.totalH} h`],
+  ];
+  const y = pageH - 120;
+  const gap = 12;
+  const cardW = (pageW - 80 - gap * 3) / 4;
+  metrics.forEach(([label, value], i) => {
+    const cx = 40 + i * (cardW + gap);
+    doc.setFillColor(23, 32, 51);
+    doc.setDrawColor(60, 70, 90);
+    doc.roundedRect(cx, y, cardW, 66, 8, 8, "FD");
+    doc.setTextColor(180, 190, 210);
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    doc.text(label.toUpperCase(), cx + 12, y + 22);
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(value, cx + 12, y + 48);
+  });
+
+  // Data
+  doc.setTextColor(160, 170, 190);
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.text(`Gerado em ${fmtDate(report.generatedAt)}`, 40, pageH - 32);
+  doc.text("Dioris Hub · Inteligência que conecta tudo.", pageW - 40, pageH - 32, {
+    align: "right",
+  });
+}
+
+function drawTOC(
+  doc: import("jspdf").jsPDF,
+  pageW: number,
+  report: ProductionReport,
+) {
+  doc.setTextColor(...BRAND.ink);
+  doc.setFontSize(16);
+  doc.setFont("helvetica", "bold");
+  doc.text("Sumário executivo", 40, 110);
+
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...BRAND.muted);
+  doc.text(
+    "Este relatório reúne todos os artefatos necessários para orçar, produzir e",
+    40,
+    130,
+  );
+  doc.text(
+    "montar o projeto — extraídos automaticamente pelo Dioris Planner.",
+    40,
+    145,
+  );
+
+  const items: Array<[string, string]> = [
+    ["1", "KPIs e indicadores principais"],
+    ["2", "Resumo financeiro e tempo de produção"],
+    ["3", `Lista de corte (${report.cutList.length} linhas)`],
+    ["4", `Ferragens / BOM (${report.hardware.length} itens)`],
+    ["5", `Plano de corte por chapa (${report.cuttingPlan.boards.length} chapas)`],
+  ];
+
+  let y = 190;
+  items.forEach(([num, label]) => {
+    doc.setFillColor(...BRAND.purple);
+    doc.circle(50, y - 4, 8, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.text(num, 50, y - 1, { align: "center" });
+
+    doc.setTextColor(...BRAND.ink);
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+    doc.text(label, 70, y);
+
+    doc.setDrawColor(...BRAND.line);
+    doc.line(70, y + 6, pageW - 40, y + 6);
+
+    y += 30;
+  });
 }
 
 function drawHeader(
