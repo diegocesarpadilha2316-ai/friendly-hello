@@ -20,19 +20,23 @@ import {
   useMemo,
   useReducer,
   useRef,
+  useState,
   type ReactNode,
 } from "react";
-import { useTenant } from "@/core/providers/TenantProvider";
+import { useServerFn } from "@tanstack/react-start";
 import type {
   PlannerProject,
   PlannerProjectVersion,
 } from "../types/project";
+import type { PlannerProjectId } from "../types";
+import { createProject } from "../factories/project";
 import {
-  appendVersion,
-  loadProject,
-  loadVersions,
-  upsertProject,
-} from "../persistence/local-store";
+  loadProjectSnapshot,
+  saveProjectSnapshot,
+  listProjectVersions,
+  createProjectVersion,
+  type JsonObject,
+} from "@/lib/planner-snapshots.functions";
 
 const HISTORY_LIMIT = 50;
 
@@ -144,17 +148,55 @@ const initialState: EditorState = {
 };
 
 export function PlannerEditorProvider({ children }: { children: ReactNode }) {
-  const { activeCompany } = useTenant();
-  const tenantId = activeCompany?.id ?? "anonymous";
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [versions, setVersions] = useState<readonly PlannerProjectVersion[]>([]);
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const persist = useCallback(
-    (project: PlannerProject) => {
-      upsertProject(tenantId, project);
-      dispatch({ type: "saved", at: new Date().toISOString() });
+  const loadSnapshotFn = useServerFn(loadProjectSnapshot);
+  const saveSnapshotFn = useServerFn(saveProjectSnapshot);
+  const listVersionsFn = useServerFn(listProjectVersions);
+  const createVersionFn = useServerFn(createProjectVersion);
+
+  const refreshVersions = useCallback(
+    async (projectId: string) => {
+      try {
+        const rows = await listVersionsFn({ data: { projectId } });
+        setVersions(
+          rows.map((r) => ({
+            id: r.id,
+            projectId: r.projectId as PlannerProjectId,
+            version: r.version,
+            label: r.label,
+            createdAt: r.createdAt,
+            snapshot: null as unknown as PlannerProject, // carregado sob demanda
+          })),
+        );
+      } catch {
+        setVersions([]);
+      }
     },
-    [tenantId],
+    [listVersionsFn],
+  );
+
+  const persist = useCallback(
+    async (project: PlannerProject) => {
+      try {
+        await saveSnapshotFn({
+          data: {
+            id: project.id,
+            snapshot: project as unknown as JsonObject,
+            version: project.version,
+            name: project.name,
+            client: project.client ?? null,
+          },
+        });
+        dispatch({ type: "saved", at: new Date().toISOString() });
+      } catch (err) {
+        // silencia; próxima edição tentará novamente
+        console.error("[planner] autosave falhou", err);
+      }
+    },
+    [saveSnapshotFn],
   );
 
   // Autosave — debounced 800ms após qualquer mudança "dirty".
@@ -169,11 +211,49 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
   }, [state.dirty, state.project, persist]);
 
   const loadProjectById = useCallback(
-    (projectId: string) => {
-      const p = loadProject(tenantId, projectId);
-      dispatch({ type: "load", project: p });
+    async (projectId: string) => {
+      try {
+        const result = await loadSnapshotFn({ data: { id: projectId } });
+        if (!result) {
+          dispatch({ type: "load", project: null });
+          setVersions([]);
+          return;
+        }
+        let project: PlannerProject;
+        if (result.snapshot) {
+          project = {
+            ...(result.snapshot as unknown as PlannerProject),
+            id: result.meta.id as PlannerProject["id"],
+            name: result.meta.name,
+            client: result.meta.client ?? undefined,
+            version: result.meta.version,
+            updatedAt: result.meta.updatedAt,
+          };
+        } else {
+          // Metadados existem, mas snapshot ainda não foi persistido: semeia via factory.
+          project = createProject({
+            tenantId: result.meta.companyId,
+            ownerId: result.meta.ownerId,
+            name: result.meta.name,
+            client: result.meta.client ?? undefined,
+          });
+          project = {
+            ...project,
+            id: result.meta.id as PlannerProject["id"],
+            createdAt: result.meta.createdAt,
+            updatedAt: result.meta.updatedAt,
+            version: result.meta.version,
+          };
+        }
+        dispatch({ type: "load", project });
+        void refreshVersions(project.id);
+      } catch (err) {
+        console.error("[planner] load project falhou", err);
+        dispatch({ type: "load", project: null });
+        setVersions([]);
+      }
     },
-    [tenantId],
+    [loadSnapshotFn, refreshVersions],
   );
 
   const updateProject = useCallback(
@@ -195,30 +275,31 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
   const redo = useCallback(() => dispatch({ type: "redo" }), []);
 
   const saveNow = useCallback(() => {
-    if (state.project) persist(state.project);
+    if (state.project) void persist(state.project);
   }, [state.project, persist]);
 
   const snapshotVersion = useCallback(
-    (label: string) => {
-      if (!state.project) return;
-      const version: PlannerProjectVersion = {
-        id: `${state.project.id}-v${state.project.version}-${Date.now()}`,
-        projectId: state.project.id,
-        version: state.project.version,
-        label,
-        createdAt: new Date().toISOString(),
-        snapshot: state.project,
-      };
-      appendVersion(tenantId, version);
-      persist(state.project);
+    async (label: string) => {
+      const project = state.project;
+      if (!project) return;
+      try {
+        await persist(project);
+        await createVersionFn({
+          data: {
+            id: `${project.id}-v${project.version}-${Date.now()}`,
+            projectId: project.id,
+            version: project.version,
+            label,
+            snapshot: project as unknown as JsonObject,
+          },
+        });
+        await refreshVersions(project.id);
+      } catch (err) {
+        console.error("[planner] snapshot version falhou", err);
+      }
     },
-    [state.project, tenantId, persist],
+    [state.project, persist, createVersionFn, refreshVersions],
   );
-
-  const versions = useMemo<readonly PlannerProjectVersion[]>(() => {
-    if (!state.project) return [];
-    return loadVersions(tenantId, state.project.id);
-  }, [tenantId, state.project?.id, state.lastSavedAt]);
 
   // Atalhos de teclado — Ctrl/Cmd+Z / Shift+Z / Ctrl+S.
   useEffect(() => {
