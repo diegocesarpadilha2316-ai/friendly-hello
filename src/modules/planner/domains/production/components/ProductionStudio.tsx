@@ -127,10 +127,11 @@ export function ProductionStudio() {
     }
   };
 
-  const downloadFile = (format: ProductionExportFormat) => {
+  const downloadFile = async (format: ProductionExportFormat) => {
     let content = "";
     let mime = "text/plain";
     let ext: string = format;
+    let blob: Blob | null = null;
     if (format === "csv") {
       content = serializeCutListCsv(report.cutList);
       mime = "text/csv";
@@ -147,20 +148,12 @@ export function ProductionStudio() {
       mime = "text/csv";
       ext = "csv";
     } else if (format === "pdf") {
-      const lines = [
-        `Dioris — Produção Inteligente`,
-        `Projeto: ${projectName} · Cliente: ${clientName}`,
-        `Gerado em: ${new Date(report.generatedAt).toLocaleString("pt-BR")}`,
-        ``,
-        `Módulos: ${report.totals.modules} · Peças: ${report.totals.parts}`,
-        `Chapas: ${report.cuttingPlan.totals.boardsCount} · Aproveitamento: ${Math.round(report.cuttingPlan.totals.avgUsageRatio * 100)}%`,
-        `Total: ${fmtBRL(report.budget.summary.final)} · R$/m²: ${fmtBRL(report.budget.summary.perM2)}`,
-      ];
-      content = lines.join("\n");
-      mime = "text/plain";
-      ext = "txt";
+      const { buildProductionPdf } = await import("../services/pdf");
+      blob = await buildProductionPdf({ projectName, clientName, report });
+      mime = "application/pdf";
+      ext = "pdf";
     }
-    const blob = new Blob([content], { type: mime });
+    if (!blob) blob = new Blob([content], { type: mime });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
