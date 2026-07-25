@@ -10,7 +10,21 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireTenant } from "@/core/middleware/require-tenant";
 
-const snapshotSchema = z.record(z.string(), z.unknown());
+type JsonPrimitive = string | number | boolean | null;
+export type JsonValue = JsonPrimitive | { [k: string]: JsonValue } | JsonValue[];
+export type JsonObject = { [k: string]: JsonValue };
+
+const jsonValue: z.ZodType<JsonValue> = z.lazy(() =>
+  z.union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+    z.null(),
+    z.array(jsonValue),
+    z.record(z.string(), jsonValue),
+  ]),
+);
+const snapshotSchema: z.ZodType<JsonObject> = z.record(z.string(), jsonValue);
 
 export const loadProjectSnapshot = createServerFn({ method: "GET" })
   .middleware([requireTenant])
@@ -36,7 +50,7 @@ export const loadProjectSnapshot = createServerFn({ method: "GET" })
         createdAt: row.created_at as string,
         updatedAt: row.updated_at as string,
       },
-      snapshot: (row.snapshot ?? null) as Record<string, unknown> | null,
+      snapshot: (row.snapshot ?? null) as JsonObject | null,
     };
   });
 
@@ -153,6 +167,6 @@ export const loadProjectVersion = createServerFn({ method: "GET" })
       version: row.version as number,
       label: row.label as string,
       createdAt: row.created_at as string,
-      snapshot: row.snapshot as Record<string, unknown>,
+      snapshot: row.snapshot as JsonObject,
     };
   });
