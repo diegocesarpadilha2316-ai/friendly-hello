@@ -10,7 +10,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { parseInsufficientCredits } from "@/core/billing/insufficient-credits";
-import { Link } from "@tanstack/react-router";
 import {
   Loader2,
   Plus,
