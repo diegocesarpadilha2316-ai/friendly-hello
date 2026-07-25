@@ -374,6 +374,118 @@ function ProductShowcase() {
   );
 }
 
+function Testimonials() {
+  const items = [
+    {
+      quote:
+        "Substituímos 4 ferramentas por uma. O Planner + IA da Dioris reduziu nosso tempo de orçamento em 70%.",
+      name: "Marcos Almeida",
+      role: "Diretor · Móveis Almeida",
+    },
+    {
+      quote:
+        "A integração CNC e a lista de corte automática pagaram o plano no primeiro mês de uso.",
+      name: "Julia Nakamura",
+      role: "Gerente de Produção · JN Marcenaria",
+    },
+    {
+      quote:
+        "Ecossistema modular de verdade. Ativamos CRM e Financeiro sem migração — foi só ligar.",
+      name: "Renata Costa",
+      role: "COO · Grupo Aria",
+    },
+  ];
+  return (
+    <section className="border-t border-white/10 bg-white/[0.02] px-4 py-24 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <Reveal>
+          <div className="max-w-2xl">
+            <SectionEyebrow>Quem já usa</SectionEyebrow>
+            <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">
+              Times reais. <GradientText>Resultados reais.</GradientText>
+            </h2>
+          </div>
+        </Reveal>
+        <div className="mt-14 grid gap-6 lg:grid-cols-3">
+          {items.map((it, i) => (
+            <Reveal key={it.name} delay={i * 0.05}>
+              <figure className="flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-white/[0.03] p-7">
+                <blockquote className="text-base leading-relaxed text-foreground/85">
+                  "{it.quote}"
+                </blockquote>
+                <figcaption className="mt-6 border-t border-white/10 pt-4">
+                  <div className="font-semibold">{it.name}</div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                    {it.role}
+                  </div>
+                </figcaption>
+              </figure>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FAQ() {
+  const items = [
+    {
+      q: "Preciso de cartão para começar?",
+      a: "Não. O plano Free inclui 100 créditos de IA e todos os módulos essenciais — você só paga quando decidir escalar.",
+    },
+    {
+      q: "Como funciona a cobrança?",
+      a: "Checkout transparente dentro da Dioris (Pix, boleto e cartão via Mercado Pago). Sem redirecionamento e sem taxa escondida.",
+    },
+    {
+      q: "Meus dados ficam isolados por empresa?",
+      a: "Sim. Isolamento total por tenant com Row Level Security, MFA, auditoria completa e backups automatizados.",
+    },
+    {
+      q: "Posso ativar só um módulo?",
+      a: "Sim. Ative apenas Planner, apenas CRM, apenas IA — ou combine à vontade. O Core é compartilhado, sem duplicação.",
+    },
+    {
+      q: "Que provedores de IA vocês suportam?",
+      a: "DeepSeek, OpenAI, Gemini, Claude, Mistral e modelos open-source — via um Gateway central com créditos unificados.",
+    },
+    {
+      q: "Existe API pública?",
+      a: "Sim. API REST versionada, chaves por tenant e webhooks para integrar seus sistemas existentes.",
+    },
+  ];
+  return (
+    <section className="px-4 py-24 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl">
+        <Reveal>
+          <div className="text-center">
+            <SectionEyebrow>Perguntas frequentes</SectionEyebrow>
+            <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">
+              Tudo o que você precisa <GradientText>saber</GradientText>.
+            </h2>
+          </div>
+        </Reveal>
+        <div className="mt-14 space-y-3">
+          {items.map((it, i) => (
+            <Reveal key={it.q} delay={i * 0.03}>
+              <details className="group rounded-2xl border border-white/10 bg-white/[0.02] p-5 open:bg-white/[0.04]">
+                <summary className="flex cursor-pointer items-center justify-between gap-4 text-left text-base font-semibold text-foreground/90 marker:hidden [&::-webkit-details-marker]:hidden">
+                  {it.q}
+                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-white/10 bg-white/5 text-muted-foreground transition-transform group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <p className="mt-3 text-sm leading-relaxed text-foreground/70">{it.a}</p>
+              </details>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function BigCTA() {
   return (
     <section className="px-4 py-24 sm:px-6 lg:px-8">
