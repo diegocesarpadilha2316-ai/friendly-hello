@@ -43,6 +43,7 @@ import {
   type RenderStatus,
 } from "@/lib/planner-render.functions";
 import { listProjects } from "@/lib/planner-projects.functions";
+import { tickRenderJobs } from "@/lib/planner-render-worker.functions";
 
 export const Route = createFileRoute("/_authenticated/planner/render")({
   head: () => ({
@@ -119,6 +120,26 @@ function RenderPage() {
     staleTime: 5_000,
     // Auto-refresh a cada 10s para acompanhar progresso da fila.
     refetchInterval: 10_000,
+  });
+
+  // Worker tick — enquanto houver jobs ativos, avança a fila a cada 6s.
+  const tick = useServerFn(tickRenderJobs);
+  const hasActive = (jobsQuery.data ?? []).some(
+    (j) => j.status === "queued" || j.status === "running",
+  );
+  useQuery({
+    queryKey: ["planner", "render", "tick"],
+    queryFn: async () => {
+      try {
+        await tick();
+      } catch {
+        /* silencioso — não polui a UI se o worker falhar */
+      }
+      return Date.now();
+    },
+    enabled: hasActive,
+    refetchInterval: hasActive ? 6_000 : false,
+    staleTime: 0,
   });
 
   const invalidate = () =>
