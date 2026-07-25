@@ -5,7 +5,6 @@ import {
   PlusCircle,
   Save,
   Home,
-  Layers,
   Boxes,
   Undo2,
   Redo2,
@@ -28,6 +27,7 @@ import {
   EditorCanvas,
   VersionHistoryPanel,
 } from "@/modules/planner/shared";
+import { ProjectTree } from "@/modules/planner/shared/components/ProjectTree";
 import { PlannerAIPanel } from "@/modules/planner/domains/ia";
 
 export const Route = createFileRoute("/_authenticated/planner/projetos/$projectId")({
@@ -128,99 +128,88 @@ function PlannerProjectDetail() {
         }
       />
 
-      <div className="mt-8 grid gap-4 lg:grid-cols-[260px,1fr,380px]">
-        {/* Painel esquerdo — estrutura do projeto */}
-        <aside className="space-y-4">
-          <div className="rounded-xl border border-border/60 bg-card p-3">
-            <div className="mb-2 flex items-center gap-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-              <Layers className="h-3 w-3" /> Estrutura do projeto
-            </div>
-          <FormSection title="Ambientes" description="Organize o projeto por ambiente.">
-            <div className="space-y-2">
-              {project.environments.map((env) => (
-                <button
-                  key={env.id}
-                  onClick={() => select({ environmentId: env.id, roomId: env.rooms[0]?.id ?? null })}
-                  className={`w-full rounded-md border px-3 py-2 text-left text-sm transition-colors ${
-                    env.id === state.selectedEnvironmentId
-                      ? "border-primary/50 bg-primary/10"
-                      : "border-border/60 hover:bg-muted"
-                  }`}
-                >
-                  <div className="font-medium">{env.name}</div>
-                  <div className="text-xs text-muted-foreground">{env.rooms.length} cômodo(s)</div>
-                </button>
-              ))}
-              <div className="flex gap-2">
-                <input
-                  className="flex-1 rounded-md border border-input bg-background px-2 py-1.5 text-sm"
-                  placeholder="Novo ambiente"
-                  value={envName}
-                  onChange={(e) => setEnvName(e.target.value)}
-                />
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    if (!envName.trim()) return;
+      <div className="mt-8 grid gap-4 lg:grid-cols-[280px,1fr,380px]">
+        {/* Painel esquerdo — Árvore hierárquica estilo Blender */}
+        <aside className="flex min-h-[640px] flex-col rounded-xl border border-border/60 bg-card">
+          <div className="min-h-0 flex-1">
+            <ProjectTree />
+          </div>
+          {/* Rodapé — adicionar ambiente / cômodo */}
+          <div className="space-y-2 border-t border-border/60 bg-background/40 p-2">
+            <div className="flex gap-1.5">
+              <input
+                className="flex-1 rounded-md border border-input bg-background px-2 py-1.5 text-xs"
+                placeholder="+ Ambiente"
+                value={envName}
+                onChange={(e) => setEnvName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && envName.trim()) {
                     const env = createEnvironment({ name: envName.trim() });
                     updateProject((p) => ({ ...p, environments: [...p.environments, env] }));
                     select({ environmentId: env.id, roomId: null });
                     setEnvName("");
-                  }}
-                >
-                  <PlusCircle className="h-4 w-4" />
-                </Button>
-              </div>
+                  }
+                }}
+              />
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  if (!envName.trim()) return;
+                  const env = createEnvironment({ name: envName.trim() });
+                  updateProject((p) => ({ ...p, environments: [...p.environments, env] }));
+                  select({ environmentId: env.id, roomId: null });
+                  setEnvName("");
+                }}
+              >
+                <PlusCircle className="h-3.5 w-3.5" />
+              </Button>
             </div>
-          </FormSection>
-
-          {selectedEnv && (
-            <FormSection title="Cômodos" description={`Cômodos de ${selectedEnv.name}.`}>
-              <div className="space-y-2">
-                {selectedEnv.rooms.map((room) => (
-                  <button
-                    key={room.id}
-                    onClick={() => select({ roomId: room.id })}
-                    className={`w-full rounded-md border px-3 py-2 text-left text-sm transition-colors ${
-                      room.id === state.selectedRoomId
-                        ? "border-primary/50 bg-primary/10"
-                        : "border-border/60 hover:bg-muted"
-                    }`}
-                  >
-                    <div className="font-medium">{room.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {room.dimensions.width}×{room.dimensions.depth}×{room.dimensions.height} mm
-                    </div>
-                  </button>
-                ))}
-                <div className="flex gap-2">
-                  <input
-                    className="flex-1 rounded-md border border-input bg-background px-2 py-1.5 text-sm"
-                    placeholder="Novo cômodo"
-                    value={roomName}
-                    onChange={(e) => setRoomName(e.target.value)}
-                  />
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      if (!roomName.trim()) return;
+            {selectedEnv && (
+              <div className="flex gap-1.5">
+                <input
+                  className="flex-1 rounded-md border border-input bg-background px-2 py-1.5 text-xs"
+                  placeholder={`+ Cômodo em ${selectedEnv.name}`}
+                  value={roomName}
+                  onChange={(e) => setRoomName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && roomName.trim()) {
                       const room = createRoom({ name: roomName.trim() });
                       updateProject((p) => ({
                         ...p,
-                        environments: p.environments.map((e) =>
-                          e.id === selectedEnv.id ? { ...e, rooms: [...e.rooms, room] } : e,
+                        environments: p.environments.map((en) =>
+                          en.id === selectedEnv.id
+                            ? { ...en, rooms: [...en.rooms, room] }
+                            : en,
                         ),
                       }));
                       select({ roomId: room.id });
                       setRoomName("");
-                    }}
-                  >
-                    <PlusCircle className="h-4 w-4" />
-                  </Button>
-                </div>
+                    }
+                  }}
+                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    if (!roomName.trim()) return;
+                    const room = createRoom({ name: roomName.trim() });
+                    updateProject((p) => ({
+                      ...p,
+                      environments: p.environments.map((en) =>
+                        en.id === selectedEnv.id
+                          ? { ...en, rooms: [...en.rooms, room] }
+                          : en,
+                      ),
+                    }));
+                    select({ roomId: room.id });
+                    setRoomName("");
+                  }}
+                >
+                  <PlusCircle className="h-3.5 w-3.5" />
+                </Button>
               </div>
-            </FormSection>
-          )}
+            )}
           </div>
         </aside>
 
