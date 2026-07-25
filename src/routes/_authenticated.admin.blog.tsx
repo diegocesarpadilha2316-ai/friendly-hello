@@ -190,7 +190,11 @@ function AdminBlogContent() {
       <PageHeader
         title="Editor do Blog"
         description="Crie, edite e publique artigos do blog público da Dioris."
-        icon={<BookOpen className="h-5 w-5" />}
+        eyebrow={
+          <span className="inline-flex items-center gap-2">
+            <BookOpen className="h-4 w-4" /> Blog público
+          </span>
+        }
         actions={
           <button
             type="button"
@@ -236,9 +240,9 @@ function AdminBlogContent() {
                   <td className="px-4 py-3 text-muted-foreground">{p.category}</td>
                   <td className="px-4 py-3">
                     {p.published ? (
-                      <StatusBadge status="success" label="Publicado" />
+                      <StatusBadge tone="success">Publicado</StatusBadge>
                     ) : (
-                      <StatusBadge status="warning" label="Rascunho" />
+                      <StatusBadge tone="warning">Rascunho</StatusBadge>
                     )}
                   </td>
                   <td className="px-4 py-3 text-xs text-muted-foreground">
