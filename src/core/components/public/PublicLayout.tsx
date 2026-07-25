@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import diorisLogo from "@/assets/dioris-logo.png";
 import { CookieConsent } from "./CookieConsent";
+import { Analytics } from "./Analytics";
 
 const productLinks = [
   { to: "/produtos/planner", label: "Planner", icon: Layers, badge: "Em breve", desc: "Projeto 3D + IA + Produção" },
@@ -348,6 +349,7 @@ export function PublicLayout({ children }: { children?: ReactNode }) {
       <main className="pt-16">{children ?? <Outlet />}</main>
       <PublicFooter />
       <CookieConsent />
+      <Analytics />
     </div>
   );
 }
