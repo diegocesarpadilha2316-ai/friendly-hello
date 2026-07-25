@@ -6,7 +6,7 @@
  * `PlannerEditorProvider` da Fase 3.1.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame, type ThreeEvent } from "@react-three/fiber";
+import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import {
   OrbitControls,
   FlyControls,
@@ -166,7 +166,7 @@ function Wall({
   const props = useTexturedMaterialProps(
     w.materialId,
     [w.length, w.height],
-    selected ? COLORS.wallSel : COLORS.wall,
+    selected ? COLORS.wallSel : (w.overrideColor ?? COLORS.wall),
     { wireframe, transparent: opacity < 1, opacity, roughness: 0.85, metalness: 0.05 },
   );
   return (
@@ -202,7 +202,9 @@ function Slab({
   onSelect: (id: string | null) => void;
 }) {
   const pos = explodeVec(s.cx, s.cz, s.y, center, viewport.explode);
-  const fallback = selected ? COLORS.wallSel : kind === "floor" ? COLORS.floor : COLORS.ceiling;
+  const fallback = selected
+    ? COLORS.wallSel
+    : s.overrideColor ?? (kind === "floor" ? COLORS.floor : COLORS.ceiling);
   const props = useTexturedMaterialProps(
     s.materialId,
     [s.width, s.depth],
@@ -238,7 +240,9 @@ function Opening({
   onSelect: (id: string | null) => void;
 }) {
   const pos = explodeVec(o.cx, o.cz, o.y, center, viewport.explode);
-  const color = selected ? COLORS.wallSel : o.role === "door" ? COLORS.door : COLORS.window;
+  const color = selected
+    ? COLORS.wallSel
+    : o.overrideColor ?? (o.role === "door" ? COLORS.door : COLORS.window);
   return (
     <mesh
       position={[pos.x, pos.y, pos.z]}
@@ -277,7 +281,7 @@ function Furniture({
   const clipped =
     viewport.sectionHeight != null && f.y - f.height / 2 > viewport.sectionHeight / 1000;
   if (clipped) return null;
-  const fallback = selected ? COLORS.furnitureSel : COLORS.furniture;
+  const fallback = selected ? COLORS.furnitureSel : (f.overrideColor ?? COLORS.furniture);
   const props = useTexturedMaterialProps(
     f.materialId,
     [f.width, f.height],
@@ -331,6 +335,42 @@ function Cameras({ mode }: { mode: Viewport3DState["camera"] }) {
   return <OrbitControls makeDefault enableDamping dampingFactor={0.15} />;
 }
 
+/**
+ * Move a câmera para presets ortogonais/perspectivos quando `viewport.view`
+ * muda. Roda uma única vez por mudança de view — depois disso o usuário
+ * segue livre com OrbitControls.
+ */
+function ApplyViewPreset({
+  view,
+  center,
+  diag,
+}: {
+  view: Viewport3DState["view"];
+  center: THREE.Vector3;
+  diag: number;
+}) {
+  const { camera } = useThree();
+  useEffect(() => {
+    const d = Math.max(6, diag * 1.2);
+    switch (view) {
+      case "topo":
+        camera.position.set(center.x, d * 1.4, center.z + 0.001);
+        break;
+      case "frontal":
+        camera.position.set(center.x, center.y, center.z + d);
+        break;
+      case "lateral":
+        camera.position.set(center.x + d, center.y, center.z);
+        break;
+      default:
+        camera.position.set(center.x + d * 0.7, d * 0.6, center.z + d * 0.7);
+    }
+    camera.lookAt(center);
+    camera.updateProjectionMatrix();
+  }, [view, camera, center.x, center.y, center.z, diag]);
+  return null;
+}
+
 function AutoResize() {
   const ref = useRef<THREE.Group>(null!);
   useFrame(() => {
@@ -355,16 +395,21 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
       onPointerMissed={() => onSelect(null)}
     >
       <color attach="background" args={["#0b0f1a"]} />
-      <ambientLight intensity={0.35} />
-      <directionalLight
-        position={[cx + 8, 12, cz + 8]}
-        intensity={1.1}
-        castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
-      />
-      <hemisphereLight args={["#b7c4e0", "#1a1f2e", 0.4]} />
+      <ambientLight intensity={viewport.showLights ? 0.35 : 0.15} />
+      {viewport.showLights ? (
+        <>
+          <directionalLight
+            position={[cx + 8, 12, cz + 8]}
+            intensity={1.1}
+            castShadow
+            shadow-mapSize-width={1024}
+            shadow-mapSize-height={1024}
+          />
+          <hemisphereLight args={["#b7c4e0", "#1a1f2e", 0.4]} />
+        </>
+      ) : null}
       {viewport.render === "material" ? <Environment preset="apartment" /> : null}
+      <ApplyViewPreset view={viewport.view} center={center} diag={diag} />
       {viewport.showGrid ? (
         <Grid
           args={[80, 80]}

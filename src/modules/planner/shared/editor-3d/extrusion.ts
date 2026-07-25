@@ -20,6 +20,7 @@ export interface WallDescriptor {
   height: number; // m
   rotationY: number; // rad
   materialId?: string;
+  overrideColor?: string;
 }
 
 export interface SlabDescriptor {
@@ -31,6 +32,7 @@ export interface SlabDescriptor {
   y: number;
   thickness: number;
   materialId?: string;
+  overrideColor?: string;
 }
 
 export interface OpeningDescriptor {
@@ -43,6 +45,7 @@ export interface OpeningDescriptor {
   y: number;
   rotationY: number;
   materialId?: string;
+  overrideColor?: string;
 }
 
 export interface FurnitureDescriptor {
@@ -57,6 +60,7 @@ export interface FurnitureDescriptor {
   y: number;       // altura do centro (m)
   rotationY: number; // rad
   materialId?: string;
+  overrideColor?: string;
 }
 
 export interface Scene3DModel {
@@ -130,11 +134,18 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
   const furniture: FurnitureDescriptor[] = [];
   const wallH = wallHeight * MM;
 
+  // Cores customizadas por nó (definidas via ProjectTree → params.__color).
+  const colorFor = (id: string): string | undefined => {
+    const n = room.nodes[id];
+    const c = n?.params["__color"];
+    return typeof c === "string" && /^#[0-9a-fA-F]{3,8}$/.test(c) ? c : undefined;
+  };
+
   for (const p of primitives) {
-    if (p.kind === "wall") walls.push(extrudeWall(p, wallHeight));
-    else if (p.kind === "floor") floors.push(extrudeSlab(p, 0));
-    else if (p.kind === "ceiling") ceilings.push(extrudeSlab(p, wallH));
-    else if (p.kind === "opening") openings.push(extrudeOpening(p));
+    if (p.kind === "wall") walls.push({ ...extrudeWall(p, wallHeight), overrideColor: colorFor(p.id) });
+    else if (p.kind === "floor") floors.push({ ...extrudeSlab(p, 0), overrideColor: colorFor(p.id) });
+    else if (p.kind === "ceiling") ceilings.push({ ...extrudeSlab(p, wallH), overrideColor: colorFor(p.id) });
+    else if (p.kind === "opening") openings.push({ ...extrudeOpening(p), overrideColor: colorFor(p.id) });
     else if (p.kind === "furniture") {
       const w = p.width * MM;
       const d = p.depth * MM;
@@ -151,6 +162,7 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
         y: h / 2,
         rotationY: -(p.rotation * Math.PI) / 180,
         materialId: p.materialId,
+        overrideColor: colorFor(p.id),
       });
     }
   }

@@ -26,7 +26,7 @@ import { Button } from "@/core/components/ui-kit";
 import { cn } from "@/lib/utils";
 import { usePlannerEditor } from "../state/editor-context";
 import { buildScene3D } from "./extrusion";
-import { DEFAULT_VIEWPORT_3D, type Camera3DMode, type Render3DMode, type Viewport3DState } from "./types";
+import { DEFAULT_VIEWPORT_3D, type Camera3DMode, type Camera3DView, type Render3DMode, type Viewport3DState } from "./types";
 import { Scene3D } from "./Scene3D";
 
 const CAM_LABEL: Record<Camera3DMode, string> = {
@@ -109,6 +109,8 @@ function SceneTree({
 export interface Viewport3DControls {
   showGrid?: boolean;
   camera?: Camera3DMode;
+  view?: Camera3DView;
+  showLights?: boolean;
 }
 
 export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {}) {
@@ -128,8 +130,10 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
       ...v,
       ...(controls.showGrid != null ? { showGrid: controls.showGrid } : {}),
       ...(controls.camera ? { camera: controls.camera } : {}),
+      ...(controls.view ? { view: controls.view } : {}),
+      ...(controls.showLights != null ? { showLights: controls.showLights } : {}),
     }));
-  }, [controls?.showGrid, controls?.camera]);
+  }, [controls?.showGrid, controls?.camera, controls?.view, controls?.showLights]);
 
   const model = useMemo(() => (room ? buildScene3D(room, viewport.wallHeight) : null), [room, viewport.wallHeight]);
 
