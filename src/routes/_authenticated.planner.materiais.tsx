@@ -79,9 +79,17 @@ function MateriaisEmpresaPage() {
     qc.invalidateQueries({ queryKey: ["planner", "company-materials"] });
   };
 
+  type UpsertData = {
+    materialId: string;
+    costPrice: number | null;
+    salePrice: number | null;
+    markupPercent: number | null;
+    stockQuantity: number | null;
+    supplierName: string | null;
+    isAvailable: boolean;
+  };
   const upsertMutation = useMutation({
-    mutationFn: (data: Parameters<typeof upsert>[0]["data"]) =>
-      upsert({ data }),
+    mutationFn: (data: UpsertData) => upsert({ data }),
     onSuccess: () => {
       toast.success("Material atualizado");
       setEditing(null);
@@ -121,17 +129,17 @@ function MateriaisEmpresaPage() {
         <MetricCard
           label="Total configurado"
           value={statsQuery.data?.total ?? 0}
-          icon={Package}
+          icon={<Package className="h-4 w-4" />}
         />
         <MetricCard
           label="Disponíveis"
           value={statsQuery.data?.available ?? 0}
-          icon={Package}
+          icon={<Package className="h-4 w-4" />}
         />
         <MetricCard
           label="Estoque baixo"
           value={statsQuery.data?.lowStock ?? 0}
-          icon={AlertTriangle}
+          icon={<AlertTriangle className="h-4 w-4" />}
         />
       </div>
 
