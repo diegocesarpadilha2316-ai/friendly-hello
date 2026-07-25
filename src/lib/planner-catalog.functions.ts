@@ -1,0 +1,156 @@
+/**
+ * Etapa 3 — Server functions do catálogo Planner (materiais + ferragens).
+ *
+ * Camada aditiva sobre a bridge browser existente:
+ *  - `planner_materials` e `planner_hardware` já são lidas via anon no cliente
+ *    (RLS: SELECT público). Estas server functions expõem o mesmo catálogo
+ *    pelo runtime servidor — úteis para SSR/loaders, prefetch por tenant,
+ *    exportações, IA e futuras extensões company-scoped.
+ *
+ * Thin wrapper: apenas createServerFn + imports client-safe.
+ */
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import { requireTenant } from "@/core/middleware/require-tenant";
+
+export interface PlannerMaterialDTO {
+  id: string;
+  name: string;
+  manufacturer: string;
+  line: string | null;
+  category: string;
+  pattern: string | null;
+  colorName: string | null;
+  colorHex: string | null;
+  textureUrl: string | null;
+  thicknessMm: number;
+  widthMm: number | null;
+  lengthMm: number | null;
+  grain: "vertical" | "horizontal" | "livre" | null;
+  pricePerM2: number | null;
+}
+
+export interface PlannerHardwareDTO {
+  id: string;
+  manufacturer: string;
+  brand: string;
+  category: string;
+  model: string;
+  description: string | null;
+  imageUrl: string | null;
+  unitPrice: number | null;
+}
+
+function num(v: unknown): number | null {
+  if (v == null) return null;
+  const n = typeof v === "number" ? v : Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+const listMaterialsInput = z.object({
+  query: z.string().trim().max(120).optional(),
+  category: z.string().trim().max(80).optional(),
+  manufacturer: z.string().trim().max(80).optional(),
+  limit: z.number().int().min(1).max(500).optional(),
+});
+
+export const listCatalogMaterials = createServerFn({ method: "GET" })
+  .middleware([requireTenant])
+  .inputValidator((data: unknown) => listMaterialsInput.parse(data ?? {}))
+  .handler(async ({ data, context }): Promise<readonly PlannerMaterialDTO[]> => {
+    let q = context.supabase
+      .from("planner_materials")
+      .select(
+        "id,fabricante,linha,categoria,padrao,cor_nome,cor_hex,textura_url,espessura_mm,largura_mm,comprimento_mm,sentido_veio,preco_m2",
+      )
+      .eq("ativo", true)
+      .limit(data.limit ?? 120);
+    if (data.category) q = q.eq("categoria", data.category);
+    if (data.manufacturer) q = q.ilike("fabricante", `%${data.manufacturer}%`);
+    if (data.query) {
+      const term = `%${data.query}%`;
+      q = q.or(
+        `padrao.ilike.${term},cor_nome.ilike.${term},fabricante.ilike.${term},linha.ilike.${term}`,
+      );
+    }
+    const { data: rows, error } = await q;
+    if (error) return [];
+    return (rows ?? []).map((r) => {
+      const pattern = r.padrao ?? r.cor_nome ?? r.linha ?? null;
+      return {
+        id: r.id as string,
+        name:
+          [r.fabricante, r.linha, pattern].filter(Boolean).join(" · ") ||
+          (r.id as string),
+        manufacturer: (r.fabricante as string) ?? "",
+        line: (r.linha as string | null) ?? null,
+        category: (r.categoria as string) ?? "",
+        pattern,
+        colorName: (r.cor_nome as string | null) ?? null,
+        colorHex: (r.cor_hex as string | null) ?? null,
+        textureUrl: (r.textura_url as string | null) ?? null,
+        thicknessMm: num(r.espessura_mm) ?? 18,
+        widthMm: num(r.largura_mm),
+        lengthMm: num(r.comprimento_mm),
+        grain: (r.sentido_veio as PlannerMaterialDTO["grain"]) ?? null,
+        pricePerM2: num(r.preco_m2),
+      };
+    });
+  });
+
+const listHardwareInput = z.object({
+  query: z.string().trim().max(120).optional(),
+  category: z.string().trim().max(80).optional(),
+  manufacturer: z.string().trim().max(80).optional(),
+  limit: z.number().int().min(1).max(500).optional(),
+});
+
+export const listCatalogHardware = createServerFn({ method: "GET" })
+  .middleware([requireTenant])
+  .inputValidator((data: unknown) => listHardwareInput.parse(data ?? {}))
+  .handler(async ({ data, context }): Promise<readonly PlannerHardwareDTO[]> => {
+    let q = context.supabase
+      .from("planner_hardware")
+      .select("id,fabricante,marca,categoria,modelo,descricao,imagem_url,preco_unitario")
+      .eq("ativo", true)
+      .limit(data.limit ?? 120);
+    if (data.category) q = q.eq("categoria", data.category);
+    if (data.manufacturer) q = q.ilike("fabricante", `%${data.manufacturer}%`);
+    if (data.query) {
+      const term = `%${data.query}%`;
+      q = q.or(
+        `modelo.ilike.${term},descricao.ilike.${term},fabricante.ilike.${term},marca.ilike.${term}`,
+      );
+    }
+    const { data: rows, error } = await q;
+    if (error) return [];
+    return (rows ?? []).map((r) => ({
+      id: r.id as string,
+      manufacturer: (r.fabricante as string) ?? "",
+      brand: (r.marca as string) ?? "",
+      category: (r.categoria as string) ?? "",
+      model: (r.modelo as string) ?? "",
+      description: (r.descricao as string | null) ?? null,
+      imageUrl: (r.imagem_url as string | null) ?? null,
+      unitPrice: num(r.preco_unitario),
+    }));
+  });
+
+export const catalogStats = createServerFn({ method: "GET" })
+  .middleware([requireTenant])
+  .handler(async ({ context }) => {
+    const [mats, hws] = await Promise.all([
+      context.supabase
+        .from("planner_materials")
+        .select("id", { count: "exact", head: true })
+        .eq("ativo", true),
+      context.supabase
+        .from("planner_hardware")
+        .select("id", { count: "exact", head: true })
+        .eq("ativo", true),
+    ]);
+    return {
+      materials: mats.count ?? 0,
+      hardware: hws.count ?? 0,
+    };
+  });
