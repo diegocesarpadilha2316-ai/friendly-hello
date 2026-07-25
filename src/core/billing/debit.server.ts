@@ -61,7 +61,29 @@ export async function debitCreditsOrThrow(
   });
   if (error) throw new Response(error.message, { status: 500 });
 
-  return { ok: true, balance: balance - amount, charged: amount };
+  const newBalance = balance - amount;
+
+  // Alerta de saldo baixo — best-effort, fora do path crítico.
+  const LOW_THRESHOLD = 20;
+  if (balance >= LOW_THRESHOLD && newBalance < LOW_THRESHOLD) {
+    void (async () => {
+      try {
+        const { notifyLowCredits } = await import(
+          "@/core/notifications/notify.server"
+        );
+        await notifyLowCredits({
+          companyId: tenantId,
+          userId,
+          balance: newBalance,
+          threshold: LOW_THRESHOLD,
+        });
+      } catch {
+        /* silencioso */
+      }
+    })();
+  }
+
+  return { ok: true, balance: newBalance, charged: amount };
 }
 
 /** Best-effort: não interrompe o fluxo em caso de falha do ledger. */
