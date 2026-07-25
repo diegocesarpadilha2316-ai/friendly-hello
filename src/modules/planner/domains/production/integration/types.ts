@@ -6,7 +6,7 @@
  * Intelligence). Zero providers, zero stores, zero migrations.
  */
 import type { NestingAlgorithm, NestingComparison, NestingPlan } from "../services/nesting";
-import type { CncFormat, CncProgram } from "../services/cnc";
+import type { CncFormat, CncProgram } from "../services/cnc/types";
 import type { FabricationPlan } from "../services/fabrication";
 import type { AssemblyPlan, IndustrialCostSummary, OffcutInventoryItem } from "../services/industrial";
 import type {
