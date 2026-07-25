@@ -91,6 +91,7 @@ import { Route as ApiPublicV1OpenapiRouteImport } from './routes/api/public/v1/o
 import { Route as AuthenticatedPlannerProjetosNovoRouteImport } from './routes/_authenticated.planner.projetos.novo'
 import { Route as AuthenticatedPlannerProjetosProjectIdRouteImport } from './routes/_authenticated.planner.projetos.$projectId'
 import { Route as ApiPublicV1WorkersRenderRouteImport } from './routes/api/public/v1/workers/render'
+import { Route as ApiPublicV1WorkersEmailRouteImport } from './routes/api/public/v1/workers/email'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -541,6 +542,11 @@ const ApiPublicV1WorkersRenderRoute =
     path: '/api/public/v1/workers/render',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicV1WorkersEmailRoute = ApiPublicV1WorkersEmailRouteImport.update({
+  id: '/api/public/v1/workers/email',
+  path: '/api/public/v1/workers/email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
@@ -622,6 +628,7 @@ export interface FileRoutesByFullPath {
   '/planner/projetos/novo': typeof AuthenticatedPlannerProjetosNovoRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
+  '/api/public/v1/workers/email': typeof ApiPublicV1WorkersEmailRoute
   '/api/public/v1/workers/render': typeof ApiPublicV1WorkersRenderRoute
 }
 export interface FileRoutesByTo {
@@ -702,6 +709,7 @@ export interface FileRoutesByTo {
   '/planner/projetos/novo': typeof AuthenticatedPlannerProjetosNovoRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
+  '/api/public/v1/workers/email': typeof ApiPublicV1WorkersEmailRoute
   '/api/public/v1/workers/render': typeof ApiPublicV1WorkersRenderRoute
 }
 export interface FileRoutesById {
@@ -787,6 +795,7 @@ export interface FileRoutesById {
   '/_authenticated/planner/projetos/novo': typeof AuthenticatedPlannerProjetosNovoRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
+  '/api/public/v1/workers/email': typeof ApiPublicV1WorkersEmailRoute
   '/api/public/v1/workers/render': typeof ApiPublicV1WorkersRenderRoute
 }
 export interface FileRouteTypes {
@@ -871,6 +880,7 @@ export interface FileRouteTypes {
     | '/planner/projetos/novo'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
+    | '/api/public/v1/workers/email'
     | '/api/public/v1/workers/render'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -951,6 +961,7 @@ export interface FileRouteTypes {
     | '/planner/projetos/novo'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
+    | '/api/public/v1/workers/email'
     | '/api/public/v1/workers/render'
   id:
     | '__root__'
@@ -1035,6 +1046,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planner/projetos/novo'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
+    | '/api/public/v1/workers/email'
     | '/api/public/v1/workers/render'
   fileRoutesById: FileRoutesById
 }
@@ -1046,6 +1058,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiPublicV1OpenapiRoute: typeof ApiPublicV1OpenapiRoute
   ApiPublicV1PingRoute: typeof ApiPublicV1PingRoute
+  ApiPublicV1WorkersEmailRoute: typeof ApiPublicV1WorkersEmailRoute
   ApiPublicV1WorkersRenderRoute: typeof ApiPublicV1WorkersRenderRoute
 }
 
@@ -1625,6 +1638,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicV1WorkersRenderRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/v1/workers/email': {
+      id: '/api/public/v1/workers/email'
+      path: '/api/public/v1/workers/email'
+      fullPath: '/api/public/v1/workers/email'
+      preLoaderRoute: typeof ApiPublicV1WorkersEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1864,6 +1884,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiPublicV1OpenapiRoute: ApiPublicV1OpenapiRoute,
   ApiPublicV1PingRoute: ApiPublicV1PingRoute,
+  ApiPublicV1WorkersEmailRoute: ApiPublicV1WorkersEmailRoute,
   ApiPublicV1WorkersRenderRoute: ApiPublicV1WorkersRenderRoute,
 }
 export const routeTree = rootRouteImport
