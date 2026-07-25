@@ -188,7 +188,7 @@ export async function tickEmailWorker(opts: { maxJobs?: number } = {}): Promise<
       continue;
     }
 
-    let notif: NotifRow = { title: null, body: null, link: null, data: null };
+    let notif: NotifRow = { title: null, body: null, link: null, data: null, category: null };
     if (row.notification_id) {
       const { data: n } = await admin
         .from("notifications")
