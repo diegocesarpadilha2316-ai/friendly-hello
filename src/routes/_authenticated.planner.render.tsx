@@ -9,6 +9,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { parseInsufficientCredits } from "@/core/billing/insufficient-credits";
+import { Link } from "@tanstack/react-router";
 import {
   Loader2,
   Plus,
@@ -156,8 +158,24 @@ function RenderPage() {
       setEnqueueOpen(false);
       invalidate();
     },
-    onError: (e: unknown) =>
-      toast.error(e instanceof Error ? e.message : "Falha ao enfileirar"),
+    onError: (e: unknown) => {
+      const ic = parseInsufficientCredits(e);
+      if (ic) {
+        toast.error(
+          `Créditos insuficientes: precisa de ${ic.need}, saldo atual ${ic.balance}.`,
+          {
+            action: {
+              label: "Comprar créditos",
+              onClick: () => {
+                window.location.href = "/workspace/creditos";
+              },
+            },
+          },
+        );
+        return;
+      }
+      toast.error(e instanceof Error ? e.message : "Falha ao enfileirar");
+    },
   });
 
   const rows = jobsQuery.data ?? [];
