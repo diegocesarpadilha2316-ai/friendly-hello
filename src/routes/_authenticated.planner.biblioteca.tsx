@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageContainer, PageHeader, StatusBadge } from "@/core/components/ui-kit";
+import { cn } from "@/lib/utils";
 import {
   CATALOG_ITEMS,
+  CatalogRealPanel,
   LibraryPanel,
   PlannerEditorProvider,
 } from "@/modules/planner/shared";
@@ -27,6 +30,11 @@ export const Route = createFileRoute("/_authenticated/planner/biblioteca")({
 });
 
 function BibliotecaPage() {
+  const [tab, setTab] = useState<"parametric" | "catalog">("parametric");
+  const tabs = [
+    { id: "parametric" as const, label: "Peças paramétricas" },
+    { id: "catalog" as const, label: "Materiais & Ferragens" },
+  ];
   return (
     <PageContainer>
       <PageHeader
@@ -37,14 +45,31 @@ function BibliotecaPage() {
           <StatusBadge tone="success">{CATALOG_ITEMS.length} peças ativas</StatusBadge>
         }
       />
-      <div className="mt-6 h-[calc(100vh-260px)] min-h-[560px]">
-        {/*
-         * Envolvemos com o mesmo provider do editor para permitir que a
-         * biblioteca insira diretamente no cômodo ativo — sem duplicar estado.
-         */}
-        <PlannerEditorProvider>
-          <LibraryPanel variant="full" />
-        </PlannerEditorProvider>
+      <div className="mt-4 inline-flex items-center gap-1 rounded-lg border border-border/60 bg-background/60 p-1">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => setTab(t.id)}
+            className={cn(
+              "rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
+              tab === t.id
+                ? "bg-primary/15 text-primary"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
+            )}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+      <div className="mt-4 h-[calc(100vh-300px)] min-h-[560px]">
+        {tab === "parametric" ? (
+          <PlannerEditorProvider>
+            <LibraryPanel variant="full" />
+          </PlannerEditorProvider>
+        ) : (
+          <CatalogRealPanel />
+        )}
       </div>
     </PageContainer>
   );

@@ -7,3 +7,4 @@ export * from "./catalog";
 export * from "./insert";
 export * from "./use-favorites";
 export { LibraryPanel } from "./LibraryPanel";
+export { CatalogRealPanel } from "./CatalogRealPanel";
