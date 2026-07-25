@@ -21,7 +21,7 @@ export function exportPremium(input: PremiumExportInput): { readonly content: st
     case "excel": {
       const lines: string[] = ["kind,id,manufacturer,category,name,price"];
       for (const m of materials) {
-        lines.push(["material", m.id, m.manufacturer, m.category, m.colorName ?? "", m.pricePerSqm ?? ""].join(","));
+        lines.push(["material", m.id, m.manufacturer, m.category, m.colorName ?? "", m.pricePerM2 ?? ""].join(","));
       }
       for (const h of hardware) {
         lines.push(["hardware", h.id, h.manufacturer, h.category, h.model, h.unitPrice ?? ""].join(","));
