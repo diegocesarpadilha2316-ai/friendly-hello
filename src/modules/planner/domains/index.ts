@@ -17,3 +17,4 @@ export * as marketplace from "./marketplace";
 export * as api from "./api";
 export * as video from "./video";
 export * as realtime from "./realtime";
+export * as ai from "./ai";
