@@ -16,6 +16,7 @@ type Mode = "2d" | "3d";
 export interface EditorCanvasControls {
   showGrid?: boolean;
   view?: "perspectiva" | "topo" | "frontal" | "lateral";
+  showLights?: boolean;
 }
 
 export function EditorCanvas({ mode, controls }: { mode: Mode; controls?: EditorCanvasControls }) {
@@ -129,8 +130,8 @@ export function EditorCanvas({ mode, controls }: { mode: Mode; controls?: Editor
               controls
                 ? {
                     showGrid: controls.showGrid,
-                    camera:
-                      controls.view && controls.view !== "perspectiva" ? "orbit" : "orbit",
+                    view: controls.view,
+                    showLights: controls.showLights,
                   }
                 : undefined
             }
