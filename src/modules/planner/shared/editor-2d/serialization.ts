@@ -203,6 +203,8 @@ export function listPrimitives(room: PlannerRoom): Editor2DPrimitive[] {
   for (const id of room.nodeOrder) {
     const n = room.nodes[id];
     if (!n) continue;
+    // Respeita flag de visibilidade definida pela árvore (ProjectTree).
+    if (n.params && n.params["__hidden"] === true) continue;
     const p = toPrimitive(n);
     if (p) out.push(p);
   }
