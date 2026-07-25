@@ -20,9 +20,9 @@ import type {
 import type {
   LocalCameraPreset,
   LocalPerformanceConfig,
-  LocalRenderPlaybook,
   LocalTextureConfig,
 } from "../local-engine/types";
+import type { LocalRenderPlaybook } from "../local-engine/renderer";
 
 /** Objeto renderizável real (paredes / piso / móveis / decoração / LED). */
 export type RealObjectKind =
