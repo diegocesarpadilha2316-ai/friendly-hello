@@ -10,6 +10,7 @@ export * as cnc from "./cnc";
 export * as executive from "./executive";
 export * as budget from "./budget";
 export * as library from "./library";
+export * as libraryPremium from "./library-premium";
 export * as rooms from "./rooms";
 export * as materials from "./materials";
 export * as hardware from "./hardware";
