@@ -15,6 +15,7 @@ const routes = [
   { path: "/integracoes", priority: "0.7" },
   { path: "/docs", priority: "0.7" },
   { path: "/blog", priority: "0.7" },
+  { path: "/changelog", priority: "0.6" },
   { path: "/faq", priority: "0.6" },
   { path: "/contato", priority: "0.6" },
   { path: "/status", priority: "0.5" },
