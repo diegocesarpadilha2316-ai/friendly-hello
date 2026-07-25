@@ -106,7 +106,12 @@ function SceneTree({
   );
 }
 
-export function Viewport3D() {
+export interface Viewport3DControls {
+  showGrid?: boolean;
+  camera?: Camera3DMode;
+}
+
+export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {}) {
   const { state } = usePlannerEditor();
   const room = state.project?.environments
     .find((e) => e.id === state.selectedEnvironmentId)
@@ -114,6 +119,17 @@ export function Viewport3D() {
 
   const [viewport, setViewport] = useState<Viewport3DState>(DEFAULT_VIEWPORT_3D);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  // Sincroniza controles externos (barra inferior do editor) com o estado
+  // interno do viewport, sem introduzir stores novos.
+  useEffect(() => {
+    if (!controls) return;
+    setViewport((v) => ({
+      ...v,
+      ...(controls.showGrid != null ? { showGrid: controls.showGrid } : {}),
+      ...(controls.camera ? { camera: controls.camera } : {}),
+    }));
+  }, [controls?.showGrid, controls?.camera]);
 
   const model = useMemo(() => (room ? buildScene3D(room, viewport.wallHeight) : null), [room, viewport.wallHeight]);
 

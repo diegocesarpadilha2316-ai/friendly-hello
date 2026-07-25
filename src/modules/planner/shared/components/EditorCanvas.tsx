@@ -13,7 +13,12 @@ const Viewport3D = lazy(() =>
 
 type Mode = "2d" | "3d";
 
-export function EditorCanvas({ mode }: { mode: Mode }) {
+export interface EditorCanvasControls {
+  showGrid?: boolean;
+  view?: "perspectiva" | "topo" | "frontal" | "lateral";
+}
+
+export function EditorCanvas({ mode, controls }: { mode: Mode; controls?: EditorCanvasControls }) {
   const { state, canUndo, canRedo, undo, redo, saveNow, updateProject } = usePlannerEditor();
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [inspectorOpen, setInspectorOpen] = useState(false);
@@ -119,7 +124,17 @@ export function EditorCanvas({ mode }: { mode: Mode }) {
             </div>
           }
         >
-          <Viewport3D />
+          <Viewport3D
+            controls={
+              controls
+                ? {
+                    showGrid: controls.showGrid,
+                    camera:
+                      controls.view && controls.view !== "perspectiva" ? "orbit" : "orbit",
+                  }
+                : undefined
+            }
+          />
         </Suspense>
       </ClientOnly>
     </div>

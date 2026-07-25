@@ -277,7 +277,7 @@ function PlannerProjectDetail() {
 
           {/* Canvas */}
           <div className="relative min-h-0 flex-1 bg-[#0a1020]">
-            <EditorCanvas mode={viewportMode} />
+            <EditorCanvas mode={viewportMode} controls={{ showGrid: gridOn, view }} />
 
             {/* Mini mapa 2D */}
             <div className="pointer-events-auto absolute bottom-4 left-4 h-32 w-44 overflow-hidden rounded-lg border border-border/60 bg-background/90 shadow-lg backdrop-blur">
