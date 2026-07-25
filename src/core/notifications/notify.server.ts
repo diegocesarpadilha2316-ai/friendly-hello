@@ -99,3 +99,42 @@ export async function notifyLowCredits(params: {
     icon: "alert-triangle",
   });
 }
+
+/** Recibo de pagamento — chamado quando um pedido é aprovado. */
+export async function notifyPaymentApproved(params: {
+  companyId: string;
+  userId?: string | null;
+  email?: string | null;
+  credits: number;
+  amount: number;
+  currency?: string;
+  provider: string;
+  orderId: string;
+  packKey?: string | null;
+}): Promise<void> {
+  const currency = params.currency ?? "BRL";
+  const amountFmt = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency,
+  }).format(params.amount);
+  await notify({
+    companyId: params.companyId,
+    userId: params.userId ?? null,
+    category: "billing",
+    priority: "normal",
+    title: `Pagamento aprovado — ${amountFmt}`,
+    body: `Recebemos seu pagamento via ${params.provider}. ${params.credits} créditos foram adicionados à sua conta.`,
+    link: "/workspace/creditos",
+    icon: "check-circle",
+    data: {
+      subject: `Recibo Dioris — ${amountFmt}`,
+      orderId: params.orderId,
+      credits: params.credits,
+      amount: params.amount,
+      currency,
+      provider: params.provider,
+      packKey: params.packKey ?? null,
+    },
+    email: params.email ? { to: params.email, subject: `Recibo Dioris — ${amountFmt}` } : null,
+  });
+}
