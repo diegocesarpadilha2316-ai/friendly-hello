@@ -255,6 +255,7 @@ export function PublicFooter() {
         { to: "/privacidade", label: "LGPD" },
       { to: "/cookies", label: "Cookies" },
         { to: "/reembolso", label: "Reembolso" },
+        { to: "/seguranca", label: "Segurança" },
       ],
     },
   ];

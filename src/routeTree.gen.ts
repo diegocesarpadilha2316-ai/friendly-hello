@@ -18,6 +18,7 @@ import { Route as PublicIndexRouteImport } from './routes/_public.index'
 import { Route as PublicTermosRouteImport } from './routes/_public.termos'
 import { Route as PublicStatusRouteImport } from './routes/_public.status'
 import { Route as PublicSobreRouteImport } from './routes/_public.sobre'
+import { Route as PublicSegurancaRouteImport } from './routes/_public.seguranca'
 import { Route as PublicReembolsoRouteImport } from './routes/_public.reembolso'
 import { Route as PublicRecursosRouteImport } from './routes/_public.recursos'
 import { Route as PublicProdutosRouteImport } from './routes/_public.produtos'
@@ -139,6 +140,11 @@ const PublicStatusRoute = PublicStatusRouteImport.update({
 const PublicSobreRoute = PublicSobreRouteImport.update({
   id: '/sobre',
   path: '/sobre',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicSegurancaRoute = PublicSegurancaRouteImport.update({
+  id: '/seguranca',
+  path: '/seguranca',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicReembolsoRoute = PublicReembolsoRouteImport.update({
@@ -617,6 +623,7 @@ export interface FileRoutesByFullPath {
   '/produtos': typeof PublicProdutosRouteWithChildren
   '/recursos': typeof PublicRecursosRoute
   '/reembolso': typeof PublicReembolsoRoute
+  '/seguranca': typeof PublicSegurancaRoute
   '/sobre': typeof PublicSobreRoute
   '/status': typeof PublicStatusRoute
   '/termos': typeof PublicTermosRoute
@@ -703,6 +710,7 @@ export interface FileRoutesByTo {
   '/produtos': typeof PublicProdutosRouteWithChildren
   '/recursos': typeof PublicRecursosRoute
   '/reembolso': typeof PublicReembolsoRoute
+  '/seguranca': typeof PublicSegurancaRoute
   '/sobre': typeof PublicSobreRoute
   '/status': typeof PublicStatusRoute
   '/termos': typeof PublicTermosRoute
@@ -793,6 +801,7 @@ export interface FileRoutesById {
   '/_public/produtos': typeof PublicProdutosRouteWithChildren
   '/_public/recursos': typeof PublicRecursosRoute
   '/_public/reembolso': typeof PublicReembolsoRoute
+  '/_public/seguranca': typeof PublicSegurancaRoute
   '/_public/sobre': typeof PublicSobreRoute
   '/_public/status': typeof PublicStatusRoute
   '/_public/termos': typeof PublicTermosRoute
@@ -884,6 +893,7 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/recursos'
     | '/reembolso'
+    | '/seguranca'
     | '/sobre'
     | '/status'
     | '/termos'
@@ -970,6 +980,7 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/recursos'
     | '/reembolso'
+    | '/seguranca'
     | '/sobre'
     | '/status'
     | '/termos'
@@ -1059,6 +1070,7 @@ export interface FileRouteTypes {
     | '/_public/produtos'
     | '/_public/recursos'
     | '/_public/reembolso'
+    | '/_public/seguranca'
     | '/_public/sobre'
     | '/_public/status'
     | '/_public/termos'
@@ -1189,6 +1201,13 @@ declare module '@tanstack/react-router' {
       path: '/sobre'
       fullPath: '/sobre'
       preLoaderRoute: typeof PublicSobreRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/seguranca': {
+      id: '/_public/seguranca'
+      path: '/seguranca'
+      fullPath: '/seguranca'
+      preLoaderRoute: typeof PublicSegurancaRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/reembolso': {
@@ -1955,6 +1974,7 @@ interface PublicRouteChildren {
   PublicProdutosRoute: typeof PublicProdutosRouteWithChildren
   PublicRecursosRoute: typeof PublicRecursosRoute
   PublicReembolsoRoute: typeof PublicReembolsoRoute
+  PublicSegurancaRoute: typeof PublicSegurancaRoute
   PublicSobreRoute: typeof PublicSobreRoute
   PublicStatusRoute: typeof PublicStatusRoute
   PublicTermosRoute: typeof PublicTermosRoute
@@ -1973,6 +1993,7 @@ const PublicRouteChildren: PublicRouteChildren = {
   PublicProdutosRoute: PublicProdutosRouteWithChildren,
   PublicRecursosRoute: PublicRecursosRoute,
   PublicReembolsoRoute: PublicReembolsoRoute,
+  PublicSegurancaRoute: PublicSegurancaRoute,
   PublicSobreRoute: PublicSobreRoute,
   PublicStatusRoute: PublicStatusRoute,
   PublicTermosRoute: PublicTermosRoute,
