@@ -284,6 +284,15 @@ export const recordAiToolCall = createServerFn({ method: "POST" })
       .select("*")
       .single();
     if (error) throw new Response(error.message, { status: 400 });
+
+    if (data.status === "ok") {
+      await debitCreditsBestEffort(context.supabase, context.tenantId, context.userId, {
+        amount: CREDIT_PRICES["ai.tool_call"],
+        reason: "ai.tool_call",
+        reference: data.sessionId,
+        metadata: { toolName: data.toolName, messageId: data.messageId ?? null },
+      });
+    }
     return row;
   });
 
