@@ -9,11 +9,18 @@ export type Camera3DMode = "orbit" | "first-person" | "fly";
 
 export type Render3DMode = "solid" | "wireframe" | "material";
 
+/** Ângulos padrão do viewport, controlados pela barra inferior do editor. */
+export type Camera3DView = "perspectiva" | "topo" | "frontal" | "lateral";
+
 export interface Viewport3DState {
   camera: Camera3DMode;
   render: Render3DMode;
   showGrid: boolean;
   showAxes: boolean;
+  /** ângulo de câmera pré-definido */
+  view: Camera3DView;
+  /** iluminação da cena (direcional + hemisférica); ambiente mínimo sempre ligado */
+  showLights: boolean;
   /** altura em milímetros — corta acima do plano */
   sectionHeight: number | null;
   /** fator 0..1 de explosão dos elementos */
@@ -27,6 +34,8 @@ export const DEFAULT_VIEWPORT_3D: Viewport3DState = {
   render: "solid",
   showGrid: true,
   showAxes: true,
+  view: "perspectiva",
+  showLights: true,
   sectionHeight: null,
   explode: 0,
   wallHeight: 2700,
