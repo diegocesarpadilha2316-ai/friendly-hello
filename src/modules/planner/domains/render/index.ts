@@ -20,3 +20,15 @@ export * from "./components";
 export * as Realtime from "./realtime";
 export * as LocalEngine from "./local-engine";
 export { LocalRenderPanel, useLocalRender } from "./local-engine";
+export * as Integration from "./integration";
+export {
+  RenderRealPanel,
+  useRenderReal,
+  buildRealScene,
+  buildRealRenderConfig,
+  buildPerformanceProfile,
+  buildLightingRig,
+  integrationReport,
+  exportFromCanvas,
+  REAL_EXPORT_RESOLUTIONS,
+} from "./integration";
