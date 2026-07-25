@@ -1,5 +1,7 @@
 import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 import {
   Coins,
   TrendingDown,
@@ -10,6 +12,7 @@ import {
   ArrowUpRight,
   RefreshCw,
   CheckCircle2,
+  Receipt,
 } from "lucide-react";
 import {
   PageContainer,
@@ -29,6 +32,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAIMetrics } from "@/core/ai/use-ai";
 import type { CreditKind, PlanDefinition } from "@/core/billing/types";
 import { CheckoutDialog } from "@/core/billing/CheckoutDialog";
+import { listCheckoutOrders, type CheckoutOrderDTO } from "@/lib/checkout.functions";
 
 export const Route = createFileRoute("/_authenticated/workspace/creditos")({
   head: () => ({
@@ -59,6 +63,27 @@ const KIND_TONE: Record<CreditKind, "success" | "warning" | "info" | "neutral" |
   expire: "danger",
 };
 
+const ORDER_TONE: Record<
+  CheckoutOrderDTO["status"],
+  "success" | "warning" | "info" | "neutral" | "danger"
+> = {
+  pending: "warning",
+  approved: "success",
+  rejected: "danger",
+  cancelled: "neutral",
+  expired: "neutral",
+  refunded: "info",
+};
+
+const ORDER_LABEL: Record<CheckoutOrderDTO["status"], string> = {
+  pending: "Aguardando",
+  approved: "Aprovado",
+  rejected: "Recusado",
+  cancelled: "Cancelado",
+  expired: "Expirado",
+  refunded: "Reembolsado",
+};
+
 function formatCurrency(cents: number, currency = "BRL") {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency });
 }
@@ -68,6 +93,13 @@ function WorkspaceCreditos() {
   const { entries, isLoading: loadingLedger } = useCreditLedger();
   const { plans, isLoading: loadingPlans } = usePlansCatalog();
   const aiMetrics = useAIMetrics();
+  const listOrders = useServerFn(listCheckoutOrders);
+  const ordersQ = useQuery({
+    queryKey: ["checkout", "orders"],
+    queryFn: () => listOrders(),
+    staleTime: 30_000,
+  });
+  const orders = ordersQ.data?.orders ?? [];
 
   const totalGranted = React.useMemo(
     () => entries.filter((e) => e.kind === "grant").reduce((a, e) => a + e.amount, 0),
@@ -147,6 +179,7 @@ function WorkspaceCreditos() {
         <TabsList>
           <TabsTrigger value="overview">Visão geral</TabsTrigger>
           <TabsTrigger value="ledger">Histórico</TabsTrigger>
+          <TabsTrigger value="payments">Pagamentos</TabsTrigger>
           <TabsTrigger value="plans">Planos</TabsTrigger>
           <TabsTrigger value="usage">Uso por serviço</TabsTrigger>
         </TabsList>
@@ -302,7 +335,62 @@ function WorkspaceCreditos() {
           </Card>
         </TabsContent>
 
-        {/* Plans */}
+        {/* Payments */}
+        <TabsContent value="payments" className="mt-6">
+          <Card className="border-border/60 bg-card/80">
+            <CardHeader>
+              <CardTitle className="text-base">Meus pagamentos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {ordersQ.isLoading ? (
+                <p className="text-sm text-muted-foreground">Carregando…</p>
+              ) : orders.length === 0 ? (
+                <EmptyState
+                  icon={<Receipt className="h-6 w-6" />}
+                  title="Nenhum pagamento ainda"
+                  description="Suas compras de créditos e assinaturas aparecerão aqui."
+                />
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="text-xs uppercase text-muted-foreground">
+                      <tr className="border-b border-border/60">
+                        <th className="py-2 text-left">Data</th>
+                        <th className="py-2 text-left">Método</th>
+                        <th className="py-2 text-left">Créditos</th>
+                        <th className="py-2 text-left">Status</th>
+                        <th className="py-2 text-right">Valor</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orders.map((o) => (
+                        <tr key={o.id} className="border-b border-border/40 last:border-0">
+                          <td className="py-2 text-muted-foreground">
+                            {new Date(o.createdAt).toLocaleString("pt-BR")}
+                          </td>
+                          <td className="py-2 uppercase text-xs">{o.method}</td>
+                          <td className="py-2 font-medium">
+                            {o.credits.toLocaleString("pt-BR")}
+                          </td>
+                          <td className="py-2">
+                            <StatusBadge tone={ORDER_TONE[o.status]}>
+                              {ORDER_LABEL[o.status]}
+                            </StatusBadge>
+                          </td>
+                          <td className="py-2 text-right font-medium">
+                            {formatCurrency(o.amountCents, o.currency)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Plans (real) */}
         <TabsContent value="plans" className="mt-6">
           {loadingPlans ? (
             <p className="text-sm text-muted-foreground">Carregando planos…</p>
