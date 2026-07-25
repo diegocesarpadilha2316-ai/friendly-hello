@@ -38,8 +38,8 @@ function Page() {
     <PageContainer>
       <PageHeader
         title="Observabilidade"
-        subtitle="Snapshot dos últimos 30 dias — atualiza a cada 15s. Fonte: logs, jobs, notifications, payment_orders."
-        icon={Activity}
+        eyebrow={<span className="inline-flex items-center gap-1.5"><Activity className="h-3.5 w-3.5" /> Admin</span>}
+        description="Snapshot das últimas 24h — atualiza a cada 15s. Fonte: logs, jobs, notifications, payment_orders."
         actions={
           <button
             onClick={() => q.refetch()}
@@ -59,10 +59,10 @@ function Page() {
       ) : s ? (
         <>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <MetricCard label="Logs (24h)" value={s.logs.total.toLocaleString("pt-BR")} hint={`${s.logs.errors} erros · ${s.logs.warnings} avisos`} icon={Activity} tone={s.logs.errors > 0 ? "danger" : "default"} />
-            <MetricCard label="Jobs" value={`${s.jobs.pending + s.jobs.running}`} hint={`${s.jobs.pending} fila · ${s.jobs.running} rodando · ${s.jobs.failed24h} falhas 24h`} icon={ListTodo} tone={s.jobs.failed24h > 0 ? "warning" : "default"} />
-            <MetricCard label="Notificações (24h)" value={s.notifications.sent24h.toLocaleString("pt-BR")} hint={`${s.notifications.pending} pendentes · ${s.notifications.failed24h} falhas`} icon={Bell} tone={s.notifications.failed24h > 0 ? "warning" : "default"} />
-            <MetricCard label="Pagamentos (24h)" value={formatBRL(s.payments.grossCents24h)} hint={`${s.payments.approved24h} aprovados · ${s.payments.pending} pendentes`} icon={CreditCard} tone="success" />
+            <MetricCard label="Logs (24h)" value={s.logs.total.toLocaleString("pt-BR")} hint={`${s.logs.errors} erros · ${s.logs.warnings} avisos`} icon={<Activity className="h-4 w-4" />} />
+            <MetricCard label="Jobs" value={`${s.jobs.pending + s.jobs.running}`} hint={`${s.jobs.pending} fila · ${s.jobs.running} rodando · ${s.jobs.failed24h} falhas 24h`} icon={<ListTodo className="h-4 w-4" />} />
+            <MetricCard label="Notificações (24h)" value={s.notifications.sent24h.toLocaleString("pt-BR")} hint={`${s.notifications.pending} pendentes · ${s.notifications.failed24h} falhas`} icon={<Bell className="h-4 w-4" />} />
+            <MetricCard label="Pagamentos (24h)" value={formatBRL(s.payments.grossCents24h)} hint={`${s.payments.approved24h} aprovados · ${s.payments.pending} pendentes`} icon={<CreditCard className="h-4 w-4" />} />
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
