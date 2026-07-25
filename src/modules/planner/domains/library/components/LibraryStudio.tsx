@@ -14,8 +14,8 @@ import {
   exportMaterials,
   exportHardware,
   importAuto,
-  type LibraryImportReport,
 } from "../services";
+import type { LibraryImportReport } from "../types";
 import { useLibrarySearch } from "../hooks/use-library";
 
 type TabId =
@@ -105,7 +105,7 @@ export function LibraryStudio() {
       <div className="flex flex-wrap items-center gap-2">
         <SearchInput
           value={query}
-          onChange={setQuery}
+          onChange={(e) => setQuery(e.target.value)}
           placeholder="Buscar por fabricante, padrão, modelo…"
           className="w-72"
         />
