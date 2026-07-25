@@ -136,7 +136,7 @@ function PlannerDashboard() {
   // browser bridge until Etapa B moves them into snapshots).
   const projects = useMemo<DashboardProject[]>(() => {
     const local = loadProjects(tenantId);
-    const localById = new Map(local.map((p) => [p.id, p]));
+    const localById = new Map(local.map((p) => [String(p.id), p]));
     return rows.map((r) => {
       const l = localById.get(r.id);
       const envs = l?.environments ?? [];
