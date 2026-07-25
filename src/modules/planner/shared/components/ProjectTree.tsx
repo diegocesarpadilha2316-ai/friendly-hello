@@ -612,12 +612,7 @@ function NodeRow({
   return (
     <TreeRow
       depth={depth}
-      icon={
-        <span
-          className="inline-block h-2.5 w-2.5 rounded-full ring-1 ring-border/60"
-          style={{ backgroundColor: meta.color ?? "transparent" }}
-        />
-      }
+      icon={<Box className="h-3.5 w-3.5 text-muted-foreground/70" />}
       label={node.label}
       hint=""
       dimmed={meta.hidden}
@@ -625,8 +620,8 @@ function NodeRow({
       isRenaming={isRenaming}
       onRenameStart={onRenameStart}
       onRenameEnd={onRenameEnd}
-      actions={
-        <div className="flex items-center gap-0.5">
+      alwaysVisibleActions={
+        <div className="flex items-center gap-1.5">
           <button
             type="button"
             title={meta.hidden ? "Mostrar" : "Ocultar"}
@@ -634,20 +629,14 @@ function NodeRow({
               e.stopPropagation();
               onToggleHidden();
             }}
-            className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+            className={cn(
+              "rounded p-0.5 transition-colors",
+              meta.hidden
+                ? "text-muted-foreground/50 hover:text-foreground"
+                : "text-foreground/80 hover:text-foreground",
+            )}
           >
             {meta.hidden ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-          </button>
-          <button
-            type="button"
-            title={meta.locked ? "Destravar" : "Travar"}
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleLocked();
-            }}
-            className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
-          >
-            {meta.locked ? <Lock className="h-3.5 w-3.5 text-amber-400" /> : <Unlock className="h-3.5 w-3.5" />}
           </button>
           <div className="relative">
             <button
@@ -657,9 +646,18 @@ function NodeRow({
                 e.stopPropagation();
                 setColorOpen((v) => !v);
               }}
-              className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+              className="rounded"
             >
-              <Sparkles className="h-3.5 w-3.5" />
+              <span
+                className="block h-2.5 w-2.5 rounded-full ring-1 ring-border/70"
+                style={{
+                  backgroundColor:
+                    meta.color ??
+                    (COLOR_PALETTE[
+                      Math.abs(hashCode(node.id)) % (COLOR_PALETTE.length - 1)
+                    ] as string),
+                }}
+              />
             </button>
             {colorOpen && (
               <div
@@ -682,6 +680,21 @@ function NodeRow({
               </div>
             )}
           </div>
+        </div>
+      }
+      actions={
+        <div className="flex items-center gap-0.5">
+          <button
+            type="button"
+            title={meta.locked ? "Destravar" : "Travar"}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleLocked();
+            }}
+            className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+          >
+            {meta.locked ? <Lock className="h-3.5 w-3.5 text-amber-400" /> : <Unlock className="h-3.5 w-3.5" />}
+          </button>
           <ItemActionsMenu
             compact
             onDuplicate={onDuplicate}
@@ -694,6 +707,12 @@ function NodeRow({
       }
     />
   );
+}
+
+function hashCode(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return h;
 }
 
 // ---------------------------------------------------------------------------
@@ -713,6 +732,7 @@ function TreeRow({
   onRenameStart,
   onRenameEnd,
   actions,
+  alwaysVisibleActions,
   muted,
   dimmed,
 }: {
@@ -728,6 +748,7 @@ function TreeRow({
   onRenameStart?: () => void;
   onRenameEnd?: (name: string | null) => void;
   actions?: React.ReactNode;
+  alwaysVisibleActions?: React.ReactNode;
   muted?: boolean;
   dimmed?: boolean;
 }) {
@@ -798,6 +819,9 @@ function TreeRow({
         <span className="hidden text-[10px] text-muted-foreground/70 group-hover:inline">
           {hint}
         </span>
+      )}
+      {alwaysVisibleActions && (
+        <div className="flex items-center">{alwaysVisibleActions}</div>
       )}
       {actions && (
         <div className="opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
