@@ -71,6 +71,7 @@ type AdminSection = {
 const SECTIONS: ReadonlyArray<AdminSection> = [
   { id: "library", title: "Biblioteca Dioris", description: "Importar CSV, atualizar materiais, preços, texturas e CNC.", to: "/admin/biblioteca", icon: BookOpen, tag: "Catálogo" },
   { id: "billing", title: "Cobrança & Provedores", description: "Mercado Pago, Stripe, Paddle, Asaas, Efí, Pagar.me — Pix, boleto, cartão e assinaturas.", to: "/admin/billing", icon: CreditCard, tag: "Financeiro" },
+  { id: "blog", title: "Editor do Blog", description: "Criar, editar e publicar artigos do blog público.", to: "/admin/blog", icon: BookOpen, tag: "Conteúdo" },
   { id: "tenants", title: "Empresas", description: "Tenants, planos, status e configurações.", to: "/configuracoes/empresa", icon: Building2, tag: "Governança" },
   { id: "users", title: "Usuários & Equipes", description: "Membros, convites, papéis e sessões.", to: "/configuracoes", icon: Users, tag: "Identidade" },
   { id: "ai", title: "IA Gateway", description: "Providers, modelos, custos e circuit breaker.", to: "/ia", icon: Sparkles, tag: "IA" },
