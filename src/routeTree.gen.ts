@@ -90,6 +90,7 @@ import { Route as ApiPublicV1PingRouteImport } from './routes/api/public/v1/ping
 import { Route as ApiPublicV1OpenapiRouteImport } from './routes/api/public/v1/openapi'
 import { Route as AuthenticatedPlannerProjetosNovoRouteImport } from './routes/_authenticated.planner.projetos.novo'
 import { Route as AuthenticatedPlannerProjetosProjectIdRouteImport } from './routes/_authenticated.planner.projetos.$projectId'
+import { Route as ApiPublicV1WorkersRenderRouteImport } from './routes/api/public/v1/workers/render'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -534,6 +535,12 @@ const AuthenticatedPlannerProjetosProjectIdRoute =
     path: '/$projectId',
     getParentRoute: () => AuthenticatedPlannerProjetosRoute,
   } as any)
+const ApiPublicV1WorkersRenderRoute =
+  ApiPublicV1WorkersRenderRouteImport.update({
+    id: '/api/public/v1/workers/render',
+    path: '/api/public/v1/workers/render',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
@@ -615,6 +622,7 @@ export interface FileRoutesByFullPath {
   '/planner/projetos/novo': typeof AuthenticatedPlannerProjetosNovoRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
+  '/api/public/v1/workers/render': typeof ApiPublicV1WorkersRenderRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
@@ -694,6 +702,7 @@ export interface FileRoutesByTo {
   '/planner/projetos/novo': typeof AuthenticatedPlannerProjetosNovoRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
+  '/api/public/v1/workers/render': typeof ApiPublicV1WorkersRenderRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -778,6 +787,7 @@ export interface FileRoutesById {
   '/_authenticated/planner/projetos/novo': typeof AuthenticatedPlannerProjetosNovoRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
+  '/api/public/v1/workers/render': typeof ApiPublicV1WorkersRenderRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -861,6 +871,7 @@ export interface FileRouteTypes {
     | '/planner/projetos/novo'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
+    | '/api/public/v1/workers/render'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -940,6 +951,7 @@ export interface FileRouteTypes {
     | '/planner/projetos/novo'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
+    | '/api/public/v1/workers/render'
   id:
     | '__root__'
     | '/_authenticated'
@@ -1023,6 +1035,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planner/projetos/novo'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
+    | '/api/public/v1/workers/render'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1033,6 +1046,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiPublicV1OpenapiRoute: typeof ApiPublicV1OpenapiRoute
   ApiPublicV1PingRoute: typeof ApiPublicV1PingRoute
+  ApiPublicV1WorkersRenderRoute: typeof ApiPublicV1WorkersRenderRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1604,6 +1618,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlannerProjetosProjectIdRouteImport
       parentRoute: typeof AuthenticatedPlannerProjetosRoute
     }
+    '/api/public/v1/workers/render': {
+      id: '/api/public/v1/workers/render'
+      path: '/api/public/v1/workers/render'
+      fullPath: '/api/public/v1/workers/render'
+      preLoaderRoute: typeof ApiPublicV1WorkersRenderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1843,6 +1864,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiPublicV1OpenapiRoute: ApiPublicV1OpenapiRoute,
   ApiPublicV1PingRoute: ApiPublicV1PingRoute,
+  ApiPublicV1WorkersRenderRoute: ApiPublicV1WorkersRenderRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
