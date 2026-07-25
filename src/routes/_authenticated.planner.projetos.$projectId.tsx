@@ -2,22 +2,28 @@ import { createFileRoute, useParams, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
-  PlusCircle,
-  Save,
+  ChevronRight,
   Home,
-  Boxes,
+  Save,
+  Share2,
+  Box,
+  Layers as LayersIcon,
+  Scissors,
+  Calculator,
+  Camera,
+  Move,
+  Hand,
+  ZoomIn,
+  Ruler,
+  MousePointer2,
   Undo2,
   Redo2,
-  Sparkles,
+  Maximize2,
+  Grid3x3,
+  Sun,
+  PlusCircle,
 } from "lucide-react";
-import {
-  PageContainer,
-  PageHeader,
-  Button,
-  StatusBadge,
-  EmptyState,
-  FormSection,
-} from "@/core/components/ui-kit";
+import { Button, EmptyState } from "@/core/components/ui-kit";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/core/providers/TenantProvider";
 import {
@@ -25,7 +31,6 @@ import {
   createEnvironment,
   createRoom,
   EditorCanvas,
-  VersionHistoryPanel,
 } from "@/modules/planner/shared";
 import { ProjectTree } from "@/modules/planner/shared/components/ProjectTree";
 import { PlannerAIPanel } from "@/modules/planner/domains/ia";
@@ -43,7 +48,6 @@ function PlannerProjectDetail() {
     loadProjectById,
     updateProject,
     select,
-    snapshotVersion,
     saveNow,
     undo,
     redo,
@@ -53,17 +57,19 @@ function PlannerProjectDetail() {
 
   const [envName, setEnvName] = useState("");
   const [roomName, setRoomName] = useState("");
-  const [versionLabel, setVersionLabel] = useState("");
   const [viewportMode, setViewportMode] = useState<"2d" | "3d">("3d");
-  const [rightTab, setRightTab] = useState<"ia" | "detalhes">("ia");
+  const [tool, setTool] = useState<"orbit" | "pan" | "zoom" | "measure" | "select">("orbit");
+  const [view, setView] = useState<"perspectiva" | "topo" | "frontal" | "lateral">("perspectiva");
+  const [gridOn, setGridOn] = useState(true);
+  const [lightOn, setLightOn] = useState(true);
+  const [aiOpen, setAiOpen] = useState(true);
 
   useEffect(() => {
     loadProjectById(projectId);
   }, [tenantId, projectId, loadProjectById]);
 
-  // Ctrl/Cmd+Space → foca IA Copiloto (dispatch pelo editor-context).
   useEffect(() => {
-    const onFocus = () => setRightTab("ia");
+    const onFocus = () => setAiOpen(true);
     window.addEventListener("planner:focus-ai", onFocus);
     return () => window.removeEventListener("planner:focus-ai", onFocus);
   }, []);
@@ -81,7 +87,7 @@ function PlannerProjectDetail() {
 
   if (!project) {
     return (
-      <PageContainer>
+      <div className="p-6">
         <EmptyState
           icon={<Home className="h-6 w-6" />}
           title="Projeto não encontrado"
@@ -94,118 +100,158 @@ function PlannerProjectDetail() {
             </Link>
           }
         />
-      </PageContainer>
+      </div>
     );
   }
 
-  return (
-    <PageContainer>
-      <PageHeader
-        eyebrow="Planner / Projeto"
-        title={project.name}
-        description={
-          project.briefing?.style
-            ? `${project.client ?? "Sem cliente"} · Estilo ${project.briefing.style}${project.briefing?.environmentType ? ` · ${project.briefing.environmentType}` : ""}`
-            : project.client ?? "Editor paramétrico com autosave, undo/redo e histórico."
-        }
-        actions={
-          <div className="flex items-center gap-2">
-            <StatusBadge tone={hasContext ? "success" : "warning"}>
-              {hasContext ? "cômodo ativo" : "selecione um cômodo"}
-            </StatusBadge>
-            <StatusBadge tone={state.dirty ? "warning" : "success"}>
-              {state.dirty ? "alterações pendentes" : "sincronizado"}
-            </StatusBadge>
-            <Button size="sm" variant="outline" onClick={saveNow}>
-              <Save className="mr-2 h-4 w-4" /> Salvar
-            </Button>
-            <Link to="/planner/projetos">
-              <Button size="sm" variant="ghost">
-                <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
-              </Button>
-            </Link>
-          </div>
-        }
-      />
+  // Handlers de adição rápida (Enter no input)
+  const handleAddEnv = () => {
+    if (!envName.trim()) return;
+    const env = createEnvironment({ name: envName.trim() });
+    updateProject((p) => ({ ...p, environments: [...p.environments, env] }));
+    select({ environmentId: env.id, roomId: null });
+    setEnvName("");
+  };
+  const handleAddRoom = () => {
+    if (!selectedEnv || !roomName.trim()) return;
+    const room = createRoom({ name: roomName.trim() });
+    updateProject((p) => ({
+      ...p,
+      environments: p.environments.map((en) =>
+        en.id === selectedEnv.id ? { ...en, rooms: [...en.rooms, room] } : en,
+      ),
+    }));
+    select({ roomId: room.id });
+    setRoomName("");
+  };
 
-      <div className="mt-8 grid gap-4 lg:grid-cols-[280px,1fr,380px]">
-        {/* Painel esquerdo — Árvore hierárquica estilo Blender */}
-        <aside className="flex min-h-[640px] flex-col rounded-xl border border-border/60 bg-card">
+  const tabs: Array<{
+    id: "editor3d" | "planta2d" | "corte" | "orcamento" | "render";
+    label: string;
+    icon: typeof Box;
+    to?: string;
+  }> = [
+    { id: "editor3d", label: "Editor 3D", icon: Box },
+    { id: "planta2d", label: "Planta 2D", icon: LayersIcon },
+    { id: "corte", label: "Lista de Corte", icon: Scissors, to: "/planner/engenharia" },
+    { id: "orcamento", label: "Orçamento", icon: Calculator, to: "/planner/orcamentos" },
+    { id: "render", label: "Render", icon: Camera, to: "/planner/render" },
+  ];
+  const activeTab: "editor3d" | "planta2d" = viewportMode === "3d" ? "editor3d" : "planta2d";
+
+  return (
+    <div className="flex h-[calc(100vh-4rem)] min-h-[720px] flex-col gap-0 bg-background">
+      {/* Topbar do projeto */}
+      <header className="flex items-center gap-4 border-b border-border/60 bg-background/60 px-4 py-3 backdrop-blur">
+        <nav aria-label="Trilha" className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Link to="/planner" className="hover:text-foreground">Planner</Link>
+          <ChevronRight className="h-3.5 w-3.5" />
+          <Link to="/planner/projetos" className="hover:text-foreground">Projetos</Link>
+          <ChevronRight className="h-3.5 w-3.5" />
+          <span className="font-medium text-foreground">{project.name}</span>
+        </nav>
+
+        {/* Tabs centrais */}
+        <div className="mx-auto flex items-center gap-1 rounded-lg border border-border/50 bg-card/60 p-1">
+          {tabs.map((t) => {
+            const isActive =
+              (t.id === "editor3d" || t.id === "planta2d") && activeTab === t.id;
+            const Icon = t.icon;
+            const inner = (
+              <button
+                type="button"
+                onClick={() => {
+                  if (t.id === "editor3d") setViewportMode("3d");
+                  else if (t.id === "planta2d") setViewportMode("2d");
+                }}
+                className={cn(
+                  "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
+                  isActive
+                    ? "bg-primary/15 text-primary shadow-inner ring-1 ring-primary/30"
+                    : "text-muted-foreground hover:bg-muted/70 hover:text-foreground",
+                )}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                {t.label}
+              </button>
+            );
+            return t.to ? (
+              <Link key={t.id} to={t.to}>
+                {inner}
+              </Link>
+            ) : (
+              <span key={t.id}>{inner}</span>
+            );
+          })}
+        </div>
+
+        {/* Ações da direita */}
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            type="button"
+            onClick={saveNow}
+            className={cn(
+              "flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors",
+              state.dirty
+                ? "border-primary/50 bg-primary text-primary-foreground hover:bg-primary/90"
+                : "border-border/60 bg-card text-foreground hover:bg-muted",
+            )}
+          >
+            <Save className="h-3.5 w-3.5" /> Salvar
+          </button>
+          <button
+            type="button"
+            className="flex items-center gap-2 rounded-lg border border-border/60 bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted"
+          >
+            <Share2 className="h-3.5 w-3.5" /> Compartilhar
+          </button>
+        </div>
+      </header>
+
+      {/* Corpo — 3 colunas */}
+      <div className="grid min-h-0 flex-1 gap-3 p-3 lg:grid-cols-[300px,1fr,380px]">
+        {/* Coluna 1 — Estrutura do Projeto */}
+        <aside className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border/60 bg-card">
+          <div className="flex items-center justify-between border-b border-border/60 px-3 py-2.5">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+              Estrutura do Projeto
+            </h2>
+            <ChevronRight className="h-3.5 w-3.5 -rotate-90 text-muted-foreground" />
+          </div>
+
+          <div className="border-b border-border/60 px-3 py-2 text-xs text-foreground/90">
+            {project.name}
+          </div>
+
           <div className="min-h-0 flex-1">
             <ProjectTree />
           </div>
-          {/* Rodapé — adicionar ambiente / cômodo */}
+
+          {/* Quick-add */}
           <div className="space-y-2 border-t border-border/60 bg-background/40 p-2">
-            <div className="flex gap-1.5">
-              <input
-                className="flex-1 rounded-md border border-input bg-background px-2 py-1.5 text-xs"
-                placeholder="+ Ambiente"
-                value={envName}
-                onChange={(e) => setEnvName(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && envName.trim()) {
-                    const env = createEnvironment({ name: envName.trim() });
-                    updateProject((p) => ({ ...p, environments: [...p.environments, env] }));
-                    select({ environmentId: env.id, roomId: null });
-                    setEnvName("");
-                  }
-                }}
-              />
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  if (!envName.trim()) return;
-                  const env = createEnvironment({ name: envName.trim() });
-                  updateProject((p) => ({ ...p, environments: [...p.environments, env] }));
-                  select({ environmentId: env.id, roomId: null });
-                  setEnvName("");
-                }}
-              >
-                <PlusCircle className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-            {selectedEnv && (
+            {selectedEnv ? (
               <div className="flex gap-1.5">
                 <input
                   className="flex-1 rounded-md border border-input bg-background px-2 py-1.5 text-xs"
-                  placeholder={`+ Cômodo em ${selectedEnv.name}`}
+                  placeholder={`+ Adicionar cômodo em ${selectedEnv.name}`}
                   value={roomName}
                   onChange={(e) => setRoomName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && roomName.trim()) {
-                      const room = createRoom({ name: roomName.trim() });
-                      updateProject((p) => ({
-                        ...p,
-                        environments: p.environments.map((en) =>
-                          en.id === selectedEnv.id
-                            ? { ...en, rooms: [...en.rooms, room] }
-                            : en,
-                        ),
-                      }));
-                      select({ roomId: room.id });
-                      setRoomName("");
-                    }
-                  }}
+                  onKeyDown={(e) => e.key === "Enter" && handleAddRoom()}
                 />
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    if (!roomName.trim()) return;
-                    const room = createRoom({ name: roomName.trim() });
-                    updateProject((p) => ({
-                      ...p,
-                      environments: p.environments.map((en) =>
-                        en.id === selectedEnv.id
-                          ? { ...en, rooms: [...en.rooms, room] }
-                          : en,
-                      ),
-                    }));
-                    select({ roomId: room.id });
-                    setRoomName("");
-                  }}
-                >
+                <Button size="sm" variant="outline" onClick={handleAddRoom}>
+                  <PlusCircle className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            ) : (
+              <div className="flex gap-1.5">
+                <input
+                  className="flex-1 rounded-md border border-input bg-background px-2 py-1.5 text-xs"
+                  placeholder="+ Adicionar ambiente"
+                  value={envName}
+                  onChange={(e) => setEnvName(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleAddEnv()}
+                />
+                <Button size="sm" variant="outline" onClick={handleAddEnv}>
                   <PlusCircle className="h-3.5 w-3.5" />
                 </Button>
               </div>
@@ -213,174 +259,168 @@ function PlannerProjectDetail() {
           </div>
         </aside>
 
-        {/* Viewport central — 2D ↔ 3D toggle */}
-        <div className="flex flex-col gap-3 rounded-xl border border-border/60 bg-card p-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-              <Boxes className="h-3 w-3" /> Viewport {selectedRoom ? `· ${selectedRoom.name}` : ""}
-            </div>
-            <div className="inline-flex rounded-md border border-border/60 bg-background p-0.5 text-xs">
-              <button
-                type="button"
-                onClick={() => setViewportMode("2d")}
-                className={cn(
-                  "rounded px-3 py-1 transition-colors",
-                  viewportMode === "2d"
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                2D
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewportMode("3d")}
-                className={cn(
-                  "rounded px-3 py-1 transition-colors",
-                  viewportMode === "3d"
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                3D
-              </button>
+        {/* Coluna 2 — Viewport */}
+        <section className="relative flex min-h-0 flex-col overflow-hidden rounded-xl border border-border/60 bg-card">
+          {/* Toolbar flutuante superior */}
+          <div className="pointer-events-none absolute inset-x-0 top-3 z-10 flex justify-center">
+            <div className="pointer-events-auto flex items-center gap-1 rounded-xl border border-border/60 bg-background/85 p-1.5 shadow-lg backdrop-blur-md">
+              <ToolBtn active={tool === "orbit"} onClick={() => setTool("orbit")} icon={Box} label="Orbit" />
+              <ToolBtn active={tool === "pan"} onClick={() => setTool("pan")} icon={Hand} label="Pan" />
+              <ToolBtn active={tool === "zoom"} onClick={() => setTool("zoom")} icon={ZoomIn} label="Zoom" />
+              <ToolBtn active={tool === "measure"} onClick={() => setTool("measure")} icon={Ruler} label="Measure" />
+              <ToolBtn active={tool === "select"} onClick={() => setTool("select")} icon={MousePointer2} label="Select" />
+              <span className="mx-1 h-6 w-px bg-border/60" />
+              <ToolBtn disabled={!canUndo} onClick={undo} icon={Undo2} label="Undo" />
+              <ToolBtn disabled={!canRedo} onClick={redo} icon={Redo2} label="Redo" />
             </div>
           </div>
-          <div className="min-h-[560px] flex-1">
-            <div className="relative h-full w-full">
-              <EditorCanvas mode={viewportMode} />
-              {/* Botões flutuantes sobre o viewport */}
-              <div className="pointer-events-none absolute inset-x-0 top-2 flex items-start justify-between px-2">
-                <div className="pointer-events-auto flex items-center gap-1 rounded-lg border border-border/60 bg-background/80 p-1 shadow-md backdrop-blur">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={undo}
-                    disabled={!canUndo}
-                    title="Desfazer (Ctrl+Z)"
-                  >
-                    <Undo2 className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={redo}
-                    disabled={!canRedo}
-                    title="Refazer (Ctrl+Shift+Z)"
-                  >
-                    <Redo2 className="h-4 w-4" />
-                  </Button>
-                  <div className="mx-1 h-4 w-px bg-border/60" />
-                  <Button size="sm" variant="ghost" onClick={saveNow} title="Salvar (Ctrl+S)">
-                    <Save className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="pointer-events-auto">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setRightTab("ia");
-                      window.dispatchEvent(new CustomEvent("planner:focus-ai"));
-                    }}
-                    title="IA Copiloto (Ctrl+Space)"
-                    className="gap-1.5 border-primary/40 bg-background/80 shadow-md backdrop-blur"
-                  >
-                    <Sparkles className="h-4 w-4 text-primary" />
-                    <span className="text-xs">IA</span>
-                    <kbd className="ml-1 rounded border border-border/60 bg-muted px-1 py-px text-[10px] text-muted-foreground">
-                      Ctrl+Space
-                    </kbd>
-                  </Button>
-                </div>
+
+          {/* Canvas */}
+          <div className="relative min-h-0 flex-1 bg-[#0a1020]">
+            <EditorCanvas mode={viewportMode} />
+
+            {/* Mini mapa 2D */}
+            <div className="pointer-events-auto absolute bottom-4 left-4 h-32 w-44 overflow-hidden rounded-lg border border-border/60 bg-background/90 shadow-lg backdrop-blur">
+              <div className="flex items-center justify-between border-b border-border/60 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                <span>Planta 2D</span>
+                <button
+                  type="button"
+                  onClick={() => setViewportMode(viewportMode === "2d" ? "3d" : "2d")}
+                  className="rounded p-0.5 hover:text-foreground"
+                  title="Expandir"
+                >
+                  <Maximize2 className="h-3 w-3" />
+                </button>
+              </div>
+              <div className="pointer-events-none relative h-[calc(100%-1.5rem)] w-full opacity-80">
+                <EditorCanvas mode="2d" />
               </div>
             </div>
-          </div>
-          {!hasContext && (
-            <div className="rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning-foreground">
-              Selecione um ambiente e um cômodo à esquerda para habilitar edição, render e orçamento.
-            </div>
-          )}
-        </div>
 
-        {/* Painel direito — IA Copiloto embarcada + Detalhes */}
-        <aside className="flex min-h-[640px] flex-col rounded-xl border border-border/60 bg-card">
-          <div className="flex items-center gap-1 border-b border-border/60 p-1.5">
-            <button
-              type="button"
-              onClick={() => setRightTab("ia")}
-              className={cn(
-                "flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
-                rightTab === "ia"
-                  ? "bg-primary/15 text-primary"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              IA Copiloto
-            </button>
-            <button
-              type="button"
-              onClick={() => setRightTab("detalhes")}
-              className={cn(
-                "flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
-                rightTab === "detalhes"
-                  ? "bg-primary/15 text-primary"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              Detalhes & histórico
-            </button>
-          </div>
-          <div className="min-h-0 flex-1 p-2">
-            {rightTab === "ia" ? (
-              <PlannerAIPanel className="h-full w-full" />
-            ) : (
-              <div className="space-y-3 p-1">
-                <FormSection title="Detalhes" description="Metadados do projeto.">
-                  <label className="text-sm">
-                    <span className="mb-1 block text-xs font-medium text-muted-foreground">Nome</span>
-                    <input
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                      value={project.name}
-                      onChange={(e) => updateProject((p) => ({ ...p, name: e.target.value }))}
-                    />
-                  </label>
-                  <label className="mt-2 text-sm">
-                    <span className="mb-1 block text-xs font-medium text-muted-foreground">Cliente</span>
-                    <input
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                      value={project.client ?? ""}
-                      onChange={(e) => updateProject((p) => ({ ...p, client: e.target.value }))}
-                    />
-                  </label>
-                </FormSection>
-
-                <FormSection title="Snapshot" description="Preserve um marco do projeto.">
-                  <div className="flex gap-2">
-                    <input
-                      className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm"
-                      placeholder="Ex.: Aprovação cliente"
-                      value={versionLabel}
-                      onChange={(e) => setVersionLabel(e.target.value)}
-                    />
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        snapshotVersion(versionLabel.trim() || `Versão ${project.version}`);
-                        setVersionLabel("");
-                      }}
-                    >
-                      Salvar
-                    </Button>
-                  </div>
-                </FormSection>
-
-                <VersionHistoryPanel />
+            {!hasContext && (
+              <div className="pointer-events-none absolute inset-x-0 bottom-20 mx-auto max-w-md rounded-lg border border-warning/40 bg-warning/10 px-4 py-2 text-center text-xs text-warning-foreground shadow-lg">
+                Selecione um ambiente e um cômodo à esquerda para habilitar edição.
               </div>
             )}
           </div>
-        </aside>
+
+          {/* Barra inferior */}
+          <div className="flex items-center gap-4 border-t border-border/60 bg-background/60 px-4 py-2 text-xs">
+            <label className="flex items-center gap-2 text-muted-foreground">
+              <span>Vista:</span>
+              <select
+                value={view}
+                onChange={(e) => setView(e.target.value as typeof view)}
+                className="rounded-md border border-input bg-background px-2 py-1 text-xs text-foreground"
+              >
+                <option value="perspectiva">Perspectiva</option>
+                <option value="topo">Topo</option>
+                <option value="frontal">Frontal</option>
+                <option value="lateral">Lateral</option>
+              </select>
+            </label>
+
+            <ToggleChip on={gridOn} onClick={() => setGridOn((v) => !v)} icon={Grid3x3} label="Grade" />
+            <ToggleChip on={lightOn} onClick={() => setLightOn((v) => !v)} icon={Sun} label="Iluminação" />
+
+            <div className="ml-auto flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-400" />
+              <span className="text-muted-foreground">Preview · 720p</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Coluna 3 — IA Copiloto */}
+        {aiOpen ? (
+          <aside className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border/60 bg-card">
+            <div className="min-h-0 flex-1">
+              <PlannerAIPanel className="h-full w-full" onClose={() => setAiOpen(false)} />
+            </div>
+          </aside>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setAiOpen(true)}
+            className="flex flex-col items-center justify-center rounded-xl border border-border/60 bg-card p-3 text-xs text-muted-foreground hover:bg-muted"
+          >
+            IA
+          </button>
+        )}
       </div>
-    </PageContainer>
+    </div>
+  );
+}
+
+function ToolBtn({
+  active,
+  disabled,
+  onClick,
+  icon: Icon,
+  label,
+}: {
+  active?: boolean;
+  disabled?: boolean;
+  onClick?: () => void;
+  icon: typeof Move;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={onClick}
+      title={label}
+      className={cn(
+        "flex flex-col items-center gap-0.5 rounded-lg px-2.5 py-1.5 text-[10px] font-medium transition-colors",
+        active
+          ? "bg-primary/15 text-primary ring-1 ring-primary/30"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+        disabled && "cursor-not-allowed opacity-40",
+      )}
+    >
+      <Icon className="h-4 w-4" />
+      <span>{label}</span>
+    </button>
+  );
+}
+
+function ToggleChip({
+  on,
+  onClick,
+  icon: Icon,
+  label,
+}: {
+  on: boolean;
+  onClick: () => void;
+  icon: typeof Move;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "flex items-center gap-2 rounded-md border px-2.5 py-1 transition-colors",
+        on
+          ? "border-primary/40 bg-primary/10 text-foreground"
+          : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
+      )}
+    >
+      <Icon className="h-3.5 w-3.5" />
+      <span>{label}</span>
+      <span
+        className={cn(
+          "relative h-3 w-6 rounded-full transition-colors",
+          on ? "bg-primary" : "bg-muted",
+        )}
+      >
+        <span
+          className={cn(
+            "absolute top-0.5 h-2 w-2 rounded-full bg-background transition-all",
+            on ? "left-3.5" : "left-0.5",
+          )}
+        />
+      </span>
+    </button>
   );
 }
