@@ -258,7 +258,54 @@ function PlannerProjectDetail() {
             </div>
           </div>
           <div className="min-h-[560px] flex-1">
-            <EditorCanvas mode={viewportMode} />
+            <div className="relative h-full w-full">
+              <EditorCanvas mode={viewportMode} />
+              {/* Botões flutuantes sobre o viewport */}
+              <div className="pointer-events-none absolute inset-x-0 top-2 flex items-start justify-between px-2">
+                <div className="pointer-events-auto flex items-center gap-1 rounded-lg border border-border/60 bg-background/80 p-1 shadow-md backdrop-blur">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={undo}
+                    disabled={!canUndo}
+                    title="Desfazer (Ctrl+Z)"
+                  >
+                    <Undo2 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={redo}
+                    disabled={!canRedo}
+                    title="Refazer (Ctrl+Shift+Z)"
+                  >
+                    <Redo2 className="h-4 w-4" />
+                  </Button>
+                  <div className="mx-1 h-4 w-px bg-border/60" />
+                  <Button size="sm" variant="ghost" onClick={saveNow} title="Salvar (Ctrl+S)">
+                    <Save className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="pointer-events-auto">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setRightTab("ia");
+                      window.dispatchEvent(new CustomEvent("planner:focus-ai"));
+                    }}
+                    title="IA Copiloto (Ctrl+Space)"
+                    className="gap-1.5 border-primary/40 bg-background/80 shadow-md backdrop-blur"
+                  >
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <span className="text-xs">IA</span>
+                    <kbd className="ml-1 rounded border border-border/60 bg-muted px-1 py-px text-[10px] text-muted-foreground">
+                      Ctrl+Space
+                    </kbd>
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
           {!hasContext && (
             <div className="rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning-foreground">
