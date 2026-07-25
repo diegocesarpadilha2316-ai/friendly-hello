@@ -55,13 +55,13 @@ export const Route = createFileRoute("/_authenticated/planner/orcamentos")({
   component: OrcamentosPage,
 });
 
-const STATUS_TONE: Record<QuoteStatus, "success" | "warning" | "neutral" | "destructive"> = {
+const STATUS_TONE: Record<QuoteStatus, "success" | "warning" | "neutral" | "danger"> = {
   draft: "neutral",
   sent: "warning",
   viewed: "warning",
   approved: "success",
-  rejected: "destructive",
-  expired: "destructive",
+  rejected: "danger",
+  expired: "danger",
   converted: "success",
 };
 
