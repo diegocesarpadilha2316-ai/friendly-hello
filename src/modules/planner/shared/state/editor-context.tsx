@@ -343,6 +343,10 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
       } else if (key === "s") {
         e.preventDefault();
         saveNow();
+      } else if (e.code === "Space" || key === " ") {
+        // Ctrl/Cmd+Space → foco na IA Copiloto do Planner.
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent("planner:focus-ai"));
       }
     };
     window.addEventListener("keydown", handler);
