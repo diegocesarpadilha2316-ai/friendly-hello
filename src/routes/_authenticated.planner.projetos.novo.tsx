@@ -1,5 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
+import { createProjectRow } from "@/lib/planner-projects.functions";
 import {
   ArrowLeft,
   ArrowRight,
@@ -110,8 +113,17 @@ function NewProjectWizard() {
     if (prev) setStep(prev.id);
   };
 
-  const finish = () => {
-    if (!name.trim() || !envType || !style) return;
+  const createOnServer = useServerFn(createProjectRow);
+  const queryClient = useQueryClient();
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const finish = async () => {
+    if (!name.trim() || !envType || !style || saving) return;
+    if (!activeCompany?.id) {
+      setError("Selecione uma empresa ativa para criar o projeto.");
+      return;
+    }
     const project = createProject({
       tenantId,
       ownerId: user?.id ?? "anonymous",
@@ -139,8 +151,24 @@ function NewProjectWizard() {
       ...project,
       environments: [{ ...env, rooms: [room] }],
     };
-    upsertProject(tenantId, bootstrapped);
-    navigate({ to: "/planner/projetos/$projectId", params: { projectId: project.id } });
+    setError(null);
+    setSaving(true);
+    try {
+      await createOnServer({
+        data: {
+          id: project.id,
+          name: project.name,
+          client: project.client ?? null,
+        },
+      });
+      upsertProject(tenantId, bootstrapped);
+      await queryClient.invalidateQueries({ queryKey: ["planner", "projects", tenantId] });
+      navigate({ to: "/planner/projetos/$projectId", params: { projectId: project.id } });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Falha ao criar projeto.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -380,9 +408,19 @@ function NewProjectWizard() {
               <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
             </Button>
             {step === "confirmar" ? (
-              <Button size="sm" onClick={finish} disabled={!name.trim() || !envType || !style}>
-                <PlusCircle className="mr-2 h-4 w-4" /> Criar projeto
-              </Button>
+              <div className="flex items-center gap-3">
+                {error && (
+                  <span className="text-xs text-destructive">{error}</span>
+                )}
+                <Button
+                  size="sm"
+                  onClick={finish}
+                  disabled={!name.trim() || !envType || !style || saving}
+                >
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  {saving ? "Criando…" : "Criar projeto"}
+                </Button>
+              </div>
             ) : (
               <Button size="sm" onClick={goNext} disabled={!canNext}>
                 Avançar <ArrowRight className="ml-2 h-4 w-4" />
