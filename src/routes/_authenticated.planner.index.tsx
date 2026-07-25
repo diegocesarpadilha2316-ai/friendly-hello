@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import {
   FolderKanban,
   Sparkles,
@@ -16,7 +18,11 @@ import { Button, StatusBadge } from "@/core/components/ui-kit";
 import { useTenant } from "@/core/providers/TenantProvider";
 import { useBillingSummary } from "@/core/billing/use-billing";
 import { loadProjects } from "@/modules/planner/shared/persistence/local-store";
-import type { PlannerProject, PlannerProjectStatus } from "@/modules/planner/shared";
+import type { PlannerProjectStatus } from "@/modules/planner/shared";
+import {
+  listProjects,
+  type PlannerProjectRowDTO,
+} from "@/lib/planner-projects.functions";
 import { useMemo } from "react";
 
 export const Route = createFileRoute("/_authenticated/planner/")({
@@ -45,6 +51,26 @@ const QUICK_ACTIONS = [
   { to: "/planner/render", label: "Render", icon: Camera },
 ] as const;
 
+interface DashboardProject {
+  id: string;
+  name: string;
+  client: string | null;
+  status: PlannerProjectStatus;
+  updatedAt: string;
+  environments: number;
+  rooms: number;
+}
+
+const projectsDashboardOptions = (
+  tenantId: string,
+  fetcher: () => Promise<PlannerProjectRowDTO[]>,
+) =>
+  queryOptions({
+    queryKey: ["planner", "projects", tenantId],
+    queryFn: fetcher,
+    staleTime: 30_000,
+  });
+
 function formatRelative(iso: string): string {
   const then = new Date(iso).getTime();
   if (Number.isNaN(then)) return "";
@@ -58,8 +84,8 @@ function formatRelative(iso: string): string {
   return `há ${d}d`;
 }
 
-function ProjectCard({ project }: { project: PlannerProject }) {
-  const roomCount = project.environments.reduce((s, e) => s + e.rooms.length, 0);
+function ProjectCard({ project }: { project: DashboardProject }) {
+  const roomCount = project.rooms;
   return (
     <Link
       to="/planner/projetos/$projectId"
@@ -86,7 +112,7 @@ function ProjectCard({ project }: { project: PlannerProject }) {
           <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
         </div>
         <div className="mt-1 flex items-center gap-3 text-[11px] text-muted-foreground">
-          <span>{project.environments.length} ambientes</span>
+          <span>{project.environments} ambientes</span>
           <span>•</span>
           <span>{roomCount} cômodos</span>
           <span className="ml-auto">{formatRelative(project.updatedAt)}</span>
@@ -101,10 +127,30 @@ function PlannerDashboard() {
   const tenantId = activeCompany?.id ?? "anonymous";
   const billing = useBillingSummary();
 
-  const projects = useMemo(() => {
-    const list = loadProjects(tenantId);
-    return [...list].sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
-  }, [tenantId]);
+  const fetchList = useServerFn(listProjects);
+  const { data: rows } = useSuspenseQuery(
+    projectsDashboardOptions(tenantId, () => fetchList()),
+  );
+
+  // Merge remote metadata with local bootstrap (environments/rooms live in the
+  // browser bridge until Etapa B moves them into snapshots).
+  const projects = useMemo<DashboardProject[]>(() => {
+    const local = loadProjects(tenantId);
+    const localById = new Map(local.map((p) => [p.id, p]));
+    return rows.map((r) => {
+      const l = localById.get(r.id);
+      const envs = l?.environments ?? [];
+      return {
+        id: r.id,
+        name: r.name,
+        client: r.client,
+        status: r.status as PlannerProjectStatus,
+        updatedAt: r.updatedAt,
+        environments: envs.length,
+        rooms: envs.reduce((s, e) => s + e.rooms.length, 0),
+      };
+    });
+  }, [rows, tenantId]);
 
   const active = projects.filter((p) => p.status === "in_progress" || p.status === "review").length;
   const recent = projects.slice(0, 6);
