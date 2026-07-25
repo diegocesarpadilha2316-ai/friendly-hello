@@ -128,6 +128,7 @@ export const ensureDefaultCompany = createServerFn({ method: "POST" })
       .single();
     if (!userInsertError) {
       await ensureFreePlanAndGrant(String(createdByUser.id));
+      await sendWelcomeIfNew(String(createdByUser.id), userId, email);
       return { created: true, companyId: createdByUser.id as string };
     }
 
@@ -153,8 +154,31 @@ export const ensureDefaultCompany = createServerFn({ method: "POST" })
       );
     if (memberError) throw new Error(memberError.message);
     await ensureFreePlanAndGrant(String(createdByAdmin.id));
+    await sendWelcomeIfNew(String(createdByAdmin.id), userId, email);
     return { created: true, companyId: createdByAdmin.id as string };
   });
+
+/** Envia notificação de boas-vindas apenas na primeira execução (idempotente). */
+async function sendWelcomeIfNew(
+  companyId: string,
+  userId: string,
+  email: string | null,
+): Promise<void> {
+  try {
+    const { getSupabaseAdmin } = await import("@/core/lib/supabase/admin.server");
+    const admin = getSupabaseAdmin();
+    const { count } = await admin
+      .from("notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("company_id", companyId)
+      .eq("category", "onboarding");
+    if ((count ?? 0) > 0) return;
+    const { notifyWelcome } = await import("@/core/notifications/notify.server");
+    await notifyWelcome({ companyId, userId, email });
+  } catch {
+    /* silencioso */
+  }
+}
 
 /**
  * Idempotente: cria subscription Free e grant inicial de créditos
