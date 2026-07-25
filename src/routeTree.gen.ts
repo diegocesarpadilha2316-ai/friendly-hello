@@ -18,6 +18,7 @@ import { Route as PublicIndexRouteImport } from './routes/_public.index'
 import { Route as PublicTermosRouteImport } from './routes/_public.termos'
 import { Route as PublicStatusRouteImport } from './routes/_public.status'
 import { Route as PublicSobreRouteImport } from './routes/_public.sobre'
+import { Route as PublicReembolsoRouteImport } from './routes/_public.reembolso'
 import { Route as PublicRecursosRouteImport } from './routes/_public.recursos'
 import { Route as PublicProdutosRouteImport } from './routes/_public.produtos'
 import { Route as PublicPrivacidadeRouteImport } from './routes/_public.privacidade'
@@ -137,6 +138,11 @@ const PublicStatusRoute = PublicStatusRouteImport.update({
 const PublicSobreRoute = PublicSobreRouteImport.update({
   id: '/sobre',
   path: '/sobre',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicReembolsoRoute = PublicReembolsoRouteImport.update({
+  id: '/reembolso',
+  path: '/reembolso',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicRecursosRoute = PublicRecursosRouteImport.update({
@@ -603,6 +609,7 @@ export interface FileRoutesByFullPath {
   '/privacidade': typeof PublicPrivacidadeRoute
   '/produtos': typeof PublicProdutosRouteWithChildren
   '/recursos': typeof PublicRecursosRoute
+  '/reembolso': typeof PublicReembolsoRoute
   '/sobre': typeof PublicSobreRoute
   '/status': typeof PublicStatusRoute
   '/termos': typeof PublicTermosRoute
@@ -687,6 +694,7 @@ export interface FileRoutesByTo {
   '/privacidade': typeof PublicPrivacidadeRoute
   '/produtos': typeof PublicProdutosRouteWithChildren
   '/recursos': typeof PublicRecursosRoute
+  '/reembolso': typeof PublicReembolsoRoute
   '/sobre': typeof PublicSobreRoute
   '/status': typeof PublicStatusRoute
   '/termos': typeof PublicTermosRoute
@@ -775,6 +783,7 @@ export interface FileRoutesById {
   '/_public/privacidade': typeof PublicPrivacidadeRoute
   '/_public/produtos': typeof PublicProdutosRouteWithChildren
   '/_public/recursos': typeof PublicRecursosRoute
+  '/_public/reembolso': typeof PublicReembolsoRoute
   '/_public/sobre': typeof PublicSobreRoute
   '/_public/status': typeof PublicStatusRoute
   '/_public/termos': typeof PublicTermosRoute
@@ -864,6 +873,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/produtos'
     | '/recursos'
+    | '/reembolso'
     | '/sobre'
     | '/status'
     | '/termos'
@@ -948,6 +958,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/produtos'
     | '/recursos'
+    | '/reembolso'
     | '/sobre'
     | '/status'
     | '/termos'
@@ -1035,6 +1046,7 @@ export interface FileRouteTypes {
     | '/_public/privacidade'
     | '/_public/produtos'
     | '/_public/recursos'
+    | '/_public/reembolso'
     | '/_public/sobre'
     | '/_public/status'
     | '/_public/termos'
@@ -1165,6 +1177,13 @@ declare module '@tanstack/react-router' {
       path: '/sobre'
       fullPath: '/sobre'
       preLoaderRoute: typeof PublicSobreRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/reembolso': {
+      id: '/_public/reembolso'
+      path: '/reembolso'
+      fullPath: '/reembolso'
+      preLoaderRoute: typeof PublicReembolsoRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/recursos': {
@@ -1915,6 +1934,7 @@ interface PublicRouteChildren {
   PublicPrivacidadeRoute: typeof PublicPrivacidadeRoute
   PublicProdutosRoute: typeof PublicProdutosRouteWithChildren
   PublicRecursosRoute: typeof PublicRecursosRoute
+  PublicReembolsoRoute: typeof PublicReembolsoRoute
   PublicSobreRoute: typeof PublicSobreRoute
   PublicStatusRoute: typeof PublicStatusRoute
   PublicTermosRoute: typeof PublicTermosRoute
@@ -1931,6 +1951,7 @@ const PublicRouteChildren: PublicRouteChildren = {
   PublicPrivacidadeRoute: PublicPrivacidadeRoute,
   PublicProdutosRoute: PublicProdutosRouteWithChildren,
   PublicRecursosRoute: PublicRecursosRoute,
+  PublicReembolsoRoute: PublicReembolsoRoute,
   PublicSobreRoute: PublicSobreRoute,
   PublicStatusRoute: PublicStatusRoute,
   PublicTermosRoute: PublicTermosRoute,

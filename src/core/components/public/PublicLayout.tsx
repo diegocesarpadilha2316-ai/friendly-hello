@@ -252,6 +252,7 @@ export function PublicFooter() {
         { to: "/termos", label: "Termos de uso" },
         { to: "/privacidade", label: "Privacidade" },
         { to: "/privacidade", label: "LGPD" },
+        { to: "/reembolso", label: "Reembolso" },
       ],
     },
   ];
