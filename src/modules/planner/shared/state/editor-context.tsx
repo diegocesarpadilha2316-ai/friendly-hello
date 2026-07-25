@@ -35,6 +35,7 @@ import {
   saveProjectSnapshot,
   listProjectVersions,
   createProjectVersion,
+  loadProjectVersion,
   type JsonObject,
 } from "@/lib/planner-snapshots.functions";
 
@@ -130,6 +131,7 @@ interface EditorContextValue {
   redo: () => void;
   saveNow: () => void;
   snapshotVersion: (label: string) => void;
+  restoreVersion: (versionId: string) => Promise<void>;
   versions: readonly PlannerProjectVersion[];
   canUndo: boolean;
   canRedo: boolean;
@@ -156,6 +158,7 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
   const saveSnapshotFn = useServerFn(saveProjectSnapshot);
   const listVersionsFn = useServerFn(listProjectVersions);
   const createVersionFn = useServerFn(createProjectVersion);
+  const loadVersionFn = useServerFn(loadProjectVersion);
 
   const refreshVersions = useCallback(
     async (projectId: string) => {
@@ -301,6 +304,29 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
     [state.project, persist, createVersionFn, refreshVersions],
   );
 
+  const restoreVersion = useCallback(
+    async (versionId: string) => {
+      const current = state.project;
+      if (!current) return;
+      try {
+        const row = await loadVersionFn({ data: { id: versionId } });
+        if (!row?.snapshot) return;
+        const restored: PlannerProject = {
+          ...(row.snapshot as unknown as PlannerProject),
+          id: current.id,
+          // versão avança para não sobrescrever a versão restaurada
+          version: current.version + 1,
+          updatedAt: new Date().toISOString(),
+        };
+        dispatch({ type: "update", project: restored });
+        await persist(restored);
+      } catch (err) {
+        console.error("[planner] restore version falhou", err);
+      }
+    },
+    [state.project, loadVersionFn, persist],
+  );
+
   // Atalhos de teclado — Ctrl/Cmd+Z / Shift+Z / Ctrl+S.
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -333,11 +359,12 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
       redo,
       saveNow,
       snapshotVersion,
+      restoreVersion,
       versions,
       canUndo: state.past.length > 0,
       canRedo: state.future.length > 0,
     }),
-    [state, loadProjectById, updateProject, select, undo, redo, saveNow, snapshotVersion, versions],
+    [state, loadProjectById, updateProject, select, undo, redo, saveNow, snapshotVersion, restoreVersion, versions],
   );
 
   return <EditorContext.Provider value={value}>{children}</EditorContext.Provider>;
