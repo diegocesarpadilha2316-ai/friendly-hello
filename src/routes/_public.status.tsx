@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CheckCircle2, Activity } from "lucide-react";
+import { CheckCircle2, Activity, AlertTriangle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { Reveal, GradientText, SectionEyebrow } from "@/core/components/public/PublicLayout";
 
 export const Route = createFileRoute("/_public/status")({
@@ -16,50 +17,60 @@ export const Route = createFileRoute("/_public/status")({
   component: Page,
 });
 
-const services = [
-  { name: "API Gateway", uptime: 99.99 },
-  { name: "IA Gateway", uptime: 99.98 },
-  { name: "Auth", uptime: 100 },
-  { name: "Storage", uptime: 99.97 },
-  { name: "Database", uptime: 99.99 },
-  { name: "Jobs & Workers", uptime: 99.95 },
-  { name: "Notifications", uptime: 99.99 },
-  { name: "Webhooks", uptime: 99.96 },
-];
+type StatusPayload = {
+  ok: boolean;
+  ts: string;
+  checks: Array<{ name: string; ok: boolean; latencyMs: number; detail?: string }>;
+};
 
 function Page() {
+  const q = useQuery<StatusPayload>({
+    queryKey: ["public", "status"],
+    queryFn: async () => {
+      const res = await fetch("/api/public/v1/status", { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return (await res.json()) as StatusPayload;
+    },
+    refetchInterval: 30_000,
+  });
+
+  const allOk = q.data?.ok ?? true;
+  const checks = q.data?.checks ?? [];
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-24 sm:px-6 lg:px-8">
       <Reveal>
         <SectionEyebrow>Status</SectionEyebrow>
         <h1 className="mt-4 text-5xl font-black tracking-tight sm:text-6xl">
-          Tudo <GradientText>operacional</GradientText>.
+          {allOk ? <>Tudo <GradientText>operacional</GradientText>.</> : <>Incidente <GradientText>em andamento</GradientText>.</>}
         </h1>
-        <div className="mt-8 flex items-center gap-3 rounded-2xl border border-accent/30 bg-accent/10 p-5">
-          <CheckCircle2 className="h-6 w-6 text-accent" />
+        <div className={`mt-8 flex items-center gap-3 rounded-2xl border p-5 ${allOk ? "border-accent/30 bg-accent/10" : "border-destructive/40 bg-destructive/10"}`}>
+          {allOk ? <CheckCircle2 className="h-6 w-6 text-accent" /> : <AlertTriangle className="h-6 w-6 text-destructive" />}
           <div>
-            <div className="font-semibold">Todos os sistemas operacionais</div>
-            <div className="text-sm text-foreground/70">Última verificação: agora</div>
+            <div className="font-semibold">{allOk ? "Todos os sistemas operacionais" : "Alguns serviços estão degradados"}</div>
+            <div className="text-sm text-foreground/70">
+              {q.isLoading ? "Verificando…" : q.data ? `Última verificação: ${new Date(q.data.ts).toLocaleTimeString("pt-BR")}` : "Aguardando resposta…"}
+            </div>
           </div>
         </div>
       </Reveal>
       <div className="mt-10 rounded-3xl border border-white/10 bg-white/[0.02] p-2">
-        {services.map((s, i) => (
-          <div key={s.name} className={`flex items-center justify-between p-5 ${i < services.length - 1 ? "border-b border-white/5" : ""}`}>
+        {checks.map((s, i) => (
+          <div key={s.name} className={`flex items-center justify-between p-5 ${i < checks.length - 1 ? "border-b border-white/5" : ""}`}>
             <div className="flex items-center gap-3">
-              <Activity className="h-4 w-4 text-accent" />
+              <Activity className={`h-4 w-4 ${s.ok ? "text-accent" : "text-destructive"}`} />
               <span className="font-medium">{s.name}</span>
+              {!s.ok && s.detail ? <span className="text-xs text-destructive/80">{s.detail}</span> : null}
             </div>
             <div className="flex items-center gap-4">
-              <div className="hidden sm:flex gap-0.5">
-                {Array.from({ length: 60 }).map((_, j) => (
-                  <div key={j} className={`h-6 w-1 rounded-sm ${j === 42 && s.uptime < 99.99 ? "bg-yellow-500/60" : "bg-accent/60"}`} />
-                ))}
-              </div>
-              <span className="text-sm text-foreground/70">{s.uptime}%</span>
+              <span className="text-xs text-foreground/60">{s.latencyMs > 0 ? `${s.latencyMs}ms` : "—"}</span>
+              <span className={`text-sm font-semibold ${s.ok ? "text-accent" : "text-destructive"}`}>{s.ok ? "Operacional" : "Degradado"}</span>
             </div>
           </div>
         ))}
+        {checks.length === 0 && !q.isLoading ? (
+          <div className="p-5 text-sm text-foreground/60">Sem dados de status no momento.</div>
+        ) : null}
       </div>
     </div>
   );

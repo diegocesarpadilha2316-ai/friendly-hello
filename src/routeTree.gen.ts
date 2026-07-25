@@ -87,6 +87,7 @@ import { Route as AuthenticatedConfiguracoesEmpresaRouteImport } from './routes/
 import { Route as AuthenticatedAdminObservabilidadeRouteImport } from './routes/_authenticated.admin.observabilidade'
 import { Route as AuthenticatedAdminBillingRouteImport } from './routes/_authenticated.admin.billing'
 import { Route as AuthenticatedAdminBibliotecaRouteImport } from './routes/_authenticated.admin.biblioteca'
+import { Route as ApiPublicV1StatusRouteImport } from './routes/api/public/v1/status'
 import { Route as ApiPublicV1PingRouteImport } from './routes/api/public/v1/ping'
 import { Route as ApiPublicV1OpenapiRouteImport } from './routes/api/public/v1/openapi'
 import { Route as AuthenticatedPlannerProjetosNovoRouteImport } from './routes/_authenticated.planner.projetos.novo'
@@ -522,6 +523,11 @@ const AuthenticatedAdminBibliotecaRoute =
     path: '/biblioteca',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const ApiPublicV1StatusRoute = ApiPublicV1StatusRouteImport.update({
+  id: '/api/public/v1/status',
+  path: '/api/public/v1/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicV1PingRoute = ApiPublicV1PingRouteImport.update({
   id: '/api/public/v1/ping',
   path: '/api/public/v1/ping',
@@ -643,6 +649,7 @@ export interface FileRoutesByFullPath {
   '/planner/projetos/novo': typeof AuthenticatedPlannerProjetosNovoRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
+  '/api/public/v1/status': typeof ApiPublicV1StatusRoute
   '/api/public/v1/webhooks/mercadopago': typeof ApiPublicV1WebhooksMercadopagoRoute
   '/api/public/v1/workers/email': typeof ApiPublicV1WorkersEmailRoute
   '/api/public/v1/workers/render': typeof ApiPublicV1WorkersRenderRoute
@@ -726,6 +733,7 @@ export interface FileRoutesByTo {
   '/planner/projetos/novo': typeof AuthenticatedPlannerProjetosNovoRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
+  '/api/public/v1/status': typeof ApiPublicV1StatusRoute
   '/api/public/v1/webhooks/mercadopago': typeof ApiPublicV1WebhooksMercadopagoRoute
   '/api/public/v1/workers/email': typeof ApiPublicV1WorkersEmailRoute
   '/api/public/v1/workers/render': typeof ApiPublicV1WorkersRenderRoute
@@ -814,6 +822,7 @@ export interface FileRoutesById {
   '/_authenticated/planner/projetos/novo': typeof AuthenticatedPlannerProjetosNovoRoute
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
+  '/api/public/v1/status': typeof ApiPublicV1StatusRoute
   '/api/public/v1/webhooks/mercadopago': typeof ApiPublicV1WebhooksMercadopagoRoute
   '/api/public/v1/workers/email': typeof ApiPublicV1WorkersEmailRoute
   '/api/public/v1/workers/render': typeof ApiPublicV1WorkersRenderRoute
@@ -901,6 +910,7 @@ export interface FileRouteTypes {
     | '/planner/projetos/novo'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
+    | '/api/public/v1/status'
     | '/api/public/v1/webhooks/mercadopago'
     | '/api/public/v1/workers/email'
     | '/api/public/v1/workers/render'
@@ -984,6 +994,7 @@ export interface FileRouteTypes {
     | '/planner/projetos/novo'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
+    | '/api/public/v1/status'
     | '/api/public/v1/webhooks/mercadopago'
     | '/api/public/v1/workers/email'
     | '/api/public/v1/workers/render'
@@ -1071,6 +1082,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planner/projetos/novo'
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
+    | '/api/public/v1/status'
     | '/api/public/v1/webhooks/mercadopago'
     | '/api/public/v1/workers/email'
     | '/api/public/v1/workers/render'
@@ -1084,6 +1096,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiPublicV1OpenapiRoute: typeof ApiPublicV1OpenapiRoute
   ApiPublicV1PingRoute: typeof ApiPublicV1PingRoute
+  ApiPublicV1StatusRoute: typeof ApiPublicV1StatusRoute
   ApiPublicV1WebhooksMercadopagoRoute: typeof ApiPublicV1WebhooksMercadopagoRoute
   ApiPublicV1WorkersEmailRoute: typeof ApiPublicV1WorkersEmailRoute
   ApiPublicV1WorkersRenderRoute: typeof ApiPublicV1WorkersRenderRoute
@@ -1637,6 +1650,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminBibliotecaRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/api/public/v1/status': {
+      id: '/api/public/v1/status'
+      path: '/api/public/v1/status'
+      fullPath: '/api/public/v1/status'
+      preLoaderRoute: typeof ApiPublicV1StatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/v1/ping': {
       id: '/api/public/v1/ping'
       path: '/api/public/v1/ping'
@@ -1928,6 +1948,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiPublicV1OpenapiRoute: ApiPublicV1OpenapiRoute,
   ApiPublicV1PingRoute: ApiPublicV1PingRoute,
+  ApiPublicV1StatusRoute: ApiPublicV1StatusRoute,
   ApiPublicV1WebhooksMercadopagoRoute: ApiPublicV1WebhooksMercadopagoRoute,
   ApiPublicV1WorkersEmailRoute: ApiPublicV1WorkersEmailRoute,
   ApiPublicV1WorkersRenderRoute: ApiPublicV1WorkersRenderRoute,
