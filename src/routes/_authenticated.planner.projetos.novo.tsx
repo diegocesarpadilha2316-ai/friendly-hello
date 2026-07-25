@@ -408,20 +408,19 @@ function NewProjectWizard() {
               <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
             </Button>
             {step === "confirmar" ? (
-              <Button
-                size="sm"
-                onClick={finish}
-                disabled={!name.trim() || !envType || !style || saving}
-              >
-                <PlusCircle className="mr-2 h-4 w-4" />
-                {saving ? "Criando…" : "Criar projeto"}
-              </Button>
-              {error && (
-                <span className="ml-2 text-xs text-destructive">{error}</span>
-              )}
-              {/* fim ações */}
-              <span style={{ display: "none" }}>
-              </Button>
+              <div className="flex items-center gap-3">
+                {error && (
+                  <span className="text-xs text-destructive">{error}</span>
+                )}
+                <Button
+                  size="sm"
+                  onClick={finish}
+                  disabled={!name.trim() || !envType || !style || saving}
+                >
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  {saving ? "Criando…" : "Criar projeto"}
+                </Button>
+              </div>
             ) : (
               <Button size="sm" onClick={goNext} disabled={!canNext}>
                 Avançar <ArrowRight className="ml-2 h-4 w-4" />
