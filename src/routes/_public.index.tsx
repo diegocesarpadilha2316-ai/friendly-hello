@@ -64,6 +64,8 @@ function HomePage() {
       <Ecosystem />
       <Pillars />
       <ProductShowcase />
+      <Testimonials />
+      <FAQ />
       <BigCTA />
     </>
   );
