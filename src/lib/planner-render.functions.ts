@@ -9,6 +9,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireTenant } from "@/core/middleware/require-tenant";
+import { debitCreditsOrThrow } from "@/core/billing/debit.server";
+import { priceRenderJob } from "@/core/billing/pricing";
 
 export type RenderKind = "image" | "video" | "panorama" | "turntable";
 export type RenderStatus =
@@ -193,6 +195,20 @@ export const enqueueRenderJob = createServerFn({ method: "POST" })
     }
 
     const size = DEFAULT_SIZE[data.kind];
+
+    // Débito de créditos ANTES de enfileirar (rejeita se saldo insuficiente).
+    const charge = priceRenderJob({
+      kind: data.kind,
+      durationSec: data.durationSec ?? (data.kind === "video" || data.kind === "turntable" ? 8 : null),
+      quality,
+    });
+    await debitCreditsOrThrow(context.supabase, context.tenantId, context.userId, {
+      amount: charge,
+      reason: `render.${data.kind}`,
+      reference: data.projectId,
+      metadata: { engine, quality, kind: data.kind },
+    });
+
     const { data: job, error } = await context.supabase
       .from("render_jobs")
       .insert({
