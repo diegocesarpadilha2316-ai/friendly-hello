@@ -57,6 +57,7 @@ import { Route as AuthenticatedPlannerIndexRouteImport } from './routes/_authent
 import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated.configuracoes.index'
 import { Route as PublicProdutosPlannerRouteImport } from './routes/_public.produtos.planner'
 import { Route as PublicProdutosCriadorRouteImport } from './routes/_public.produtos.criador'
+import { Route as PublicBlogSlugRouteImport } from './routes/_public.blog.$slug'
 import { Route as AuthenticatedWorkspacePerfilRouteImport } from './routes/_authenticated.workspace.perfil'
 import { Route as AuthenticatedWorkspaceNotificacoesRouteImport } from './routes/_authenticated.workspace.notificacoes'
 import { Route as AuthenticatedWorkspaceModulosRouteImport } from './routes/_authenticated.workspace.modulos'
@@ -344,6 +345,11 @@ const PublicProdutosCriadorRoute = PublicProdutosCriadorRouteImport.update({
   path: '/criador',
   getParentRoute: () => PublicProdutosRoute,
 } as any)
+const PublicBlogSlugRoute = PublicBlogSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => PublicBlogRoute,
+} as any)
 const AuthenticatedWorkspacePerfilRoute =
   AuthenticatedWorkspacePerfilRouteImport.update({
     id: '/perfil',
@@ -618,7 +624,7 @@ export interface FileRoutesByFullPath {
   '/sites': typeof AuthenticatedSitesRoute
   '/storage': typeof AuthenticatedStorageRoute
   '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
-  '/blog': typeof PublicBlogRoute
+  '/blog': typeof PublicBlogRouteWithChildren
   '/changelog': typeof PublicChangelogRoute
   '/contato': typeof PublicContatoRoute
   '/cookies': typeof PublicCookiesRoute
@@ -668,6 +674,7 @@ export interface FileRoutesByFullPath {
   '/workspace/modulos': typeof AuthenticatedWorkspaceModulosRoute
   '/workspace/notificacoes': typeof AuthenticatedWorkspaceNotificacoesRoute
   '/workspace/perfil': typeof AuthenticatedWorkspacePerfilRoute
+  '/blog/$slug': typeof PublicBlogSlugRoute
   '/produtos/criador': typeof PublicProdutosCriadorRoute
   '/produtos/planner': typeof PublicProdutosPlannerRoute
   '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
@@ -706,7 +713,7 @@ export interface FileRoutesByTo {
   '/sistemas': typeof AuthenticatedSistemasRoute
   '/sites': typeof AuthenticatedSitesRoute
   '/storage': typeof AuthenticatedStorageRoute
-  '/blog': typeof PublicBlogRoute
+  '/blog': typeof PublicBlogRouteWithChildren
   '/changelog': typeof PublicChangelogRoute
   '/contato': typeof PublicContatoRoute
   '/cookies': typeof PublicCookiesRoute
@@ -756,6 +763,7 @@ export interface FileRoutesByTo {
   '/workspace/modulos': typeof AuthenticatedWorkspaceModulosRoute
   '/workspace/notificacoes': typeof AuthenticatedWorkspaceNotificacoesRoute
   '/workspace/perfil': typeof AuthenticatedWorkspacePerfilRoute
+  '/blog/$slug': typeof PublicBlogSlugRoute
   '/produtos/criador': typeof PublicProdutosCriadorRoute
   '/produtos/planner': typeof PublicProdutosPlannerRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesIndexRoute
@@ -798,7 +806,7 @@ export interface FileRoutesById {
   '/_authenticated/sites': typeof AuthenticatedSitesRoute
   '/_authenticated/storage': typeof AuthenticatedStorageRoute
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
-  '/_public/blog': typeof PublicBlogRoute
+  '/_public/blog': typeof PublicBlogRouteWithChildren
   '/_public/changelog': typeof PublicChangelogRoute
   '/_public/contato': typeof PublicContatoRoute
   '/_public/cookies': typeof PublicCookiesRoute
@@ -849,6 +857,7 @@ export interface FileRoutesById {
   '/_authenticated/workspace/modulos': typeof AuthenticatedWorkspaceModulosRoute
   '/_authenticated/workspace/notificacoes': typeof AuthenticatedWorkspaceNotificacoesRoute
   '/_authenticated/workspace/perfil': typeof AuthenticatedWorkspacePerfilRoute
+  '/_public/blog/$slug': typeof PublicBlogSlugRoute
   '/_public/produtos/criador': typeof PublicProdutosCriadorRoute
   '/_public/produtos/planner': typeof PublicProdutosPlannerRoute
   '/_authenticated/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
@@ -941,6 +950,7 @@ export interface FileRouteTypes {
     | '/workspace/modulos'
     | '/workspace/notificacoes'
     | '/workspace/perfil'
+    | '/blog/$slug'
     | '/produtos/criador'
     | '/produtos/planner'
     | '/configuracoes/'
@@ -1029,6 +1039,7 @@ export interface FileRouteTypes {
     | '/workspace/modulos'
     | '/workspace/notificacoes'
     | '/workspace/perfil'
+    | '/blog/$slug'
     | '/produtos/criador'
     | '/produtos/planner'
     | '/configuracoes'
@@ -1121,6 +1132,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/modulos'
     | '/_authenticated/workspace/notificacoes'
     | '/_authenticated/workspace/perfil'
+    | '/_public/blog/$slug'
     | '/_public/produtos/criador'
     | '/_public/produtos/planner'
     | '/_authenticated/configuracoes/'
@@ -1487,6 +1499,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/produtos/criador'
       preLoaderRoute: typeof PublicProdutosCriadorRouteImport
       parentRoute: typeof PublicProdutosRoute
+    }
+    '/_public/blog/$slug': {
+      id: '/_public/blog/$slug'
+      path: '/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof PublicBlogSlugRouteImport
+      parentRoute: typeof PublicBlogRoute
     }
     '/_authenticated/workspace/perfil': {
       id: '/_authenticated/workspace/perfil'
@@ -1967,6 +1986,18 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface PublicBlogRouteChildren {
+  PublicBlogSlugRoute: typeof PublicBlogSlugRoute
+}
+
+const PublicBlogRouteChildren: PublicBlogRouteChildren = {
+  PublicBlogSlugRoute: PublicBlogSlugRoute,
+}
+
+const PublicBlogRouteWithChildren = PublicBlogRoute._addFileChildren(
+  PublicBlogRouteChildren,
+)
+
 interface PublicProdutosRouteChildren {
   PublicProdutosCriadorRoute: typeof PublicProdutosCriadorRoute
   PublicProdutosPlannerRoute: typeof PublicProdutosPlannerRoute
@@ -1982,7 +2013,7 @@ const PublicProdutosRouteWithChildren = PublicProdutosRoute._addFileChildren(
 )
 
 interface PublicRouteChildren {
-  PublicBlogRoute: typeof PublicBlogRoute
+  PublicBlogRoute: typeof PublicBlogRouteWithChildren
   PublicChangelogRoute: typeof PublicChangelogRoute
   PublicContatoRoute: typeof PublicContatoRoute
   PublicCookiesRoute: typeof PublicCookiesRoute
@@ -2002,7 +2033,7 @@ interface PublicRouteChildren {
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
-  PublicBlogRoute: PublicBlogRoute,
+  PublicBlogRoute: PublicBlogRouteWithChildren,
   PublicChangelogRoute: PublicChangelogRoute,
   PublicContatoRoute: PublicContatoRoute,
   PublicCookiesRoute: PublicCookiesRoute,
