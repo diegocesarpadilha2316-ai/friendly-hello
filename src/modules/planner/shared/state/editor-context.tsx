@@ -25,7 +25,6 @@ import {
 } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useTenant } from "@/core/providers/TenantProvider";
-import { useAuth } from "@/core/providers/AuthProvider";
 import type {
   PlannerProject,
   PlannerProjectVersion,
@@ -151,7 +150,6 @@ const initialState: EditorState = {
 
 export function PlannerEditorProvider({ children }: { children: ReactNode }) {
   const { activeCompany } = useTenant();
-  const { user } = useAuth();
   const tenantId = activeCompany?.id ?? "anonymous";
   const [state, dispatch] = useReducer(reducer, initialState);
   const [versions, setVersions] = useState<readonly PlannerProjectVersion[]>([]);
