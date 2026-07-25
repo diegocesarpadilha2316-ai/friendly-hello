@@ -115,6 +115,11 @@ function AdminBillingContent() {
               Preencha aqui o modo (sandbox/live), a chave pública e ative quando estiver pronto.
               A URL do webhook é gerada automaticamente e você cola no painel do provedor.
             </p>
+            <p className="mt-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-[12px] text-primary">
+              <strong>Modo padrão: Checkout Transparente.</strong> Todo pagamento (Pix, cartão, boleto,
+              assinatura) roda inline dentro da Dioris via SDK do provedor — nunca redireciona para
+              Checkout Pro / hosted checkout. Isso preserva marca, UX e conversão.
+            </p>
           </div>
         </div>
       </div>
