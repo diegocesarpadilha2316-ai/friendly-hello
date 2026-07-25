@@ -70,6 +70,36 @@ export const Route = createFileRoute("/api/public/v1/webhooks/mercadopago")({
             .from("payment_orders")
             .update({ credited_at: new Date().toISOString(), status: "approved" })
             .eq("id", order.id);
+
+          // Envia recibo por e-mail (in-app + email via worker).
+          try {
+            const { notifyPaymentApproved } = await import(
+              "@/core/notifications/notify.server"
+            );
+            let email: string | null = null;
+            if (order.actor_id) {
+              const { data: prof } = await admin
+                .from("profiles")
+                .select("email")
+                .eq("id", order.actor_id)
+                .maybeSingle();
+              email = (prof as { email?: string | null } | null)?.email ?? null;
+            }
+            await notifyPaymentApproved({
+              companyId: order.company_id,
+              userId: order.actor_id,
+              email,
+              credits: order.credits,
+              amount: Number(order.amount ?? 0),
+              currency: order.currency ?? "BRL",
+              provider: "Mercado Pago",
+              orderId: order.id,
+              packKey: order.pack_key ?? null,
+            });
+          } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error("[mp-webhook] receipt notify failed", err);
+          }
         }
 
         return new Response("ok", { status: 200 });
