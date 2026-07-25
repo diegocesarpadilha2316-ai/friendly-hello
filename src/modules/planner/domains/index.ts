@@ -18,5 +18,3 @@ export * as api from "./api";
 export * as video from "./video";
 export * as realtime from "./realtime";
 export * as ai from "./ai";
-export * as importer from "./importer";
-export * as configurator from "./configurator";
