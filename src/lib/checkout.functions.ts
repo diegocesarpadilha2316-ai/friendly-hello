@@ -198,6 +198,22 @@ export const getCheckoutOrder = createServerFn({ method: "GET" })
     return { order: mapOrder(row) };
   });
 
+export const listCheckoutOrders = createServerFn({ method: "GET" })
+  .middleware([requireTenant])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("payment_orders")
+      .select(
+        "id, provider, method, status, amount_cents, currency, credits, qr_code, qr_code_base64, ticket_url, expires_at, created_at",
+      )
+      .eq("company_id", context.tenantId)
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (error) throw new Response(error.message, { status: 500 });
+    const orders: CheckoutOrderDTO[] = (data ?? []).map(mapOrder);
+    return { orders };
+  });
+
 // Concede créditos no ledger e marca pedido como creditado (idempotente).
 async function creditOrder(admin: any, row: any): Promise<void> {
   const { data: existing } = await admin
