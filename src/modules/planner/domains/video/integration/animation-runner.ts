@@ -5,11 +5,11 @@
  * Reaproveita `door-animation`, `drawer-animation`, `led-animation`,
  * `lighting-animation` e `scene-animation` do local-engine.
  */
-import { doorAnimationAt } from "../local-engine/door-animation";
-import { drawerAnimationAt } from "../local-engine/drawer-animation";
-import { ledAnimationAt } from "../local-engine/led-animation";
-import { lightingAnimationAt } from "../local-engine/lighting-animation";
-import { sceneAnimationAt } from "../local-engine/scene-animation";
+import { interpolateDoorAngle } from "../local-engine/door-animation";
+import { interpolateDrawerOffset } from "../local-engine/drawer-animation";
+import { sampleLedIntensity } from "../local-engine/led-animation";
+import { sampleLighting } from "../local-engine/lighting-animation";
+import { sampleSceneProgress } from "../local-engine/scene-animation";
 import type {
   LocalObjectAnimation,
   LocalObjectAnimationKind,
@@ -28,21 +28,20 @@ function evaluate(
   a: LocalObjectAnimation,
   sec: number,
 ): { value: number; opacity: number } {
-  const rel = sec - a.startSec;
   switch (a.kind) {
     case "door-open":
     case "door-close":
-      return { value: doorAnimationAt(a, rel), opacity: 1 };
+      return { value: interpolateDoorAngle(a, sec), opacity: 1 };
     case "drawer-open":
     case "drawer-close":
-      return { value: drawerAnimationAt(a, rel), opacity: 1 };
+      return { value: interpolateDrawerOffset(a, sec), opacity: 1 };
     case "led-on":
     case "led-off":
-      return { value: ledAnimationAt(a, rel), opacity: 1 };
+      return { value: sampleLedIntensity(a, sec), opacity: 1 };
     case "lighting-swap":
-      return { value: lightingAnimationAt(a, rel), opacity: 1 };
+      return { value: sampleLighting(a, sec).intensity, opacity: 1 };
     default:
-      return { value: sceneAnimationAt(a, rel), opacity: 1 };
+      return { value: sampleSceneProgress(a, sec), opacity: 1 };
   }
 }
 

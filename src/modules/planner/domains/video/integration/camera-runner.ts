@@ -4,7 +4,7 @@
  * Wrapper leve sobre o `buildLocalCameraPath` (Fase 3.22): entrega uma
  * amostra interpolada por frame — pronta para o viewport aplicar.
  */
-import { buildLocalCameraPath } from "../local-engine/camera-path";
+import { samplePath } from "../local-engine/camera-animation";
 import { LOCAL_CAMERAS } from "../../render/local-engine/cameras";
 import type {
   LocalCameraMoveKind,
@@ -19,7 +19,7 @@ export function pathFor(
   fps: LocalFps,
   cameraId: string = LOCAL_CAMERAS[0].id,
 ): LocalCameraPath {
-  return buildLocalCameraPath({ moveId: move, cameraId, durationSec, fps });
+  return samplePath({ moveId: move, cameraId, durationSec, fps });
 }
 
 export function sampleAt(path: LocalCameraPath, frame: number): LocalCameraSample | null {
