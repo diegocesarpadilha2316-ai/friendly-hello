@@ -3,8 +3,9 @@
  * Gera programas reais para todos os formatos suportados pela máquina primária
  * (GCODE, BPP, CID3, CIX, DXF, NC, MPR, XML) reutilizando o program-generator existente.
  */
-import { CNC_MACHINE_CATALOG, findCncMachine, generatePrograms } from "../services/cnc";
-import type { CncFormat } from "../services/cnc/types";
+import { CNC_MACHINE_CATALOG, findCncMachine } from "../services/cnc/machines";
+import { generatePrograms } from "../services/cnc/program-generator";
+import type { CncFormat, CncProgram } from "../services/cnc/types";
 import type { CutListRow } from "../types";
 import type { CncManifest, CncManifestEntry } from "./types";
 
@@ -20,15 +21,15 @@ export function buildCncManifest(
     return { primaryMachineId: machineId, entries: [], totalPrograms: 0, totalMinutes: 0 };
   }
   for (const format of machine.formats as readonly CncFormat[]) {
-    const programs = generatePrograms(cutList, machine.id, format);
+    const programs: readonly CncProgram[] = generatePrograms(cutList, machine.id, format);
     if (programs.length === 0) continue;
     entries.push({
       machineId: machine.id,
       machineLabel: `${machine.brand.toUpperCase()} ${machine.model}`,
       format,
       programs,
-      totalMin: programs.reduce((a, p) => a + p.estimatedMin, 0),
-      totalOps: programs.reduce((a, p) => a + p.operations.length, 0),
+      totalMin: programs.reduce((a: number, p: CncProgram) => a + p.estimatedMin, 0),
+      totalOps: programs.reduce((a: number, p: CncProgram) => a + p.operations.length, 0),
     });
   }
   const totalPrograms = entries.reduce((a, e) => a + e.programs.length, 0);
