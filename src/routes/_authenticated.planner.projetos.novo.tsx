@@ -1,5 +1,11 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { createFileRoute, Link, useNavigate, ClientOnly } from "@tanstack/react-router";
+import { lazy, useMemo, useState } from "react";
+
+const WizardPreview3D = lazy(() =>
+  import("@/modules/planner/shared/components/WizardPreview3D").then((m) => ({
+    default: m.WizardPreview3D,
+  })),
+);
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { createProjectRow } from "@/lib/planner-projects.functions";
@@ -376,6 +382,22 @@ function NewProjectWizard() {
                   A IA vai criar um ambiente inicial e abrir o editor 3D já contextualizado.
                 </p>
               </header>
+              <div className="relative overflow-hidden rounded-xl border border-border/60 bg-gradient-to-br from-primary/10 via-background to-background">
+                <div className="aspect-[16/9] w-full">
+                  <ClientOnly
+                    fallback={
+                      <div className="grid h-full w-full place-items-center text-xs text-muted-foreground">
+                        Carregando preview 3D…
+                      </div>
+                    }
+                  >
+                    {() => <WizardPreview3D roomType={envType} style={style} />}
+                  </ClientOnly>
+                </div>
+                <div className="pointer-events-none absolute left-3 top-3 rounded-md bg-background/70 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground backdrop-blur">
+                  Prévia 3D · ambiente base
+                </div>
+              </div>
               <ul className="divide-y divide-border/60 rounded-xl border border-border/60 bg-background/40">
                 <SummaryRow label="Projeto" value={name || "—"} />
                 <SummaryRow label="Cliente" value={client || "—"} />
