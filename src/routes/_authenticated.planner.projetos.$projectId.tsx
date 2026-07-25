@@ -1,6 +1,16 @@
 import { createFileRoute, useParams, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, PlusCircle, Save, Home, Layers, Boxes } from "lucide-react";
+import {
+  ArrowLeft,
+  PlusCircle,
+  Save,
+  Home,
+  Layers,
+  Boxes,
+  Undo2,
+  Redo2,
+  Sparkles,
+} from "lucide-react";
 import {
   PageContainer,
   PageHeader,
@@ -35,6 +45,10 @@ function PlannerProjectDetail() {
     select,
     snapshotVersion,
     saveNow,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
   } = usePlannerEditor();
 
   const [envName, setEnvName] = useState("");
@@ -46,6 +60,13 @@ function PlannerProjectDetail() {
   useEffect(() => {
     loadProjectById(projectId);
   }, [tenantId, projectId, loadProjectById]);
+
+  // Ctrl/Cmd+Space → foca IA Copiloto (dispatch pelo editor-context).
+  useEffect(() => {
+    const onFocus = () => setRightTab("ia");
+    window.addEventListener("planner:focus-ai", onFocus);
+    return () => window.removeEventListener("planner:focus-ai", onFocus);
+  }, []);
 
   const project = state.project;
   const selectedEnv = useMemo(
