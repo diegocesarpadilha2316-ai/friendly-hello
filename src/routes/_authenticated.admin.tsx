@@ -25,6 +25,7 @@ import {
   Trash2,
   PlayCircle,
   BookOpen,
+  CreditCard,
 } from "lucide-react";
 import { app } from "@/core/config";
 import {
