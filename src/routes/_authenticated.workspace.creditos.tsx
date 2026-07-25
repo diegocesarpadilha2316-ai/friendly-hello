@@ -1,5 +1,7 @@
 import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 import {
   Coins,
   TrendingDown,
@@ -10,6 +12,7 @@ import {
   ArrowUpRight,
   RefreshCw,
   CheckCircle2,
+  Receipt,
 } from "lucide-react";
 import {
   PageContainer,
@@ -29,6 +32,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAIMetrics } from "@/core/ai/use-ai";
 import type { CreditKind, PlanDefinition } from "@/core/billing/types";
 import { CheckoutDialog } from "@/core/billing/CheckoutDialog";
+import { listCheckoutOrders, type CheckoutOrderDTO } from "@/lib/checkout.functions";
 
 export const Route = createFileRoute("/_authenticated/workspace/creditos")({
   head: () => ({
@@ -59,6 +63,27 @@ const KIND_TONE: Record<CreditKind, "success" | "warning" | "info" | "neutral" |
   expire: "danger",
 };
 
+const ORDER_TONE: Record<
+  CheckoutOrderDTO["status"],
+  "success" | "warning" | "info" | "neutral" | "danger"
+> = {
+  pending: "warning",
+  approved: "success",
+  rejected: "danger",
+  cancelled: "neutral",
+  expired: "neutral",
+  refunded: "info",
+};
+
+const ORDER_LABEL: Record<CheckoutOrderDTO["status"], string> = {
+  pending: "Aguardando",
+  approved: "Aprovado",
+  rejected: "Recusado",
+  cancelled: "Cancelado",
+  expired: "Expirado",
+  refunded: "Reembolsado",
+};
+
 function formatCurrency(cents: number, currency = "BRL") {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency });
 }
@@ -68,6 +93,13 @@ function WorkspaceCreditos() {
   const { entries, isLoading: loadingLedger } = useCreditLedger();
   const { plans, isLoading: loadingPlans } = usePlansCatalog();
   const aiMetrics = useAIMetrics();
+  const listOrders = useServerFn(listCheckoutOrders);
+  const ordersQ = useQuery({
+    queryKey: ["checkout", "orders"],
+    queryFn: () => listOrders(),
+    staleTime: 30_000,
+  });
+  const orders = ordersQ.data?.orders ?? [];
 
   const totalGranted = React.useMemo(
     () => entries.filter((e) => e.kind === "grant").reduce((a, e) => a + e.amount, 0),
@@ -147,6 +179,7 @@ function WorkspaceCreditos() {
         <TabsList>
           <TabsTrigger value="overview">Visão geral</TabsTrigger>
           <TabsTrigger value="ledger">Histórico</TabsTrigger>
+          <TabsTrigger value="payments">Pagamentos</TabsTrigger>
           <TabsTrigger value="plans">Planos</TabsTrigger>
           <TabsTrigger value="usage">Uso por serviço</TabsTrigger>
         </TabsList>
