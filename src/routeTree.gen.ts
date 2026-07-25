@@ -26,6 +26,7 @@ import { Route as PublicPlanosRouteImport } from './routes/_public.planos'
 import { Route as PublicIntegracoesRouteImport } from './routes/_public.integracoes'
 import { Route as PublicFaqRouteImport } from './routes/_public.faq'
 import { Route as PublicDocsRouteImport } from './routes/_public.docs'
+import { Route as PublicCookiesRouteImport } from './routes/_public.cookies'
 import { Route as PublicContatoRouteImport } from './routes/_public.contato'
 import { Route as PublicBlogRouteImport } from './routes/_public.blog'
 import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated.workspace'
@@ -178,6 +179,11 @@ const PublicFaqRoute = PublicFaqRouteImport.update({
 const PublicDocsRoute = PublicDocsRouteImport.update({
   id: '/docs',
   path: '/docs',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicCookiesRoute = PublicCookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicContatoRoute = PublicContatoRouteImport.update({
@@ -602,6 +608,7 @@ export interface FileRoutesByFullPath {
   '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/blog': typeof PublicBlogRoute
   '/contato': typeof PublicContatoRoute
+  '/cookies': typeof PublicCookiesRoute
   '/docs': typeof PublicDocsRoute
   '/faq': typeof PublicFaqRoute
   '/integracoes': typeof PublicIntegracoesRoute
@@ -687,6 +694,7 @@ export interface FileRoutesByTo {
   '/storage': typeof AuthenticatedStorageRoute
   '/blog': typeof PublicBlogRoute
   '/contato': typeof PublicContatoRoute
+  '/cookies': typeof PublicCookiesRoute
   '/docs': typeof PublicDocsRoute
   '/faq': typeof PublicFaqRoute
   '/integracoes': typeof PublicIntegracoesRoute
@@ -776,6 +784,7 @@ export interface FileRoutesById {
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/_public/blog': typeof PublicBlogRoute
   '/_public/contato': typeof PublicContatoRoute
+  '/_public/cookies': typeof PublicCookiesRoute
   '/_public/docs': typeof PublicDocsRoute
   '/_public/faq': typeof PublicFaqRoute
   '/_public/integracoes': typeof PublicIntegracoesRoute
@@ -866,6 +875,7 @@ export interface FileRouteTypes {
     | '/workspace'
     | '/blog'
     | '/contato'
+    | '/cookies'
     | '/docs'
     | '/faq'
     | '/integracoes'
@@ -951,6 +961,7 @@ export interface FileRouteTypes {
     | '/storage'
     | '/blog'
     | '/contato'
+    | '/cookies'
     | '/docs'
     | '/faq'
     | '/integracoes'
@@ -1039,6 +1050,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace'
     | '/_public/blog'
     | '/_public/contato'
+    | '/_public/cookies'
     | '/_public/docs'
     | '/_public/faq'
     | '/_public/integracoes'
@@ -1233,6 +1245,13 @@ declare module '@tanstack/react-router' {
       path: '/docs'
       fullPath: '/docs'
       preLoaderRoute: typeof PublicDocsRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/cookies': {
+      id: '/_public/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof PublicCookiesRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/contato': {
@@ -1927,6 +1946,7 @@ const PublicProdutosRouteWithChildren = PublicProdutosRoute._addFileChildren(
 interface PublicRouteChildren {
   PublicBlogRoute: typeof PublicBlogRoute
   PublicContatoRoute: typeof PublicContatoRoute
+  PublicCookiesRoute: typeof PublicCookiesRoute
   PublicDocsRoute: typeof PublicDocsRoute
   PublicFaqRoute: typeof PublicFaqRoute
   PublicIntegracoesRoute: typeof PublicIntegracoesRoute
@@ -1944,6 +1964,7 @@ interface PublicRouteChildren {
 const PublicRouteChildren: PublicRouteChildren = {
   PublicBlogRoute: PublicBlogRoute,
   PublicContatoRoute: PublicContatoRoute,
+  PublicCookiesRoute: PublicCookiesRoute,
   PublicDocsRoute: PublicDocsRoute,
   PublicFaqRoute: PublicFaqRoute,
   PublicIntegracoesRoute: PublicIntegracoesRoute,

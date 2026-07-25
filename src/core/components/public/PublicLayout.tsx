@@ -20,6 +20,7 @@ import {
   Instagram,
 } from "lucide-react";
 import diorisLogo from "@/assets/dioris-logo.png";
+import { CookieConsent } from "./CookieConsent";
 
 const productLinks = [
   { to: "/produtos/planner", label: "Planner", icon: Layers, badge: "Em breve", desc: "Projeto 3D + IA + Produção" },
@@ -252,6 +253,7 @@ export function PublicFooter() {
         { to: "/termos", label: "Termos de uso" },
         { to: "/privacidade", label: "Privacidade" },
         { to: "/privacidade", label: "LGPD" },
+      { to: "/cookies", label: "Cookies" },
         { to: "/reembolso", label: "Reembolso" },
       ],
     },
@@ -343,6 +345,7 @@ export function PublicLayout({ children }: { children?: ReactNode }) {
       <PublicHeader />
       <main className="pt-16">{children ?? <Outlet />}</main>
       <PublicFooter />
+      <CookieConsent />
     </div>
   );
 }
