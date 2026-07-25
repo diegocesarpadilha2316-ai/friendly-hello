@@ -20,6 +20,9 @@ const routes = [
   { path: "/status", priority: "0.5" },
   { path: "/termos", priority: "0.3" },
   { path: "/privacidade", priority: "0.3" },
+  { path: "/cookies", priority: "0.3" },
+  { path: "/reembolso", priority: "0.3" },
+  { path: "/seguranca", priority: "0.6" },
   { path: "/auth", priority: "0.5" },
 ];
 
