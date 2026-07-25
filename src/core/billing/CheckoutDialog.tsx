@@ -195,16 +195,13 @@ function PixPanel({ order, onRestart }: { order: CheckoutOrderDTO; onRestart: ()
     <div className="space-y-4">
       <div className="flex items-center justify-between rounded-lg border border-border/50 bg-card/40 px-3 py-2 text-sm">
         <span className="text-muted-foreground">Status</span>
-        <StatusBadge
-          tone={approved ? "success" : failed ? "danger" : "warning"}
-          label={
-            approved
-              ? "Pagamento aprovado"
-              : failed
-                ? `Pagamento ${order.status}`
-                : "Aguardando pagamento"
-          }
-        />
+        <StatusBadge tone={approved ? "success" : failed ? "danger" : "warning"}>
+          {approved
+            ? "Pagamento aprovado"
+            : failed
+              ? `Pagamento ${order.status}`
+              : "Aguardando pagamento"}
+        </StatusBadge>
       </div>
 
       {approved ? (
