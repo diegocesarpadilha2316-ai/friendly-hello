@@ -337,6 +337,66 @@ function WorkspaceCreditos() {
 
         {/* Plans */}
         <TabsContent value="plans" className="mt-6">
+          {/* placeholder anchor */}
+        </TabsContent>
+
+        {/* Payments */}
+        <TabsContent value="payments" className="mt-6">
+          <Card className="border-border/60 bg-card/80">
+            <CardHeader>
+              <CardTitle className="text-base">Meus pagamentos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {ordersQ.isLoading ? (
+                <p className="text-sm text-muted-foreground">Carregando…</p>
+              ) : orders.length === 0 ? (
+                <EmptyState
+                  icon={<Receipt className="h-6 w-6" />}
+                  title="Nenhum pagamento ainda"
+                  description="Suas compras de créditos e assinaturas aparecerão aqui."
+                />
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="text-xs uppercase text-muted-foreground">
+                      <tr className="border-b border-border/60">
+                        <th className="py-2 text-left">Data</th>
+                        <th className="py-2 text-left">Método</th>
+                        <th className="py-2 text-left">Créditos</th>
+                        <th className="py-2 text-left">Status</th>
+                        <th className="py-2 text-right">Valor</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orders.map((o) => (
+                        <tr key={o.id} className="border-b border-border/40 last:border-0">
+                          <td className="py-2 text-muted-foreground">
+                            {new Date(o.createdAt).toLocaleString("pt-BR")}
+                          </td>
+                          <td className="py-2 uppercase text-xs">{o.method}</td>
+                          <td className="py-2 font-medium">
+                            {o.credits.toLocaleString("pt-BR")}
+                          </td>
+                          <td className="py-2">
+                            <StatusBadge tone={ORDER_TONE[o.status]}>
+                              {ORDER_LABEL[o.status]}
+                            </StatusBadge>
+                          </td>
+                          <td className="py-2 text-right font-medium">
+                            {formatCurrency(o.amountCents, o.currency)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Plans (real) */}
+        <TabsContent value="plans" className="mt-6">
           {loadingPlans ? (
             <p className="text-sm text-muted-foreground">Carregando planos…</p>
           ) : plans.length === 0 ? (
