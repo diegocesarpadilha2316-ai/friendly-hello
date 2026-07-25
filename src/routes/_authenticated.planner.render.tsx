@@ -142,7 +142,15 @@ function RenderPage() {
   });
 
   const enqueueMutation = useMutation({
-    mutationFn: (data: Parameters<typeof enqueue>[0]["data"]) => enqueue({ data }),
+    mutationFn: (data: {
+      projectId: string;
+      kind: RenderKind;
+      engine: string;
+      quality: string;
+      presetId?: string | null;
+      durationSec?: number;
+      fps?: number;
+    }) => enqueue({ data }),
     onSuccess: () => {
       toast.success("Job enfileirado");
       setEnqueueOpen(false);
