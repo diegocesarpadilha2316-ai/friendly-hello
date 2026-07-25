@@ -51,7 +51,6 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated.workspace.index'
 import { Route as AuthenticatedPlannerIndexRouteImport } from './routes/_authenticated.planner.index'
 import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated.configuracoes.index'
-import { Route as ApiPublicApply042RouteImport } from './routes/api/public/apply-042'
 import { Route as PublicProdutosPlannerRouteImport } from './routes/_public.produtos.planner'
 import { Route as PublicProdutosCriadorRouteImport } from './routes/_public.produtos.criador'
 import { Route as AuthenticatedWorkspacePerfilRouteImport } from './routes/_authenticated.workspace.perfil'
@@ -305,11 +304,6 @@ const AuthenticatedConfiguracoesIndexRoute =
     path: '/configuracoes/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const ApiPublicApply042Route = ApiPublicApply042RouteImport.update({
-  id: '/api/public/apply-042',
-  path: '/api/public/apply-042',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PublicProdutosPlannerRoute = PublicProdutosPlannerRouteImport.update({
   id: '/planner',
   path: '/planner',
@@ -606,7 +600,6 @@ export interface FileRoutesByFullPath {
   '/workspace/perfil': typeof AuthenticatedWorkspacePerfilRoute
   '/produtos/criador': typeof PublicProdutosCriadorRoute
   '/produtos/planner': typeof PublicProdutosPlannerRoute
-  '/api/public/apply-042': typeof ApiPublicApply042Route
   '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/planner/': typeof AuthenticatedPlannerIndexRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
@@ -685,7 +678,6 @@ export interface FileRoutesByTo {
   '/workspace/perfil': typeof AuthenticatedWorkspacePerfilRoute
   '/produtos/criador': typeof PublicProdutosCriadorRoute
   '/produtos/planner': typeof PublicProdutosPlannerRoute
-  '/api/public/apply-042': typeof ApiPublicApply042Route
   '/configuracoes': typeof AuthenticatedConfiguracoesIndexRoute
   '/planner': typeof AuthenticatedPlannerIndexRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
@@ -769,7 +761,6 @@ export interface FileRoutesById {
   '/_authenticated/workspace/perfil': typeof AuthenticatedWorkspacePerfilRoute
   '/_public/produtos/criador': typeof PublicProdutosCriadorRoute
   '/_public/produtos/planner': typeof PublicProdutosPlannerRoute
-  '/api/public/apply-042': typeof ApiPublicApply042Route
   '/_authenticated/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/_authenticated/planner/': typeof AuthenticatedPlannerIndexRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
@@ -852,7 +843,6 @@ export interface FileRouteTypes {
     | '/workspace/perfil'
     | '/produtos/criador'
     | '/produtos/planner'
-    | '/api/public/apply-042'
     | '/configuracoes/'
     | '/planner/'
     | '/workspace/'
@@ -931,7 +921,6 @@ export interface FileRouteTypes {
     | '/workspace/perfil'
     | '/produtos/criador'
     | '/produtos/planner'
-    | '/api/public/apply-042'
     | '/configuracoes'
     | '/planner'
     | '/workspace'
@@ -1014,7 +1003,6 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/perfil'
     | '/_public/produtos/criador'
     | '/_public/produtos/planner'
-    | '/api/public/apply-042'
     | '/_authenticated/configuracoes/'
     | '/_authenticated/planner/'
     | '/_authenticated/workspace/'
@@ -1030,7 +1018,6 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  ApiPublicApply042Route: typeof ApiPublicApply042Route
   ApiPublicV1OpenapiRoute: typeof ApiPublicV1OpenapiRoute
   ApiPublicV1PingRoute: typeof ApiPublicV1PingRoute
 }
@@ -1330,13 +1317,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/configuracoes/'
       preLoaderRoute: typeof AuthenticatedConfiguracoesIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
-    }
-    '/api/public/apply-042': {
-      id: '/api/public/apply-042'
-      path: '/api/public/apply-042'
-      fullPath: '/api/public/apply-042'
-      preLoaderRoute: typeof ApiPublicApply042RouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/_public/produtos/planner': {
       id: '/_public/produtos/planner'
@@ -1839,7 +1819,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  ApiPublicApply042Route: ApiPublicApply042Route,
   ApiPublicV1OpenapiRoute: ApiPublicV1OpenapiRoute,
   ApiPublicV1PingRoute: ApiPublicV1PingRoute,
 }
