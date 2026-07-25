@@ -28,6 +28,7 @@ import { useTenant } from "@/core/providers/TenantProvider";
 import { useAuth } from "@/core/providers/AuthProvider";
 import type {
   PlannerProject,
+  PlannerProjectId,
   PlannerProjectVersion,
 } from "../types/project";
 import { createProject } from "../factories/project";
@@ -168,7 +169,7 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
         setVersions(
           rows.map((r) => ({
             id: r.id,
-            projectId: r.projectId,
+            projectId: r.projectId as PlannerProjectId,
             version: r.version,
             label: r.label,
             createdAt: r.createdAt,
