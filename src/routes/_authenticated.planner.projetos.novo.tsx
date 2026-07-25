@@ -391,7 +391,7 @@ function NewProjectWizard() {
                       </div>
                     }
                   >
-                    {() => <WizardPreview3D roomType={envType} style={style} />}
+                    <WizardPreview3D roomType={envType} style={style} />
                   </ClientOnly>
                 </div>
                 <div className="pointer-events-none absolute left-3 top-3 rounded-md bg-background/70 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground backdrop-blur">
