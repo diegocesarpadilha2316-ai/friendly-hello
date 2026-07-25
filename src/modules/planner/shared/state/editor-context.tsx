@@ -28,9 +28,9 @@ import { useTenant } from "@/core/providers/TenantProvider";
 import { useAuth } from "@/core/providers/AuthProvider";
 import type {
   PlannerProject,
-  PlannerProjectId,
   PlannerProjectVersion,
 } from "../types/project";
+import type { PlannerProjectId } from "../types";
 import { createProject } from "../factories/project";
 import {
   loadProjectSnapshot,
