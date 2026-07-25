@@ -79,7 +79,7 @@ function Page() {
         {post.excerpt && (
           <p className="text-lg text-foreground/90">{post.excerpt}</p>
         )}
-        {paragraphs.map((p, i) => (
+        {paragraphs.map((p: string, i: number) => (
           <p key={i}>{p}</p>
         ))}
       </div>
