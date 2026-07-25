@@ -15,7 +15,7 @@ interface Props {
   style: PlannerProjectStyle | null;
 }
 
-const ROOM_DIMS: Record<PlannerRoomType, { w: number; d: number; h: number }> = {
+const ROOM_DIMS: Partial<Record<PlannerRoomType, { w: number; d: number; h: number }>> = {
   cozinha: { w: 4.2, d: 3.6, h: 2.7 },
   closet: { w: 3.0, d: 2.4, h: 2.5 },
   dormitorio: { w: 3.8, d: 3.4, h: 2.7 },
@@ -25,8 +25,9 @@ const ROOM_DIMS: Record<PlannerRoomType, { w: number; d: number; h: number }> = 
   lavanderia: { w: 2.4, d: 1.8, h: 2.5 },
   comercial: { w: 5.4, d: 4.0, h: 3.0 },
 };
+const DEFAULT_DIM = { w: 4.0, d: 3.4, h: 2.7 };
 
-const STYLE_PALETTE: Record<PlannerProjectStyle, { floor: string; walls: string; accent: string }> = {
+const STYLE_PALETTE: Partial<Record<PlannerProjectStyle, { floor: string; walls: string; accent: string }>> = {
   moderno: { floor: "#3f3a36", walls: "#eceef2", accent: "#8b5cf6" },
   minimalista: { floor: "#d9d4cc", walls: "#f7f6f2", accent: "#a3a3a3" },
   escandinavo: { floor: "#d9c3a4", walls: "#f6f2ec", accent: "#93b7d6" },
@@ -38,10 +39,11 @@ const STYLE_PALETTE: Record<PlannerProjectStyle, { floor: string; walls: string;
   rustico: { floor: "#7a5230", walls: "#d9c9b0", accent: "#5e3b1e" },
   boho: { floor: "#a67447", walls: "#efe0c9", accent: "#c46a4a" },
 };
+const DEFAULT_PALETTE = { floor: "#3f3a36", walls: "#eceef2", accent: "#8b5cf6" };
 
 export function WizardPreview3D({ roomType, style }: Props) {
-  const dims = ROOM_DIMS[roomType ?? "cozinha"];
-  const palette = STYLE_PALETTE[style ?? "moderno"];
+  const dims = (roomType && ROOM_DIMS[roomType]) || DEFAULT_DIM;
+  const palette = (style && STYLE_PALETTE[style]) || DEFAULT_PALETTE;
 
   const floorMat = useMemo(
     () => new THREE.MeshStandardMaterial({ color: palette.floor, roughness: 0.7, metalness: 0.05 }),
