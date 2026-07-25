@@ -12,6 +12,9 @@ import {
   Factory,
   Menu,
   Store,
+  Calculator,
+  Scissors,
+  Settings,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -41,6 +44,8 @@ const GROUPS: readonly Group[] = [
     label: "Engenharia & Produção",
     items: [
       { to: "/planner/engenharia", label: "Engenharia", icon: Wrench },
+      { to: "/planner/engenharia", label: "Lista de Corte", icon: Scissors },
+      { to: "/planner/orcamentos", label: "Orçamento", icon: Calculator },
       { to: "/planner/producao", label: "Produção", icon: Factory },
       { to: "/planner/marketplace", label: "Marketplace", icon: Store },
     ],
@@ -58,6 +63,12 @@ const GROUPS: readonly Group[] = [
       { to: "/planner/ia", label: "IA de Projeto", icon: Sparkles },
       { to: "/planner/visao", label: "IA Visão", icon: ScanEye },
       { to: "/planner/decoradora", label: "IA Decoradora", icon: Palette },
+    ],
+  },
+  {
+    label: "Sistema",
+    items: [
+      { to: "/configuracoes", label: "Configurações", icon: Settings },
     ],
   },
 ];
