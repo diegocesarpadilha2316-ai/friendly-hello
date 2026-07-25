@@ -3,10 +3,11 @@
  * Nunca lança: observabilidade não pode derrubar o request principal.
  */
 import { getSupabaseAdmin } from "@/core/lib/supabase/admin.server";
+import type { LogEntry, LogLevel as PersistedLogLevel, JsonRecord } from "./types";
 
 export type LogLevel = "trace" | "debug" | "info" | "warn" | "error" | "fatal";
 
-export interface LogEntry {
+export interface LogInput {
   level?: LogLevel;
   module: string;
   action: string;
@@ -21,7 +22,7 @@ export interface LogEntry {
   status?: string | null;
 }
 
-export async function logEvent(entry: LogEntry): Promise<void> {
+export async function logEvent(entry: LogInput): Promise<void> {
   try {
     const admin = getSupabaseAdmin();
     await admin.from("logs").insert({
@@ -44,6 +45,69 @@ export async function logEvent(entry: LogEntry): Promise<void> {
     console.error("[observability] logEvent failed", err);
   }
 }
+
+/** Mapeia uma linha de `public.logs` para o formato LogEntry consumido pela UI. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function mapLog(row: any): LogEntry {
+  return {
+    id: String(row.id),
+    companyId: (row.company_id as string | null) ?? null,
+    userId: (row.user_id as string | null) ?? null,
+    level: (row.level as PersistedLogLevel) ?? "info",
+    module: String(row.module ?? ""),
+    action: String(row.action ?? ""),
+    message: (row.message as string | null) ?? null,
+    context: (row.context as JsonRecord) ?? {},
+    metadata: (row.metadata as JsonRecord) ?? {},
+    ip: (row.ip as string | null) ?? null,
+    userAgent: (row.user_agent as string | null) ?? null,
+    traceId: (row.trace_id as string | null) ?? null,
+    correlationId: (row.correlation_id as string | null) ?? null,
+    durationMs: (row.duration_ms as number | null) ?? null,
+    status: (row.status as string | null) ?? null,
+    createdAt: String(row.created_at ?? ""),
+  };
+}
+
+/** Logger via cliente autenticado do tenant (usado pelas server functions da UI). */
+export const Logger = {
+  async write(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    context: { supabase: any; tenantId: string; userId: string | null },
+    data: {
+      level?: LogLevel;
+      module: string;
+      action: string;
+      message?: string;
+      context?: Record<string, unknown>;
+      metadata?: Record<string, unknown>;
+      correlationId?: string;
+      traceId?: string;
+      durationMs?: number;
+      status?: string;
+    },
+  ): Promise<void> {
+    try {
+      await context.supabase.from("logs").insert({
+        company_id: context.tenantId,
+        user_id: context.userId,
+        level: data.level ?? "info",
+        module: data.module,
+        action: data.action,
+        message: data.message ?? null,
+        context: data.context ?? {},
+        metadata: data.metadata ?? {},
+        trace_id: data.traceId ?? null,
+        correlation_id: data.correlationId ?? null,
+        duration_ms: data.durationMs ?? null,
+        status: data.status ?? null,
+      });
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("[observability] Logger.write failed", err);
+    }
+  },
+};
 
 export async function auditEvent(input: {
   companyId: string;
