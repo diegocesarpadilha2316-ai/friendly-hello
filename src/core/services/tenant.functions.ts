@@ -104,7 +104,20 @@ export const ensureDefaultCompany = createServerFn({ method: "POST" })
       .eq("active", true)
       .limit(1);
     if (exErr) throw new Error(exErr.message);
-    if (existing && existing.length > 0) return { created: false };
+    if (existing && existing.length > 0) {
+      // Idempotência: garante plano+créditos mesmo em contas legadas.
+      const { data: memberRow } = await supabase
+        .from("company_members")
+        .select("company_id")
+        .eq("user_id", userId)
+        .eq("active", true)
+        .limit(1)
+        .maybeSingle();
+      if (memberRow?.company_id) {
+        await ensureFreePlanAndGrant(String(memberRow.company_id));
+      }
+      return { created: false };
+    }
     const nick = email && email.includes("@") ? email.split("@")[0] : "meu-espaco";
     const name = `Espaço ${nick.charAt(0).toUpperCase()}${nick.slice(1)}`;
     const slug = `${slugify(nick)}-${Math.random().toString(36).slice(2, 6)}`;
@@ -113,7 +126,10 @@ export const ensureDefaultCompany = createServerFn({ method: "POST" })
       .insert({ name, slug, created_by: userId })
       .select("id")
       .single();
-    if (!userInsertError) return { created: true, companyId: createdByUser.id as string };
+    if (!userInsertError) {
+      await ensureFreePlanAndGrant(String(createdByUser.id));
+      return { created: true, companyId: createdByUser.id as string };
+    }
 
     const { getSupabaseAdmin } = await import("@/core/lib/supabase/admin.server");
     const admin = getSupabaseAdmin();
@@ -136,8 +152,75 @@ export const ensureDefaultCompany = createServerFn({ method: "POST" })
         { onConflict: "company_id,user_id" },
       );
     if (memberError) throw new Error(memberError.message);
+    await ensureFreePlanAndGrant(String(createdByAdmin.id));
     return { created: true, companyId: createdByAdmin.id as string };
   });
+
+/**
+ * Idempotente: cria subscription Free e grant inicial de créditos
+ * (equivalente aos `monthly_credits` do plano) na primeira execução.
+ * Silenciosamente ignora falhas — é enriquecimento, não bloqueia login.
+ */
+async function ensureFreePlanAndGrant(companyId: string): Promise<void> {
+  try {
+    const { getSupabaseAdmin } = await import("@/core/lib/supabase/admin.server");
+    const admin = getSupabaseAdmin();
+
+    // Garante que o plano "free" exista (idempotente).
+    await admin
+      .from("plans")
+      .upsert(
+        {
+          key: "free",
+          label: "Free",
+          monthly_credits: 100,
+          price_cents: 0,
+          currency: "BRL",
+          is_public: true,
+          sort_order: 1,
+        },
+        { onConflict: "key", ignoreDuplicates: true },
+      );
+
+    const { data: planRow } = await admin
+      .from("plans")
+      .select("key,monthly_credits")
+      .eq("key", "free")
+      .maybeSingle();
+    const monthly = Math.max(0, Number(planRow?.monthly_credits ?? 100));
+
+    // Assinatura Free (uma por empresa — unique constraint garante).
+    const { data: existingSub } = await admin
+      .from("subscriptions")
+      .select("id")
+      .eq("company_id", companyId)
+      .maybeSingle();
+    if (!existingSub) {
+      await admin.from("subscriptions").insert({
+        company_id: companyId,
+        plan_key: "free",
+        status: "active",
+      });
+    }
+
+    // Grant inicial — apenas se o ledger estiver zerado para esta empresa.
+    const { count } = await admin
+      .from("credit_ledger")
+      .select("id", { count: "exact", head: true })
+      .eq("company_id", companyId);
+    if ((count ?? 0) === 0 && monthly > 0) {
+      await admin.from("credit_ledger").insert({
+        company_id: companyId,
+        kind: "grant",
+        amount: monthly,
+        reason: "onboarding.free_plan",
+        metadata: { plan: "free" },
+      });
+    }
+  } catch {
+    /* enriquecimento — falha não bloqueia login */
+  }
+}
 
 /** Atualiza dados da empresa ativa. Requer admin/owner. */
 export const updateActiveCompany = createServerFn({ method: "POST" })

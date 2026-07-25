@@ -12,6 +12,7 @@
  *   - Falha do insert é propagada como Response 500.
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { getSupabaseAdmin } from "@/core/lib/supabase/admin.server";
 
 export interface DebitInput {
   amount: number;
@@ -47,7 +48,9 @@ export async function debitCreditsOrThrow(
     );
   }
 
-  const { error } = await supabase.from("credit_ledger").insert({
+  // Ledger is append-only via service_role — user client has no INSERT policy.
+  const admin = getSupabaseAdmin();
+  const { error } = await admin.from("credit_ledger").insert({
     company_id: tenantId,
     kind: "consume",
     amount: -amount,
