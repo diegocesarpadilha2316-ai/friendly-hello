@@ -225,6 +225,7 @@ export function PublicFooter() {
       links: [
         { to: "/sobre", label: "Sobre a Dioris" },
         { to: "/blog", label: "Blog" },
+        { to: "/changelog", label: "Changelog" },
         { to: "/contato", label: "Contato" },
         { to: "/status", label: "Status" },
       ],
