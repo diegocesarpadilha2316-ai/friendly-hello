@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { FolderKanban, PlusCircle, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import {
   PageContainer,
   PageHeader,
@@ -10,10 +12,30 @@ import {
   SearchInput,
 } from "@/core/components/ui-kit";
 import { useTenant } from "@/core/providers/TenantProvider";
-import { loadProjects } from "@/modules/planner/shared";
+import { listProjects, type PlannerProjectRowDTO } from "@/lib/planner-projects.functions";
+
+const projectsQueryOptions = (
+  tenantId: string,
+  fetcher: () => Promise<PlannerProjectRowDTO[]>,
+) =>
+  queryOptions({
+    queryKey: ["planner", "projects", tenantId],
+    queryFn: fetcher,
+    staleTime: 30_000,
+  });
 
 export const Route = createFileRoute("/_authenticated/planner/projetos")({
   component: PlannerProjectsPage,
+  head: () => ({
+    meta: [
+      { title: "Projetos — Dioris Planner" },
+      {
+        name: "description",
+        content:
+          "Lista de projetos paramétricos do Dioris Planner, escopados por empresa.",
+      },
+    ],
+  }),
 });
 
 function PlannerProjectsPage() {
@@ -21,7 +43,10 @@ function PlannerProjectsPage() {
   const tenantId = activeCompany?.id ?? "anonymous";
   const [query, setQuery] = useState("");
 
-  const projects = useMemo(() => loadProjects(tenantId), [tenantId]);
+  const fetchList = useServerFn(listProjects);
+  const { data: projects } = useSuspenseQuery(
+    projectsQueryOptions(tenantId, () => fetchList()),
+  );
   const filtered = useMemo(
     () => projects.filter((p) => p.name.toLowerCase().includes(query.toLowerCase())),
     [projects, query],
@@ -98,7 +123,7 @@ function PlannerProjectsPage() {
                     </StatusBadge>
                   </div>
                   <p className="mt-3 text-xs text-muted-foreground">
-                    v{p.version} · {p.environments.length} ambiente(s) · atualizado{" "}
+                    v{p.version} · atualizado{" "}
                     {new Date(p.updatedAt).toLocaleDateString("pt-BR")}
                   </p>
                 </Link>
