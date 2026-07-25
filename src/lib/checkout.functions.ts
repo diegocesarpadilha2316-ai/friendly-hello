@@ -3,7 +3,7 @@
  * Thin wrappers — helpers reais em `src/core/billing/mercadopago.server.ts`.
  */
 import { createServerFn } from "@tanstack/react-start";
-import { getRequestURL } from "@tanstack/react-start/server";
+import { getRequestUrl } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { requireTenant } from "@/core/middleware/require-tenant";
 
@@ -108,7 +108,7 @@ export const createPixCheckout = createServerFn({ method: "POST" })
     let notificationUrl = process.env.PUBLIC_APP_URL ?? "";
     if (!notificationUrl) {
       try {
-        const req = getRequestURL();
+        const req = getRequestUrl();
         notificationUrl = `${req.protocol}//${req.host}`;
       } catch {
         notificationUrl = "";
