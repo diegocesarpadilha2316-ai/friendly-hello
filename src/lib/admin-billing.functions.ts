@@ -5,7 +5,7 @@
  */
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireTenant } from "@/core/middleware/require-tenant";
 
 export type PaymentProviderDTO = {
   code: string;
@@ -62,7 +62,7 @@ async function assertAdmin(ctx: { supabase: any; userId: string }): Promise<void
 }
 
 export const listPaymentProviders = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireTenant])
   .handler(async ({ context }) => {
     await assertAdmin(context);
     const { data, error } = await context.supabase
@@ -84,7 +84,7 @@ const updateInput = z.object({
 });
 
 export const updatePaymentProvider = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireTenant])
   .inputValidator((raw) => updateInput.parse(raw))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
