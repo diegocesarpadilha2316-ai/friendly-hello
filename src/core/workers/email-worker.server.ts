@@ -19,6 +19,7 @@ interface NotifRow {
   body: string | null;
   link: string | null;
   data: Record<string, unknown> | null;
+  category: string | null;
 }
 
 export interface EmailTickResult {
@@ -31,18 +32,93 @@ export interface EmailTickResult {
 const FROM = process.env.EMAIL_FROM ?? "Dioris <no-reply@dioris.app>";
 const APP_URL = process.env.APP_URL ?? "https://dioris.app";
 
-function renderHtml(n: NotifRow): string {
+function fullLink(link: string | null | undefined): string {
+  if (!link) return APP_URL;
+  return `${APP_URL}${link.startsWith("/") ? link : `/${link}`}`;
+}
+
+function shell(inner: string, preheader?: string): string {
+  const pre = preheader
+    ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">${escapeHtml(preheader)}</div>`
+    : "";
+  return `<!doctype html><html><body style="margin:0;padding:0;background:#0b0b10;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#e6e6f0">${pre}
+  <div style="max-width:560px;margin:0 auto;padding:32px 24px">
+    <div style="background:linear-gradient(135deg,#8B5CF6,#2563EB,#06B6D4);height:4px;border-radius:2px;margin-bottom:28px"></div>
+    ${inner}
+    <p style="margin-top:32px;font-size:12px;color:#6a6a7a;border-top:1px solid #1f1f2a;padding-top:16px">Dioris Hub · Inteligência que conecta tudo.<br/>Você recebeu este e-mail porque possui uma conta na Dioris.</p>
+  </div></body></html>`;
+}
+
+function button(href: string, label: string): string {
+  return `<a href="${href}" style="display:inline-block;padding:12px 20px;background:linear-gradient(135deg,#8B5CF6,#2563EB);color:#fff;text-decoration:none;border-radius:8px;font-weight:600">${escapeHtml(label)}</a>`;
+}
+
+function renderWelcome(n: NotifRow): string {
+  const inner = `
+    <h1 style="font-size:24px;margin:0 0 12px;color:#fff">Bem-vindo à Dioris 🎉</h1>
+    <p style="font-size:15px;line-height:1.6;color:#c8c8d8;margin:0 0 20px">${escapeHtml(n.body ?? "Sua conta está pronta.")}</p>
+    <ul style="font-size:14px;line-height:1.7;color:#c8c8d8;margin:0 0 24px;padding-left:18px">
+      <li>100 créditos iniciais liberados</li>
+      <li>Planner com IA, Render e Produção inclusos</li>
+      <li>Suporte via /workspace/ajuda</li>
+    </ul>
+    ${button(fullLink(n.link ?? "/workspace"), "Acessar meu Workspace")}
+  `;
+  return shell(inner, "Sua conta Dioris está pronta com 100 créditos iniciais.");
+}
+
+function renderReceipt(n: NotifRow): string {
+  const d = (n.data ?? {}) as Record<string, unknown>;
+  const credits = Number(d.credits ?? 0);
+  const amount = Number(d.amount ?? 0);
+  const currency = String(d.currency ?? "BRL");
+  const provider = String(d.provider ?? "—");
+  const orderId = String(d.orderId ?? "");
+  const amountFmt = new Intl.NumberFormat("pt-BR", { style: "currency", currency }).format(amount);
+  const inner = `
+    <h1 style="font-size:22px;margin:0 0 12px;color:#fff">Pagamento aprovado ✅</h1>
+    <p style="font-size:15px;line-height:1.6;color:#c8c8d8;margin:0 0 20px">Obrigado! Recebemos seu pagamento e os créditos já estão disponíveis.</p>
+    <table style="width:100%;border-collapse:collapse;margin:0 0 24px;background:#12121b;border-radius:10px;overflow:hidden">
+      <tr><td style="padding:12px 16px;color:#8a8a9a;font-size:13px;border-bottom:1px solid #1f1f2a">Valor</td><td style="padding:12px 16px;color:#fff;font-size:14px;text-align:right;border-bottom:1px solid #1f1f2a">${escapeHtml(amountFmt)}</td></tr>
+      <tr><td style="padding:12px 16px;color:#8a8a9a;font-size:13px;border-bottom:1px solid #1f1f2a">Créditos</td><td style="padding:12px 16px;color:#fff;font-size:14px;text-align:right;border-bottom:1px solid #1f1f2a">${credits.toLocaleString("pt-BR")}</td></tr>
+      <tr><td style="padding:12px 16px;color:#8a8a9a;font-size:13px;border-bottom:1px solid #1f1f2a">Método</td><td style="padding:12px 16px;color:#fff;font-size:14px;text-align:right;border-bottom:1px solid #1f1f2a">${escapeHtml(provider)}</td></tr>
+      <tr><td style="padding:12px 16px;color:#8a8a9a;font-size:13px">Pedido</td><td style="padding:12px 16px;color:#fff;font-size:12px;text-align:right;font-family:ui-monospace,monospace">${escapeHtml(orderId.slice(0, 18))}</td></tr>
+    </table>
+    ${button(fullLink(n.link ?? "/workspace/creditos"), "Ver histórico de créditos")}
+  `;
+  return shell(inner, `Recibo Dioris — ${amountFmt} · ${credits} créditos`);
+}
+
+function renderLowCredits(n: NotifRow): string {
+  const d = (n.data ?? {}) as Record<string, unknown>;
+  const balance = Number(d.balance ?? 0);
+  const inner = `
+    <h1 style="font-size:22px;margin:0 0 12px;color:#fff">Seus créditos estão acabando ⚠️</h1>
+    <p style="font-size:15px;line-height:1.6;color:#c8c8d8;margin:0 0 12px">${escapeHtml(n.body ?? "")}</p>
+    <p style="font-size:14px;color:#c8c8d8;margin:0 0 24px">Saldo atual: <strong style="color:#fff">${balance.toLocaleString("pt-BR")} créditos</strong></p>
+    ${button(fullLink(n.link ?? "/workspace/creditos"), "Recarregar agora")}
+  `;
+  return shell(inner, "Saldo de créditos baixo — recarregue para continuar.");
+}
+
+function renderGeneric(n: NotifRow): string {
   const title = escapeHtml(n.title ?? "Notificação Dioris");
   const body = escapeHtml(n.body ?? "");
-  const link = n.link ? `${APP_URL}${n.link.startsWith("/") ? n.link : `/${n.link}`}` : APP_URL;
-  return `<!doctype html><html><body style="margin:0;padding:0;background:#0b0b10;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#e6e6f0">
-  <div style="max-width:560px;margin:0 auto;padding:32px 24px">
-    <div style="background:linear-gradient(135deg,#8B5CF6,#2563EB,#06B6D4);height:4px;border-radius:2px;margin-bottom:24px"></div>
+  const inner = `
     <h1 style="font-size:22px;margin:0 0 12px;color:#fff">${title}</h1>
     <p style="font-size:15px;line-height:1.55;color:#c8c8d8;margin:0 0 24px">${body}</p>
-    <a href="${link}" style="display:inline-block;padding:12px 20px;background:linear-gradient(135deg,#8B5CF6,#2563EB);color:#fff;text-decoration:none;border-radius:8px;font-weight:600">Acessar Dioris</a>
-    <p style="margin-top:32px;font-size:12px;color:#6a6a7a">Dioris Hub · Inteligência que conecta tudo.</p>
-  </div></body></html>`;
+    ${button(fullLink(n.link), "Acessar Dioris")}
+  `;
+  return shell(inner, n.title ?? undefined);
+}
+
+function renderHtml(n: NotifRow): string {
+  const category = (n.category ?? "").toLowerCase();
+  const d = (n.data ?? {}) as Record<string, unknown>;
+  if (category === "onboarding") return renderWelcome(n);
+  if (category === "billing" && d.orderId) return renderReceipt(n);
+  if (category === "billing" && typeof d.balance === "number") return renderLowCredits(n);
+  return renderGeneric(n);
 }
 
 function escapeHtml(s: string): string {
@@ -116,7 +192,7 @@ export async function tickEmailWorker(opts: { maxJobs?: number } = {}): Promise<
     if (row.notification_id) {
       const { data: n } = await admin
         .from("notifications")
-        .select("title, body, link, data")
+        .select("title, body, link, data, category")
         .eq("id", row.notification_id)
         .maybeSingle();
       if (n) notif = n as NotifRow;
