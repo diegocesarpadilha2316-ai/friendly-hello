@@ -1,9 +1,19 @@
-import { History } from "lucide-react";
-import { StatusBadge } from "@/core/components/ui-kit";
+import { History, RotateCcw } from "lucide-react";
+import { useState } from "react";
+import { Button, StatusBadge } from "@/core/components/ui-kit";
 import { usePlannerEditor } from "../state/editor-context";
 
 export function VersionHistoryPanel() {
-  const { versions, state } = usePlannerEditor();
+  const { versions, state, restoreVersion } = usePlannerEditor();
+  const [restoringId, setRestoringId] = useState<string | null>(null);
+  const handleRestore = async (id: string) => {
+    setRestoringId(id);
+    try {
+      await restoreVersion(id);
+    } finally {
+      setRestoringId(null);
+    }
+  };
   return (
     <div className="rounded-xl border border-border/60 bg-card p-4">
       <div className="mb-3 flex items-center gap-2">
@@ -21,11 +31,23 @@ export function VersionHistoryPanel() {
         <ol className="space-y-2">
           {versions.map((v) => (
             <li key={v.id} className="flex items-start justify-between rounded-lg border border-border/40 bg-background/60 px-3 py-2 text-sm">
-              <div>
+              <div className="min-w-0">
                 <p className="font-medium">{v.label}</p>
                 <p className="text-xs text-muted-foreground">v{v.version} · {new Date(v.createdAt).toLocaleString("pt-BR")}</p>
               </div>
-              <StatusBadge tone="neutral">v{v.version}</StatusBadge>
+              <div className="flex items-center gap-2">
+                <StatusBadge tone="neutral">v{v.version}</StatusBadge>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleRestore(v.id)}
+                  disabled={restoringId !== null}
+                  title="Restaurar esta versão"
+                >
+                  <RotateCcw className="mr-1 h-3.5 w-3.5" />
+                  {restoringId === v.id ? "Restaurando…" : "Restaurar"}
+                </Button>
+              </div>
             </li>
           ))}
         </ol>
