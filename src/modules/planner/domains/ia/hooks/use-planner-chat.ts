@@ -16,6 +16,7 @@ import {
 } from "@/modules/planner/shared";
 import { runAgent } from "../services/agent";
 import { PLANNER_TOOL_REGISTRY } from "../services/tools";
+import { FINISHING_PRESETS } from "../services/finishing";
 import type { ParsedIntent } from "../services/interpreter";
 import type { PlannerProject } from "@/modules/planner/shared";
 import type { ToolContext } from "../services/tools";
@@ -180,7 +181,9 @@ export function usePlannerChat() {
                   system:
                     "Você é o planejador do Dioris Planner. Traduza o pedido do usuário em uma sequência de chamadas de ferramentas (tool-calling). Responda SOMENTE com JSON válido no formato { \"intents\": [{ \"tool\": string, \"args\": object }] }. Não inclua explicações. Use apenas ferramentas da lista.\n\nFerramentas disponíveis:\n" +
                     catalog +
-                    "\n\nSubtypes válidos para insert_item/set_front_type: aereo, balcao, gaveteiro, torre, tampo, ilha, painel, roupeiro, closet, nicho, prateleira, cristaleira, bancada, espelho, porta, gaveta, iluminacao.\nPresets válidos para create_room_preset: cozinha, closet, dormitorio, sala, escritorio, banheiro.\nEstilos válidos para set_style: minimalista, classico, industrial, luxo, moderno.\nTipos válidos para set_front_type: vidro, reeded, solid, aberto.",
+                    "\n\nSubtypes válidos para insert_item/set_front_type: aereo, balcao, gaveteiro, torre, tampo, ilha, painel, roupeiro, closet, nicho, prateleira, cristaleira, bancada, espelho, porta, gaveta, iluminacao.\nPresets válidos para create_room_preset: cozinha, closet, dormitorio, sala, escritorio, banheiro.\nEstilos válidos para set_style: minimalista, classico, industrial, luxo, moderno.\nTipos válidos para set_front_type: vidro, reeded, solid, aberto.\nPresets de apply_finishing (arg 'preset'): " +
+                    FINISHING_PRESETS.map((p) => `"${p.id}" (${p.label})`).join(", ") +
+                    ".\nEscopos de apply_finishing (arg 'scope'): all, aereos, balcoes, torre, painel, tampos.",
                   prompt: `Projeto: "${p.name}". Cômodo: "${p.environments.find((e) => e.id === ctx.environmentId)?.rooms.find((r) => r.id === ctx.roomId)?.name ?? "—"}".\nPedido do usuário: ${userMessage}`,
                   temperature: 0.2,
                   maxTokens: 800,
