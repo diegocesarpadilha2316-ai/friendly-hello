@@ -8,13 +8,15 @@
  */
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { aiGenerateText } from "@/core/ai";
+import { aiGenerateText, aiGenerateJson } from "@/core/ai";
 import { useTenant } from "@/core/providers/TenantProvider";
 import {
   usePlannerEditor,
   loadRules,
 } from "@/modules/planner/shared";
 import { runAgent } from "../services/agent";
+import { PLANNER_TOOL_REGISTRY } from "../services/tools";
+import type { ParsedIntent } from "../services/interpreter";
 import type { PlannerProject } from "@/modules/planner/shared";
 import type { ToolContext } from "../services/tools";
 import type {
@@ -69,6 +71,7 @@ export function usePlannerChat() {
   const { activeCompany } = useTenant();
   const tenantId = activeCompany?.id ?? "anonymous";
   const runAI = useServerFn(aiGenerateText);
+  const runAIJson = useServerFn(aiGenerateJson);
 
   const [state, setState] = useState<ChatState>({
     messages: [
@@ -152,6 +155,44 @@ export function usePlannerChat() {
           },
           rules,
           signal: controller.signal,
+          llmPlan: async ({ userMessage, project: p, ctx }) => {
+            try {
+              const catalog = PLANNER_TOOL_REGISTRY.map(
+                (t) => `- ${t.name}: ${t.description}`,
+              ).join("\n");
+              const res = await runAIJson({
+                data: {
+                  task: { type: "json", quality: "standard", speed: "balanced" },
+                  system:
+                    "Você é o planejador do Dioris Planner. Traduza o pedido do usuário em uma sequência de chamadas de ferramentas (tool-calling). Responda SOMENTE com JSON válido no formato { \"intents\": [{ \"tool\": string, \"args\": object }] }. Não inclua explicações. Use apenas ferramentas da lista.\n\nFerramentas disponíveis:\n" +
+                    catalog +
+                    "\n\nSubtypes válidos para insert_item/set_front_type: aereo, balcao, gaveteiro, torre, tampo, ilha, painel, roupeiro, closet, nicho, prateleira, cristaleira, bancada, espelho, porta, gaveta, iluminacao.\nPresets válidos para create_room_preset: cozinha, closet, dormitorio, sala, escritorio, banheiro.\nEstilos válidos para set_style: minimalista, classico, industrial, luxo, moderno.\nTipos válidos para set_front_type: vidro, reeded, solid, aberto.",
+                  prompt: `Projeto: "${p.name}". Cômodo: "${p.environments.find((e) => e.id === ctx.environmentId)?.rooms.find((r) => r.id === ctx.roomId)?.name ?? "—"}".\nPedido do usuário: ${userMessage}`,
+                  temperature: 0.2,
+                  maxTokens: 800,
+                  reason: "planner:tool-plan",
+                },
+              });
+              const raw = res?.output as unknown;
+              const parsed = typeof raw === "string" ? safeJson(raw) : raw;
+              const intents = (parsed as { intents?: unknown } | null)?.intents;
+              if (!Array.isArray(intents)) return null;
+              return intents
+                .filter(
+                  (i): i is ParsedIntent =>
+                    !!i && typeof i === "object" && typeof (i as ParsedIntent).tool === "string",
+                )
+                .map((i) => ({
+                  tool: (i as ParsedIntent).tool,
+                  args:
+                    (i as ParsedIntent).args && typeof (i as ParsedIntent).args === "object"
+                      ? (i as ParsedIntent).args
+                      : {},
+                }));
+            } catch {
+              return null;
+            }
+          },
           llmReply: async ({ userMessage, role, project: p, ctx }) => {
             // Consulta o AI Gateway real do Core (com créditos e auditoria).
             // Falha silenciosa → o agent volta ao intérprete heurístico.
