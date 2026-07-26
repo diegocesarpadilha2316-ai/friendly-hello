@@ -14,6 +14,8 @@ import {
   Grid,
   Environment,
   Bounds,
+  ContactShadows,
+  SoftShadows,
 } from "@react-three/drei";
 import * as THREE from "three";
 import type {
