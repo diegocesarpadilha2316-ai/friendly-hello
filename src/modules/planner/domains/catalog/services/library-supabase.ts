@@ -8,6 +8,7 @@
  * store ou motor é criado.
  */
 import { getSupabaseBrowser } from "@/core/lib/supabase/client";
+import { getPbrMaterial, isPbrId, listPbrMaterials } from "@/modules/planner/shared/materials/pbr-catalog";
 
 export interface LibraryMaterial {
   readonly id: string;
@@ -132,11 +133,16 @@ function emptyMaterial(id: string): LibraryMaterial {
 }
 
 export function getCachedLibraryMaterial(id: string): LibraryMaterial | null {
+  if (isPbrId(id)) return getPbrMaterial(id);
   return cache.get(id) ?? null;
 }
 
 export function requestLibraryMaterial(id: string): Promise<LibraryMaterial | null> {
   if (!id) return Promise.resolve(null);
+  if (isPbrId(id)) {
+    const mat = getPbrMaterial(id);
+    if (mat) return Promise.resolve(mat);
+  }
   const cached = cache.get(id);
   if (cached) return Promise.resolve(cached);
   const inflight = pending.get(id);
@@ -168,6 +174,14 @@ export async function searchLibraryMaterials(params: {
   category?: string;
   limit?: number;
 }): Promise<readonly LibraryMaterial[]> {
+  const pbr = listPbrMaterials().filter((m) => {
+    if (params.category && m.category !== params.category) return false;
+    if (params.query && params.query.trim()) {
+      const q = params.query.trim().toLowerCase();
+      return (m.pattern ?? "").toLowerCase().includes(q) || m.name.toLowerCase().includes(q);
+    }
+    return true;
+  });
   const supabase = getSupabaseBrowser();
   let q = supabase
     .from("planner_materials")
@@ -184,11 +198,11 @@ export async function searchLibraryMaterials(params: {
     );
   }
   const { data, error } = await q;
-  if (error) return [];
+  if (error) return pbr;
   const out = ((data ?? []) as RawRow[]).map(normalize);
   for (const m of out) cache.set(m.id, m);
   notify();
-  return out;
+  return [...pbr, ...out];
 }
 
 /** Resolver síncrono para consumidores em batch (pricing, exportações). */
