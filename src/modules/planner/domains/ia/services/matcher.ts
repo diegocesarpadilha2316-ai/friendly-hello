@@ -79,18 +79,22 @@ function detectSubtype(text: string): CatalogSubtype | null {
 // ─────────── dimensão ───────────
 // Aceita "80", "800", "80cm", "1,20m", "2m", "1200mm".
 function parseWidth(text: string): number | null {
-  const m = text.match(/(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?\b/g);
+  // Ignora números que qualificam contagem (portas/gavetas/prateleiras) para
+  // não confundir "3 portas" com 3m ou "4 gavetas" com 4m.
+  const sanitized = text.replace(/\b(\d+(?:[.,]\d+)?)\s*(porta|gaveta|prateleir)/g, "");
+  const m = sanitized.match(/(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?\b/g);
   if (!m) return null;
   for (const raw of m) {
     const mm = raw.match(/(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?/);
     if (!mm) continue;
-    const n = Number(mm[1].replace(",", "."));
+    const rawNum = mm[1];
+    const n = Number(rawNum.replace(",", "."));
     const unit = mm[2];
     let val: number;
     if (unit === "mm") val = n;
     else if (unit === "cm") val = n * 10;
     else if (unit === "m") val = n * 1000;
-    else if (n < 10) val = n * 1000; // "1.2" => metros
+    else if (n < 10 && /[.,]/.test(rawNum)) val = n * 1000; // "1.2" => metros (só decimais)
     else if (n < 100) val = n * 10; // "80" => 800mm (cm)
     else val = n; // já em mm
     if (val >= 200 && val <= 4000) return Math.round(val);
