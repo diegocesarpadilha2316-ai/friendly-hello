@@ -127,6 +127,29 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
     ?.rooms.find((r) => r.id === state.selectedRoomId);
 
   const [viewport, setViewport] = useState<Viewport3DState>(DEFAULT_VIEWPORT_3D);
+  // Reenquadramento automático: sempre que a IA (ou o próprio usuário)
+  // troca de cômodo, ou o cômodo muda de tamanho/número de móveis, o
+  // Planner "apresenta" o ambiente inteiro de novo. Sem isso, um projeto
+  // recém-criado pela IA nasce com a câmera olhando o vazio.
+  const fitKey = useMemo(() => {
+    if (!room) return "empty";
+    return [
+      room.id,
+      room.dimensions.width,
+      room.dimensions.depth,
+      room.dimensions.height,
+      room.nodeOrder.length,
+    ].join(":");
+  }, [
+    room?.id,
+    room?.dimensions.width,
+    room?.dimensions.depth,
+    room?.dimensions.height,
+    room?.nodeOrder.length,
+  ]);
+  useEffect(() => {
+    setViewport((v) => ({ ...v, autoFitVersion: (v.autoFitVersion ?? 0) + 1 }));
+  }, [fitKey]);
   // A seleção agora vive no PlannerEditorProvider — a IA lê o mesmo
   // `selectedNodeId` para operar tools sobre o item que o usuário
   // clicou no viewport ou na árvore da cena.
