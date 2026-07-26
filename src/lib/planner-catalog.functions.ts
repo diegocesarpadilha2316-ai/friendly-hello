@@ -51,49 +51,58 @@ const listMaterialsInput = z.object({
   query: z.string().trim().max(120).optional(),
   category: z.string().trim().max(80).optional(),
   manufacturer: z.string().trim().max(80).optional(),
+  thicknessMm: z.number().int().min(1).max(60).optional(),
+  onlyCurrent: z.boolean().optional(),
   limit: z.number().int().min(1).max(500).optional(),
+  offset: z.number().int().min(0).max(100000).optional(),
 });
 
 export const listCatalogMaterials = createServerFn({ method: "GET" })
   .middleware([requireTenant])
   .inputValidator((data: unknown) => listMaterialsInput.parse(data ?? {}))
   .handler(async ({ data, context }): Promise<readonly PlannerMaterialDTO[]> => {
+    const limit = data.limit ?? 120;
+    const offset = data.offset ?? 0;
     let q = context.supabase
-      .from("materials_with_price")
+      .from("planner_materials")
       .select(
-        "id,category,sku,name,manufacturer,brand,collection,color_name,color_code,thickness_mm,width_mm,length_mm,image_url,cost_price,sale_price,currency,is_active",
+        "id,fabricante,marca,linha,categoria,padrao,cor_nome,cor_hex,textura_url,espessura_mm,largura_mm,comprimento_mm,sentido_veio,preco_m2",
       )
-      .eq("is_active", true)
-      .limit(data.limit ?? 120);
-    if (data.category) q = q.eq("category", data.category);
-    if (data.manufacturer) q = q.ilike("manufacturer", `%${data.manufacturer}%`);
+      .eq("ativo", true)
+      .range(offset, offset + limit - 1)
+      .order("fabricante", { ascending: true })
+      .order("padrao", { ascending: true })
+      .order("espessura_mm", { ascending: true });
+    if (data.category) q = q.eq("categoria", data.category);
+    if (data.manufacturer) q = q.ilike("fabricante", `%${data.manufacturer}%`);
+    if (data.thicknessMm) q = q.eq("espessura_mm", data.thicknessMm);
+    if (data.onlyCurrent) q = q.ilike("id", "CHP-%-202%").not("cor_nome", "ilike", "%(Histórico)%");
     if (data.query) {
       const term = `%${data.query}%`;
       q = q.or(
-        `name.ilike.${term},color_name.ilike.${term},manufacturer.ilike.${term},brand.ilike.${term},collection.ilike.${term}`,
+        `padrao.ilike.${term},cor_nome.ilike.${term},fabricante.ilike.${term},linha.ilike.${term}`,
       );
     }
     const { data: rows, error } = await q;
     if (error) return [];
     return (rows ?? []).map((r) => {
-      const pattern = (r.name as string | null) ?? (r.color_name as string | null) ?? (r.collection as string | null) ?? null;
+      const pattern = (r.padrao as string | null) ?? (r.cor_nome as string | null) ?? null;
       return {
         id: r.id as string,
         name:
-          [r.manufacturer, r.collection, pattern].filter(Boolean).join(" · ") ||
-          (r.id as string),
-        manufacturer: (r.manufacturer as string) ?? "",
-        line: (r.collection as string | null) ?? null,
-        category: (r.category as string) ?? "",
+          [r.fabricante, r.linha, pattern].filter(Boolean).join(" · ") || (r.id as string),
+        manufacturer: (r.fabricante as string) ?? "",
+        line: (r.linha as string | null) ?? null,
+        category: (r.categoria as string) ?? "chapa",
         pattern,
-        colorName: (r.color_name as string | null) ?? null,
-        colorHex: (r.color_code as string | null) ?? null,
-        textureUrl: (r.image_url as string | null) ?? null,
-        thicknessMm: num(r.thickness_mm) ?? 18,
-        widthMm: num(r.width_mm),
-        lengthMm: num(r.length_mm),
-        grain: null,
-        pricePerM2: num(r.sale_price) ?? num(r.cost_price),
+        colorName: (r.cor_nome as string | null) ?? null,
+        colorHex: (r.cor_hex as string | null) ?? null,
+        textureUrl: (r.textura_url as string | null) ?? null,
+        thicknessMm: num(r.espessura_mm) ?? 18,
+        widthMm: num(r.largura_mm),
+        lengthMm: num(r.comprimento_mm),
+        grain: (r.sentido_veio as PlannerMaterialDTO["grain"]) ?? null,
+        pricePerM2: num(r.preco_m2),
       };
     });
   });
@@ -138,9 +147,9 @@ export const catalogStats = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const [mats, hws] = await Promise.all([
       context.supabase
-        .from("materials_catalog")
+        .from("planner_materials")
         .select("id", { count: "exact", head: true })
-        .eq("is_active", true),
+        .eq("ativo", true),
       context.supabase
         .from("hardware")
         .select("id", { count: "exact", head: true })
