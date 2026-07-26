@@ -13,7 +13,6 @@ import {
   PointerLockControls,
   Grid,
   Environment,
-  Bounds,
   ContactShadows,
   SoftShadows,
   Sky,
@@ -485,24 +484,32 @@ function ApplyViewPreset({
   diag: number;
 }) {
   const { camera } = useThree();
+  // Guardar valores em refs para NÃO re-disparar o preset quando o modelo
+  // muda (AI adicionando móveis). A câmera só deve reposicionar quando o
+  // usuário troca de `view` explicitamente.
+  const centerRef = useRef(center);
+  const diagRef = useRef(diag);
+  centerRef.current = center;
+  diagRef.current = diag;
   useEffect(() => {
-    const d = Math.max(6, diag * 1.2);
+    const c = centerRef.current;
+    const d = Math.max(6, diagRef.current * 1.2);
     switch (view) {
       case "topo":
-        camera.position.set(center.x, d * 1.4, center.z + 0.001);
+        camera.position.set(c.x, d * 1.4, c.z + 0.001);
         break;
       case "frontal":
-        camera.position.set(center.x, center.y, center.z + d);
+        camera.position.set(c.x, c.y, c.z + d);
         break;
       case "lateral":
-        camera.position.set(center.x + d, center.y, center.z);
+        camera.position.set(c.x + d, c.y, c.z);
         break;
       default:
-        camera.position.set(center.x + d * 0.7, d * 0.6, center.z + d * 0.7);
+        camera.position.set(c.x + d * 0.7, d * 0.6, c.z + d * 0.7);
     }
-    camera.lookAt(center);
+    camera.lookAt(centerRef.current);
     camera.updateProjectionMatrix();
-  }, [view, camera, center.x, center.y, center.z, diag]);
+  }, [view, camera]);
   return null;
 }
 
@@ -685,8 +692,7 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
       ) : null}
       {viewport.showAxes ? <axesHelper args={[2]} position={[cx, 0.01, cz]} /> : null}
 
-      <Bounds observe margin={1.3}>
-        <group>
+      <group>
           <AutoResize />
           {model.floors.map((s) => (
             <Slab key={s.id} s={s} kind="floor" center={center} viewport={viewport} selected={selectedId === s.id} onSelect={onSelect} />
@@ -705,8 +711,7 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
               <Slab key={s.id} s={s} kind="ceiling" center={center} viewport={viewport} selected={selectedId === s.id} onSelect={onSelect} />
             ))}
           {selectedId ? <BoundingBox id={selectedId} model={model} center={center} viewport={viewport} /> : null}
-        </group>
-      </Bounds>
+      </group>
 
       <Cameras mode={viewport.camera} />
       {viewport.cinematic && viewport.render === "material" ? <CinematicFX /> : null}
