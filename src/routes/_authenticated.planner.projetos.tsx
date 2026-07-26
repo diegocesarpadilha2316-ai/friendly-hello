@@ -45,11 +45,20 @@ function PlannerProjectsPage() {
 
   const fetchList = useServerFn(listProjects);
   const { data: projects } = useSuspenseQuery(
-    projectsQueryOptions(tenantId, () => fetchList()),
+    projectsQueryOptions(tenantId, async () => {
+      if (!activeCompany?.id) return [];
+      try {
+        const res = await fetchList();
+        return Array.isArray(res) ? res : [];
+      } catch {
+        return [];
+      }
+    }),
   );
+  const safeProjects = Array.isArray(projects) ? projects : [];
   const filtered = useMemo(
-    () => projects.filter((p) => p.name.toLowerCase().includes(query.toLowerCase())),
-    [projects, query],
+    () => safeProjects.filter((p) => p.name.toLowerCase().includes(query.toLowerCase())),
+    [safeProjects, query],
   );
 
   return (
