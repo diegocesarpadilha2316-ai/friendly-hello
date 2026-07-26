@@ -303,7 +303,17 @@ const ROOM_BLUEPRINTS: Readonly<Record<string, RoomBlueprint>> = {
 export function toolCreateRoomPreset(
   project: PlannerProject,
   ctx: ToolContext,
-  args: { preset: string; style?: string },
+  args: {
+    preset: string;
+    style?: string;
+    /**
+     * Peças customizadas (decompositor). Quando presentes, substituem as
+     * peças padrão do blueprint — o ambiente segue trazendo shell + decor.
+     */
+    pieces?: readonly { description: string; count?: number; wall?: "bottom" | "top" | "left" | "right" }[];
+    /** Some peças do blueprint sem substituir por nada (só shell/decor). */
+    noBlueprintPieces?: boolean;
+  },
 ): ToolExecutionResult {
   const blueprint = ROOM_BLUEPRINTS[args.preset];
   if (!blueprint) {
@@ -316,7 +326,12 @@ export function toolCreateRoomPreset(
   const room = getRoom(project, ctx);
   if (!room) return { project, summary: "Selecione um cômodo antes de criar o ambiente.", affectedIds: [] };
 
-  const res = applyLayout(project, ctx, { shape: blueprint.shape, pieces: blueprint.pieces });
+  const piecesToPlace = args.pieces && args.pieces.length > 0
+    ? args.pieces
+    : args.noBlueprintPieces
+    ? []
+    : blueprint.pieces;
+  const res = applyLayout(project, ctx, { shape: blueprint.shape, pieces: piecesToPlace });
 
   // ── Decoração contextual ────────────────────────────────────────────────
   // Além dos módulos de marcenaria, o ambiente ganha itens decorativos
