@@ -199,6 +199,8 @@ function Wall({
   selected: boolean;
   onSelect: (id: string | null) => void;
 }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const matRef = useRef<THREE.MeshStandardMaterial>(null);
   const pos = explodeVec(w.cx, w.cz, w.height / 2, center, viewport.explode);
   const clipped =
     viewport.sectionHeight != null && w.height / 2 > (viewport.sectionHeight / 1000);
@@ -209,10 +211,39 @@ function Wall({
     w.materialId,
     [w.length, w.height],
     selected ? COLORS.wallSel : (w.overrideColor ?? COLORS.wall),
-    { wireframe, transparent: opacity < 1, opacity, roughness: 0.85, metalness: 0.05 },
+    { wireframe, transparent: true, opacity, roughness: 0.85, metalness: 0.05 },
   );
+  // Auto-fade: se a parede está ENTRE a câmera e o centro do ambiente,
+  // deixamos ela quase invisível para o usuário sempre enxergar os móveis
+  // (regra "câmera nunca escondida por parede"). O usuário não precisa
+  // apertar nenhum botão — o Planner cuida disso a cada frame.
+  useFrame(({ camera }) => {
+    if (!matRef.current) return;
+    const base = opacity;
+    let target = base;
+    if (viewport.autoFadeNearWalls && !selected) {
+      const wallPos = new THREE.Vector3(pos.x, pos.y, pos.z);
+      const camToCenter = new THREE.Vector3().subVectors(center, camera.position);
+      const camToWall = new THREE.Vector3().subVectors(wallPos, camera.position);
+      const distCenter = camToCenter.length();
+      const distWall = camToWall.length();
+      // Alinhado com o vetor câmera→centro e mais perto que o centro?
+      // Então essa parede está bloqueando a visão — apagamos.
+      camToCenter.normalize();
+      camToWall.normalize();
+      const aligned = camToWall.dot(camToCenter);
+      if (aligned > 0.35 && distWall < distCenter * 1.05) {
+        target = Math.min(base, 0.08);
+      }
+    }
+    const current = matRef.current.opacity;
+    matRef.current.opacity = current + (target - current) * 0.25;
+    matRef.current.transparent = matRef.current.opacity < 0.999;
+    matRef.current.depthWrite = matRef.current.opacity > 0.6;
+  });
   return (
     <mesh
+      ref={meshRef}
       position={[pos.x, pos.y, pos.z]}
       rotation={[0, w.rotationY, 0]}
       castShadow
@@ -223,7 +254,7 @@ function Wall({
       }}
     >
       <boxGeometry args={[w.length, w.height, w.thickness]} />
-      <meshStandardMaterial {...props} />
+      <meshStandardMaterial ref={matRef} {...props} />
     </mesh>
   );
 }
