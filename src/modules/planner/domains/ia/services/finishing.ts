@@ -20,6 +20,7 @@ import {
   type Editor2DPrimitive,
   type CatalogSubtype,
 } from "@/modules/planner/shared";
+import { findPbrMaterialByLabel } from "@/modules/planner/shared/materials/pbr-catalog";
 
 export type FinishingScope = "all" | "aereos" | "balcoes" | "torre" | "painel" | "tampos";
 export type FinishingFront = "vidro" | "reeded" | "solid" | "aberto";
@@ -195,7 +196,12 @@ function applyToRoom(
       params["led:on"] = true;
       params["led:kelvin"] = 3000;
     }
-    out = upsertPrimitive(out, { ...f, params });
+    // Amarra o material PBR real (Parte 6) — resolve por rótulo humano.
+    const pbr = findPbrMaterialByLabel(color);
+    const next: FurniturePrim = pbr
+      ? { ...f, params, materialId: pbr.id }
+      : { ...f, params };
+    out = upsertPrimitive(out, next);
   }
   count(targets.length);
   return out;
