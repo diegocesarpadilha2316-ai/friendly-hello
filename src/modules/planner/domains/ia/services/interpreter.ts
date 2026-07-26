@@ -9,6 +9,7 @@
  * execução" exigida pela fase.
  */
 import type { ToolName } from "./tools";
+import { decompose } from "./decomposer";
 
 export interface ParsedIntent {
   tool: ToolName;
@@ -142,7 +143,22 @@ export function interpret(input: string): PlannerIntent {
     if (matchedPreset || wantsCreate) {
       const preset = matchedPreset ?? "cozinha";
         const styleMatch = STYLES.find((s) => t.includes(norm(s)));
-        intents.push({ tool: "create_room_preset", args: { preset, style: styleMatch } });
+        // ── Modo Engenharia: se o usuário descreveu módulos específicos
+        // (ex.: "com aéreo de 3 portas, balcão 2 portas, 4 gavetas"), o
+        // decompositor traduz a frase em uma composição EXATA e substitui
+        // as peças padrão do blueprint — mantendo apenas shell e decor.
+        const dec = decompose(raw);
+        const customPieces = dec.modules.map((m) => ({
+          description: m.description,
+          count: m.count,
+          wall: m.wall,
+        }));
+        intents.push({
+          tool: "create_room_preset",
+          args: customPieces.length > 0
+            ? { preset, style: styleMatch, pieces: customPieces }
+            : { preset, style: styleMatch },
+        });
         if (styleMatch) intents.push({ tool: "set_style", args: { style: styleMatch === "clássico" ? "classico" : styleMatch } });
         // Qualificadores na MESMA frase: material/cor e tipo de frente.
         for (const { key, words: mw } of MATERIALS) {
