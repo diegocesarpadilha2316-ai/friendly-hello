@@ -35,7 +35,59 @@ export type CatalogSubtype =
   | "perfil"
   | "vidro"
   | "espelho"
-  | "iluminacao";
+  | "iluminacao"
+  // ---- Aberturas / arquitetura ----
+  | "janela"
+  | "porta-ambiente"
+  | "porta-correr"
+  | "porta-balcao"
+  | "portal"
+  | "parede"
+  | "teto"
+  // ---- Pisos & revestimentos ----
+  | "piso"
+  | "revestimento"
+  | "azulejo"
+  | "papel-parede"
+  // ---- Eletrodomésticos ----
+  | "geladeira"
+  | "fogao"
+  | "cooktop"
+  | "coifa"
+  | "forno"
+  | "microondas"
+  | "lava-loucas"
+  | "lava-roupas"
+  | "adega"
+  | "tv"
+  // ---- Hidráulica / louças ----
+  | "cuba"
+  | "torneira"
+  | "vaso-sanitario"
+  | "chuveiro"
+  | "banheira"
+  // ---- Móveis soltos ----
+  | "sofa"
+  | "cama"
+  | "mesa"
+  | "cadeira"
+  | "poltrona"
+  | "criado-mudo"
+  | "estante"
+  | "aparador"
+  // ---- Decoração ----
+  | "tapete"
+  | "cortina"
+  | "persiana"
+  | "quadro"
+  | "vaso-planta"
+  | "planta"
+  | "luminaria"
+  | "pendente"
+  | "arandela"
+  | "spot"
+  | "livro"
+  | "objeto-deco";
 
 export type CatalogCategoryId =
   | "modulos"
@@ -44,7 +96,16 @@ export type CatalogCategoryId =
   | "prateleiras"
   | "acessorios"
   | "acabamentos"
-  | "iluminacao";
+  | "iluminacao"
+  | "aberturas"
+  | "pisos"
+  | "revestimentos"
+  | "eletros"
+  | "hidraulica"
+  | "moveis-soltos"
+  | "decoracao"
+  | "textil"
+  | "paredes-teto";
 
 export interface CatalogCategory {
   id: CatalogCategoryId;
