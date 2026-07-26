@@ -77,6 +77,23 @@ export function insertItemIntoProject(
 }
 
 function applyInsertion(room: PlannerRoom, item: CatalogItem, opts: InsertionOptions): PlannerRoom {
-  const at = opts.at ?? { x: room.dimensions.width / 2, y: room.dimensions.depth / 2 };
+  const roomW = room.dimensions.width;
+  const roomD = room.dimensions.depth;
+  const width = opts.overrides?.width ?? item.parametric.defaults.width;
+  const depth = opts.overrides?.depth ?? item.parametric.defaults.depth;
+  // Espessura da parede (~100mm centralizada) — 50mm interno + 2mm folga.
+  const WALL = 52;
+  const raw = opts.at ?? { x: roomW / 2, y: roomD / 2 };
+  // Clampa o CENTRO do móvel para manter os 4 cantos dentro do cômodo.
+  const halfW = width / 2;
+  const halfD = depth / 2;
+  const minX = WALL + halfW;
+  const maxX = Math.max(minX, roomW - WALL - halfW);
+  const minY = WALL + halfD;
+  const maxY = Math.max(minY, roomD - WALL - halfD);
+  const at = {
+    x: Math.min(Math.max(raw.x, minX), maxX),
+    y: Math.min(Math.max(raw.y, minY), maxY),
+  };
   return upsertPrimitive(room, buildFurniturePrimitive(item, { ...opts, at }));
 }
