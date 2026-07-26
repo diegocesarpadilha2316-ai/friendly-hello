@@ -139,6 +139,34 @@ function detectMaterial(text: string): string | null {
   return null;
 }
 
+// ─────────── contagem de portas / gavetas ───────────
+// Reconhece "3 portas", "porta tripla", "2 gavetas", "gaveteiro de 4 gavetas".
+function detectDoorCount(text: string): number | null {
+  const m = text.match(/(\d+)\s*porta/);
+  if (m) {
+    const n = Number(m[1]);
+    if (n >= 1 && n <= 8) return n;
+  }
+  if (/porta\s*(simples|unica|single)/.test(text)) return 1;
+  if (/porta\s*dupla/.test(text) || /duas\s*portas/.test(text)) return 2;
+  if (/tres\s*portas|porta\s*tripla/.test(text)) return 3;
+  if (/quatro\s*portas/.test(text)) return 4;
+  return null;
+}
+function detectDrawerCount(text: string): number | null {
+  const m = text.match(/(\d+)\s*gaveta/);
+  if (m) {
+    const n = Number(m[1]);
+    if (n >= 1 && n <= 8) return n;
+  }
+  if (/duas\s*gavetas/.test(text)) return 2;
+  if (/tres\s*gavetas/.test(text)) return 3;
+  if (/quatro\s*gavetas/.test(text)) return 4;
+  if (/cinco\s*gavetas/.test(text)) return 5;
+  if (/seis\s*gavetas/.test(text)) return 6;
+  return null;
+}
+
 // ─────────── seleção do item ───────────
 function pickBestItem(subtype: CatalogSubtype, wantedWidth: number | null): CatalogItem | null {
   const candidates = CATALOG_ITEMS.filter((i) => i.subtype === subtype);
@@ -201,6 +229,16 @@ export function matchDescription(
   if (material) {
     params.material = material;
     reasons.push(`material ${material}`);
+  }
+  const doors = detectDoorCount(t);
+  if (doors != null) {
+    params["mod:doors"] = doors;
+    reasons.push(`${doors} porta(s)`);
+  }
+  const drawers = detectDrawerCount(t);
+  if (drawers != null) {
+    params["mod:drawers"] = drawers;
+    reasons.push(`${drawers} gaveta(s)`);
   }
 
   return { item, overrides, params, reasons };
