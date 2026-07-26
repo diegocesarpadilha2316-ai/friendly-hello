@@ -50,6 +50,26 @@ const SUBTYPE_HINTS: Array<{ subtype: CatalogSubtype; words: string[] }> = [
   { subtype: "armario", words: ["armario"] },
 ];
 
+// Decor / arquitetura / eletros / iluminação — permite ao matcher reconhecer
+// pedidos como "pendente na ilha", "porcelanato no piso" ou "geladeira Brastemp".
+const DECOR_HINTS: Array<{ subtype: CatalogSubtype; words: string[] }> = [
+  { subtype: "iluminacao", words: ["pendente", "lustre", "luminaria", "spot", "fita led", "led", "arandela", "plafon"] },
+  { subtype: "piso", words: ["piso", "porcelanato", "laminado", "vinilico", "ceramica", "assoalho"] },
+  { subtype: "revestimento", words: ["revestimento", "azulejo", "pastilha", "cimenticio"] },
+  { subtype: "geladeira", words: ["geladeira", "frigobar", "refrigerador"] },
+  { subtype: "fogao", words: ["fogao"] },
+  { subtype: "cooktop", words: ["cooktop"] },
+  { subtype: "coifa", words: ["coifa", "depurador", "exaustor"] },
+  { subtype: "forno", words: ["forno"] },
+  { subtype: "microondas", words: ["microondas", "micro-ondas"] },
+  { subtype: "lava-loucas", words: ["lava loucas", "lava-loucas", "lava-louça", "lavaloucas"] },
+  { subtype: "lava-roupas", words: ["lava roupas", "lava-roupas", "lavadora"] },
+  { subtype: "janela", words: ["janela"] },
+  { subtype: "porta-ambiente", words: ["porta de ambiente", "porta ambiente"] },
+  { subtype: "porta-correr", words: ["porta de correr", "porta correr"] },
+  { subtype: "espelho", words: ["espelho"] },
+];
+
 function detectSubtype(text: string): CatalogSubtype | null {
   for (const h of SUBTYPE_HINTS) if (h.words.some((w) => text.includes(w))) return h.subtype;
   return null;
