@@ -1,32 +1,16 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
-import {
-  FolderKanban,
-  Sparkles,
-  PlusCircle,
-  Activity,
-  Camera,
-  Wrench,
-  Factory,
-  Boxes,
-  Upload,
-  Clock,
-  ArrowUpRight,
-} from "lucide-react";
-import { Button, StatusBadge } from "@/core/components/ui-kit";
-import { useTenant } from "@/core/providers/TenantProvider";
-import { useBillingSummary } from "@/core/billing/use-billing";
-import { loadProjects } from "@/modules/planner/shared/persistence/local-store";
-import type { PlannerProjectStatus } from "@/modules/planner/shared";
-import {
-  listProjects,
-  type PlannerProjectRowDTO,
-} from "@/lib/planner-projects.functions";
-import { useMemo } from "react";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
+/**
+ * A porta de entrada oficial do Planner é a **Dioris Planner** — a IA
+ * projetista. O usuário conversa e o projeto nasce sozinho no viewport;
+ * não existe mais botão "Novo projeto" nem wizard manual como ponto de
+ * partida. Toda navegação para /planner cai direto no chat.
+ */
 export const Route = createFileRoute("/_authenticated/planner/")({
-  component: PlannerDashboard,
+  beforeLoad: () => {
+    throw redirect({ to: "/planner/ia" });
+  },
+  component: () => null,
 });
 
 const STATUS_TONE: Record<PlannerProjectStatus, "neutral" | "info" | "warning" | "success"> = {
