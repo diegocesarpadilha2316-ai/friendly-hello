@@ -236,8 +236,10 @@ export function matchDescription(
   let item: CatalogItem | null = null;
   if (fallback?.catalogItemId) item = findCatalogItem(fallback.catalogItemId) ?? null;
   const wantedWidth = parseWidth(t);
+  const wantedDoors = detectDoorCount(t);
+  const wantedDrawers = detectDrawerCount(t);
 
-  if (!item && subtype) item = pickBestItem(subtype, wantedWidth);
+  if (!item && subtype) item = pickBestItem(subtype, wantedWidth, t, wantedDoors, wantedDrawers);
   if (!item) return null;
 
   const overrides: MatchResult["overrides"] = {};
@@ -267,15 +269,13 @@ export function matchDescription(
     params.material = material;
     reasons.push(`material ${material}`);
   }
-  const doors = detectDoorCount(t);
-  if (doors != null) {
-    params["mod:doors"] = doors;
-    reasons.push(`${doors} porta(s)`);
+  if (wantedDoors != null) {
+    params["mod:doors"] = wantedDoors;
+    reasons.push(`${wantedDoors} porta(s)`);
   }
-  const drawers = detectDrawerCount(t);
-  if (drawers != null) {
-    params["mod:drawers"] = drawers;
-    reasons.push(`${drawers} gaveta(s)`);
+  if (wantedDrawers != null) {
+    params["mod:drawers"] = wantedDrawers;
+    reasons.push(`${wantedDrawers} gaveta(s)`);
   }
 
   return { item, overrides, params, reasons };
