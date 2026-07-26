@@ -162,6 +162,21 @@ interface RoomBlueprint {
   shape: LayoutShape;
   pieces: readonly LayoutPieceSpec[];
   style?: string;
+  /**
+   * Itens decorativos posicionados livremente no cômodo (não seguem parede).
+   * `xRatio`/`yRatio` = fração 0..1 do width/depth do cômodo.
+   * `catalogItemId` casa direto; `description` cai no matcher.
+   */
+  decor?: readonly {
+    catalogItemId?: string;
+    description?: string;
+    xRatio: number;
+    yRatio: number;
+    rotation?: number;
+    overrides?: { width?: number; height?: number; depth?: number };
+  }[];
+  /** Preset de acabamento aplicado após o layout para dar coerência visual. */
+  finishing?: string;
 }
 
 const ROOM_BLUEPRINTS: Readonly<Record<string, RoomBlueprint>> = {
@@ -181,6 +196,14 @@ const ROOM_BLUEPRINTS: Readonly<Record<string, RoomBlueprint>> = {
       { description: "aéreo 800mm porta basculante Louro Freijó", count: 3, wall: "bottom" },
     ],
     style: "moderno",
+    decor: [
+      { catalogItemId: "tapete-2x1_5", xRatio: 0.55, yRatio: 0.55 },
+      { catalogItemId: "vaso-planta-alto", xRatio: 0.05, yRatio: 0.9 },
+      { catalogItemId: "pendente-cluster", xRatio: 0.55, yRatio: 0.55 },
+      { catalogItemId: "banqueta-alta", xRatio: 0.35, yRatio: 0.4 },
+      { catalogItemId: "banqueta-alta", xRatio: 0.55, yRatio: 0.4 },
+      { catalogItemId: "banqueta-alta", xRatio: 0.75, yRatio: 0.4 },
+    ],
   },
   closet: {
     label: "Closet completo",
@@ -193,6 +216,11 @@ const ROOM_BLUEPRINTS: Readonly<Record<string, RoomBlueprint>> = {
       { description: "closet 1200mm cabideiro duplo Louro Freijó", count: 1, wall: "right" },
     ],
     style: "minimalista",
+    decor: [
+      { catalogItemId: "tapete-passadeira", xRatio: 0.5, yRatio: 0.5 },
+      { catalogItemId: "puff", xRatio: 0.5, yRatio: 0.5 },
+      { catalogItemId: "luminaria-piso", xRatio: 0.15, yRatio: 0.5 },
+    ],
   },
   dormitorio: {
     label: "Dormitório",
@@ -201,6 +229,14 @@ const ROOM_BLUEPRINTS: Readonly<Record<string, RoomBlueprint>> = {
       { description: "roupeiro 2400mm 6 portas Louro Freijó", count: 1, wall: "bottom" },
       { description: "painel de TV 2000mm ripado", count: 1, wall: "right" },
       { description: "gaveteiro 800mm Louro Freijó", count: 1, wall: "right" },
+    ],
+    decor: [
+      { description: "cama queen 1600mm", xRatio: 0.5, yRatio: 0.55 },
+      { catalogItemId: "tapete-3x2", xRatio: 0.5, yRatio: 0.55 },
+      { catalogItemId: "luminaria-mesa", xRatio: 0.32, yRatio: 0.35 },
+      { catalogItemId: "luminaria-mesa", xRatio: 0.68, yRatio: 0.35 },
+      { catalogItemId: "vaso-planta-medio", xRatio: 0.08, yRatio: 0.9 },
+      { catalogItemId: "quadro-triptico", xRatio: 0.5, yRatio: 0.05 },
     ],
   },
   sala: {
@@ -211,6 +247,15 @@ const ROOM_BLUEPRINTS: Readonly<Record<string, RoomBlueprint>> = {
       { description: "cristaleira 800mm vidro", count: 1, wall: "bottom" },
       { description: "nicho 400mm", count: 3, wall: "bottom" },
     ],
+    decor: [
+      { catalogItemId: "sofa-ilha", xRatio: 0.5, yRatio: 0.7 },
+      { catalogItemId: "mesa-centro", xRatio: 0.5, yRatio: 0.5 },
+      { catalogItemId: "tapete-3x2", xRatio: 0.5, yRatio: 0.6 },
+      { catalogItemId: "poltrona-decor", xRatio: 0.15, yRatio: 0.7 },
+      { catalogItemId: "planta-ficus", xRatio: 0.9, yRatio: 0.85 },
+      { catalogItemId: "luminaria-piso", xRatio: 0.1, yRatio: 0.5 },
+      { catalogItemId: "quadro-abstrato", xRatio: 0.25, yRatio: 0.05 },
+    ],
   },
   escritorio: {
     label: "Home office",
@@ -220,6 +265,12 @@ const ROOM_BLUEPRINTS: Readonly<Record<string, RoomBlueprint>> = {
       { description: "gaveteiro 500mm rodízio Louro Freijó", count: 1, wall: "bottom" },
       { description: "prateleira 800mm", count: 3, wall: "bottom" },
     ],
+    decor: [
+      { catalogItemId: "cadeira-escritorio", xRatio: 0.4, yRatio: 0.35 },
+      { catalogItemId: "tapete-2x1_5", xRatio: 0.5, yRatio: 0.55 },
+      { catalogItemId: "planta-costela-adao", xRatio: 0.9, yRatio: 0.85 },
+      { catalogItemId: "quadro-abstrato", xRatio: 0.75, yRatio: 0.05 },
+    ],
   },
   banheiro: {
     label: "Banheiro",
@@ -228,6 +279,10 @@ const ROOM_BLUEPRINTS: Readonly<Record<string, RoomBlueprint>> = {
       { description: "gaveteiro 800mm suspenso Louro Freijó", count: 1, wall: "bottom" },
       { description: "espelho 800mm", count: 1, wall: "bottom" },
       { description: "nicho 400mm", count: 2, wall: "bottom" },
+    ],
+    decor: [
+      { catalogItemId: "tapete-passadeira", xRatio: 0.5, yRatio: 0.55 },
+      { catalogItemId: "planta-suculenta", xRatio: 0.15, yRatio: 0.35 },
     ],
   },
 };
@@ -249,9 +304,40 @@ export function toolCreateRoomPreset(
   if (!room) return { project, summary: "Selecione um cômodo antes de criar o ambiente.", affectedIds: [] };
 
   const res = applyLayout(project, ctx, { shape: blueprint.shape, pieces: blueprint.pieces });
+
+  // ── Decoração contextual ────────────────────────────────────────────────
+  // Além dos módulos de marcenaria, o ambiente ganha itens decorativos
+  // (tapete, sofá, planta, luminária, quadro, etc.) posicionados por
+  // frações do cômodo. Isso deixa o viewport com cara de projeto real,
+  // não de biblioteca vazia.
+  let next = res.project;
+  let decorPlaced = 0;
+  const decorItems = blueprint.decor ?? [];
+  for (const spec of decorItems) {
+    const item = spec.catalogItemId
+      ? findCatalogItem(spec.catalogItemId)
+      : spec.description
+      ? matchDescription(spec.description)?.item ?? null
+      : null;
+    if (!item) continue;
+    const at = {
+      x: Math.round(room.dimensions.width * spec.xRatio),
+      y: Math.round(room.dimensions.depth * spec.yRatio),
+    };
+    next = insertItemIntoProject(next, ctx, item, {
+      at,
+      overrides: spec.overrides,
+      params: spec.rotation != null ? { rotation: spec.rotation } : undefined,
+    });
+    decorPlaced += 1;
+  }
+
+  const parts = [`${res.placed} peças encostadas nas paredes de ${room.name}`];
+  if (decorPlaced > 0) parts.push(`${decorPlaced} itens de decoração`);
+  if (res.skipped > 0) parts.push(`${res.skipped} ignoradas`);
   return {
-    project: res.project,
-    summary: `${blueprint.label} criado — ${res.placed} peças encostadas nas paredes de ${room.name}.${res.skipped > 0 ? ` (${res.skipped} ignoradas)` : ""}`,
+    project: next,
+    summary: `${blueprint.label} criado — ${parts.join(", ")}.`,
     affectedIds: [],
   };
 }
