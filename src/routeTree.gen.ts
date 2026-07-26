@@ -55,6 +55,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated.workspace.index'
 import { Route as AuthenticatedPlannerIndexRouteImport } from './routes/_authenticated.planner.index'
 import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated.configuracoes.index'
+import { Route as ApiAiChatRouteImport } from './routes/api/ai/chat'
 import { Route as PublicProdutosPlannerRouteImport } from './routes/_public.produtos.planner'
 import { Route as PublicProdutosCriadorRouteImport } from './routes/_public.produtos.criador'
 import { Route as PublicBlogSlugRouteImport } from './routes/_public.blog.$slug'
@@ -336,6 +337,11 @@ const AuthenticatedConfiguracoesIndexRoute =
     path: '/configuracoes/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const ApiAiChatRoute = ApiAiChatRouteImport.update({
+  id: '/api/ai/chat',
+  path: '/api/ai/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PublicProdutosPlannerRoute = PublicProdutosPlannerRouteImport.update({
   id: '/planner',
   path: '/planner',
@@ -684,6 +690,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof PublicBlogSlugRoute
   '/produtos/criador': typeof PublicProdutosCriadorRoute
   '/produtos/planner': typeof PublicProdutosPlannerRoute
+  '/api/ai/chat': typeof ApiAiChatRoute
   '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/planner/': typeof AuthenticatedPlannerIndexRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
@@ -774,6 +781,7 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof PublicBlogSlugRoute
   '/produtos/criador': typeof PublicProdutosCriadorRoute
   '/produtos/planner': typeof PublicProdutosPlannerRoute
+  '/api/ai/chat': typeof ApiAiChatRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesIndexRoute
   '/planner': typeof AuthenticatedPlannerIndexRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
@@ -869,6 +877,7 @@ export interface FileRoutesById {
   '/_public/blog/$slug': typeof PublicBlogSlugRoute
   '/_public/produtos/criador': typeof PublicProdutosCriadorRoute
   '/_public/produtos/planner': typeof PublicProdutosPlannerRoute
+  '/api/ai/chat': typeof ApiAiChatRoute
   '/_authenticated/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/_authenticated/planner/': typeof AuthenticatedPlannerIndexRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
@@ -963,6 +972,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/produtos/criador'
     | '/produtos/planner'
+    | '/api/ai/chat'
     | '/configuracoes/'
     | '/planner/'
     | '/workspace/'
@@ -1053,6 +1063,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/produtos/criador'
     | '/produtos/planner'
+    | '/api/ai/chat'
     | '/configuracoes'
     | '/planner'
     | '/workspace'
@@ -1147,6 +1158,7 @@ export interface FileRouteTypes {
     | '/_public/blog/$slug'
     | '/_public/produtos/criador'
     | '/_public/produtos/planner'
+    | '/api/ai/chat'
     | '/_authenticated/configuracoes/'
     | '/_authenticated/planner/'
     | '/_authenticated/workspace/'
@@ -1166,6 +1178,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiAiChatRoute: typeof ApiAiChatRoute
   ApiPublicV1OpenapiRoute: typeof ApiPublicV1OpenapiRoute
   ApiPublicV1PingRoute: typeof ApiPublicV1PingRoute
   ApiPublicV1StatusRoute: typeof ApiPublicV1StatusRoute
@@ -1497,6 +1510,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/configuracoes/'
       preLoaderRoute: typeof AuthenticatedConfiguracoesIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/api/ai/chat': {
+      id: '/api/ai/chat'
+      path: '/api/ai/chat'
+      fullPath: '/api/ai/chat'
+      preLoaderRoute: typeof ApiAiChatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_public/produtos/planner': {
       id: '/_public/produtos/planner'
@@ -2082,6 +2102,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiAiChatRoute: ApiAiChatRoute,
   ApiPublicV1OpenapiRoute: ApiPublicV1OpenapiRoute,
   ApiPublicV1PingRoute: ApiPublicV1PingRoute,
   ApiPublicV1StatusRoute: ApiPublicV1StatusRoute,
@@ -2092,13 +2113,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
