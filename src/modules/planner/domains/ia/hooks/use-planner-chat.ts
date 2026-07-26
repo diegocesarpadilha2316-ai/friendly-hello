@@ -8,13 +8,17 @@
  */
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { aiGenerateText, aiGenerateJson } from "@/core/ai";
 import { useTenant } from "@/core/providers/TenantProvider";
 import { useAuth } from "@/core/providers/AuthProvider";
+import { createProjectRow } from "@/lib/planner-projects.functions";
+import { saveProjectSnapshot, type JsonObject } from "@/lib/planner-snapshots.functions";
 import {
   createEnvironment,
   createProject,
   createRoom,
+  upsertProject,
   usePlannerEditor,
   loadRules,
 } from "@/modules/planner/shared";
@@ -250,10 +254,14 @@ export function usePlannerChat() {
   const editor = usePlannerEditor();
   const { activeCompany } = useTenant();
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const tenantId = activeCompany?.id ?? "anonymous";
   const ownerId = user?.id ?? "anonymous";
   const runAI = useServerFn(aiGenerateText);
   const runAIJson = useServerFn(aiGenerateJson);
+  const createProjectOnServer = useServerFn(createProjectRow);
+  const saveSnapshotOnServer = useServerFn(saveProjectSnapshot);
 
   const [state, setState] = useState<ChatState>({
     messages: [
@@ -313,6 +321,9 @@ export function usePlannerChat() {
         editor.state.selectedRoomId,
         { prompt: trimmed, tenantId, ownerId },
       );
+      const startedWithoutProject = !editor.state.project;
+      const shouldOpenEditorAfterCreate =
+        startedWithoutProject || pathname.endsWith("/planner/projetos/novo");
       if (boot.changed) {
         if (editor.state.project) editor.updateProject(() => boot.project);
         else editor.loadProject(boot.project);
@@ -459,6 +470,42 @@ export function usePlannerChat() {
         if (mutatedProject !== project) {
           if (editor.state.project) editor.updateProject(() => mutatedProject);
           else editor.loadProject(mutatedProject);
+          editor.select({ environmentId: activeEnvironmentId, roomId: activeRoomId });
+
+          // Quando a IA cria a partir do wizard/sem editor aberto, o usuário não
+          // vê o resultado porque a página /novo mostra apenas uma prévia estática.
+          // Persistimos o snapshot e abrimos o editor real do projeto criado.
+          upsertProject(tenantId, mutatedProject);
+          if (shouldOpenEditorAfterCreate) {
+            try {
+              if (activeCompany?.id) {
+                if (startedWithoutProject) {
+                  await createProjectOnServer({
+                    data: {
+                      id: mutatedProject.id,
+                      name: mutatedProject.name,
+                      client: mutatedProject.client ?? null,
+                    },
+                  });
+                }
+                await saveSnapshotOnServer({
+                  data: {
+                    id: mutatedProject.id,
+                    snapshot: mutatedProject as unknown as JsonObject,
+                    version: mutatedProject.version,
+                    name: mutatedProject.name,
+                    client: mutatedProject.client ?? null,
+                  },
+                });
+              }
+            } catch (e) {
+              console.warn("[planner-chat] snapshot IA não persistiu no servidor; usando cache local", e);
+            }
+            void navigate({
+              to: "/planner/projetos/$projectId",
+              params: { projectId: mutatedProject.id },
+            });
+          }
         }
 
         setState((s) => ({ ...s, status: "idle" }));
@@ -474,7 +521,20 @@ export function usePlannerChat() {
         setState((s) => ({ ...s, status: "error" }));
       }
     },
-    [state.status, editor, tenantId, ownerId, patchMessage, runAI, runAIJson],
+    [
+      state.status,
+      editor,
+      tenantId,
+      ownerId,
+      pathname,
+      activeCompany?.id,
+      patchMessage,
+      runAI,
+      runAIJson,
+      createProjectOnServer,
+      saveSnapshotOnServer,
+      navigate,
+    ],
   );
 
   const editMessage = useCallback(
