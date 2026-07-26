@@ -17,9 +17,8 @@ function roomShellNodes(input: {
   roomId: string;
   width: number;
   depth: number;
-  height: number;
 }): readonly PlannerParametricNode[] {
-  const { roomId, width, depth, height } = input;
+  const { roomId, width, depth } = input;
   const thickness = 100;
   return [
     {
@@ -80,7 +79,6 @@ export function ensureRoomShell(room: PlannerRoom): PlannerRoom {
     roomId: room.id,
     width: room.dimensions.width,
     depth: room.dimensions.depth,
-    height: room.dimensions.height,
   });
   const nodes: Record<string, PlannerParametricNode> = { ...room.nodes };
   const shellOrder: string[] = [];
@@ -126,7 +124,7 @@ export function createRoom(input: {
     height: input.height ?? 2600,
     depth: input.depth ?? 3000,
   };
-  const shell = roomShellNodes({ roomId: id, ...dimensions });
+  const shell = roomShellNodes({ roomId: id, width: dimensions.width, depth: dimensions.depth });
   return {
     id,
     name: input.name,
