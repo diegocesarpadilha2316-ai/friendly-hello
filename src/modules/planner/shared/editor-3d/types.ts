@@ -35,6 +35,23 @@ export interface Viewport3DState {
   openDoors?: boolean;
   /** Abrir gavetas de todos os móveis (toolbar do editor). */
   openDrawers?: boolean;
+  /**
+   * Auto-esconde o teto durante a edição para o usuário sempre enxergar o
+   * ambiente. O teto volta automaticamente no modo Foto (cinematic).
+   */
+  autoHideCeiling?: boolean;
+  /**
+   * Fade automático das paredes que ficam ENTRE a câmera e o centro do
+   * ambiente (regra de "corte inteligente"): mantém a visão aberta em
+   * qualquer ângulo, sem o usuário mexer em nada.
+   */
+  autoFadeNearWalls?: boolean;
+  /**
+   * Sinal para o viewport reenquadrar automaticamente a cena inteira.
+   * Incrementado sempre que um novo projeto é gerado pela IA, para que a
+   * câmera "apresente" o ambiente completo sem entrar em parede/teto.
+   */
+  autoFitVersion?: number;
 }
 
 export const DEFAULT_VIEWPORT_3D: Viewport3DState = {
@@ -52,4 +69,7 @@ export const DEFAULT_VIEWPORT_3D: Viewport3DState = {
   daytime: "noon",
   openDoors: false,
   openDrawers: false,
+  autoHideCeiling: true,
+  autoFadeNearWalls: true,
+  autoFitVersion: 0,
 };
