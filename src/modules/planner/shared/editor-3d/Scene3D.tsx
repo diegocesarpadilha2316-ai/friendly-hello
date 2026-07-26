@@ -34,6 +34,7 @@ import {
 } from "../../domains/catalog/services/library-supabase";
 import { getPbrMaterial, getPbrRoughnessBias, isPbrId } from "../materials/pbr-catalog";
 import { GlassFront } from "./GlassFront";
+import { DecorMesh, isDecorSubtype } from "./DecorMesh";
 
 interface Scene3DProps {
   model: Scene3DModel;
@@ -325,6 +326,30 @@ function Furniture({
     fallback,
     { wireframe: viewport.render === "wireframe", roughness: 0.6, metalness: 0.05 },
   );
+  // Decoração procedural: sofá, cama, planta, luminária, etc. — renderiza
+  // silhueta reconhecível em vez do box padrão. Wireframe volta ao box.
+  const decor = viewport.render !== "wireframe" && isDecorSubtype(f.subtype);
+  if (decor) {
+    return (
+      <group
+        position={[pos.x, pos.z !== undefined ? pos.y - f.height / 2 : 0, pos.z]}
+        rotation={[0, f.rotationY, 0]}
+        onClick={(e: ThreeEvent<MouseEvent>) => {
+          e.stopPropagation();
+          onSelect(f.id);
+        }}
+      >
+        <DecorMesh
+          subtype={f.subtype as never}
+          width={f.width}
+          height={f.height}
+          depth={f.depth}
+          color={selected ? COLORS.furnitureSel : f.overrideColor}
+          selected={selected}
+        />
+      </group>
+    );
+  }
   return (
     <mesh
       position={[pos.x, pos.y, pos.z]}
