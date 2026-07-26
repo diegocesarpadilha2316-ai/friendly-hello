@@ -39,7 +39,7 @@ export interface Viewport3DState {
 
 export const DEFAULT_VIEWPORT_3D: Viewport3DState = {
   camera: "orbit",
-  render: "solid",
+  render: "material",
   showGrid: true,
   showAxes: true,
   view: "perspectiva",
@@ -48,7 +48,7 @@ export const DEFAULT_VIEWPORT_3D: Viewport3DState = {
   explode: 0,
   wallHeight: 2700,
   wallOpacity: 1,
-  cinematic: false,
+  cinematic: true,
   daytime: "noon",
   openDoors: false,
   openDrawers: false,
