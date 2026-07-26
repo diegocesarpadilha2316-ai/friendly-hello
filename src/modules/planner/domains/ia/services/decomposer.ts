@@ -101,7 +101,11 @@ const PREAMBLE_WORDS = new Set([
   "novo","nova","modelo","design","estilo","por","favor","de","do","da",
   "para","pra","planejad","planejada","planejado","completo","completa","simples",
   "pequen","pequena","pequeno","moderna","moderno","classic","classica","classico",
-  "luxo","luxuoso","luxuosa","industrial","minimalista",
+  "luxo","luxuoso","luxuosa","industrial","minimalista","em","com","no","na",
+  // materiais/acabamentos: aparecem no preamble, não são módulos.
+  "freijo","louro","nogueira","carvalho","branco","branca","fosco","tx",
+  "grafite","chumbo","quartzo","cumaru","mdf","mdp","laca","laqueado",
+  "vidro","reeded","canelado","canelada","off","white",
 ]);
 // Nomes de ambiente que também são só declaração de intenção quando aparecem sozinhos.
 const ENV_WORDS = new Set([
