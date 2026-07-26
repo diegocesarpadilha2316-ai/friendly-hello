@@ -40,26 +40,32 @@ interface CabinetMeshProps {
   doorsCount?: number;
 }
 
+interface CabinetComposition {
+  drawers: number;
+  doors: number;
+  bays: number;
+}
+
 // -----------------------------------------------------------------------------
 // Heurísticas de composição
 // -----------------------------------------------------------------------------
-function inferComposition(p: CabinetMeshProps) {
+function inferComposition(p: CabinetMeshProps): CabinetComposition {
   const { subtype, width, height, drawersCount, doorsCount } = p;
   // gaveteiros: só gavetas
   if (subtype === "gaveteiro") {
     const n = drawersCount ?? Math.max(2, Math.min(6, Math.round(height / 0.2)));
-    return { drawers: n, doors: 0 };
+    return { drawers: n, doors: 0, bays: 1 };
   }
   if (subtype === "closet") {
     const bays = Math.max(2, Math.min(5, Math.round(width / 0.72)));
     return { drawers: 0, doors: 0, bays };
   }
   if (subtype === "prateleira" || subtype === "nicho" || subtype === "tampo" || subtype === "bancada" || subtype === "painel") {
-    return { drawers: 0, doors: 0 };
+    return { drawers: 0, doors: 0, bays: 1 };
   }
   // armários: portas verticais, 1 por ~500mm
   const doors = doorsCount ?? Math.max(1, Math.min(6, Math.round(width / 0.5)));
-  return { drawers: 0, doors };
+  return { drawers: 0, doors, bays: Math.max(1, doors) };
 }
 
 export function CabinetMesh(props: CabinetMeshProps) {
@@ -120,8 +126,8 @@ export function CabinetMesh(props: CabinetMeshProps) {
       {/* Closet aberto: módulos verticais, prateleiras, cabideiro e gavetas baixas. */}
       {props.subtype === "closet" ? (
         <>
-          {Array.from({ length: Math.max(1, comp.bays ?? 2) - 1 }).map((_, i) => {
-            const bayW = (width - T * 2) / Math.max(1, comp.bays ?? 2);
+          {Array.from({ length: Math.max(1, comp.bays) - 1 }).map((_, i) => {
+            const bayW = (width - T * 2) / Math.max(1, comp.bays);
             const x = -halfW + T + bayW * (i + 1);
             return (
               <mesh key={`divider-${i}`} position={[x, 0, 0]} castShadow receiveShadow>
@@ -130,8 +136,8 @@ export function CabinetMesh(props: CabinetMeshProps) {
               </mesh>
             );
           })}
-          {Array.from({ length: Math.max(1, comp.bays ?? 2) }).map((_, i) => {
-            const bays = Math.max(1, comp.bays ?? 2);
+          {Array.from({ length: Math.max(1, comp.bays) }).map((_, i) => {
+            const bays = Math.max(1, comp.bays);
             const bayW = (width - T * 2) / bays;
             const x = -halfW + T + bayW * i + bayW / 2;
             const topShelfY = halfH - 0.42;
