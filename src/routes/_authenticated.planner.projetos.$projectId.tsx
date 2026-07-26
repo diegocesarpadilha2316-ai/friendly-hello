@@ -209,10 +209,10 @@ function PlannerProjectDetail() {
         </div>
       </header>
 
-      {/* Corpo — 3 colunas */}
-      <div className="grid min-h-0 flex-1 gap-3 p-3 xl:grid-cols-[300px,1fr,380px]">
+      {/* Corpo — 3 colunas (viewport sempre centralizado) */}
+      <div className="grid min-h-0 flex-1 gap-3 p-3 md:grid-cols-[240px,1fr,300px] xl:grid-cols-[300px,1fr,380px]">
         {/* Coluna 1 — Estrutura do Projeto */}
-        <aside className="order-2 flex min-h-[360px] flex-col overflow-hidden rounded-xl border border-border/60 bg-card xl:order-none xl:min-h-0">
+        <aside className="order-2 flex min-h-[280px] flex-col overflow-hidden rounded-xl border border-border/60 bg-card md:order-none md:min-h-0">
           <div className="flex items-center justify-between border-b border-border/60 px-3 py-2.5">
             <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">
               Estrutura do Projeto
@@ -261,7 +261,7 @@ function PlannerProjectDetail() {
         </aside>
 
         {/* Coluna 2 — Viewport */}
-        <section className="order-1 relative flex min-h-[580px] flex-col overflow-hidden rounded-xl border border-border/60 bg-card xl:order-none xl:min-h-0">
+        <section className="order-1 relative flex min-h-[580px] flex-col overflow-hidden rounded-xl border border-border/60 bg-card md:order-none md:min-h-0">
           {/* Toolbar flutuante superior */}
           <div className="pointer-events-none absolute inset-x-0 top-3 z-10 flex justify-center">
             <div className="pointer-events-auto flex items-center gap-1 rounded-xl border border-border/60 bg-background/85 p-1.5 shadow-lg backdrop-blur-md">
@@ -336,7 +336,7 @@ function PlannerProjectDetail() {
 
         {/* Coluna 3 — IA Copiloto */}
         {aiOpen ? (
-          <aside className="order-3 flex min-h-[520px] flex-col overflow-hidden rounded-xl border border-border/60 bg-card xl:order-none xl:min-h-0">
+          <aside className="order-3 flex min-h-[360px] flex-col overflow-hidden rounded-xl border border-border/60 bg-card md:order-none md:min-h-0">
             <div className="min-h-0 flex-1">
               <PlannerAIPanel className="h-full w-full" onClose={() => setAiOpen(false)} />
             </div>
