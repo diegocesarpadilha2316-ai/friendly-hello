@@ -13,7 +13,6 @@ import {
   PointerLockControls,
   Grid,
   Environment,
-  Bounds,
   ContactShadows,
   SoftShadows,
   Sky,
