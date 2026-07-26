@@ -88,6 +88,7 @@ const STYLES = ["minimalista", "classico", "clássico", "industrial", "luxo", "m
 
 const MATERIALS = [
   { key: "MDF Freijó", words: ["freijo"] },
+  { key: "MDF Louro Freijó", words: ["louro freijo", "louro-freijo"] },
   { key: "MDF Nogueira", words: ["nogueira"] },
   { key: "MDF Carvalho", words: ["carvalho"] },
   { key: "MDF Branco TX", words: ["branco tx", "branco"] },
@@ -129,6 +130,22 @@ export function interpret(input: string): PlannerIntent {
         const styleMatch = STYLES.find((s) => t.includes(norm(s)));
         intents.push({ tool: "create_room_preset", args: { preset, style: styleMatch } });
         if (styleMatch) intents.push({ tool: "set_style", args: { style: styleMatch === "clássico" ? "classico" : styleMatch } });
+        // Qualificadores na MESMA frase: material/cor e tipo de frente.
+        for (const { key, words: mw } of MATERIALS) {
+          if (mw.some((w) => t.includes(w))) {
+            intents.push({ tool: "change_material", args: { material: key } });
+            const color = key.replace(/^MDF\s+/, "");
+            intents.push({ tool: "change_color", args: { color } });
+            break;
+          }
+        }
+        if (has(t, "porta de vidro", "portas de vidro", "com vidro", "frente de vidro")) {
+          const reeded = has(t, "reeded", "canelado", "canelada");
+          intents.push({
+            tool: "set_front_type",
+            args: { type: reeded ? "reeded" : "vidro", subtype: "aereo" },
+          });
+        }
         return { type: "command", intents };
       }
     }
