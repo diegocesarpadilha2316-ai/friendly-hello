@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { FolderKanban, PlusCircle, Sparkles } from "lucide-react";
+import { FolderKanban, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
