@@ -331,7 +331,13 @@ export function toolCreateRoomPreset(
     : args.noBlueprintPieces
     ? []
     : blueprint.pieces;
-  const res = applyLayout(project, ctx, { shape: blueprint.shape, pieces: piecesToPlace });
+  // Tolerância zero: quando o usuário fornece peças específicas, garantimos
+  // shape com paredes suficientes (mínimo L) — o motor faz fallback entre
+  // paredes disponíveis antes de skippar.
+  const shape = args.pieces && args.pieces.length > 3 && blueprint.shape === "linear"
+    ? "L"
+    : blueprint.shape;
+  const res = applyLayout(project, ctx, { shape, pieces: piecesToPlace });
 
   // ── Decoração contextual ────────────────────────────────────────────────
   // Além dos módulos de marcenaria, o ambiente ganha itens decorativos
@@ -358,6 +364,25 @@ export function toolCreateRoomPreset(
       params: spec.rotation != null ? { rotation: spec.rotation } : undefined,
     });
     decorPlaced += 1;
+  }
+
+  // ── Auditoria Modo Engenharia ──────────────────────────────────────────
+  // Quando o usuário informou peças específicas, contamos exatamente quantas
+  // foram solicitadas por módulo e comparamos com o que o motor conseguiu
+  // encaixar. O relatório final é EXPLÍCITO — nada de esconder divergências.
+  const auditLines: string[] = [];
+  if (args.pieces && args.pieces.length > 0) {
+    let expected = 0;
+    for (const p of args.pieces) expected += Math.max(1, p.count ?? 1);
+    if (res.placed < expected) {
+      auditLines.push(
+        `⚠ Auditoria: ${res.placed}/${expected} módulos instalados. ` +
+          `Cômodo ${room.dimensions.width}×${room.dimensions.depth}mm ficou apertado — ` +
+          `aumente o cômodo ou reduza módulos: ${res.reasons.slice(0, 4).join("; ")}.`,
+      );
+    } else {
+      auditLines.push(`✔ Auditoria: ${res.placed}/${expected} módulos com 100% de correspondência.`);
+    }
   }
 
   const parts = [`${res.placed} peças encostadas nas paredes de ${room.name}`];
