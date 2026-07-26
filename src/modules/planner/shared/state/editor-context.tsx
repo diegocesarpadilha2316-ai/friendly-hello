@@ -31,7 +31,7 @@ import type {
 } from "../types/project";
 import type { PlannerProjectId } from "../types";
 import { createProject, ensureProjectRoomShells } from "../factories/project";
-import { loadProject as loadLocalProject } from "../persistence/local-store";
+import { loadProject as loadLocalProject, upsertProject as upsertLocalProject } from "../persistence/local-store";
 import {
   loadProjectSnapshot,
   saveProjectSnapshot,
@@ -194,6 +194,7 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
 
   const persist = useCallback(
     async (project: PlannerProject) => {
+      upsertLocalProject(tenantId, project);
       try {
         await saveSnapshotFn({
           data: {
@@ -210,7 +211,7 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
         console.error("[planner] autosave falhou", err);
       }
     },
-    [saveSnapshotFn],
+    [saveSnapshotFn, tenantId],
   );
 
   // Autosave — debounced 800ms após qualquer mudança "dirty".
@@ -250,6 +251,14 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
             version: result.meta.version,
             updatedAt: result.meta.updatedAt,
           };
+          const local = loadLocalProject(tenantId, projectId);
+          if (local) {
+            const localTime = Date.parse(local.updatedAt || "");
+            const serverTime = Date.parse(project.updatedAt || "");
+            if (local.version > project.version || localTime > serverTime) {
+              project = local;
+            }
+          }
         } else {
           const local = loadLocalProject(tenantId, projectId);
           if (local) {

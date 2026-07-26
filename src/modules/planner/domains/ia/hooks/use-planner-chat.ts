@@ -473,11 +473,11 @@ export function usePlannerChat() {
           if (editor.state.project) editor.updateProject(() => mutatedProject);
           else editor.loadProject(mutatedProject);
           editor.select({ environmentId: activeEnvironmentId, roomId: activeRoomId });
+          upsertProject(tenantId, mutatedProject);
 
           // Quando a IA cria a partir do wizard/sem editor aberto, o usuário não
           // vê o resultado porque a página /novo mostra apenas uma prévia estática.
           // Persistimos o snapshot e abrimos o editor real do projeto criado.
-          upsertProject(tenantId, mutatedProject);
           if (shouldOpenEditorAfterCreate) {
             try {
               if (activeCompany?.id) {
