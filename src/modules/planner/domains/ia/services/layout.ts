@@ -16,6 +16,28 @@ import { matchDescription } from "./matcher";
 
 export type LayoutShape = "linear" | "L" | "U" | "paralela";
 
+// Espelha o mapa de profundidades reais aplicado por
+// `insertItemIntoProject` (src/modules/planner/shared/library/insert.ts).
+// Se o layout calcular a posição com uma profundidade e o insert armazenar
+// outra, o móvel fica descolado da parede — a auditoria confirmou o bug.
+const REAL_DEPTH_BY_SUBTYPE: Record<string, number> = {
+  aereo: 350,
+  prateleira: 300,
+  nicho: 300,
+  painel: 40,
+  balcao: 600,
+  tampo: 600,
+  bancada: 600,
+  ilha: 900,
+  torre: 600,
+  gaveteiro: 500,
+  closet: 600,
+  roupeiro: 600,
+  armario: 600,
+  "guarda-roupa": 600,
+  cristaleira: 400,
+};
+
 export interface LayoutPieceSpec {
   description: string;
   count?: number;
@@ -144,7 +166,10 @@ export function applyLayout(
       continue;
     }
     const width = match.overrides.width ?? match.item.parametric.defaults.width;
-    const depth = match.overrides.depth ?? match.item.parametric.defaults.depth;
+    const depth =
+      match.overrides.depth
+      ?? REAL_DEPTH_BY_SUBTYPE[String(match.item.subtype)]
+      ?? match.item.parametric.defaults.depth;
     const height = match.overrides.height ?? match.item.parametric.defaults.height;
 
     for (let i = 0; i < count; i++) {
