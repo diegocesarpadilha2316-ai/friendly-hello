@@ -87,6 +87,9 @@ export function CabinetMesh(props: CabinetMeshProps) {
 
   const bodyColor = (bodyProps as { color?: string }).color ?? "#b78a5c";
   const frontMatProps = frontProps ?? bodyProps;
+  // Cor levemente escurecida para as reentrâncias/shaker panel (sombreado real de marcenaria).
+  const frontColor = (frontMatProps as { color?: string }).color ?? bodyColor;
+  const HANDLE_COLOR = "#d4d7dc";
 
   return (
     <group>
