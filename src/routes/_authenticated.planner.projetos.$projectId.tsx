@@ -119,7 +119,7 @@ function PlannerProjectDetail() {
         await (navigator as Navigator & { share: (d: ShareData) => Promise<void> }).share(payload);
         return;
       }
-      await navigator.clipboard.writeText(url);
+      await (navigator as unknown as { clipboard: { writeText: (v: string) => Promise<void> } }).clipboard.writeText(url);
       toast.success("Link copiado para a área de transferência");
     } catch {
       toast.error("Não foi possível compartilhar");
