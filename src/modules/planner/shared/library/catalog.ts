@@ -9,6 +9,7 @@ import type {
   CatalogItem,
   CatalogSubtype,
 } from "./types";
+import { EXTENDED_CATALOG_ITEMS } from "./catalog-extended";
 
 export const CATALOG_CATEGORIES: readonly CatalogCategory[] = [
   { id: "modulos",         label: "Módulos",         description: "Corpos paramétricos — armários, balcões, torres, ilhas." },
@@ -276,6 +277,9 @@ export const CATALOG_ITEMS: readonly CatalogItem[] = [
   item("objeto-escultura",        "Escultura Decorativa",      "objeto-deco","decoracao",  { width: 200, depth: 200, height: 400 },   { tags: ["escultura"] }),
   item("bandeja-decor",           "Bandeja Decorativa",        "objeto-deco","decoracao",  { width: 400, depth: 250, height: 40 },    { tags: ["bandeja"] }),
   item("relogio-parede",          "Relógio de Parede",         "objeto-deco","decoracao",  { width: 500, depth: 40, height: 500 },    { tags: ["relogio"] }),
+  // ---- Expansão massiva (400+ variações, fabricantes, eletros, hidráulica,
+  //      móveis soltos, decoração, iluminação, pisos, aberturas). ----
+  ...EXTENDED_CATALOG_ITEMS,
 ];
 
 export const CATALOG_COLLECTIONS: readonly CatalogCollection[] = [
@@ -296,6 +300,48 @@ export const CATALOG_COLLECTIONS: readonly CatalogCollection[] = [
     label: "Sala Integrada",
     description: "Painel TV, cristaleira e nichos decorativos.",
     itemIds: ["mod-painel-tv", "mod-cristaleira", "mod-nicho-quadrado"],
+  },
+  {
+    id: "cozinha-gourmet-premium",
+    label: "Cozinha Gourmet Premium",
+    description: "Ilha, balcão gourmet, torre forno+micro, coifa e adega.",
+    itemIds: ["balcao-gourmet", "torre-forno-micro", "coifa-ilha-inox", "adega-46g", "tampo-quartzo-preto"],
+  },
+  {
+    id: "cozinha-linear",
+    label: "Cozinha Linear 3m",
+    description: "Base + aéreo + torre em 3 metros lineares.",
+    itemIds: ["arm-base-2p-1000", "aer-2p-1000", "torre-forno", "tampo-quartzo-branco", "coifa-parede-60"],
+  },
+  {
+    id: "closet-completo",
+    label: "Closet Completo",
+    description: "Cabideiros, gaveteiros, sapateira e cristaleira.",
+    itemIds: ["closet-cabideiro-duplo", "closet-gaveteiro-6g", "closet-sapateira", "closet-cristaleira"],
+  },
+  {
+    id: "home-office-pro",
+    label: "Home Office Pro",
+    description: "Mesa em L, cadeira presidente, estante e painel ripado.",
+    itemIds: ["mesa-escritorio", "cadeira-office", "estante-modular", "painel-tv-ripado"],
+  },
+  {
+    id: "sala-jantar-moderna",
+    label: "Sala de Jantar Moderna",
+    description: "Mesa 8 lugares, cadeiras, aparador e pendente linear.",
+    itemIds: ["mesa-jantar-8", "cadeira-wishbone", "aparador-sala", "pendente-linear"],
+  },
+  {
+    id: "banheiro-premium",
+    label: "Banheiro Premium",
+    description: "Cuba esculpida, torneira parede, vaso suspenso, chuveiro cascata.",
+    itemIds: ["cuba-esculpida-marmore", "torneira-parede", "vaso-suspenso", "chuveiro-cascata", "banheira-freestanding"],
+  },
+  {
+    id: "sala-tv-cinema",
+    label: "Sala de TV Cinema",
+    description: "TV 85”, painel LED, home theater e sofá retrátil.",
+    itemIds: ["tv-85", "painel-tv-led", "home-theater", "sofa-retratil", "tapete-retangular"],
   },
 ];
 
