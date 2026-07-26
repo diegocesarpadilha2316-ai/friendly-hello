@@ -89,7 +89,10 @@ export function GlassFront({ width, height, depth, variant, tint }: GlassFrontPr
           ? {
               normalMap,
               normalScale: new THREE.Vector2(1.4, 1.4),
-              "normalMap-repeat": new THREE.Vector2(repeatX, 1),
+              "normalMap-repeat-x": repeatX,
+              "normalMap-repeat-y": 1,
+              "normalMap-wrapS": THREE.RepeatWrapping,
+              "normalMap-wrapT": THREE.RepeatWrapping,
             }
           : {})}
       />
