@@ -113,14 +113,14 @@ export function EditorCanvas({ mode, controls }: { mode: Mode; controls?: Editor
       </div>
       <ClientOnly
         fallback={
-          <div className="grid h-[620px] place-items-center rounded-xl border border-border/60 bg-muted/20 text-sm text-muted-foreground">
+            <div className="grid min-h-[520px] place-items-center rounded-xl border border-border/60 bg-muted/20 text-sm text-muted-foreground">
             Carregando ambiente 3D…
           </div>
         }
       >
         <Suspense
           fallback={
-            <div className="grid h-[620px] place-items-center rounded-xl border border-border/60 bg-muted/20 text-sm text-muted-foreground">
+              <div className="grid min-h-[520px] place-items-center rounded-xl border border-border/60 bg-muted/20 text-sm text-muted-foreground">
               Inicializando motor 3D…
             </div>
           }

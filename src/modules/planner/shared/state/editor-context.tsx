@@ -30,7 +30,7 @@ import type {
   PlannerProjectVersion,
 } from "../types/project";
 import type { PlannerProjectId } from "../types";
-import { createProject } from "../factories/project";
+import { createProject, ensureProjectRoomShells } from "../factories/project";
 import { loadProject as loadLocalProject } from "../persistence/local-store";
 import {
   loadProjectSnapshot,
@@ -187,8 +187,9 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
   );
 
   const loadProject = useCallback((project: PlannerProject) => {
-    dispatch({ type: "load", project });
-    void refreshVersions(project.id);
+    const normalized = ensureProjectRoomShells(project);
+    dispatch({ type: "load", project: normalized });
+    void refreshVersions(normalized.id);
   }, [refreshVersions]);
 
   const persist = useCallback(
@@ -230,8 +231,9 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
         if (!result || !result.meta) {
           const local = loadLocalProject(tenantId, projectId);
           if (local) {
-            dispatch({ type: "load", project: local });
-            void refreshVersions(local.id);
+            const normalizedLocal = ensureProjectRoomShells(local);
+            dispatch({ type: "load", project: normalizedLocal });
+            void refreshVersions(normalizedLocal.id);
             return;
           }
           dispatch({ type: "load", project: null });
@@ -251,8 +253,9 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
         } else {
           const local = loadLocalProject(tenantId, projectId);
           if (local) {
-            dispatch({ type: "load", project: local });
-            void refreshVersions(local.id);
+            const normalizedLocal = ensureProjectRoomShells(local);
+            dispatch({ type: "load", project: normalizedLocal });
+            void refreshVersions(normalizedLocal.id);
             return;
           }
           // Metadados existem, mas snapshot ainda não foi persistido: semeia via factory.
@@ -270,14 +273,16 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
             version: result.meta.version,
           };
         }
-        dispatch({ type: "load", project });
-        void refreshVersions(project.id);
+        const normalizedProject = ensureProjectRoomShells(project);
+        dispatch({ type: "load", project: normalizedProject });
+        void refreshVersions(normalizedProject.id);
       } catch (err) {
         console.error("[planner] load project falhou", err);
         const local = loadLocalProject(tenantId, projectId);
         if (local) {
-          dispatch({ type: "load", project: local });
-          void refreshVersions(local.id);
+          const normalizedLocal = ensureProjectRoomShells(local);
+          dispatch({ type: "load", project: normalizedLocal });
+          void refreshVersions(normalizedLocal.id);
           return;
         }
         dispatch({ type: "load", project: null });

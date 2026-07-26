@@ -17,6 +17,7 @@ import { saveProjectSnapshot, type JsonObject } from "@/lib/planner-snapshots.fu
 import {
   createEnvironment,
   createProject,
+  ensureProjectRoomShells,
   createRoom,
   upsertProject,
   usePlannerEditor,
@@ -324,13 +325,14 @@ export function usePlannerChat() {
       const startedWithoutProject = !editor.state.project;
       const shouldOpenEditorAfterCreate =
         startedWithoutProject || pathname.endsWith("/planner/projetos/novo");
-      if (boot.changed) {
-        if (editor.state.project) editor.updateProject(() => boot.project);
-        else editor.loadProject(boot.project);
+      const operableProject = ensureProjectRoomShells(boot.project);
+      if (boot.changed || operableProject !== boot.project) {
+        if (editor.state.project) editor.updateProject(() => operableProject);
+        else editor.loadProject(operableProject);
         editor.select({ environmentId: boot.environmentId, roomId: boot.roomId });
       }
 
-      const project = boot.project;
+      const project = operableProject;
       const activeEnvironmentId = boot.environmentId;
       const activeRoomId = boot.roomId;
 
