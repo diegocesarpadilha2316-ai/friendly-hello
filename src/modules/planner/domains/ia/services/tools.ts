@@ -151,58 +151,83 @@ interface RoomPreset {
   style?: string;
 }
 
-const ROOM_PRESETS: Readonly<Record<string, RoomPreset>> = {
+/**
+ * Blueprint por ambiente — usa o motor de layout (`applyLayout`) que
+ * já sabe encostar as peças na face interna da parede (WALL_OFFSET) e
+ * distribuir sequencialmente com margem. Cada peça é passada como
+ * descrição rica → o `matcher` converte no CatalogItem certo.
+ */
+interface RoomBlueprint {
+  label: string;
+  shape: LayoutShape;
+  pieces: readonly LayoutPieceSpec[];
+  style?: string;
+}
+
+const ROOM_BLUEPRINTS: Readonly<Record<string, RoomBlueprint>> = {
   cozinha: {
     label: "Cozinha moderna",
-    items: [
-      { subtype: "balcao", qty: 2 },
-      { subtype: "aereo", qty: 3 },
-      { subtype: "gaveteiro", qty: 1 },
-      { subtype: "torre", qty: 1 },
-      { subtype: "tampo", qty: 1 },
-      { subtype: "ilha", qty: 1 },
+    shape: "L",
+    pieces: [
+      // Parede principal (bottom) — balcões + eletros
+      { description: "balcão 800mm Louro Freijó", count: 2, wall: "bottom" },
+      { description: "gaveteiro 600mm Louro Freijó", count: 1, wall: "bottom" },
+      { description: "cooktop 600mm inox", count: 1, wall: "bottom" },
+      { description: "balcão 600mm Louro Freijó", count: 1, wall: "bottom" },
+      // Parede lateral (right) — torre alta + geladeira
+      { description: "torre forno microondas 700mm", count: 1, wall: "right" },
+      { description: "geladeira 700mm inox", count: 1, wall: "right" },
+      // Aéreos acompanham a parede principal
+      { description: "aéreo 800mm porta basculante Louro Freijó", count: 3, wall: "bottom" },
     ],
     style: "moderno",
   },
   closet: {
     label: "Closet completo",
-    items: [
-      { subtype: "closet", qty: 3 },
-      { subtype: "gaveteiro", qty: 2 },
-      { subtype: "prateleira", qty: 4 },
+    shape: "U",
+    pieces: [
+      { description: "closet 1200mm cabideiro duplo Louro Freijó", count: 1, wall: "left" },
+      { description: "gaveteiro 800mm Louro Freijó", count: 1, wall: "left" },
+      { description: "closet 1200mm prateleiras Louro Freijó", count: 1, wall: "bottom" },
+      { description: "gaveteiro 800mm Louro Freijó", count: 1, wall: "bottom" },
+      { description: "closet 1200mm cabideiro duplo Louro Freijó", count: 1, wall: "right" },
     ],
     style: "minimalista",
   },
   dormitorio: {
     label: "Dormitório",
-    items: [
-      { subtype: "roupeiro", qty: 1 },
-      { subtype: "painel", qty: 1 },
-      { subtype: "gaveteiro", qty: 1 },
+    shape: "L",
+    pieces: [
+      { description: "roupeiro 2400mm 6 portas Louro Freijó", count: 1, wall: "bottom" },
+      { description: "painel de TV 2000mm ripado", count: 1, wall: "right" },
+      { description: "gaveteiro 800mm Louro Freijó", count: 1, wall: "right" },
     ],
   },
   sala: {
     label: "Sala integrada",
-    items: [
-      { subtype: "painel", qty: 1 },
-      { subtype: "cristaleira", qty: 1 },
-      { subtype: "nicho", qty: 3 },
+    shape: "linear",
+    pieces: [
+      { description: "painel de TV 2400mm ripado", count: 1, wall: "bottom" },
+      { description: "cristaleira 800mm vidro", count: 1, wall: "bottom" },
+      { description: "nicho 400mm", count: 3, wall: "bottom" },
     ],
   },
   escritorio: {
     label: "Home office",
-    items: [
-      { subtype: "bancada", qty: 1 },
-      { subtype: "gaveteiro", qty: 1 },
-      { subtype: "prateleira", qty: 3 },
+    shape: "linear",
+    pieces: [
+      { description: "bancada 1600mm Louro Freijó", count: 1, wall: "bottom" },
+      { description: "gaveteiro 500mm rodízio Louro Freijó", count: 1, wall: "bottom" },
+      { description: "prateleira 800mm", count: 3, wall: "bottom" },
     ],
   },
   banheiro: {
     label: "Banheiro",
-    items: [
-      { subtype: "gaveteiro", qty: 1 },
-      { subtype: "espelho", qty: 1 },
-      { subtype: "nicho", qty: 2 },
+    shape: "linear",
+    pieces: [
+      { description: "gaveteiro 800mm suspenso Louro Freijó", count: 1, wall: "bottom" },
+      { description: "espelho 800mm", count: 1, wall: "bottom" },
+      { description: "nicho 400mm", count: 2, wall: "bottom" },
     ],
   },
 };
@@ -212,8 +237,8 @@ export function toolCreateRoomPreset(
   ctx: ToolContext,
   args: { preset: string; style?: string },
 ): ToolExecutionResult {
-  const preset = ROOM_PRESETS[args.preset];
-  if (!preset) {
+  const blueprint = ROOM_BLUEPRINTS[args.preset];
+  if (!blueprint) {
     return {
       project,
       summary: `Não conheço o ambiente "${args.preset}". Tente cozinha, closet, dormitório, sala, escritório ou banheiro.`,
@@ -223,22 +248,10 @@ export function toolCreateRoomPreset(
   const room = getRoom(project, ctx);
   if (!room) return { project, summary: "Selecione um cômodo antes de criar o ambiente.", affectedIds: [] };
 
-  let next = project;
-  let x = 300;
-  const y = room.dimensions.depth / 2;
-  let inserted = 0;
-  for (const { subtype, qty } of preset.items) {
-    const item = firstItem(subtype);
-    if (!item) continue;
-    for (let i = 0; i < qty; i++) {
-      next = insertItemIntoProject(next, ctx, item, { at: { x, y } });
-      x += item.parametric.defaults.width + 40;
-      inserted++;
-    }
-  }
+  const res = applyLayout(project, ctx, { shape: blueprint.shape, pieces: blueprint.pieces });
   return {
-    project: next,
-    summary: `${preset.label} criado — ${inserted} peças inseridas em ${room.name}.`,
+    project: res.project,
+    summary: `${blueprint.label} criado — ${res.placed} peças encostadas nas paredes de ${room.name}.${res.skipped > 0 ? ` (${res.skipped} ignoradas)` : ""}`,
     affectedIds: [],
   };
 }
