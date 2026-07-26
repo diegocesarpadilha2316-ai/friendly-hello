@@ -39,6 +39,7 @@ interface CabinetMeshProps {
   drawersCount?: number;
   doorsCount?: number;
   shelvesCount?: number;
+  led?: boolean;
 }
 
 interface CabinetComposition {
