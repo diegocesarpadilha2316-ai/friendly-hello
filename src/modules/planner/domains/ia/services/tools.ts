@@ -25,6 +25,7 @@ import {
   type CatalogSubtype,
   type Editor2DPrimitive,
 } from "@/modules/planner/shared";
+import { matchDescription } from "./matcher";
 
 export interface ToolContext {
   environmentId: string;
@@ -554,9 +555,58 @@ export function toolSetFrontType(
   };
 }
 
+// ───── Inserção paramétrica a partir de descrição livre (Parte 2) ─────
+
+export function toolInsertDescribed(
+  project: PlannerProject,
+  ctx: ToolContext,
+  args: {
+    description: string;
+    subtype?: string;
+    catalogItemId?: string;
+    count?: number;
+    at?: { x: number; y: number };
+  },
+): ToolExecutionResult {
+  const match = matchDescription(args.description, {
+    subtype: args.subtype as CatalogSubtype | undefined,
+    catalogItemId: args.catalogItemId,
+  });
+  if (!match) {
+    return {
+      project,
+      summary: `Não consegui casar "${args.description}" com nenhum item do catálogo.`,
+      affectedIds: [],
+    };
+  }
+  const room = getRoom(project, ctx);
+  if (!room) return { project, summary: "Selecione um cômodo antes de inserir.", affectedIds: [] };
+
+  const count = Math.max(1, Math.min(20, args.count ?? 1));
+  const startX = args.at?.x ?? room.dimensions.width / 2;
+  const startY = args.at?.y ?? room.dimensions.depth / 2;
+  const stepBase = match.overrides.width ?? match.item.parametric.defaults.width;
+  const step = stepBase + 40;
+
+  let next = project;
+  for (let i = 0; i < count; i++) {
+    next = insertItemIntoProject(next, ctx, match.item, {
+      at: { x: startX + i * step, y: startY },
+      overrides: match.overrides,
+      params: match.params,
+    });
+  }
+  return {
+    project: next,
+    summary: `${count}× ${match.item.name} inserido (${match.reasons.join(", ")}).`,
+    affectedIds: [],
+  };
+}
+
 // Registro para descoberta/documentação (futuro Marketplace de tools).
 export type ToolName =
   | "insert_item"
+  | "insert_described"
   | "create_room_preset"
   | "change_material"
   | "change_color"
@@ -581,6 +631,7 @@ export interface ToolDescriptor {
 
 export const PLANNER_TOOL_REGISTRY: readonly ToolDescriptor[] = [
   { name: "insert_item", label: "Inserir peça", description: "Adiciona um item da biblioteca ao cômodo ativo." },
+  { name: "insert_described", label: "Inserir por descrição", description: "Casa uma descrição livre (ex.: 'aéreo 800 vidro reeded louro freijó') com um item real do catálogo e insere já com dimensões e acabamento aplicados." },
   { name: "create_room_preset", label: "Criar ambiente", description: "Monta um ambiente completo (cozinha, closet, etc.)." },
   { name: "change_material", label: "Trocar material", description: "Substitui o material dos móveis." },
   { name: "change_color", label: "Trocar acabamento", description: "Substitui a cor/acabamento dos móveis." },
@@ -601,6 +652,7 @@ export const PLANNER_TOOL_REGISTRY: readonly ToolDescriptor[] = [
 // Bindings entre nomes e funções — usados pelo executor.
 export const TOOL_FUNCTIONS = {
   insert_item: toolInsertItem,
+  insert_described: toolInsertDescribed,
   create_room_preset: toolCreateRoomPreset,
   change_material: toolChangeMaterial,
   change_color: toolChangeColor,
