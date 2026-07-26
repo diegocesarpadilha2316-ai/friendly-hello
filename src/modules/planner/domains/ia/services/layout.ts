@@ -117,6 +117,25 @@ function wallLength(wall: LayoutWall, roomW: number, roomD: number): number {
 
 const GAP_MM = 20;
 const MARGIN_MM = 40;
+// Reserva do canto — quando duas paredes ativas se encontram, o módulo do
+// canto ocupa uma caixa de ~600mm × 600mm. Sem essa reserva, a peça inicial
+// de uma parede sobrepõe a peça inicial da parede vizinha (auditoria confirmou).
+const CORNER_RESERVE_MM = 620;
+
+const ADJ: Record<LayoutWall, { start: LayoutWall; end: LayoutWall }> = {
+  bottom: { start: "left", end: "right" },
+  top:    { start: "left", end: "right" },
+  left:   { start: "bottom", end: "top" },
+  right:  { start: "bottom", end: "top" },
+};
+
+function cornerReserve(wall: LayoutWall, walls: LayoutWall[]): { start: number; end: number } {
+  const adj = ADJ[wall];
+  return {
+    start: walls.includes(adj.start) ? CORNER_RESERVE_MM : 0,
+    end: walls.includes(adj.end) ? CORNER_RESERVE_MM : 0,
+  };
+}
 
 /**
  * Aplica um layout completo. `pieces` é interpretada em ordem — cada
@@ -136,11 +155,17 @@ export function applyLayout(
   const roomD = room.dimensions.depth;
 
   const walls = wallsFor(args.shape);
+  const reserves: Record<LayoutWall, { start: number; end: number }> = {
+    bottom: cornerReserve("bottom", walls),
+    top: cornerReserve("top", walls),
+    left: cornerReserve("left", walls),
+    right: cornerReserve("right", walls),
+  };
   const cursors: Record<LayoutWall, Cursor> = {
-    bottom: { wall: "bottom", offset: MARGIN_MM },
-    top: { wall: "top", offset: MARGIN_MM },
-    left: { wall: "left", offset: MARGIN_MM },
-    right: { wall: "right", offset: MARGIN_MM },
+    bottom: { wall: "bottom", offset: MARGIN_MM + reserves.bottom.start },
+    top: { wall: "top", offset: MARGIN_MM + reserves.top.start },
+    left: { wall: "left", offset: MARGIN_MM + reserves.left.start },
+    right: { wall: "right", offset: MARGIN_MM + reserves.right.start },
   };
 
   // fila circular sobre as paredes disponíveis, para dividir peso.
@@ -185,7 +210,7 @@ export function applyLayout(
       let wall: LayoutWall | null = null;
       for (const w of tryOrder) {
         const c = cursors[w];
-        const len = wallLength(w, roomW, roomD);
+        const len = wallLength(w, roomW, roomD) - reserves[w].end;
         if (c.offset + width + MARGIN_MM <= len) { wall = w; break; }
       }
       if (!wall) {
