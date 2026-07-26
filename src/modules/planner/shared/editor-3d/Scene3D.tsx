@@ -544,6 +544,48 @@ function ApplyViewPreset({
   return null;
 }
 
+/**
+ * Reenquadramento automático "de apresentação".
+ *
+ * Sempre que o `autoFitVersion` do viewport muda (por exemplo, quando a
+ * IA acaba de gerar um ambiente completo), a câmera pula para uma posição
+ * fora da sala, olhando o centro em um ângulo de ~35° — nunca dentro de
+ * parede, nunca dentro de teto. É o "primeiro enquadramento" prometido
+ * pelo Dioris Planner: o usuário digita "quero uma cozinha" e vê o
+ * projeto inteiro imediatamente.
+ */
+function AutoFitCamera({
+  version,
+  center,
+  diag,
+  wallHeight,
+}: {
+  version: number;
+  center: THREE.Vector3;
+  diag: number;
+  wallHeight: number;
+}) {
+  const { camera } = useThree();
+  const centerRef = useRef(center);
+  const diagRef = useRef(diag);
+  const wallRef = useRef(wallHeight);
+  centerRef.current = center;
+  diagRef.current = diag;
+  wallRef.current = wallHeight;
+  useEffect(() => {
+    const c = centerRef.current;
+    const d = Math.max(6, diagRef.current * 1.35);
+    // Câmera na diagonal SE, ~1.65m do chão (linha do olho humano),
+    // afastada o suficiente para o ambiente inteiro caber no frame.
+    const eyeY = Math.max(1.4, (wallRef.current / 1000) * 0.55);
+    camera.position.set(c.x + d * 0.75, eyeY + d * 0.35, c.z + d * 0.75);
+    camera.lookAt(c.x, eyeY * 0.6, c.z);
+    camera.updateProjectionMatrix();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [version, camera]);
+  return null;
+}
+
 function AutoResize() {
   const ref = useRef<THREE.Group>(null!);
   useFrame(() => {
@@ -738,6 +780,7 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
             <Furniture key={f.id} f={f} center={center} viewport={viewport} selected={selectedId === f.id} onSelect={onSelect} />
           ))}
           {viewport.sectionHeight == null &&
+            !(viewport.autoHideCeiling !== false && !viewport.cinematic) &&
             model.ceilings.map((s) => (
               <Slab key={s.id} s={s} kind="ceiling" center={center} viewport={viewport} selected={selectedId === s.id} onSelect={onSelect} />
             ))}
@@ -745,6 +788,12 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
       </group>
 
       <Cameras mode={viewport.camera} />
+      <AutoFitCamera
+        version={viewport.autoFitVersion ?? 0}
+        center={center}
+        diag={diag}
+        wallHeight={viewport.wallHeight}
+      />
       {viewport.cinematic && viewport.render === "material" ? <CinematicFX /> : null}
     </Canvas>
   );
