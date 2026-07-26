@@ -20,6 +20,7 @@ import {
   TOOL_FUNCTIONS,
   type ToolContext,
   type ToolExecutionResult,
+  type ToolName,
 } from "./tools";
 
 export interface AgentInput {
@@ -39,6 +40,17 @@ export interface AgentInput {
     project: PlannerProject;
     ctx: ToolContext;
   }) => Promise<string | null>;
+  /**
+   * Callback opcional — quando fornecido, o agent tenta obter do LLM uma
+   * lista estruturada de `ParsedIntent`s (tool-calling real) antes de
+   * cair no fallback heurístico. Retornar `null` ou `[]` mantém o
+   * comportamento local.
+   */
+  llmPlan?: (prompt: {
+    userMessage: string;
+    project: PlannerProject;
+    ctx: ToolContext;
+  }) => Promise<readonly ParsedIntent[] | null>;
 }
 
 export interface AgentChunk {
@@ -78,6 +90,15 @@ export async function* runAgent(input: AgentInput): AsyncGenerator<AgentChunk, v
   const parsed = interpret(input.message);
 
   if (parsed.type === "smalltalk" || parsed.type === "unknown") {
+    // Antes de responder só com texto, tenta obter um plano estruturado
+    // (tool-calling real) do LLM — se vier, executa como command.
+    if (parsed.type === "unknown" && input.llmPlan) {
+      const plan = await tryLLMPlan(input);
+      if (plan && plan.length > 0) {
+        yield* runCommand(plan, input);
+        return;
+      }
+    }
     const reply =
       (await tryLLM(input, parsed.type, input.message)) ?? parsed.reply;
     yield* streamText(reply, input.signal);
@@ -94,31 +115,65 @@ export async function* runAgent(input: AgentInput): AsyncGenerator<AgentChunk, v
     return;
   }
 
-  // command
+  // command — antes de rodar o plano local, deixa o LLM enriquecer/refazer o plano
+  // se ele conhecer detalhes que o interpretador heurístico não captou.
+  let intents: readonly ParsedIntent[] = parsed.intents;
+  if (input.llmPlan) {
+    const remote = await tryLLMPlan(input);
+    if (remote && remote.length >= intents.length) intents = remote;
+  }
+  yield* runCommand(intents, input);
+}
+
+async function* runCommand(
+  intents: readonly ParsedIntent[],
+  input: AgentInput,
+): AsyncGenerator<AgentChunk, void, void> {
   let project = input.project;
   const summaries: string[] = [];
-  for (const intent of parsed.intents) {
+  for (const intent of intents) {
     if (input.signal?.aborted) {
       yield { kind: "error", text: "Geração cancelada." };
       return;
     }
-    yield {
-      kind: "tool",
-      toolName: intent.tool,
-      toolArgs: intent.args,
-    };
+    yield { kind: "tool", toolName: intent.tool, toolArgs: intent.args };
     const result = executeIntent(intent, project, input.ctx);
     project = result.project;
     summaries.push(`• ${result.summary}`);
     yield { kind: "tool", toolName: intent.tool, toolArgs: intent.args, toolResult: result };
-    // pequena pausa para dar feeling de tool-loop sem travar a UI
     await sleep(60, input.signal);
   }
-
   const header = summaries.length > 1 ? "Pronto — executei os passos:\n" : "Pronto — ";
   const finalText = `${header}${summaries.join("\n")}`;
   yield* streamText(finalText, input.signal);
   yield { kind: "done", toolResult: { project, summary: finalText, affectedIds: [] } };
+}
+
+async function tryLLMPlan(input: AgentInput): Promise<readonly ParsedIntent[] | null> {
+  if (!input.llmPlan) return null;
+  try {
+    const plan = await input.llmPlan({
+      userMessage: input.message,
+      project: input.project,
+      ctx: input.ctx,
+    });
+    if (!Array.isArray(plan) || plan.length === 0) return null;
+    // valida cada intent contra ToolName conhecido.
+    const valid = plan.filter(
+      (i): i is ParsedIntent =>
+        !!i &&
+        typeof i === "object" &&
+        typeof (i as ParsedIntent).tool === "string" &&
+        (i as ParsedIntent).tool in TOOL_FUNCTIONS,
+    );
+    return valid.length > 0 ? (valid as readonly ParsedIntent[]) : null;
+  } catch {
+    return null;
+  }
+}
+
+// Somente para referência de tipo (evita import não-usado em builds estritos).
+export type _ToolNameForPlan = ToolName;
 }
 
 async function tryLLM(
