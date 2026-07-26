@@ -119,26 +119,27 @@ export const listCatalogHardware = createServerFn({ method: "GET" })
   .inputValidator((data: unknown) => listHardwareInput.parse(data ?? {}))
   .handler(async ({ data, context }): Promise<readonly PlannerHardwareDTO[]> => {
     let q = context.supabase
-      .from("hardware")
-      .select("id,name,slug,kind,sku,price_cents,currency,specs,manufacturer_id,status")
-      .eq("status", "active")
-      .limit(data.limit ?? 120);
-    if (data.category) q = q.eq("kind", data.category);
+      .from("planner_hardware")
+      .select("id,fabricante,marca,categoria,modelo,descricao,imagem_url,preco_unitario,parametros_cnc,furacao,profundidade,folga")
+      .eq("ativo", true)
+      .limit(data.limit ?? 200);
+    if (data.category) q = q.eq("categoria", data.category);
+    if (data.manufacturer) q = q.eq("fabricante", data.manufacturer);
     if (data.query) {
       const term = `%${data.query}%`;
-      q = q.or(`name.ilike.${term},sku.ilike.${term},slug.ilike.${term}`);
+      q = q.or(`modelo.ilike.${term},categoria.ilike.${term},fabricante.ilike.${term},marca.ilike.${term}`);
     }
     const { data: rows, error } = await q;
     if (error) return [];
     return (rows ?? []).map((r) => ({
       id: r.id as string,
-      manufacturer: "",
-      brand: "",
-      category: (r.kind as string) ?? "",
-      model: (r.name as string) ?? (r.sku as string) ?? "",
-      description: (r.sku as string | null) ?? null,
-      imageUrl: null,
-      unitPrice: r.price_cents != null ? Number(r.price_cents) / 100 : null,
+      manufacturer: (r.fabricante as string) ?? "",
+      brand: (r.marca as string) ?? "",
+      category: (r.categoria as string) ?? "",
+      model: (r.modelo as string) ?? "",
+      description: (r.descricao as string | null) ?? null,
+      imageUrl: (r.imagem_url as string | null) ?? null,
+      unitPrice: r.preco_unitario != null ? Number(r.preco_unitario) : null,
     }));
   });
 
@@ -151,9 +152,9 @@ export const catalogStats = createServerFn({ method: "GET" })
         .select("id", { count: "exact", head: true })
         .eq("ativo", true),
       context.supabase
-        .from("hardware")
+        .from("planner_hardware")
         .select("id", { count: "exact", head: true })
-        .eq("status", "active"),
+        .eq("ativo", true),
     ]);
     return {
       materials: mats.count ?? 0,
