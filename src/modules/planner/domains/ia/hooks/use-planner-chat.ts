@@ -384,7 +384,17 @@ export function usePlannerChat() {
                 catalog +
                 "\n\nSubtypes válidos para insert_item/set_front_type: aereo, balcao, gaveteiro, torre, tampo, ilha, painel, roupeiro, closet, nicho, prateleira, cristaleira, bancada, espelho, porta, gaveta, iluminacao.\nPresets válidos para create_room_preset: cozinha, closet, dormitorio, sala, escritorio, banheiro.\nEstilos válidos para set_style: minimalista, classico, industrial, luxo, moderno.\nTipos válidos para set_front_type: vidro, reeded, solid, aberto.\nPresets de apply_finishing (arg 'preset'): " +
                 FINISHING_PRESETS.map((p) => `"${p.id}" (${p.label})`).join(", ") +
-                ".\nEscopos de apply_finishing (arg 'scope'): all, aereos, balcoes, torre, painel, tampos.";
+                ".\nEscopos de apply_finishing (arg 'scope'): all, aereos, balcoes, torre, painel, tampos." +
+                "\n\nSinônimos que você DEVE reconhecer e mapear ao subtype correto via insert_described:" +
+                "\n• 'aéreo/superior/de cima' → aereo | 'balcão/inferior/de baixo' → balcao | 'gaveteiro' → gaveteiro | 'torre/torre quente' → torre" +
+                "\n• 'roupeiro/guarda-roupa' → roupeiro | 'closet' → closet | 'painel de TV' → painel | 'ilha' → ilha | 'bancada/tampo' → bancada/tampo" +
+                "\n• 'nicho/cristaleira/prateleira' → nicho/cristaleira/prateleira" +
+                "\n• 'porcelanato/piso/laminado/vinílico' → piso | 'azulejo/revestimento/pastilha' → revestimento" +
+                "\n• 'geladeira/frigobar' → geladeira | 'fogão/cooktop' → fogao/cooktop | 'coifa/depurador' → coifa | 'forno/microondas' → forno/microondas | 'lava-louças/lava-roupas' → lava-loucas/lava-roupas" +
+                "\n• 'pendente/lustre/luminária/spot/fita LED' → iluminacao" +
+                "\n• 'sofá/poltrona/mesa/cadeira/tapete/cortina/vaso/quadro' → decoração (use insert_described com descrição completa)" +
+                "\n• 'torneira/cuba/pia/misturador' → tratar como ferragem via change_hardware ou insert_described." +
+                "\n\nRegra de ouro: sempre prefira `insert_described` para itens reais do catálogo. Passe a descrição rica com marca (Blum, Duratex, Portobello…), cor (Louro Freijó, Off White…), dimensão (800mm, 1,20m) e tipo de frente (vidro/reeded/sólida).";
               const prompt = `Projeto: "${p.name}". Cômodo: "${p.environments.find((e) => e.id === ctx.environmentId)?.rooms.find((r) => r.id === ctx.roomId)?.name ?? "—"}".\nPedido do usuário: ${userMessage}`;
               let raw: unknown = null;
               try {
