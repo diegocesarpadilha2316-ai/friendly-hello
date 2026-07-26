@@ -174,21 +174,21 @@ function PlannerDashboard() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Link to="/planner/projetos">
-              <Button size="sm" className="gap-2">
+            <Button size="sm" className="gap-2" asChild>
+              <Link to="/planner/projetos/novo">
                 <PlusCircle className="h-4 w-4" /> Novo projeto
-              </Button>
-            </Link>
-            <Link to="/planner/projetos">
-              <Button size="sm" variant="outline" className="gap-2">
+              </Link>
+            </Button>
+            <Button size="sm" variant="outline" className="gap-2" asChild>
+              <Link to="/planner/projetos">
                 <Upload className="h-4 w-4" /> Importar
-              </Button>
-            </Link>
-            <Link to="/planner/ia">
-              <Button size="sm" variant="ghost" className="gap-2">
+              </Link>
+            </Button>
+            <Button size="sm" variant="ghost" className="gap-2" asChild>
+              <Link to="/planner/ia">
                 <Sparkles className="h-4 w-4" /> IA Copiloto
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
