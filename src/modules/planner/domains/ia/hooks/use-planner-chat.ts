@@ -107,7 +107,7 @@ function buildPlannerSystemPrompt(
     .join("\n");
 }
 
-function buildPlannerNoContextSystemPrompt(project: PlannerProject | null): string {
+function buildPlannerNoContextSystemPrompt(project: PlannerProject | null | undefined): string {
   const projectContext = project
     ? [
         `Existe um projeto carregado: "${project.name}" (v${project.version}).`,
