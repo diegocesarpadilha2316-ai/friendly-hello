@@ -17,6 +17,8 @@ export interface EditorCanvasControls {
   showGrid?: boolean;
   view?: "perspectiva" | "topo" | "frontal" | "lateral";
   showLights?: boolean;
+  openDoors?: boolean;
+  openDrawers?: boolean;
 }
 
 export function EditorCanvas({ mode, controls }: { mode: Mode; controls?: EditorCanvasControls }) {
@@ -132,6 +134,8 @@ export function EditorCanvas({ mode, controls }: { mode: Mode; controls?: Editor
                     showGrid: controls.showGrid,
                     view: controls.view,
                     showLights: controls.showLights,
+                    openDoors: controls.openDoors,
+                    openDrawers: controls.openDrawers,
                   }
                 : undefined
             }
