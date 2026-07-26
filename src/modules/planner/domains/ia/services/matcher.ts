@@ -79,18 +79,22 @@ function detectSubtype(text: string): CatalogSubtype | null {
 // ─────────── dimensão ───────────
 // Aceita "80", "800", "80cm", "1,20m", "2m", "1200mm".
 function parseWidth(text: string): number | null {
-  const m = text.match(/(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?\b/g);
+  // Ignora números que qualificam contagem (portas/gavetas/prateleiras) para
+  // não confundir "3 portas" com 3m ou "4 gavetas" com 4m.
+  const sanitized = text.replace(/\b(\d+(?:[.,]\d+)?)\s*(porta|gaveta|prateleir)/g, "");
+  const m = sanitized.match(/(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?\b/g);
   if (!m) return null;
   for (const raw of m) {
     const mm = raw.match(/(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?/);
     if (!mm) continue;
-    const n = Number(mm[1].replace(",", "."));
+    const rawNum = mm[1];
+    const n = Number(rawNum.replace(",", "."));
     const unit = mm[2];
     let val: number;
     if (unit === "mm") val = n;
     else if (unit === "cm") val = n * 10;
     else if (unit === "m") val = n * 1000;
-    else if (n < 10) val = n * 1000; // "1.2" => metros
+    else if (n < 10 && /[.,]/.test(rawNum)) val = n * 1000; // "1.2" => metros (só decimais)
     else if (n < 100) val = n * 10; // "80" => 800mm (cm)
     else val = n; // já em mm
     if (val >= 200 && val <= 4000) return Math.round(val);
@@ -136,6 +140,34 @@ function detectMaterial(text: string): string | null {
   if (/compensad/.test(text)) return "Compensado 18mm";
   if (/mdf\s*15/.test(text)) return "MDF 15mm";
   if (/mdf/.test(text)) return "MDF 18mm";
+  return null;
+}
+
+// ─────────── contagem de portas / gavetas ───────────
+// Reconhece "3 portas", "porta tripla", "2 gavetas", "gaveteiro de 4 gavetas".
+function detectDoorCount(text: string): number | null {
+  const m = text.match(/(\d+)\s*porta/);
+  if (m) {
+    const n = Number(m[1]);
+    if (n >= 1 && n <= 8) return n;
+  }
+  if (/porta\s*(simples|unica|single)/.test(text)) return 1;
+  if (/porta\s*dupla/.test(text) || /duas\s*portas/.test(text)) return 2;
+  if (/tres\s*portas|porta\s*tripla/.test(text)) return 3;
+  if (/quatro\s*portas/.test(text)) return 4;
+  return null;
+}
+function detectDrawerCount(text: string): number | null {
+  const m = text.match(/(\d+)\s*gaveta/);
+  if (m) {
+    const n = Number(m[1]);
+    if (n >= 1 && n <= 8) return n;
+  }
+  if (/duas\s*gavetas/.test(text)) return 2;
+  if (/tres\s*gavetas/.test(text)) return 3;
+  if (/quatro\s*gavetas/.test(text)) return 4;
+  if (/cinco\s*gavetas/.test(text)) return 5;
+  if (/seis\s*gavetas/.test(text)) return 6;
   return null;
 }
 
@@ -201,6 +233,16 @@ export function matchDescription(
   if (material) {
     params.material = material;
     reasons.push(`material ${material}`);
+  }
+  const doors = detectDoorCount(t);
+  if (doors != null) {
+    params["mod:doors"] = doors;
+    reasons.push(`${doors} porta(s)`);
+  }
+  const drawers = detectDrawerCount(t);
+  if (drawers != null) {
+    params["mod:drawers"] = drawers;
+    reasons.push(`${drawers} gaveta(s)`);
   }
 
   return { item, overrides, params, reasons };
