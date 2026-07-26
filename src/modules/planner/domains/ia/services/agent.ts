@@ -174,7 +174,6 @@ async function tryLLMPlan(input: AgentInput): Promise<readonly ParsedIntent[] | 
 
 // Somente para referência de tipo (evita import não-usado em builds estritos).
 export type _ToolNameForPlan = ToolName;
-}
 
 async function tryLLM(
   input: AgentInput,
