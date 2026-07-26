@@ -76,9 +76,9 @@ function placementFor(
     case "top":
       return { at: { x: offset + halfW, y: roomD - halfD }, rotation: 180 };
     case "left":
-      return { at: { x: halfD, y: offset + halfW }, rotation: 90 };
+      return { at: { x: halfD, y: offset + halfW }, rotation: 270 };
     case "right":
-      return { at: { x: roomW - halfD, y: offset + halfW }, rotation: 270 };
+      return { at: { x: roomW - halfD, y: offset + halfW }, rotation: 90 };
   }
   // exhaustiveness (item usado só para futura variação por subtype)
   return { at: { x: roomW / 2, y: roomD / 2 }, rotation: 0 };
