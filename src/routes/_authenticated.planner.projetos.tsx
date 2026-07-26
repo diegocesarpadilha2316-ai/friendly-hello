@@ -87,14 +87,14 @@ function PlannerProjectsPage() {
         {filtered.length === 0 ? (
           <EmptyState
             icon={<FolderKanban className="h-6 w-6" />}
-            title={projects.length === 0 ? "Nenhum projeto ainda" : "Nenhum projeto encontrado"}
+            title={safeProjects.length === 0 ? "Nenhum projeto ainda" : "Nenhum projeto encontrado"}
             description={
-              projects.length === 0
+              safeProjects.length === 0
                 ? "Crie o primeiro projeto com o wizard guiado pela IA."
                 : "Ajuste sua busca para localizar projetos existentes."
             }
             action={
-              projects.length === 0 ? (
+              safeProjects.length === 0 ? (
                 <Button size="sm" asChild>
                   <Link to="/planner/projetos/novo">
                     <Sparkles className="mr-2 h-4 w-4" /> Criar com IA
