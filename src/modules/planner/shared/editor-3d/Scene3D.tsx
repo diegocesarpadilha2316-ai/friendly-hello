@@ -356,10 +356,6 @@ function Furniture({
   }
   const cabinet = viewport.render !== "wireframe" && isCabinetSubtype(f.subtype);
   if (cabinet) {
-    const openDoors = Boolean(f.params?.["open:doors"]);
-    const openDrawers = Boolean(f.params?.["open:drawers"]);
-    const drawersCount = typeof f.params?.["drawers"] === "number" ? (f.params!["drawers"] as number) : undefined;
-    const doorsCount = typeof f.params?.["doors"] === "number" ? (f.params!["doors"] as number) : undefined;
     return (
       <group
         position={[pos.x, pos.y, pos.z]}
@@ -376,10 +372,6 @@ function Furniture({
           depth={f.depth}
           bodyProps={props}
           selected={selected}
-          openDoors={openDoors}
-          openDrawers={openDrawers}
-          drawersCount={drawersCount}
-          doorsCount={doorsCount}
         />
         {(f.frontType === "vidro" || f.frontType === "reeded") ? (
           <GlassFront
