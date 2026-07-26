@@ -87,6 +87,9 @@ export function CabinetMesh(props: CabinetMeshProps) {
 
   const bodyColor = (bodyProps as { color?: string }).color ?? "#b78a5c";
   const frontMatProps = frontProps ?? bodyProps;
+  // Cor levemente escurecida para as reentrâncias/shaker panel (sombreado real de marcenaria).
+  const frontColor = (frontMatProps as { color?: string }).color ?? bodyColor;
+  const HANDLE_COLOR = "#d4d7dc";
 
   return (
     <group>
@@ -201,24 +204,54 @@ export function CabinetMesh(props: CabinetMeshProps) {
         const cx = -halfW + GAP + doorW / 2 + i * (doorW + GAP);
         const openAngle = openDoors ? (i % 2 === 0 ? -1.2 : 1.2) : 0;
         const hingeSide = i % 2 === 0 ? -1 : 1;
+        const panelInset = 0.045;
+        const panelW = Math.max(0.05, doorW - panelInset * 2);
+        const panelH = Math.max(0.05, doorH - panelInset * 2);
         return (
           <group
             key={`door-${i}`}
             position={[cx + (hingeSide * doorW) / 2, 0, halfD - INSET]}
             rotation={[0, openAngle, 0]}
           >
+            {/* Frente principal (corpo da porta) */}
             <mesh position={[(-hingeSide * doorW) / 2, 0, FRONT_T / 2]} castShadow receiveShadow>
               <boxGeometry args={[doorW, doorH, FRONT_T]} />
               <meshStandardMaterial {...frontMatProps} />
             </mesh>
-            {/* Puxador vertical minimalista */}
+            {/* Shaker panel — reentrância interna (dá profundidade à frente) */}
+            <mesh position={[(-hingeSide * doorW) / 2, 0, FRONT_T * 0.35]} receiveShadow>
+              <boxGeometry args={[panelW, panelH, FRONT_T * 0.35]} />
+              <meshStandardMaterial
+                {...frontMatProps}
+                color={frontColor}
+                roughness={Math.min(1, ((frontMatProps as { roughness?: number }).roughness ?? 0.6) + 0.05)}
+              />
+            </mesh>
+            {/* Sombra interna do rebaixo (fina moldura escura) */}
+            <mesh position={[(-hingeSide * doorW) / 2, 0, FRONT_T * 0.55]}>
+              <boxGeometry args={[panelW + 0.003, panelH + 0.003, 0.001]} />
+              <meshBasicMaterial color="#000" transparent opacity={0.28} />
+            </mesh>
+            {/* Puxador tubular metálico */}
             <mesh
-              position={[(-hingeSide * doorW) + hingeSide * 0.03, 0, FRONT_T + 0.008]}
+              position={[(-hingeSide * doorW) + hingeSide * 0.028, 0, FRONT_T + 0.012]}
+              rotation={[0, 0, 0]}
               castShadow
             >
-              <boxGeometry args={[0.012, Math.min(0.36, doorH * 0.6), 0.008]} />
-              <meshStandardMaterial color="#c9cdd4" metalness={0.9} roughness={0.25} />
+              <cylinderGeometry args={[0.006, 0.006, Math.min(0.32, doorH * 0.55), 20]} />
+              <meshStandardMaterial color={HANDLE_COLOR} metalness={0.95} roughness={0.18} />
             </mesh>
+            {/* Bases do puxador (parafuseria) */}
+            {[-1, 1].map((s) => (
+              <mesh
+                key={`hbase-${s}`}
+                position={[(-hingeSide * doorW) + hingeSide * 0.028, s * Math.min(0.14, doorH * 0.25), FRONT_T + 0.006]}
+                castShadow
+              >
+                <cylinderGeometry args={[0.009, 0.009, 0.008, 16]} />
+                <meshStandardMaterial color={HANDLE_COLOR} metalness={0.9} roughness={0.25} />
+              </mesh>
+            ))}
           </group>
         );
       })}
@@ -228,17 +261,42 @@ export function CabinetMesh(props: CabinetMeshProps) {
         const drH = (height - (comp.drawers + 1) * GAP) / comp.drawers;
         const cy = halfH - GAP - drH / 2 - i * (drH + GAP);
         const outset = openDrawers ? 0.16 : 0;
+        const panelInset = 0.04;
+        const panelW = Math.max(0.05, width - 2 * GAP - panelInset * 2);
+        const panelH = Math.max(0.04, drH - panelInset * 2);
         return (
           <group key={`dr-${i}`} position={[0, cy, halfD - INSET + FRONT_T / 2 + outset]}>
             <mesh castShadow receiveShadow>
               <boxGeometry args={[width - 2 * GAP, drH, FRONT_T]} />
               <meshStandardMaterial {...frontMatProps} />
             </mesh>
-            {/* Puxador horizontal centralizado */}
-            <mesh position={[0, 0, FRONT_T / 2 + 0.008]} castShadow>
-              <boxGeometry args={[Math.min(0.32, (width - 2 * GAP) * 0.5), 0.012, 0.008]} />
-              <meshStandardMaterial color="#c9cdd4" metalness={0.9} roughness={0.25} />
+            {/* Shaker panel gaveta */}
+            <mesh position={[0, 0, FRONT_T * 0.35]} receiveShadow>
+              <boxGeometry args={[panelW, panelH, FRONT_T * 0.35]} />
+              <meshStandardMaterial
+                {...frontMatProps}
+                color={frontColor}
+                roughness={Math.min(1, ((frontMatProps as { roughness?: number }).roughness ?? 0.6) + 0.05)}
+              />
             </mesh>
+            <mesh position={[0, 0, FRONT_T * 0.55]}>
+              <boxGeometry args={[panelW + 0.003, panelH + 0.003, 0.001]} />
+              <meshBasicMaterial color="#000" transparent opacity={0.25} />
+            </mesh>
+            {/* Puxador tubular horizontal */}
+            <mesh position={[0, 0, FRONT_T / 2 + 0.014]} rotation={[0, 0, Math.PI / 2]} castShadow>
+              <cylinderGeometry args={[0.006, 0.006, Math.min(0.28, (width - 2 * GAP) * 0.45), 20]} />
+              <meshStandardMaterial color={HANDLE_COLOR} metalness={0.95} roughness={0.18} />
+            </mesh>
+            {/* Laterais da gaveta visíveis quando aberta */}
+            {openDrawers ? (
+              <>
+                <mesh position={[0, -drH / 2 + 0.01, -outset / 2 - FRONT_T / 2]} receiveShadow>
+                  <boxGeometry args={[Math.max(0.05, width - 2 * GAP - 0.04), 0.012, Math.max(0.02, outset)]} />
+                  <meshStandardMaterial color="#8a8a8a" roughness={0.7} metalness={0.1} />
+                </mesh>
+              </>
+            ) : null}
           </group>
         );
       })}

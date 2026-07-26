@@ -31,6 +31,10 @@ export interface Viewport3DState {
   cinematic?: boolean;
   /** Horário do dia — controla sol, céu e ambiente. */
   daytime?: "morning" | "noon" | "golden" | "night";
+  /** Abrir portas de todos os armários (toolbar do editor). */
+  openDoors?: boolean;
+  /** Abrir gavetas de todos os móveis (toolbar do editor). */
+  openDrawers?: boolean;
 }
 
 export const DEFAULT_VIEWPORT_3D: Viewport3DState = {
@@ -46,4 +50,6 @@ export const DEFAULT_VIEWPORT_3D: Viewport3DState = {
   wallOpacity: 1,
   cinematic: false,
   daytime: "noon",
+  openDoors: false,
+  openDrawers: false,
 };

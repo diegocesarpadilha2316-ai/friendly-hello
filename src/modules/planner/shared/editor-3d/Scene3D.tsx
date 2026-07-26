@@ -395,6 +395,11 @@ function Furniture({
           depth={f.depth}
           bodyProps={props}
           selected={selected}
+          openDoors={viewport.openDoors ?? f.openDoors}
+          openDrawers={viewport.openDrawers ?? f.openDrawers}
+          doorsCount={f.doorsCount}
+          drawersCount={f.drawersCount}
+          shelvesCount={f.shelvesCount}
         />
         {(f.frontType === "vidro" || f.frontType === "reeded") ? (
           <GlassFront
