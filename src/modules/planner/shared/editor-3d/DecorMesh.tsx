@@ -288,8 +288,8 @@ function Curtain({ width, height, depth, color }: DecorProps & { color: string }
         </mesh>
       ))}
       {/* varão */}
-      <mesh position={[0, height + 0.05, 0]}>
-        <cylinderGeometry args={[0.015, 0.015, width + 0.2, 12]} rotation={[0, 0, Math.PI / 2] as unknown as never} />
+      <mesh position={[0, height + 0.05, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.015, 0.015, width + 0.2, 12]} />
         <meshStandardMaterial color="#3d3d3d" metalness={0.7} roughness={0.3} />
       </mesh>
       <_ignored depth={depth} />
