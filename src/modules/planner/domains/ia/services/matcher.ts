@@ -41,7 +41,7 @@ const SUBTYPE_HINTS: Array<{ subtype: CatalogSubtype; words: string[] }> = [
   { subtype: "nicho", words: ["nicho"] },
   { subtype: "cristaleira", words: ["cristaleira"] },
   { subtype: "roupeiro", words: ["roupeiro", "guarda-roupa", "guarda roupa"] },
-  { subtype: "closet", words: ["closet"] },
+  { subtype: "closet", words: ["closet", "cabideiro", "sapateira", "vestidor", "porta-gravata", "porta gravata", "bijoux"] },
   { subtype: "painel", words: ["painel"] },
   { subtype: "ilha", words: ["ilha"] },
   { subtype: "bancada", words: ["bancada"] },
@@ -172,19 +172,52 @@ function detectDrawerCount(text: string): number | null {
 }
 
 // ─────────── seleção do item ───────────
-function pickBestItem(subtype: CatalogSubtype, wantedWidth: number | null): CatalogItem | null {
+// Palavras-chave que devem privilegiar variantes específicas do catálogo
+// quando aparecem no pedido (ex.: "sapateira" → item cujo nome contém
+// "sapateira"; "pia" → "Balcão com Cuba"; "forno" → "Torre Quente Forno").
+const NAME_HINTS: readonly string[] = [
+  "cabideiro", "sapateira", "gravata", "bijoux", "vestidor", "espelho",
+  "pia", "cuba", "gourmet", "forno", "micro-ondas", "microondas",
+  "correr", "vidro", "reeded", "canelad",
+];
+
+function pickBestItem(
+  subtype: CatalogSubtype,
+  wantedWidth: number | null,
+  text: string,
+  wantedDoors: number | null,
+  wantedDrawers: number | null,
+): CatalogItem | null {
   const candidates = CATALOG_ITEMS.filter((i) => i.subtype === subtype);
   if (candidates.length === 0) return null;
-  if (wantedWidth == null) return candidates[0];
-  // menor distância entre largura default e desejada
-  let best = candidates[0];
-  let bestDist = Math.abs(best.parametric.defaults.width - wantedWidth);
-  for (const c of candidates.slice(1)) {
-    const d = Math.abs(c.parametric.defaults.width - wantedWidth);
-    if (d < bestDist) {
-      best = c;
-      bestDist = d;
+
+  const nameHits = NAME_HINTS.filter((w) => text.includes(w));
+  const score = (c: CatalogItem): number => {
+    const nameLc = c.name.toLowerCase();
+    let s = 0;
+    // fidelidade de largura: peso alto (a diferença já entra invertida)
+    if (wantedWidth != null) {
+      const dist = Math.abs(c.parametric.defaults.width - wantedWidth);
+      s -= dist / 10; // 1 pt penal / 10 mm
     }
+    // portas / gavetas: bônus quando o nome cita a mesma contagem
+    if (wantedDoors != null) {
+      const rx = new RegExp(`\\b${wantedDoors}\\s*porta`);
+      if (rx.test(nameLc)) s += 500;
+    }
+    if (wantedDrawers != null) {
+      const rx = new RegExp(`\\b${wantedDrawers}\\s*gavet`);
+      if (rx.test(nameLc)) s += 500;
+    }
+    // dicas semânticas: cada palavra-chave presente e refletida no nome
+    for (const w of nameHits) if (nameLc.includes(w)) s += 120;
+    return s;
+  };
+  let best = candidates[0];
+  let bestScore = score(best);
+  for (const c of candidates.slice(1)) {
+    const sc = score(c);
+    if (sc > bestScore) { best = c; bestScore = sc; }
   }
   return best;
 }
@@ -203,8 +236,10 @@ export function matchDescription(
   let item: CatalogItem | null = null;
   if (fallback?.catalogItemId) item = findCatalogItem(fallback.catalogItemId) ?? null;
   const wantedWidth = parseWidth(t);
+  const wantedDoors = detectDoorCount(t);
+  const wantedDrawers = detectDrawerCount(t);
 
-  if (!item && subtype) item = pickBestItem(subtype, wantedWidth);
+  if (!item && subtype) item = pickBestItem(subtype, wantedWidth, t, wantedDoors, wantedDrawers);
   if (!item) return null;
 
   const overrides: MatchResult["overrides"] = {};
@@ -234,15 +269,13 @@ export function matchDescription(
     params.material = material;
     reasons.push(`material ${material}`);
   }
-  const doors = detectDoorCount(t);
-  if (doors != null) {
-    params["mod:doors"] = doors;
-    reasons.push(`${doors} porta(s)`);
+  if (wantedDoors != null) {
+    params["mod:doors"] = wantedDoors;
+    reasons.push(`${wantedDoors} porta(s)`);
   }
-  const drawers = detectDrawerCount(t);
-  if (drawers != null) {
-    params["mod:drawers"] = drawers;
-    reasons.push(`${drawers} gaveta(s)`);
+  if (wantedDrawers != null) {
+    params["mod:drawers"] = wantedDrawers;
+    reasons.push(`${wantedDrawers} gaveta(s)`);
   }
 
   return { item, overrides, params, reasons };

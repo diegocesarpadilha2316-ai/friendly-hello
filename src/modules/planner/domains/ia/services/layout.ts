@@ -16,6 +16,28 @@ import { matchDescription } from "./matcher";
 
 export type LayoutShape = "linear" | "L" | "U" | "paralela";
 
+// Espelha o mapa de profundidades reais aplicado por
+// `insertItemIntoProject` (src/modules/planner/shared/library/insert.ts).
+// Se o layout calcular a posição com uma profundidade e o insert armazenar
+// outra, o móvel fica descolado da parede — a auditoria confirmou o bug.
+const REAL_DEPTH_BY_SUBTYPE: Record<string, number> = {
+  aereo: 350,
+  prateleira: 300,
+  nicho: 300,
+  painel: 40,
+  balcao: 600,
+  tampo: 600,
+  bancada: 600,
+  ilha: 900,
+  torre: 600,
+  gaveteiro: 500,
+  closet: 600,
+  roupeiro: 600,
+  armario: 600,
+  "guarda-roupa": 600,
+  cristaleira: 400,
+};
+
 export interface LayoutPieceSpec {
   description: string;
   count?: number;
@@ -95,6 +117,25 @@ function wallLength(wall: LayoutWall, roomW: number, roomD: number): number {
 
 const GAP_MM = 20;
 const MARGIN_MM = 40;
+// Reserva do canto — quando duas paredes ativas se encontram, o módulo do
+// canto ocupa uma caixa de ~600mm × 600mm. Sem essa reserva, a peça inicial
+// de uma parede sobrepõe a peça inicial da parede vizinha (auditoria confirmou).
+const CORNER_RESERVE_MM = 620;
+
+const ADJ: Record<LayoutWall, { start: LayoutWall; end: LayoutWall }> = {
+  bottom: { start: "left", end: "right" },
+  top:    { start: "left", end: "right" },
+  left:   { start: "bottom", end: "top" },
+  right:  { start: "bottom", end: "top" },
+};
+
+function cornerReserve(wall: LayoutWall, walls: LayoutWall[]): { start: number; end: number } {
+  const adj = ADJ[wall];
+  return {
+    start: walls.includes(adj.start) ? CORNER_RESERVE_MM : 0,
+    end: walls.includes(adj.end) ? CORNER_RESERVE_MM : 0,
+  };
+}
 
 /**
  * Aplica um layout completo. `pieces` é interpretada em ordem — cada
@@ -114,11 +155,17 @@ export function applyLayout(
   const roomD = room.dimensions.depth;
 
   const walls = wallsFor(args.shape);
+  const reserves: Record<LayoutWall, { start: number; end: number }> = {
+    bottom: cornerReserve("bottom", walls),
+    top: cornerReserve("top", walls),
+    left: cornerReserve("left", walls),
+    right: cornerReserve("right", walls),
+  };
   const cursors: Record<LayoutWall, Cursor> = {
-    bottom: { wall: "bottom", offset: MARGIN_MM },
-    top: { wall: "top", offset: MARGIN_MM },
-    left: { wall: "left", offset: MARGIN_MM },
-    right: { wall: "right", offset: MARGIN_MM },
+    bottom: { wall: "bottom", offset: MARGIN_MM + reserves.bottom.start },
+    top: { wall: "top", offset: MARGIN_MM + reserves.top.start },
+    left: { wall: "left", offset: MARGIN_MM + reserves.left.start },
+    right: { wall: "right", offset: MARGIN_MM + reserves.right.start },
   };
 
   // fila circular sobre as paredes disponíveis, para dividir peso.
@@ -144,7 +191,10 @@ export function applyLayout(
       continue;
     }
     const width = match.overrides.width ?? match.item.parametric.defaults.width;
-    const depth = match.overrides.depth ?? match.item.parametric.defaults.depth;
+    const depth =
+      match.overrides.depth
+      ?? REAL_DEPTH_BY_SUBTYPE[String(match.item.subtype)]
+      ?? match.item.parametric.defaults.depth;
     const height = match.overrides.height ?? match.item.parametric.defaults.height;
 
     for (let i = 0; i < count; i++) {
@@ -160,7 +210,7 @@ export function applyLayout(
       let wall: LayoutWall | null = null;
       for (const w of tryOrder) {
         const c = cursors[w];
-        const len = wallLength(w, roomW, roomD);
+        const len = wallLength(w, roomW, roomD) - reserves[w].end;
         if (c.offset + width + MARGIN_MM <= len) { wall = w; break; }
       }
       if (!wall) {
