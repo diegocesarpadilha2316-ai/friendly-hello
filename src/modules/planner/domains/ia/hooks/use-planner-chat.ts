@@ -43,6 +43,48 @@ function safeJson(text: string): unknown {
   }
 }
 
+/**
+ * Fallback direto para o proxy público `/api/ai/chat` (Lovable AI).
+ * Usado quando a chamada via `aiGenerateText`/`aiGenerateJson` falha
+ * (ex.: tenant não selecionado, créditos, RLS). Garante que a IA de
+ * teste sempre responda.
+ */
+async function callLovableProxy(
+  system: string,
+  prompt: string,
+  opts: { json?: boolean; maxTokens?: number; temperature?: number; signal?: AbortSignal } = {},
+): Promise<string | null> {
+  try {
+    const body: Record<string, unknown> = {
+      model: "google/gemini-3.6-flash",
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: prompt },
+      ],
+      temperature: opts.temperature ?? 0.4,
+    };
+    if (opts.maxTokens) body.max_tokens = opts.maxTokens;
+    if (opts.json) body.response_format = { type: "json_object" };
+    const res = await fetch("/api/ai/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: opts.signal,
+    });
+    if (!res.ok) {
+      console.warn("[planner-chat] proxy /api/ai/chat falhou", res.status, await res.text());
+      return null;
+    }
+    const json = (await res.json()) as {
+      choices?: { message?: { content?: string } }[];
+    };
+    return json.choices?.[0]?.message?.content ?? null;
+  } catch (e) {
+    console.warn("[planner-chat] proxy /api/ai/chat erro", e);
+    return null;
+  }
+}
+
 /** Prompt de sistema mínimo que dá contexto do projeto/cômodo ativo ao LLM. */
 function buildPlannerSystemPrompt(
   p: PlannerProject,
