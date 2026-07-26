@@ -1,9 +1,11 @@
 import type { AIProvider, AIProviderId } from "../types";
 import { DeepSeekProvider } from "./deepseek";
+import { LovableProvider } from "./lovable";
 import { ClaudeProvider, GeminiProvider, MistralProvider, OSSProvider, OpenAIProvider } from "./stubs";
 
 export { BaseAIProvider } from "./base";
 export { DeepSeekProvider } from "./deepseek";
+export { LovableProvider } from "./lovable";
 export { ClaudeProvider, GeminiProvider, MistralProvider, OSSProvider, OpenAIProvider } from "./stubs";
 
 export interface ProviderCreateOptions {
@@ -13,6 +15,7 @@ export interface ProviderCreateOptions {
 }
 
 export interface ProviderRegistryOptions {
+  readonly lovable?: ProviderCreateOptions;
   readonly deepseek?: ProviderCreateOptions;
   readonly openai?: ProviderCreateOptions;
   readonly gemini?: ProviderCreateOptions;
@@ -23,6 +26,8 @@ export interface ProviderRegistryOptions {
 
 export function createProvider(id: AIProviderId, opts: ProviderRegistryOptions = {}): AIProvider {
   switch (id) {
+    case "lovable":
+      return new LovableProvider(opts.lovable);
     case "deepseek":
       return new DeepSeekProvider(opts.deepseek);
     case "openai":
@@ -38,8 +43,8 @@ export function createProvider(id: AIProviderId, opts: ProviderRegistryOptions =
   }
 }
 
-export const DEFAULT_PROVIDER: AIProviderId = "deepseek";
+export const DEFAULT_PROVIDER: AIProviderId = "lovable";
 
 export function listProviders(): readonly AIProviderId[] {
-  return ["deepseek", "openai", "gemini", "claude", "mistral", "oss"] as const;
+  return ["lovable", "deepseek", "openai", "gemini", "claude", "mistral", "oss"] as const;
 }

@@ -7,6 +7,7 @@
  */
 
 export type AIProviderId =
+  | "lovable"
   | "deepseek"
   | "openai"
   | "gemini"
