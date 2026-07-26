@@ -9,6 +9,7 @@ import type {
   CatalogItem,
   CatalogSubtype,
 } from "./types";
+import { EXTENDED_CATALOG_ITEMS } from "./catalog-extended";
 
 export const CATALOG_CATEGORIES: readonly CatalogCategory[] = [
   { id: "modulos",         label: "Módulos",         description: "Corpos paramétricos — armários, balcões, torres, ilhas." },
