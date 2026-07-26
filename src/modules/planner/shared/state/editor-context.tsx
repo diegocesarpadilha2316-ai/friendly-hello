@@ -24,12 +24,14 @@ import {
   type ReactNode,
 } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { useTenant } from "@/core/providers/TenantProvider";
 import type {
   PlannerProject,
   PlannerProjectVersion,
 } from "../types/project";
 import type { PlannerProjectId } from "../types";
 import { createProject } from "../factories/project";
+import { loadProject as loadLocalProject } from "../persistence/local-store";
 import {
   loadProjectSnapshot,
   saveProjectSnapshot,
@@ -124,6 +126,7 @@ function reducer(state: EditorState, action: EditorAction): EditorState {
 
 interface EditorContextValue {
   state: EditorState;
+  loadProject: (project: PlannerProject) => void;
   loadProjectById: (projectId: string) => void;
   updateProject: (updater: (p: PlannerProject) => PlannerProject) => void;
   select: (patch: { environmentId?: string | null; roomId?: string | null }) => void;
@@ -153,6 +156,8 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [versions, setVersions] = useState<readonly PlannerProjectVersion[]>([]);
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { activeCompany } = useTenant();
+  const tenantId = activeCompany?.id ?? "anonymous";
 
   const loadSnapshotFn = useServerFn(loadProjectSnapshot);
   const saveSnapshotFn = useServerFn(saveProjectSnapshot);
@@ -180,6 +185,11 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
     },
     [listVersionsFn],
   );
+
+  const loadProject = useCallback((project: PlannerProject) => {
+    dispatch({ type: "load", project });
+    void refreshVersions(project.id);
+  }, [refreshVersions]);
 
   const persist = useCallback(
     async (project: PlannerProject) => {
@@ -218,6 +228,12 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
       try {
         const result = await loadSnapshotFn({ data: { id: projectId } });
         if (!result) {
+          const local = loadLocalProject(tenantId, projectId);
+          if (local) {
+            dispatch({ type: "load", project: local });
+            void refreshVersions(local.id);
+            return;
+          }
           dispatch({ type: "load", project: null });
           setVersions([]);
           return;
@@ -233,6 +249,12 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
             updatedAt: result.meta.updatedAt,
           };
         } else {
+          const local = loadLocalProject(tenantId, projectId);
+          if (local) {
+            dispatch({ type: "load", project: local });
+            void refreshVersions(local.id);
+            return;
+          }
           // Metadados existem, mas snapshot ainda não foi persistido: semeia via factory.
           project = createProject({
             tenantId: result.meta.companyId,
@@ -252,11 +274,17 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
         void refreshVersions(project.id);
       } catch (err) {
         console.error("[planner] load project falhou", err);
+        const local = loadLocalProject(tenantId, projectId);
+        if (local) {
+          dispatch({ type: "load", project: local });
+          void refreshVersions(local.id);
+          return;
+        }
         dispatch({ type: "load", project: null });
         setVersions([]);
       }
     },
-    [loadSnapshotFn, refreshVersions],
+    [loadSnapshotFn, refreshVersions, tenantId],
   );
 
   const updateProject = useCallback(
@@ -356,6 +384,7 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
   const value = useMemo<EditorContextValue>(
     () => ({
       state,
+      loadProject,
       loadProjectById,
       updateProject,
       select,
@@ -368,7 +397,7 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
       canUndo: state.past.length > 0,
       canRedo: state.future.length > 0,
     }),
-    [state, loadProjectById, updateProject, select, undo, redo, saveNow, snapshotVersion, restoreVersion, versions],
+    [state, loadProject, loadProjectById, updateProject, select, undo, redo, saveNow, snapshotVersion, restoreVersion, versions],
   );
 
   return <EditorContext.Provider value={value}>{children}</EditorContext.Provider>;
