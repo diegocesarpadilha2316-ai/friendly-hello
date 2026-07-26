@@ -181,7 +181,7 @@ export function decompose(input: string): Decomposition {
       else if (/porta/.test(chunk)) matched = TOKENS.find((x) => x.id === "aereo") ?? null;
     }
     if (!matched) {
-      if (chunk.length > 2) unresolved.push(chunk);
+      if (chunk.length > 2 && !chunkIsOnlyPreamble(chunk)) unresolved.push(chunk);
       continue;
     }
     const count = extractCount(chunk);
