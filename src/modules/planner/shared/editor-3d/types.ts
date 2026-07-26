@@ -29,6 +29,8 @@ export interface Viewport3DState {
   wallOpacity: number;
   /** Preview Fotorrealista: liga postprocessing (SSAO + Bloom + Vignette). */
   cinematic?: boolean;
+  /** Horário do dia — controla sol, céu e ambiente. */
+  daytime?: "morning" | "noon" | "golden" | "night";
 }
 
 export const DEFAULT_VIEWPORT_3D: Viewport3DState = {
@@ -43,4 +45,5 @@ export const DEFAULT_VIEWPORT_3D: Viewport3DState = {
   wallHeight: 2700,
   wallOpacity: 1,
   cinematic: false,
+  daytime: "noon",
 };
