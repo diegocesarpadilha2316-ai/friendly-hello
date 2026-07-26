@@ -61,6 +61,10 @@ export interface FurnitureDescriptor {
   rotationY: number; // rad
   materialId?: string;
   overrideColor?: string;
+  /** Tipo de frente para renderização PBR (Parte 5). */
+  frontType?: "vidro" | "reeded" | "solid" | "aberto";
+  /** Cor/tinta do vidro quando a frente é vidro/reeded. */
+  glassTint?: string;
 }
 
 export interface Scene3DModel {
@@ -150,6 +154,12 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
       const w = p.width * MM;
       const d = p.depth * MM;
       const h = p.height * MM;
+      const ft = p.params?.frontType ?? p.params?.["eng:front"];
+      const frontType =
+        ft === "vidro" || ft === "reeded" || ft === "solid" || ft === "aberto"
+          ? (ft as "vidro" | "reeded" | "solid" | "aberto")
+          : undefined;
+      const tint = typeof p.params?.["glass:tint"] === "string" ? (p.params["glass:tint"] as string) : undefined;
       furniture.push({
         id: p.id,
         subtype: p.subtype,
@@ -163,6 +173,8 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
         rotationY: -(p.rotation * Math.PI) / 180,
         materialId: p.materialId,
         overrideColor: colorFor(p.id),
+        frontType,
+        glassTint: tint,
       });
     }
   }

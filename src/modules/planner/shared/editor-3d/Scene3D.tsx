@@ -30,6 +30,7 @@ import {
   subscribeLibrary,
   type LibraryMaterial,
 } from "../../domains/catalog/services/library-supabase";
+import { GlassFront } from "./GlassFront";
 
 interface Scene3DProps {
   model: Scene3DModel;
@@ -301,6 +302,15 @@ function Furniture({
     >
       <boxGeometry args={[f.width, f.height, f.depth]} />
       <meshStandardMaterial {...props} />
+      {(f.frontType === "vidro" || f.frontType === "reeded") ? (
+        <GlassFront
+          width={f.width}
+          height={f.height}
+          depth={f.depth}
+          variant={f.frontType}
+          tint={f.glassTint}
+        />
+      ) : null}
     </mesh>
   );
 }
