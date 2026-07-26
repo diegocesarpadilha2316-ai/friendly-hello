@@ -354,6 +354,45 @@ function Furniture({
       </group>
     );
   }
+  const cabinet = viewport.render !== "wireframe" && isCabinetSubtype(f.subtype);
+  if (cabinet) {
+    const openDoors = Boolean(f.params?.["open:doors"]);
+    const openDrawers = Boolean(f.params?.["open:drawers"]);
+    const drawersCount = typeof f.params?.["drawers"] === "number" ? (f.params!["drawers"] as number) : undefined;
+    const doorsCount = typeof f.params?.["doors"] === "number" ? (f.params!["doors"] as number) : undefined;
+    return (
+      <group
+        position={[pos.x, pos.y, pos.z]}
+        rotation={[0, f.rotationY, 0]}
+        onClick={(e: ThreeEvent<MouseEvent>) => {
+          e.stopPropagation();
+          onSelect(f.id);
+        }}
+      >
+        <CabinetMesh
+          subtype={f.subtype as never}
+          width={f.width}
+          height={f.height}
+          depth={f.depth}
+          bodyProps={props}
+          selected={selected}
+          openDoors={openDoors}
+          openDrawers={openDrawers}
+          drawersCount={drawersCount}
+          doorsCount={doorsCount}
+        />
+        {(f.frontType === "vidro" || f.frontType === "reeded") ? (
+          <GlassFront
+            width={f.width}
+            height={f.height}
+            depth={f.depth}
+            variant={f.frontType}
+            tint={f.glassTint}
+          />
+        ) : null}
+      </group>
+    );
+  }
   return (
     <mesh
       position={[pos.x, pos.y, pos.z]}
