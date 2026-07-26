@@ -72,6 +72,7 @@ const DECOR_HINTS: Array<{ subtype: CatalogSubtype; words: string[] }> = [
 
 function detectSubtype(text: string): CatalogSubtype | null {
   for (const h of SUBTYPE_HINTS) if (h.words.some((w) => text.includes(w))) return h.subtype;
+  for (const h of DECOR_HINTS) if (h.words.some((w) => text.includes(w))) return h.subtype;
   return null;
 }
 
