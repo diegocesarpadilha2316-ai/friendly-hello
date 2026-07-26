@@ -65,6 +65,12 @@ export interface FurnitureDescriptor {
   frontType?: "vidro" | "reeded" | "solid" | "aberto";
   /** Cor/tinta do vidro quando a frente é vidro/reeded. */
   glassTint?: string;
+  /** Composição custom (via IA / Editor de Módulo). */
+  doorsCount?: number;
+  drawersCount?: number;
+  shelvesCount?: number;
+  openDoors?: boolean;
+  openDrawers?: boolean;
 }
 
 export interface Scene3DModel {
@@ -160,6 +166,19 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
           ? (ft as "vidro" | "reeded" | "solid" | "aberto")
           : undefined;
       const tint = typeof p.params?.["glass:tint"] === "string" ? (p.params["glass:tint"] as string) : undefined;
+      const numParam = (k: string): number | undefined => {
+        const v = p.params?.[k];
+        if (typeof v === "number" && Number.isFinite(v)) return v;
+        if (typeof v === "string" && v.trim() !== "" && Number.isFinite(Number(v))) return Number(v);
+        return undefined;
+      };
+      const boolParam = (k: string): boolean | undefined => {
+        const v = p.params?.[k];
+        if (typeof v === "boolean") return v;
+        if (v === "true" || v === 1 || v === "1") return true;
+        if (v === "false" || v === 0 || v === "0") return false;
+        return undefined;
+      };
       furniture.push({
         id: p.id,
         subtype: p.subtype,
@@ -175,6 +194,11 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
         overrideColor: colorFor(p.id),
         frontType,
         glassTint: tint,
+        doorsCount: numParam("mod:doors") ?? numParam("doors"),
+        drawersCount: numParam("mod:drawers") ?? numParam("drawers"),
+        shelvesCount: numParam("mod:shelves") ?? numParam("shelves"),
+        openDoors: boolParam("mod:openDoors") ?? boolParam("openDoors"),
+        openDrawers: boolParam("mod:openDrawers") ?? boolParam("openDrawers"),
       });
     }
   }
