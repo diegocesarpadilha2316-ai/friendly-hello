@@ -470,7 +470,8 @@ export function usePlannerChat() {
 
         // Aplica mutações do projeto no editor — canal ÚNICO (Undo/Redo/Autosave).
         if (mutatedProject !== project) {
-          if (editor.state.project) editor.updateProject(() => mutatedProject);
+          const hasLoadedProject = Boolean(editor.state.project);
+          if (hasLoadedProject) editor.updateProject(() => mutatedProject);
           else editor.loadProject(mutatedProject);
           editor.select({ environmentId: activeEnvironmentId, roomId: activeRoomId });
           upsertProject(tenantId, mutatedProject);
@@ -481,7 +482,7 @@ export function usePlannerChat() {
           if (shouldOpenEditorAfterCreate) {
             try {
               if (activeCompany?.id) {
-                if (startedWithoutProject) {
+                if (!hasLoadedProject) {
                   await createProjectOnServer({
                     data: {
                       id: mutatedProject.id,
