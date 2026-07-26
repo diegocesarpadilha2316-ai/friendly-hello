@@ -28,6 +28,12 @@ function roomShellNodes(input: {
       params: { x: 0, y: 0, width, depth, layer: "floors", locked: true, materialId: null },
     },
     {
+      id: `${roomId}_ceiling`,
+      kind: "ceiling",
+      label: "Teto (forro)",
+      params: { x: 0, y: 0, width, depth, layer: "ceilings", locked: true, materialId: null },
+    },
+    {
       id: `${roomId}_wall_bottom`,
       kind: "wall",
       label: "Parede frontal",
@@ -73,7 +79,8 @@ function roomShellNodes(input: {
 export function ensureRoomShell(room: PlannerRoom): PlannerRoom {
   const hasFloor = room.nodeOrder.some((id) => room.nodes[id]?.kind === "floor");
   const hasWall = room.nodeOrder.some((id) => room.nodes[id]?.kind === "wall");
-  if (hasFloor && hasWall) return room;
+  const hasCeiling = room.nodeOrder.some((id) => room.nodes[id]?.kind === "ceiling");
+  if (hasFloor && hasWall && hasCeiling) return room;
 
   const shell = roomShellNodes({
     roomId: room.id,
