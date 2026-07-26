@@ -68,15 +68,20 @@ function placementFor(
 ) {
   // `at` recebe centro do móvel — `insertItemIntoProject` faz cx - width/2.
   // A rotação segue a convenção do editor (0 = frente para o interior).
+  // Paredes têm espessura ~100mm (centralizadas no perímetro do cômodo),
+  // então metade fica DENTRO do cômodo. Somamos esse offset + 2mm de folga
+  // para o fundo do móvel ficar flush com a face interna da parede, sem
+  // atravessar.
+  const WALL_OFFSET = 50 + 2;
   const halfW = width / 2;
   const halfD = depth / 2;
   switch (wall) {
     case "bottom":
-      return { at: { x: offset + halfW, y: halfD }, rotation: 0 };
+      return { at: { x: offset + halfW, y: WALL_OFFSET + halfD }, rotation: 0 };
     case "top":
-      return { at: { x: offset + halfW, y: roomD - halfD }, rotation: 180 };
+      return { at: { x: offset + halfW, y: roomD - WALL_OFFSET - halfD }, rotation: 180 };
     case "left":
-      return { at: { x: halfD, y: offset + halfW }, rotation: 270 };
+      return { at: { x: WALL_OFFSET + halfD, y: offset + halfW }, rotation: 270 };
     case "right":
       return { at: { x: roomW - halfD, y: offset + halfW }, rotation: 90 };
   }
