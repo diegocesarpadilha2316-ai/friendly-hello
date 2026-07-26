@@ -28,6 +28,20 @@ import type {
 
 const uid = () => `m_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 
+function safeJson(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    const m = text.match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    try {
+      return JSON.parse(m[0]);
+    } catch {
+      return null;
+    }
+  }
+}
+
 /** Prompt de sistema mínimo que dá contexto do projeto/cômodo ativo ao LLM. */
 function buildPlannerSystemPrompt(
   p: PlannerProject,
