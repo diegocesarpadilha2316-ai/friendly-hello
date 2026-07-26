@@ -400,6 +400,7 @@ function Furniture({
           doorsCount={f.doorsCount}
           drawersCount={f.drawersCount}
           shelvesCount={f.shelvesCount}
+          led={f.led}
         />
         {(f.frontType === "vidro" || f.frontType === "reeded") ? (
           <GlassFront

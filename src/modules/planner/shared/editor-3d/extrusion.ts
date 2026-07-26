@@ -71,6 +71,7 @@ export interface FurnitureDescriptor {
   shelvesCount?: number;
   openDoors?: boolean;
   openDrawers?: boolean;
+  led?: boolean;
 }
 
 export interface Scene3DModel {
@@ -179,6 +180,12 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
         if (v === "false" || v === 0 || v === "0") return false;
         return undefined;
       };
+      // Altura do centro real (Y) por subtype — respeita padrões de marcenaria:
+      // aéreo suspenso a 1400mm, prateleira 1200mm, torre/balcão/gaveteiro no piso.
+      const uppers = new Set(["aereo", "prateleira", "nicho", "painel", "cristaleira"]);
+      const baseY = uppers.has(p.subtype)
+        ? 1.4 + h / 2  // aéreo pendurado
+        : h / 2;       // apoiado no piso
       furniture.push({
         id: p.id,
         subtype: p.subtype,
@@ -188,7 +195,7 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
         width: w,
         depth: d,
         height: h,
-        y: h / 2,
+        y: baseY,
         rotationY: -(p.rotation * Math.PI) / 180,
         materialId: p.materialId,
         overrideColor: colorFor(p.id),
@@ -199,6 +206,7 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
         shelvesCount: numParam("mod:shelves") ?? numParam("shelves"),
         openDoors: boolParam("mod:openDoors") ?? boolParam("openDoors"),
         openDrawers: boolParam("mod:openDrawers") ?? boolParam("openDrawers"),
+        led: boolParam("mod:led") ?? boolParam("led"),
       });
     }
   }
