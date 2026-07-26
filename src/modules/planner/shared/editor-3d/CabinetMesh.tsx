@@ -71,7 +71,7 @@ function inferComposition(p: CabinetMeshProps): CabinetComposition {
 }
 
 export function CabinetMesh(props: CabinetMeshProps) {
-  const { width, height, depth, bodyProps, frontProps, selected, openDoors, openDrawers } = props;
+  const { width, height, depth, bodyProps, frontProps, selected, openDoors, openDrawers, led } = props;
   const comp = useMemo(() => inferComposition(props), [props]);
 
   // A cena 3D trabalha em metros; todos os valores abaixo são medidas reais de marcenaria.
@@ -79,7 +79,11 @@ export function CabinetMesh(props: CabinetMeshProps) {
   const GAP = 0.003;
   const FRONT_T = 0.018;
   const INSET = 0.006;
-  const TOE_KICK_H = props.subtype === "closet" || props.subtype === "roupeiro" ? 0.08 : 0.1;
+  // Rodapé/sapata: 100mm em balcões/torres, 80mm em closets, ausente em aéreos.
+  const isUpper = props.subtype === "aereo" || props.subtype === "prateleira" || props.subtype === "nicho";
+  const TOE_KICK_H = isUpper ? 0 : (props.subtype === "closet" || props.subtype === "roupeiro" ? 0.08 : 0.1);
+  const HAS_CORNICE = isUpper || props.subtype === "torre";
+  const CORNICE_H = 0.04;
 
   // Caixa (corpo) — meshes internos: fundo, laterais, tampo, base
   const halfW = width / 2;
@@ -95,10 +99,26 @@ export function CabinetMesh(props: CabinetMeshProps) {
   return (
     <group>
       {/* Rodapé/sapata técnica */}
-      {height > 0.5 ? (
+      {TOE_KICK_H > 0 && height > 0.5 ? (
         <mesh position={[0, -halfH + TOE_KICK_H / 2, halfD - depth * 0.08]} castShadow receiveShadow>
           <boxGeometry args={[Math.max(0.05, width - T * 2), TOE_KICK_H, Math.max(0.04, depth * 0.12)]} />
           <meshStandardMaterial {...bodyProps} color={bodyColor} roughness={0.8} />
+        </mesh>
+      ) : null}
+
+      {/* Cornija superior (aéreos/torres) */}
+      {HAS_CORNICE ? (
+        <mesh position={[0, halfH + CORNICE_H / 2, 0]} castShadow receiveShadow>
+          <boxGeometry args={[width + 0.01, CORNICE_H, depth + 0.008]} />
+          <meshStandardMaterial {...bodyProps} color={bodyColor} roughness={0.7} />
+        </mesh>
+      ) : null}
+
+      {/* LED emissivo — barra fininha no topo interno */}
+      {led ? (
+        <mesh position={[0, halfH - T - 0.006, -halfD + T + 0.02]}>
+          <boxGeometry args={[Math.max(0.05, width - T * 2 - 0.02), 0.004, 0.01]} />
+          <meshStandardMaterial color="#fff6d8" emissive="#fff2c2" emissiveIntensity={2.4} toneMapped={false} />
         </mesh>
       ) : null}
 
@@ -203,7 +223,7 @@ export function CabinetMesh(props: CabinetMeshProps) {
         const doorW = (width - (comp.doors + 1) * GAP) / comp.doors;
         const doorH = height - 2 * GAP;
         const cx = -halfW + GAP + doorW / 2 + i * (doorW + GAP);
-        const openAngle = openDoors ? (i % 2 === 0 ? -1.2 : 1.2) : 0;
+        const openAngle = openDoors ? (i % 2 === 0 ? -1.35 : 1.35) : 0;
         const hingeSide = i % 2 === 0 ? -1 : 1;
         const RAIL = Math.min(0.075, Math.min(doorW, doorH) * 0.14); // largura da régua
         const PROT = 0.004; // 4mm de protrusão do frame
@@ -261,6 +281,18 @@ export function CabinetMesh(props: CabinetMeshProps) {
               >
                 <cylinderGeometry args={[0.009, 0.009, 0.014, 20]} />
                 <meshStandardMaterial color={HANDLE_COLOR} metalness={0.9} roughness={0.25} />
+              </mesh>
+            ))}
+            {/* Dobradiças caneco (2 por porta) — visíveis quando a porta abre */}
+            {[-1, 1].map((s) => (
+              <mesh
+                key={`hinge-${s}`}
+                position={[0, s * Math.min(0.24, doorH * 0.36), -FRONT_T / 2 - 0.002]}
+                rotation={[0, 0, Math.PI / 2]}
+                castShadow
+              >
+                <cylinderGeometry args={[0.011, 0.011, 0.024, 20]} />
+                <meshStandardMaterial color="#a8adb5" metalness={0.9} roughness={0.35} />
               </mesh>
             ))}
           </group>
@@ -323,10 +355,31 @@ export function CabinetMesh(props: CabinetMeshProps) {
             ))}
             {/* Laterais internas visíveis quando gaveta aberta */}
             {openDrawers ? (
-              <mesh position={[0, -drH / 2 + 0.01, -outset / 2 - FRONT_T / 2]} receiveShadow>
-                <boxGeometry args={[Math.max(0.05, drW - 0.04), 0.012, Math.max(0.02, outset)]} />
-                <meshStandardMaterial color="#8a8a8a" roughness={0.7} metalness={0.1} />
-              </mesh>
+              <>
+                {/* Fundo da caixa da gaveta */}
+                <mesh position={[0, -drH / 2 + 0.01, -outset / 2 - FRONT_T / 2]} receiveShadow>
+                  <boxGeometry args={[Math.max(0.05, drW - 0.04), 0.012, Math.max(0.02, outset)]} />
+                  <meshStandardMaterial color="#8a8a8a" roughness={0.7} metalness={0.1} />
+                </mesh>
+                {/* Laterais da caixa */}
+                {[-1, 1].map((s) => (
+                  <mesh key={`box-side-${s}`} position={[s * (drW / 2 - 0.02), 0, -outset / 2 - FRONT_T / 2]} receiveShadow>
+                    <boxGeometry args={[0.012, drH * 0.85, Math.max(0.02, outset)]} />
+                    <meshStandardMaterial color="#8a8a8a" roughness={0.7} />
+                  </mesh>
+                ))}
+                {/* Corrediças telescópicas (Blum-like) visíveis nas laterais */}
+                {[-1, 1].map((s) => (
+                  <mesh
+                    key={`slide-${s}`}
+                    position={[s * (drW / 2 - 0.005), -drH / 2 + 0.03, -outset / 2 - FRONT_T / 2]}
+                    receiveShadow
+                  >
+                    <boxGeometry args={[0.006, 0.02, Math.max(0.02, outset * 0.95)]} />
+                    <meshStandardMaterial color="#c0c4cc" metalness={0.9} roughness={0.25} />
+                  </mesh>
+                ))}
+              </>
             ) : null}
           </group>
         );
