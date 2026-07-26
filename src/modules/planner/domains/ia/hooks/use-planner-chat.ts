@@ -107,6 +107,24 @@ function buildPlannerSystemPrompt(
     .join("\n");
 }
 
+function buildPlannerNoContextSystemPrompt(project: PlannerProject | null | undefined): string {
+  const projectContext = project
+    ? [
+        `Existe um projeto carregado: "${project.name}" (v${project.version}).`,
+        `Ambientes disponíveis: ${project.environments.map((env) => env.name).join(", ") || "nenhum"}.`,
+        "Nenhum cômodo está selecionado no editor neste momento.",
+      ].join("\n")
+    : "Nenhum projeto está aberto no editor neste momento.";
+
+  return [
+    "Você é a IA Copiloto do Dioris Planner — um sistema paramétrico de marcenaria, interiores e produção em pt-BR.",
+    "Responda normalmente ao usuário. Não repita a frase fixa 'Abra um projeto e selecione um cômodo'.",
+    "Se o usuário pedir criação/edição de projeto sem contexto ativo, entregue um plano útil, materiais sugeridos e próximos passos; explique de forma curta que para aplicar no editor ele precisa abrir/criar um projeto e selecionar um cômodo.",
+    "Use a biblioteca Dioris como base: MDF/MDP premium, Louro Freijó, Duratex, Arauco, Guararapes, ferragens Blum/Hettich, LED, portas de vidro, pisos, janelas e decoração.",
+    projectContext,
+  ].join("\n");
+}
+
 export const PLANNER_QUICK_ACTIONS: readonly PlannerAIQuickAction[] = [
   { id: "kitchen", label: "Crie uma cozinha moderna", prompt: "Crie uma cozinha moderna com ilha e LED." },
   { id: "closet", label: "Crie um closet", prompt: "Crie um closet completo minimalista." },
@@ -184,11 +202,22 @@ export function usePlannerChat() {
 
       const project = editor.state.project;
       if (!project || !editor.state.selectedEnvironmentId || !editor.state.selectedRoomId) {
+        const controller = new AbortController();
+        abortRef.current = controller;
+        setState((s) => ({ ...s, status: "streaming" }));
+        const reply = await callLovableProxy(
+          buildPlannerNoContextSystemPrompt(project),
+          `Mensagem do usuário: ${trimmed}`,
+          { maxTokens: 650, temperature: 0.45, signal: controller.signal },
+        );
         patchMessage(assistantId, (m) => ({
           ...m,
-          content: "Abra um projeto e selecione um cômodo para eu poder trabalhar.",
+          content:
+            reply?.trim() ||
+            "Estou online. Posso conversar, planejar ambientes e sugerir materiais agora; para aplicar alterações no editor, abra ou crie um projeto e selecione um cômodo.",
           status: "done",
         }));
+        abortRef.current = null;
         setState((s) => ({ ...s, status: "idle" }));
         return;
       }
@@ -343,7 +372,7 @@ export function usePlannerChat() {
         setState((s) => ({ ...s, status: "error" }));
       }
     },
-    [state.status, editor, tenantId, patchMessage],
+    [state.status, editor, tenantId, patchMessage, runAI, runAIJson],
   );
 
   const editMessage = useCallback(
