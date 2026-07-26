@@ -18,6 +18,15 @@ export const CATALOG_CATEGORIES: readonly CatalogCategory[] = [
   { id: "acessorios",      label: "Acessórios",      description: "Ferragens, pés, perfis." },
   { id: "acabamentos",     label: "Acabamentos",     description: "Rodapés, vidros, espelhos." },
   { id: "iluminacao",      label: "Iluminação",      description: "Fitas LED, spots e perfis luminosos." },
+  { id: "aberturas",       label: "Aberturas",       description: "Janelas, portas de ambiente, portais e vãos." },
+  { id: "pisos",           label: "Pisos",           description: "Porcelanato, madeira, cerâmico, vinílico, laminados." },
+  { id: "revestimentos",   label: "Revestimentos",   description: "Azulejos, papéis de parede, revestimentos 3D." },
+  { id: "paredes-teto",    label: "Paredes & Teto",  description: "Paredes divisórias, tetos, sancas e forros." },
+  { id: "eletros",         label: "Eletrodomésticos", description: "Geladeira, cooktop, forno, coifa, microondas, lava-louças." },
+  { id: "hidraulica",      label: "Louças & Metais", description: "Cubas, torneiras, vasos, chuveiros, banheiras." },
+  { id: "moveis-soltos",   label: "Móveis Soltos",   description: "Sofás, camas, mesas, cadeiras, poltronas, estantes." },
+  { id: "decoracao",       label: "Decoração",       description: "Quadros, vasos, plantas, luminárias, objetos." },
+  { id: "textil",          label: "Têxtil",          description: "Tapetes, cortinas, persianas." },
 ];
 
 function item(
