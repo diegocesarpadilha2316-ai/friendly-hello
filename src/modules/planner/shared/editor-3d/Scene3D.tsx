@@ -35,6 +35,7 @@ import {
 import { getPbrMaterial, getPbrRoughnessBias, isPbrId } from "../materials/pbr-catalog";
 import { GlassFront } from "./GlassFront";
 import { DecorMesh, isDecorSubtype } from "./DecorMesh";
+import { CinematicFX } from "./CinematicFX";
 
 interface Scene3DProps {
   model: Scene3DModel;
@@ -562,6 +563,7 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
       </Bounds>
 
       <Cameras mode={viewport.camera} />
+      {viewport.cinematic && viewport.render === "material" ? <CinematicFX /> : null}
     </Canvas>
   );
 }
