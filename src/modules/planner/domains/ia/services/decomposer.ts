@@ -92,6 +92,29 @@ export interface Decomposition {
 
 const CONNECTORS = /,|;| e | mais | \+ | com | contendo /gi;
 
+// Palavras de preamble/ambiente que NÃO devem virar "unresolved".
+// Elas apenas anunciam a intenção ("quero uma cozinha", "faz um closet")
+// e o blueprint padrão do ambiente cobre o resto.
+const PREAMBLE_WORDS = new Set([
+  "quero","queria","gostaria","preciso","cria","crie","criar","faca","faz",
+  "monta","montar","gera","gerar","projeto","ambiente","um","uma","o","a",
+  "novo","nova","modelo","design","estilo","por","favor","de","do","da",
+  "para","pra","planejad","planejada","planejado","completo","completa","simples",
+  "pequen","pequena","pequeno","moderna","moderno","classic","classica","classico",
+  "luxo","luxuoso","luxuosa","industrial","minimalista",
+]);
+// Nomes de ambiente que também são só declaração de intenção quando aparecem sozinhos.
+const ENV_WORDS = new Set([
+  "cozinha","closet","dormitorio","quarto","sala","estar","living","escritorio",
+  "home","office","banheiro","lavabo","lavanderia",
+]);
+
+function chunkIsOnlyPreamble(chunk: string): boolean {
+  const words = chunk.replace(/[.,;:!?]/g, " ").split(/\s+/).filter(Boolean);
+  if (words.length === 0) return true;
+  return words.every((w) => PREAMBLE_WORDS.has(w) || ENV_WORDS.has(w));
+}
+
 function extractNumber(chunk: string, kind: "porta" | "gaveta"): number | undefined {
   const re = new RegExp(`(\\d+)\\s*${kind}`, "i");
   const m = chunk.match(re);
