@@ -23,6 +23,9 @@ type Tab = "materials" | "hardware";
 export function CatalogRealPanel() {
   const [tab, setTab] = useState<Tab>("materials");
   const [query, setQuery] = useState("");
+  const [manufacturer, setManufacturer] = useState<string>("");
+  const [thickness, setThickness] = useState<number | "">("");
+  const [onlyCurrent, setOnlyCurrent] = useState(false);
 
   const listMaterials = useServerFn(listCatalogMaterials);
   const listHardware = useServerFn(listCatalogHardware);
@@ -35,8 +38,17 @@ export function CatalogRealPanel() {
   });
 
   const materials = useQuery({
-    queryKey: ["planner", "catalog", "materials", query],
-    queryFn: () => listMaterials({ data: { query: query || undefined, limit: 200 } }),
+    queryKey: ["planner", "catalog", "materials", query, manufacturer, thickness, onlyCurrent],
+    queryFn: () =>
+      listMaterials({
+        data: {
+          query: query || undefined,
+          manufacturer: manufacturer || undefined,
+          thicknessMm: typeof thickness === "number" ? thickness : undefined,
+          onlyCurrent: onlyCurrent || undefined,
+          limit: 240,
+        },
+      }),
     enabled: tab === "materials",
     staleTime: 30_000,
   });
@@ -100,6 +112,48 @@ export function CatalogRealPanel() {
           />
         </div>
       </div>
+
+      {tab === "materials" ? (
+        <div className="flex flex-wrap items-center gap-2 border-b border-border/60 px-3 py-2 text-xs">
+          <select
+            value={manufacturer}
+            onChange={(e) => setManufacturer(e.target.value)}
+            className="h-7 rounded-md border border-input bg-background px-2 text-xs"
+          >
+            <option value="">Todos os fabricantes</option>
+            <option value="Duratex">Duratex</option>
+            <option value="Arauco">Arauco</option>
+            <option value="Guararapes">Guararapes</option>
+            <option value="Berneck">Berneck</option>
+            <option value="Eucatex">Eucatex</option>
+            <option value="Sudati">Sudati</option>
+          </select>
+          <select
+            value={thickness}
+            onChange={(e) => setThickness(e.target.value ? Number(e.target.value) : "")}
+            className="h-7 rounded-md border border-input bg-background px-2 text-xs"
+          >
+            <option value="">Todas as espessuras</option>
+            <option value="3">3 mm</option>
+            <option value="6">6 mm</option>
+            <option value="15">15 mm</option>
+            <option value="18">18 mm</option>
+            <option value="25">25 mm</option>
+          </select>
+          <label className="inline-flex items-center gap-1.5 text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={onlyCurrent}
+              onChange={(e) => setOnlyCurrent(e.target.checked)}
+              className="h-3 w-3"
+            />
+            Somente atuais
+          </label>
+          <span className="ml-auto text-[10px] text-muted-foreground">
+            {(materials.data?.length ?? 0).toLocaleString("pt-BR")} de {(stats.data?.materials ?? 0).toLocaleString("pt-BR")} chapas
+          </span>
+        </div>
+      ) : null}
 
       <div className="min-h-0 flex-1 overflow-auto p-2">
         {loading ? (
