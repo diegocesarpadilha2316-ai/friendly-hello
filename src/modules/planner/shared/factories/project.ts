@@ -106,22 +106,17 @@ export function ensureProjectRoomShells(project: PlannerProject): PlannerProject
     : [{ ...createEnvironment({ name: "Ambiente principal" }), rooms: [createRoom({ name: roomName, type: roomType, width: 4200, depth: 3200, height: 2700 })] }];
   if (bootEnvironments !== project.environments) changed = true;
 
-  const environments = bootEnvironments.map((environment, index) => {
+  const environments = bootEnvironments.map((environment) => {
     const sourceRooms = environment.rooms.length > 0
       ? environment.rooms
       : [createRoom({ name: roomName, type: roomType, width: 4200, depth: 3200, height: 2700 })];
     if (sourceRooms !== environment.rooms) changed = true;
-    const rooms = environment.rooms.map((room) => {
-      const nextRoom = ensureRoomShell(room);
-      if (nextRoom !== room) changed = true;
-      return nextRoom;
-    });
     const normalizedRooms = sourceRooms.map((room) => {
       const nextRoom = ensureRoomShell(room);
       if (nextRoom !== room) changed = true;
       return nextRoom;
     });
-    return changed || index === 0 ? { ...environment, rooms: normalizedRooms } : { ...environment, rooms };
+    return normalizedRooms !== environment.rooms ? { ...environment, rooms: normalizedRooms } : environment;
   });
   return changed ? { ...project, environments } : project;
 }
