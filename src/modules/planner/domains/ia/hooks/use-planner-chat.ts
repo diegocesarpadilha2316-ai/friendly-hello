@@ -217,22 +217,30 @@ export function usePlannerChat() {
               const catalog = PLANNER_TOOL_REGISTRY.map(
                 (t) => `- ${t.name}: ${t.description}`,
               ).join("\n");
-              const res = await runAIJson({
-                data: {
-                  task: { type: "json", quality: "standard", speed: "balanced" },
-                  system:
-                    "Você é o planejador do Dioris Planner. Traduza o pedido do usuário em uma sequência de chamadas de ferramentas (tool-calling). Responda SOMENTE com JSON válido no formato { \"intents\": [{ \"tool\": string, \"args\": object }] }. Não inclua explicações. Use apenas ferramentas da lista.\n\nFerramentas disponíveis:\n" +
-                    catalog +
-                    "\n\nSubtypes válidos para insert_item/set_front_type: aereo, balcao, gaveteiro, torre, tampo, ilha, painel, roupeiro, closet, nicho, prateleira, cristaleira, bancada, espelho, porta, gaveta, iluminacao.\nPresets válidos para create_room_preset: cozinha, closet, dormitorio, sala, escritorio, banheiro.\nEstilos válidos para set_style: minimalista, classico, industrial, luxo, moderno.\nTipos válidos para set_front_type: vidro, reeded, solid, aberto.\nPresets de apply_finishing (arg 'preset'): " +
-                    FINISHING_PRESETS.map((p) => `"${p.id}" (${p.label})`).join(", ") +
-                    ".\nEscopos de apply_finishing (arg 'scope'): all, aereos, balcoes, torre, painel, tampos.",
-                  prompt: `Projeto: "${p.name}". Cômodo: "${p.environments.find((e) => e.id === ctx.environmentId)?.rooms.find((r) => r.id === ctx.roomId)?.name ?? "—"}".\nPedido do usuário: ${userMessage}`,
-                  temperature: 0.2,
-                  maxTokens: 800,
-                  reason: "planner:tool-plan",
-                },
-              });
-              const raw = res?.output as unknown;
+              const system =
+                "Você é o planejador do Dioris Planner. Traduza o pedido do usuário em uma sequência de chamadas de ferramentas (tool-calling). Responda SOMENTE com JSON válido no formato { \"intents\": [{ \"tool\": string, \"args\": object }] }. Não inclua explicações. Use apenas ferramentas da lista.\n\nFerramentas disponíveis:\n" +
+                catalog +
+                "\n\nSubtypes válidos para insert_item/set_front_type: aereo, balcao, gaveteiro, torre, tampo, ilha, painel, roupeiro, closet, nicho, prateleira, cristaleira, bancada, espelho, porta, gaveta, iluminacao.\nPresets válidos para create_room_preset: cozinha, closet, dormitorio, sala, escritorio, banheiro.\nEstilos válidos para set_style: minimalista, classico, industrial, luxo, moderno.\nTipos válidos para set_front_type: vidro, reeded, solid, aberto.\nPresets de apply_finishing (arg 'preset'): " +
+                FINISHING_PRESETS.map((p) => `"${p.id}" (${p.label})`).join(", ") +
+                ".\nEscopos de apply_finishing (arg 'scope'): all, aereos, balcoes, torre, painel, tampos.";
+              const prompt = `Projeto: "${p.name}". Cômodo: "${p.environments.find((e) => e.id === ctx.environmentId)?.rooms.find((r) => r.id === ctx.roomId)?.name ?? "—"}".\nPedido do usuário: ${userMessage}`;
+              let raw: unknown = null;
+              try {
+                const res = await runAIJson({
+                  data: {
+                    task: { type: "json", quality: "standard", speed: "balanced" },
+                    system,
+                    prompt,
+                    temperature: 0.2,
+                    maxTokens: 800,
+                    reason: "planner:tool-plan",
+                  },
+                });
+                raw = res?.output;
+              } catch (e) {
+                console.warn("[planner-chat] gateway com tenant falhou, usando proxy Lovable", e);
+                raw = await callLovableProxy(system, prompt, { json: true, maxTokens: 800, temperature: 0.2 });
+              }
               const parsed = typeof raw === "string" ? safeJson(raw) : raw;
               const intents = (parsed as { intents?: unknown } | null)?.intents;
               if (!Array.isArray(intents)) return null;
@@ -253,24 +261,27 @@ export function usePlannerChat() {
             }
           },
           llmReply: async ({ userMessage, role, project: p, ctx }) => {
-            // Consulta o AI Gateway real do Core (com créditos e auditoria).
-            // Falha silenciosa → o agent volta ao intérprete heurístico.
+            // 1) tenta o AI Gateway com tenant (créditos + auditoria)
+            // 2) fallback direto no proxy público Lovable (garante resposta em modo teste)
+            const system = buildPlannerSystemPrompt(p, ctx);
+            const prompt = `Usuário (${role}): ${userMessage}`;
             try {
               const res = await runAI({
                 data: {
                   task: { type: "text", quality: "standard", speed: "balanced" },
-                  system: buildPlannerSystemPrompt(p, ctx),
-                  prompt: `Usuário (${role}): ${userMessage}`,
+                  system,
+                  prompt,
                   temperature: 0.4,
                   maxTokens: 500,
                 },
               });
-              return typeof res?.output === "string" && res.output.trim().length > 0
-                ? res.output
-                : null;
-            } catch {
-              return null;
+              if (typeof res?.output === "string" && res.output.trim().length > 0) {
+                return res.output;
+              }
+            } catch (e) {
+              console.warn("[planner-chat] gateway com tenant falhou, usando proxy Lovable", e);
             }
+            return await callLovableProxy(system, prompt, { maxTokens: 500, temperature: 0.4 });
           },
         })) {
           if (controller.signal.aborted) break;
