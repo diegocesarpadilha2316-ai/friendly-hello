@@ -95,7 +95,7 @@ const MATERIAL_WORDS: Array<{ material: string; words: string[] }> = [
   { material: "Nogueira", words: ["nogueira"] },
   { material: "Carvalho", words: ["carvalho"] },
   { material: "Branco Fosco", words: ["branco fosco", "off white", "off-white"] },
-  { material: "Branco TX", words: ["branco tx", "branco"] },
+  { material: "Branco TX", words: ["branco tx", "branco", "branca"] },
   { material: "Grafite", words: ["grafite", "chumbo"] },
   { material: "Quartzo", words: ["quartzo"] },
 ];
@@ -117,7 +117,15 @@ function detectMaterial(t: string): string | undefined {
 export function buildBlueprint(input: string, override?: { environment?: string }): PlannerBlueprint {
   const t = norm(input);
   const dec: Decomposition = decompose(input);
-  const environment = override?.environment ?? dec.preset ?? inferEnvironment(t) ?? "cozinha";
+  // Prioridade: override explícito > preset detectado pelo decompositor >
+  // inferência por módulos declarados (roupeiro→dormitorio, painel→sala) >
+  // default "cozinha".
+  const environment =
+    override?.environment ??
+    dec.preset ??
+    inferEnvironment(t) ??
+    inferFromModules(dec) ??
+    "cozinha";
   const style = detectStyle(t);
   const material = detectMaterial(t);
 
@@ -148,6 +156,20 @@ function inferEnvironment(t: string): string | null {
   if (/(sala|living|estar)/.test(t)) return "sala";
   if (/(escritori|home office)/.test(t)) return "escritorio";
   if (/(banheir|lavab)/.test(t)) return "banheiro";
+  if (/(lavanderi)/.test(t)) return "cozinha"; // lavanderia usa blueprint de cozinha (com pia + gaveteiros)
+  return null;
+}
+
+/**
+ * Quando o usuário cita um módulo sem nome de ambiente ("quero um roupeiro
+ * de 6 portas"), inferimos o ambiente pelo tipo do módulo dominante.
+ */
+function inferFromModules(dec: Decomposition): string | null {
+  const labels = dec.modules.map((m) => m.label.toLowerCase());
+  if (labels.some((l) => l.includes("roupeir"))) return "dormitorio";
+  if (labels.some((l) => l.includes("closet"))) return "closet";
+  if (labels.some((l) => l.includes("painel"))) return "sala";
+  if (labels.some((l) => l.includes("espelho") || l.includes("nicho"))) return "banheiro";
   return null;
 }
 
