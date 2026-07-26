@@ -38,6 +38,7 @@ interface CabinetMeshProps {
   openDrawers?: boolean;
   drawersCount?: number;
   doorsCount?: number;
+  shelvesCount?: number;
 }
 
 interface CabinetComposition {
@@ -178,15 +179,19 @@ export function CabinetMesh(props: CabinetMeshProps) {
 
       {/* Prateleiras internas (visíveis quando abre) */}
       {props.subtype === "closet" || (comp.doors > 0 && !openDoors) ? null : (
-        Array.from({ length: Math.max(0, Math.floor(height / 0.4) - 1) }).map((_, i) => {
-          const y = -halfH + ((i + 1) * height) / Math.max(1, Math.floor(height / 0.4));
+        (() => {
+          const auto = Math.max(0, Math.floor(height / 0.4) - 1);
+          const n = Math.max(0, Math.min(12, props.shelvesCount ?? auto));
+          return Array.from({ length: n }).map((_, i) => {
+          const y = -halfH + ((i + 1) * height) / Math.max(1, n + 1);
           return (
             <mesh key={`shelf-${i}`} position={[0, y, 0]} castShadow receiveShadow>
               <boxGeometry args={[width - 2 * T, T * 0.9, depth - T]} />
               <meshStandardMaterial {...bodyProps} color={bodyColor} />
             </mesh>
           );
-        })
+        });
+        })()
       )}
 
       {/* Frentes: portas */}
