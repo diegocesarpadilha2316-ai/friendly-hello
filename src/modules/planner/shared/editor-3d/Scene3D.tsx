@@ -37,6 +37,7 @@ import {
 import { getPbrMaterial, getPbrRoughnessBias, isPbrId } from "../materials/pbr-catalog";
 import { GlassFront } from "./GlassFront";
 import { DecorMesh, isDecorSubtype } from "./DecorMesh";
+import { CabinetMesh, isCabinetSubtype } from "./CabinetMesh";
 import { CinematicFX } from "./CinematicFX";
 
 interface Scene3DProps {
@@ -53,7 +54,7 @@ const COLORS = {
   ceiling: "#6b7280",
   door: "#f59e0b",
   window: "#06b6d4",
-  furniture: "#a78bfa",
+  furniture: "#b78a5c", // freijó neutro — evita "box roxo"
   furnitureSel: "#8b5cf6",
 };
 
