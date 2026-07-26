@@ -14,6 +14,8 @@ import {
   Grid,
   Environment,
   Bounds,
+  ContactShadows,
+  SoftShadows,
 } from "@react-three/drei";
 import * as THREE from "three";
 import type {
@@ -436,24 +438,64 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
       dpr={[1, 1.5]}
       camera={{ position: [cx + camDist * 0.7, camDist * 0.6, cz + camDist * 0.7], fov: 45, near: 0.05, far: 500 }}
       gl={{ antialias: true, powerPreference: "high-performance" }}
+      onCreated={({ gl }) => {
+        gl.toneMapping = THREE.ACESFilmicToneMapping;
+        gl.toneMappingExposure = 1.05;
+        gl.outputColorSpace = THREE.SRGBColorSpace;
+        // Sombras suaves com filtragem PCF de alta qualidade
+        gl.shadowMap.type = THREE.PCFSoftShadowMap;
+      }}
       onPointerMissed={() => onSelect(null)}
     >
       <color attach="background" args={["#0b0f1a"]} />
-      <ambientLight intensity={viewport.showLights ? 0.35 : 0.15} />
+      {/* PCSS: penumbra realista, custo baixo — só quando materiais estão ativos */}
+      {viewport.render === "material" && viewport.showLights ? (
+        <SoftShadows size={18} samples={12} focus={0.9} />
+      ) : null}
+      <ambientLight intensity={viewport.showLights ? 0.18 : 0.12} />
       {viewport.showLights ? (
         <>
           <directionalLight
-            position={[cx + 8, 12, cz + 8]}
-            intensity={1.1}
+            position={[cx + 8, 14, cz + 6]}
+            intensity={2.2}
+            color="#fff4e0"
             castShadow
-            shadow-mapSize-width={1024}
-            shadow-mapSize-height={1024}
+            shadow-mapSize-width={2048}
+            shadow-mapSize-height={2048}
+            shadow-bias={-0.0002}
+            shadow-normalBias={0.05}
+            shadow-camera-far={60}
+            shadow-camera-left={-diag}
+            shadow-camera-right={diag}
+            shadow-camera-top={diag}
+            shadow-camera-bottom={-diag}
           />
-          <hemisphereLight args={["#b7c4e0", "#1a1f2e", 0.4]} />
+          {/* Rim/fill frio para volumetria */}
+          <directionalLight
+            position={[cx - 6, 6, cz - 8]}
+            intensity={0.35}
+            color="#a8c5ff"
+          />
+          <hemisphereLight args={["#dbe6ff", "#141822", 0.28]} />
         </>
       ) : null}
-      {viewport.render === "material" ? <Environment preset="apartment" /> : null}
+      {/* HDRI IBL sempre ativo em modo material — sem alterar cor de fundo */}
+      {viewport.render === "material" ? (
+        <Environment preset="warehouse" background={false} environmentIntensity={0.9} />
+      ) : null}
       <ApplyViewPreset view={viewport.view} center={center} diag={diag} />
+      {/* Contact shadow suave no chão — enraíza os móveis mesmo em modo wireframe */}
+      {viewport.showLights ? (
+        <ContactShadows
+          position={[cx, 0.001, cz]}
+          scale={Math.max(diag * 2, 20)}
+          resolution={1024}
+          blur={2.4}
+          far={4}
+          opacity={0.55}
+          color="#000000"
+        />
+      ) : null}
       {viewport.showGrid ? (
         <Grid
           args={[80, 80]}
