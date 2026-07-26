@@ -21,6 +21,7 @@ import {
   Image as ImageIcon,
   History,
   CheckCircle2,
+  ClipboardList,
 } from "lucide-react";
 import { Button, EmptyState } from "@/core/components/ui-kit";
 import { cn } from "@/lib/utils";
@@ -28,7 +29,16 @@ import { useTenant } from "@/core/providers/TenantProvider";
 import {
   usePlannerEditor,
   EditorCanvas,
+  Inspector,
 } from "@/modules/planner/shared";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 export const Route = createFileRoute("/_authenticated/planner/projetos/$projectId")({
   component: PlannerProjectDetail,
@@ -60,6 +70,7 @@ function PlannerProjectDetail() {
   const [snapOn, setSnapOn] = useState(true);
   const [gridOn, setGridOn] = useState(true);
   const [zoom, setZoom] = useState(85);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   useEffect(() => {
     if (!activeCompany?.id) return;
