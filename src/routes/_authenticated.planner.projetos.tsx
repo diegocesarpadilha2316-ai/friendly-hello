@@ -65,11 +65,11 @@ function PlannerProjectsPage() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Buscar projeto…"
             />
-            <Link to="/planner/projetos/novo">
-              <Button size="sm">
+            <Button size="sm" asChild>
+              <Link to="/planner/projetos/novo">
                 <PlusCircle className="mr-2 h-4 w-4" /> Novo projeto
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         }
       />
@@ -86,11 +86,11 @@ function PlannerProjectsPage() {
             }
             action={
               projects.length === 0 ? (
-                <Link to="/planner/projetos/novo">
-                  <Button size="sm">
+                <Button size="sm" asChild>
+                  <Link to="/planner/projetos/novo">
                     <Sparkles className="mr-2 h-4 w-4" /> Criar com IA
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               ) : undefined
             }
           />
