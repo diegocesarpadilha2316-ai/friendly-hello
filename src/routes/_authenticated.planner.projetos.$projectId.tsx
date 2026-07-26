@@ -65,8 +65,9 @@ function PlannerProjectDetail() {
   const [aiOpen, setAiOpen] = useState(true);
 
   useEffect(() => {
+    if (!activeCompany?.id) return;
     loadProjectById(projectId);
-  }, [tenantId, projectId, loadProjectById]);
+  }, [activeCompany?.id, projectId, loadProjectById]);
 
   useEffect(() => {
     const onFocus = () => setAiOpen(true);
