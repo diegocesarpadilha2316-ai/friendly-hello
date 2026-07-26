@@ -112,7 +112,7 @@ function Fridge({ w, h, d, color, outline }: { w: number; h: number; d: number; 
         <cylinderGeometry args={[0.012, 0.012, freezerH * 0.5, 16]} />
         <meshStandardMaterial {...CHROME} />
       </mesh>
-      {outline && <boxOutline w={w} h={h} d={d} color={outline} />}
+      {outline && <BoxOutline w={w} h={h} d={d} color={outline} />}
     </group>
   );
 }
@@ -151,7 +151,7 @@ function Range({ w, h, d, outline }: { w: number; h: number; d: number; outline?
         <cylinderGeometry args={[0.01, 0.01, w * 0.5, 16]} />
         <meshStandardMaterial {...CHROME} />
       </mesh>
-      {outline && <boxOutline w={w} h={h} d={d} color={outline} />}
+      {outline && <BoxOutline w={w} h={h} d={d} color={outline} />}
     </group>
   );
 }
@@ -170,7 +170,7 @@ function Cooktop({ w, h, d, outline }: { w: number; h: number; d: number; outlin
           <meshStandardMaterial color="#2a2a2a" roughness={0.6} metalness={0.3} />
         </mesh>
       ))}
-      {outline && <boxOutline w={w} h={h} d={d} color={outline} />}
+      {outline && <BoxOutline w={w} h={h} d={d} color={outline} />}
     </group>
   );
 }
@@ -198,7 +198,7 @@ function Oven({ w, h, d, outline }: { w: number; h: number; d: number; outline?:
         <cylinderGeometry args={[0.01, 0.01, w * 0.6, 16]} />
         <meshStandardMaterial {...CHROME} />
       </mesh>
-      {outline && <boxOutline w={w} h={h} d={d} color={outline} />}
+      {outline && <BoxOutline w={w} h={h} d={d} color={outline} />}
     </group>
   );
 }
@@ -224,7 +224,7 @@ function Hood({ w, h, d, outline }: { w: number; h: number; d: number; outline?:
         <boxGeometry args={[w * 0.9, 0.008, d * 0.85]} />
         <meshStandardMaterial {...INOX_DARK} />
       </mesh>
-      {outline && <boxOutline w={w} h={h} d={d} color={outline} />}
+      {outline && <BoxOutline w={w} h={h} d={d} color={outline} />}
     </group>
   );
 }
@@ -247,11 +247,11 @@ function Washer({ w, h, d, outline }: { w: number; h: number; d: number; outline
         <boxGeometry args={[w - 0.02, h * 0.75, 0.01]} />
         <meshStandardMaterial {...INOX} />
       </mesh>
-      <mesh position={[0, -h * 0.08, d / 2 + 0.012]}>
-        <cylinderGeometry args={[Math.min(w, h) * 0.28, Math.min(w, h) * 0.28, 0.004, 32]} rotation={[Math.PI / 2, 0, 0]} />
+      <mesh position={[0, -h * 0.08, d / 2 + 0.012]} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[Math.min(w, h) * 0.28, Math.min(w, h) * 0.28, 0.004, 32]} />
         <meshStandardMaterial {...GLASS_BLACK} />
       </mesh>
-      {outline && <boxOutline w={w} h={h} d={d} color={outline} />}
+      {outline && <BoxOutline w={w} h={h} d={d} color={outline} />}
     </group>
   );
 }
@@ -285,7 +285,7 @@ function Sink({ w, h, d, outline }: { w: number; h: number; d: number; outline?:
         <boxGeometry args={[w - 2 * wall, 0.005, d - 2 * wall]} />
         <meshStandardMaterial color="#a8adb3" roughness={0.4} metalness={0.7} />
       </mesh>
-      {outline && <boxOutline w={w} h={h} d={d} color={outline} />}
+      {outline && <BoxOutline w={w} h={h} d={d} color={outline} />}
     </group>
   );
 }
@@ -333,7 +333,7 @@ function Faucet({ h, outline }: { h: number; outline?: string }) {
 }
 
 // --- Utilitário: contorno de seleção ---------------------------------------
-function boxOutline({ w, h, d, color }: { w: number; h: number; d: number; color: string }) {
+function BoxOutline({ w, h, d, color }: { w: number; h: number; d: number; color: string }) {
   return (
     <mesh>
       <boxGeometry args={[w * 1.01, h * 1.01, d * 1.01]} />
@@ -342,6 +342,4 @@ function boxOutline({ w, h, d, color }: { w: number; h: number; d: number; color
   );
 }
 
-// Suprime warning de "unused"; usado nos returns condicionais acima.
-void boxOutline;
 void THREE;
