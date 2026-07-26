@@ -152,7 +152,7 @@ export function interpret(input: string): PlannerIntent {
           // Blueprint incompleto — a IA PERGUNTA antes de executar.
           return { type: "unknown", reply: validation.ask };
         }
-        const presetArgs = blueprintToPreset(bp);
+        const presetArgs = blueprintToPreset(bp) as Record<string, unknown>;
         intents.push({
           tool: "create_room_preset",
           args: styleMatch ? { ...presetArgs, style: styleMatch } : presetArgs,
