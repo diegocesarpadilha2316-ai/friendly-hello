@@ -114,6 +114,10 @@ export interface Viewport3DControls {
   showLights?: boolean;
   openDoors?: boolean;
   openDrawers?: boolean;
+  render?: Render3DMode;
+  sectionHeight?: number | null;
+  wallOpacity?: number;
+  cinematic?: boolean;
 }
 
 export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {}) {
@@ -141,8 +145,23 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
       ...(controls.showLights != null ? { showLights: controls.showLights } : {}),
       ...(controls.openDoors != null ? { openDoors: controls.openDoors } : {}),
       ...(controls.openDrawers != null ? { openDrawers: controls.openDrawers } : {}),
+      ...(controls.render ? { render: controls.render } : {}),
+      ...(controls.sectionHeight !== undefined ? { sectionHeight: controls.sectionHeight } : {}),
+      ...(controls.wallOpacity != null ? { wallOpacity: controls.wallOpacity } : {}),
+      ...(controls.cinematic != null ? { cinematic: controls.cinematic } : {}),
     }));
-  }, [controls?.showGrid, controls?.camera, controls?.view, controls?.showLights, controls?.openDoors, controls?.openDrawers]);
+  }, [
+    controls?.showGrid,
+    controls?.camera,
+    controls?.view,
+    controls?.showLights,
+    controls?.openDoors,
+    controls?.openDrawers,
+    controls?.render,
+    controls?.sectionHeight,
+    controls?.wallOpacity,
+    controls?.cinematic,
+  ]);
 
   const model = useMemo(() => (room ? buildScene3D(room, viewport.wallHeight) : null), [room, viewport.wallHeight]);
 

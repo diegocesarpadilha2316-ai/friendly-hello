@@ -16,9 +16,14 @@ type Mode = "2d" | "3d";
 export interface EditorCanvasControls {
   showGrid?: boolean;
   view?: "perspectiva" | "topo" | "frontal" | "lateral";
+  camera?: "orbit" | "first-person" | "fly";
   showLights?: boolean;
   openDoors?: boolean;
   openDrawers?: boolean;
+  render?: "solid" | "wireframe" | "material";
+  sectionHeight?: number | null;
+  wallOpacity?: number;
+  cinematic?: boolean;
 }
 
 export function EditorCanvas({ mode, controls }: { mode: Mode; controls?: EditorCanvasControls }) {
@@ -133,9 +138,14 @@ export function EditorCanvas({ mode, controls }: { mode: Mode; controls?: Editor
                 ? {
                     showGrid: controls.showGrid,
                     view: controls.view,
+                    camera: controls.camera,
                     showLights: controls.showLights,
                     openDoors: controls.openDoors,
                     openDrawers: controls.openDrawers,
+                    render: controls.render,
+                    sectionHeight: controls.sectionHeight,
+                    wallOpacity: controls.wallOpacity,
+                    cinematic: controls.cinematic,
                   }
                 : undefined
             }

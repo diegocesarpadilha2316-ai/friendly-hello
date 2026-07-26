@@ -4,10 +4,8 @@ import {
   ArrowLeft,
   Home,
   ChevronDown,
-  Search,
   Undo2,
   Redo2,
-  Play,
   Sparkles,
   Ruler,
   DoorOpen,
@@ -19,9 +17,16 @@ import {
   Footprints,
   Box,
   Image as ImageIcon,
-  History,
+  Save,
+  Share2,
+  Download,
+  Upload,
+  BookOpen,
+  Scroll,
+  Calculator,
   CheckCircle2,
   ClipboardList,
+  Loader2,
 } from "lucide-react";
 import { Button, EmptyState } from "@/core/components/ui-kit";
 import { cn } from "@/lib/utils";
@@ -39,6 +44,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/planner/projetos/$projectId")({
   component: PlannerProjectDetail,
@@ -61,16 +67,17 @@ function PlannerProjectDetail() {
 
   const [viewportMode, setViewportMode] = useState<"2d" | "3d" | "realista">("3d");
   const [walkMode, setWalkMode] = useState(false);
-  const [exploded, setExploded] = useState(false);
   const [doorsOpen, setDoorsOpen] = useState(false);
   const [drawersOpen, setDrawersOpen] = useState(false);
   const [ledsOn, setLedsOn] = useState(true);
-  const [measuring, setMeasuring] = useState(false);
-  const [showStructure, setShowStructure] = useState(false);
+  const [wireframe, setWireframe] = useState(false);
+  const [sectionCut, setSectionCut] = useState(false);
+  const [wallsHidden, setWallsHidden] = useState(false);
   const [snapOn, setSnapOn] = useState(true);
   const [gridOn, setGridOn] = useState(true);
-  const [zoom, setZoom] = useState(85);
+  const [zoom] = useState(100);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!activeCompany?.id) return;
@@ -91,6 +98,46 @@ function PlannerProjectDetail() {
     return project.environments.reduce((acc, e) => acc + e.rooms.length, 0);
   }, [project]);
   const clientName = (project?.client as { name?: string } | undefined)?.name ?? "Sem cliente";
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await saveNow();
+      toast.success("Projeto salvo");
+    } catch (e) {
+      toast.error("Erro ao salvar", { description: (e as Error)?.message });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleShare = async () => {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    const payload = { title: project?.name ?? "Projeto Dioris", url };
+    try {
+      if (typeof navigator !== "undefined" && "share" in navigator) {
+        await (navigator as Navigator & { share: (d: ShareData) => Promise<void> }).share(payload);
+        return;
+      }
+      await (navigator as unknown as { clipboard: { writeText: (v: string) => Promise<void> } }).clipboard.writeText(url);
+      toast.success("Link copiado para a área de transferência");
+    } catch {
+      toast.error("Não foi possível compartilhar");
+    }
+  };
+
+  const handleExport = () => {
+    if (!project) return;
+    const blob = new Blob([JSON.stringify(project, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `${project.name.replace(/\s+/g, "_")}.dioris.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(a.href);
+    toast.success("Projeto exportado (.dioris.json)");
+  };
 
   if (!project) {
     return (
@@ -116,64 +163,65 @@ function PlannerProjectDetail() {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col bg-background">
       {/* ===== Header cinematográfico ===== */}
-      <header className="flex items-center gap-3 border-b border-border/60 bg-card/40 px-5 py-3 backdrop-blur">
+      <header className="flex flex-wrap items-center gap-3 border-b border-border/60 bg-card/60 px-4 py-3 backdrop-blur md:px-5">
         <div className="min-w-0">
           <div className="flex items-center gap-3">
             <h1 className="truncate text-lg font-semibold tracking-tight text-foreground">
               {project.name}
             </h1>
-            <span className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-300">
+            <span className="flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-200">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-              Auto Save
-              <ChevronDown className="h-3 w-3 opacity-70" />
+              {state.dirty ? "Salvando…" : "Auto Save"}
             </span>
           </div>
-          <p className="mt-0.5 text-xs text-muted-foreground">Cliente: {clientName}</p>
+          <p className="mt-0.5 text-xs text-slate-400">Cliente: {clientName}</p>
         </div>
 
         <div className="ml-4 flex items-center gap-1">
           <IconBtn onClick={undo} disabled={!canUndo} icon={Undo2} label="Undo" />
           <IconBtn onClick={redo} disabled={!canRedo} icon={Redo2} label="Redo" />
+          <IconBtn onClick={handleSave} disabled={saving} icon={saving ? Loader2 : Save} label="Salvar (Ctrl+S)" />
+          <IconBtn onClick={handleShare} icon={Share2} label="Compartilhar" />
+          <IconBtn onClick={handleExport} icon={Download} label="Exportar .dioris.json" />
         </div>
 
-        <div className="ml-auto flex items-center gap-2">
-          <div className="hidden items-center gap-2 rounded-lg border border-border/60 bg-background/60 px-3 py-1.5 text-xs text-muted-foreground md:flex md:w-56">
-            <Search className="h-3.5 w-3.5" />
-            <input
-              placeholder="Search"
-              className="w-full border-none bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground"
-            />
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setViewportMode("realista")}
+        <nav className="ml-auto flex flex-wrap items-center gap-1">
+          <Link
+            to="/planner/biblioteca"
+            className="flex items-center gap-1.5 rounded-lg border border-border/60 bg-card/60 px-3 py-1.5 text-xs font-medium text-slate-200 transition-all hover:border-primary/40 hover:bg-primary/10 hover:text-primary active:scale-95"
+          >
+            <BookOpen className="h-3.5 w-3.5" /> Biblioteca
+          </Link>
+          <Link
+            to="/planner/engenharia"
+            className="flex items-center gap-1.5 rounded-lg border border-border/60 bg-card/60 px-3 py-1.5 text-xs font-medium text-slate-200 transition-all hover:border-primary/40 hover:bg-primary/10 hover:text-primary active:scale-95"
+          >
+            <Scroll className="h-3.5 w-3.5" /> Lista de Corte
+          </Link>
+          <Link
+            to="/planner/orcamentos"
+            className="flex items-center gap-1.5 rounded-lg border border-border/60 bg-card/60 px-3 py-1.5 text-xs font-medium text-slate-200 transition-all hover:border-primary/40 hover:bg-primary/10 hover:text-primary active:scale-95"
+          >
+            <Calculator className="h-3.5 w-3.5" /> Orçamento
+          </Link>
+          <Link
+            to="/planner/render"
             className={cn(
-              "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
-              viewportMode === "realista"
-                ? "bg-primary text-primary-foreground shadow-[0_0_20px_-4px_hsl(var(--primary)/0.6)]"
-                : "border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20",
+              "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all active:scale-95",
+              "border border-primary/40 bg-gradient-to-r from-primary/25 to-accent/25 text-primary-foreground",
+              "hover:from-primary/40 hover:to-accent/40 hover:shadow-[0_0_24px_-6px_hsl(var(--primary)/0.7)]",
             )}
           >
             <ImageIcon className="h-3.5 w-3.5" /> Render
-          </button>
-          <button
-            type="button"
-            className="flex items-center gap-1.5 rounded-lg border border-border/60 bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted"
-          >
-            <Play className="h-3.5 w-3.5" /> Vídeo
-          </button>
+          </Link>
           <button
             type="button"
             onClick={() => window.dispatchEvent(new CustomEvent("planner:focus-ai"))}
-            className="flex items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20"
+            className="flex items-center gap-1.5 rounded-lg border border-accent/40 bg-gradient-to-r from-accent/20 to-primary/20 px-3 py-1.5 text-xs font-semibold text-white transition-all hover:from-accent/40 hover:to-primary/40 hover:shadow-[0_0_24px_-6px_hsl(var(--accent)/0.7)] active:scale-95"
           >
             <Sparkles className="h-3.5 w-3.5" /> IA
           </button>
-          <div className="ml-1 grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-primary/60 to-accent/60 text-xs font-bold text-primary-foreground">
-            D
-          </div>
-        </div>
+        </nav>
       </header>
 
       {/* ===== Corpo: viewport + inspector ===== */}
@@ -203,13 +251,12 @@ function PlannerProjectDetail() {
               />
               <span className="mx-1 h-8 w-px bg-border/60" />
               <ToolBtn active={walkMode} onClick={() => setWalkMode((v) => !v)} icon={Footprints} label="Caminhar" />
-              <ToolBtn active={exploded} onClick={() => setExploded((v) => !v)} icon={Box} label="Explodir" />
-              <ToolBtn active={false} onClick={() => {}} icon={Scissors} label="Cortar ambiente" />
+              <ToolBtn active={sectionCut} onClick={() => setSectionCut((v) => !v)} icon={Scissors} label="Cortar ambiente" />
+              <ToolBtn active={wallsHidden} onClick={() => setWallsHidden((v) => !v)} icon={Eye} label="Ocultar paredes" />
               <ToolBtn active={doorsOpen} onClick={() => setDoorsOpen((v) => !v)} icon={DoorOpen} label="Abrir portas" />
               <ToolBtn active={drawersOpen} onClick={() => setDrawersOpen((v) => !v)} icon={Archive} label="Abrir gavetas" />
               <ToolBtn active={ledsOn} onClick={() => setLedsOn((v) => !v)} icon={Lightbulb} label="Ligar LEDs" />
-              <ToolBtn active={measuring} onClick={() => setMeasuring((v) => !v)} icon={Ruler} label="Medir" />
-              <ToolBtn active={showStructure} onClick={() => setShowStructure((v) => !v)} icon={Eye} label="Mostrar estrutura" />
+              <ToolBtn active={wireframe} onClick={() => setWireframe((v) => !v)} icon={Ruler} label="Wireframe" />
               <span className="mx-1 h-8 w-px bg-border/60" />
               <ToolBtn
                 active={detailsOpen}
@@ -227,35 +274,42 @@ function PlannerProjectDetail() {
               controls={{
                 showGrid: gridOn,
                 view: "perspectiva",
+                camera: walkMode ? "first-person" : "orbit",
                 showLights: ledsOn,
                 openDoors: doorsOpen,
                 openDrawers: drawersOpen,
+                render: wireframe ? "wireframe" : viewportMode === "realista" ? "material" : "solid",
+                sectionHeight: sectionCut ? 1200 : null,
+                wallOpacity: wallsHidden ? 0.12 : 1,
+                cinematic: viewportMode === "realista",
               }}
             />
           </div>
 
           {/* Barra inferior */}
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-border/60 bg-background/70 px-5 py-2 text-xs text-muted-foreground backdrop-blur">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-border/60 bg-background/80 px-5 py-2 text-xs text-slate-300 backdrop-blur">
             <button
               type="button"
               onClick={() => setSnapOn((v) => !v)}
               className={cn(
-                "flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors",
-                snapOn ? "text-foreground" : "hover:text-foreground",
+                "flex items-center gap-1.5 rounded-md px-2 py-1 transition-all active:scale-95",
+                snapOn ? "text-foreground" : "text-slate-400 hover:text-foreground",
               )}
+              title="Snap magnético"
             >
-              <span className={cn("inline-block h-2 w-2 rounded-sm", snapOn ? "bg-primary" : "bg-muted-foreground/40")} />
+              <span className={cn("inline-block h-2 w-2 rounded-sm", snapOn ? "bg-primary shadow-[0_0_8px_hsl(var(--primary))]" : "bg-slate-500")} />
               Snap
             </button>
             <button
               type="button"
               onClick={() => setGridOn((v) => !v)}
               className={cn(
-                "flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors",
-                gridOn ? "text-foreground" : "hover:text-foreground",
+                "flex items-center gap-1.5 rounded-md px-2 py-1 transition-all active:scale-95",
+                gridOn ? "text-foreground" : "text-slate-400 hover:text-foreground",
               )}
+              title="Grade do viewport"
             >
-              <span className={cn("inline-block h-2 w-2 rounded-sm", gridOn ? "bg-primary" : "bg-muted-foreground/40")} />
+              <span className={cn("inline-block h-2 w-2 rounded-sm", gridOn ? "bg-primary shadow-[0_0_8px_hsl(var(--primary))]" : "bg-slate-500")} />
               Grade
             </button>
 
@@ -272,10 +326,7 @@ function PlannerProjectDetail() {
               Escala: <span className="text-foreground">1:50</span>
             </span>
 
-            <button className="ml-auto flex items-center gap-1.5 text-muted-foreground hover:text-foreground">
-              <History className="h-3.5 w-3.5" /> Histórico
-            </button>
-            <span className="flex items-center gap-1.5 text-emerald-300">
+            <span className="ml-auto flex items-center gap-1.5 text-emerald-300">
               <CheckCircle2 className="h-3.5 w-3.5" /> Auto Save
             </span>
             <span>
@@ -364,13 +415,15 @@ function IconBtn({
       onClick={onClick}
       disabled={disabled}
       title={label}
+      aria-label={label}
       className={cn(
-        "grid h-8 w-8 place-items-center rounded-md border border-border/60 bg-background/40 text-muted-foreground transition-colors",
-        !disabled && "hover:bg-muted hover:text-foreground",
+        "grid h-8 w-8 place-items-center rounded-md border border-border/60 bg-background/60 text-slate-300 transition-all",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
+        !disabled && "hover:border-primary/50 hover:bg-primary/10 hover:text-white active:scale-90",
         disabled && "cursor-not-allowed opacity-40",
       )}
     >
-      <Icon className="h-3.5 w-3.5" />
+      <Icon className={cn("h-3.5 w-3.5", label.startsWith("Salvando") || (Icon === Loader2 && "animate-spin"))} />
     </button>
   );
 }
@@ -391,11 +444,14 @@ function ToolBtn({
       type="button"
       onClick={onClick}
       title={label}
+      aria-label={label}
+      aria-pressed={!!active}
       className={cn(
         "flex shrink-0 flex-col items-center gap-0.5 rounded-xl px-2.5 py-1.5 text-[10px] font-medium transition-all",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 active:scale-95",
         active
-          ? "bg-primary/20 text-primary ring-1 ring-primary/40 shadow-[0_0_12px_-4px_hsl(var(--primary)/0.6)]"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+          ? "bg-gradient-to-b from-primary/30 to-accent/25 text-white ring-1 ring-primary/60 shadow-[0_0_16px_-4px_hsl(var(--primary)/0.7)]"
+          : "text-slate-300 hover:bg-white/5 hover:text-white",
       )}
     >
       <Icon className="h-4 w-4" />
