@@ -124,9 +124,23 @@ export function interpret(input: string): PlannerIntent {
   const intents: ParsedIntent[] = [];
 
   // ── Criação de ambiente completo ──
-  if (has(t, "cria", "crie", "criar", "faca", "faz", "monta", "montar")) {
+  // Dispara sempre que o usuário mencionar o nome do ambiente OU pedir
+  // genericamente "quero um projeto" / "faz um projeto" (default: cozinha).
+  const wantsCreate = has(
+    t,
+    "cria", "crie", "criar", "faca", "faz", "monta", "montar",
+    "quero", "queria", "gostaria", "preciso", "projeto", "ambiente",
+    "gera", "gerar", "montar",
+  );
+  {
+    let matchedPreset: string | null = null;
     for (const { preset, words } of PRESET_KEYWORDS) {
-      if (words.some((w) => t.includes(w))) {
+      if (words.some((w) => t.includes(w))) { matchedPreset = preset; break; }
+    }
+    // Se citou só o nome do ambiente (ex.: "cozinha moderna"), ou pediu
+    // genericamente ("quero um projeto"), cria mesmo assim.
+    if (matchedPreset || wantsCreate) {
+      const preset = matchedPreset ?? "cozinha";
         const styleMatch = STYLES.find((s) => t.includes(norm(s)));
         intents.push({ tool: "create_room_preset", args: { preset, style: styleMatch } });
         if (styleMatch) intents.push({ tool: "set_style", args: { style: styleMatch === "clássico" ? "classico" : styleMatch } });
@@ -147,7 +161,6 @@ export function interpret(input: string): PlannerIntent {
           });
         }
         return { type: "command", intents };
-      }
     }
   }
 

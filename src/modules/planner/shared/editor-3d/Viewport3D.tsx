@@ -61,8 +61,8 @@ function ToolbarButton({
       className={cn(
         "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors",
         active
-          ? "bg-primary/20 text-primary"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+          ? "bg-primary/25 text-primary-foreground ring-1 ring-primary/40"
+          : "text-foreground/85 hover:bg-muted hover:text-foreground",
       )}
     >
       {children}
