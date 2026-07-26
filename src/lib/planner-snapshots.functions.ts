@@ -10,7 +10,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireTenant } from "@/core/middleware/require-tenant";
 
-export type JsonObject = Record<string, unknown>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type JsonObject = Record<string, any>;
 
 // Snapshot é payload JSON opaco do editor. Validamos apenas que é um objeto;
 // serializamos via JSON.stringify/parse para remover `undefined` que o Zod
