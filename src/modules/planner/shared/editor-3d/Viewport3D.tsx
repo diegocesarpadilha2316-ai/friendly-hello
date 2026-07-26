@@ -250,6 +250,21 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
             >
               <Scissors className="h-3.5 w-3.5" /> Corte
             </ToolbarButton>
+            <span className="mx-1 h-4 w-px bg-border/60" />
+            <ToolbarButton
+              active={!!viewport.cinematic}
+              onClick={() =>
+                setViewport((v) => ({
+                  ...v,
+                  cinematic: !v.cinematic,
+                  // Preview Fotorrealista exige modo Material
+                  render: !v.cinematic ? "material" : v.render,
+                }))
+              }
+              title="Preview Fotorrealista (SSAO + Bloom)"
+            >
+              <Sparkles className="h-3.5 w-3.5" /> Foto
+            </ToolbarButton>
           </div>
         </div>
 
