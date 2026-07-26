@@ -96,7 +96,7 @@ function SidebarNav({
             const Icon = item.icon;
             return (
               <Link
-                key={item.to}
+                key={`${group.label}-${item.to}-${item.label}`}
                 to={item.to}
                 onClick={onNavigate}
                 className={cn(

@@ -141,7 +141,7 @@ function PlannerProjectDetail() {
   const activeTab: "editor3d" | "planta2d" = viewportMode === "3d" ? "editor3d" : "planta2d";
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] min-h-[720px] flex-col gap-0 bg-background">
+    <div className="flex min-h-[calc(100vh-4rem)] flex-col gap-0 bg-background">
       {/* Topbar do projeto */}
       <header className="flex items-center gap-4 border-b border-border/60 bg-background/60 px-4 py-3 backdrop-blur">
         <nav aria-label="Trilha" className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -210,9 +210,9 @@ function PlannerProjectDetail() {
       </header>
 
       {/* Corpo — 3 colunas */}
-      <div className="grid min-h-0 flex-1 gap-3 p-3 lg:grid-cols-[300px,1fr,380px]">
+      <div className="grid min-h-0 flex-1 gap-3 p-3 xl:grid-cols-[300px,1fr,380px]">
         {/* Coluna 1 — Estrutura do Projeto */}
-        <aside className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border/60 bg-card">
+        <aside className="order-2 flex min-h-[360px] flex-col overflow-hidden rounded-xl border border-border/60 bg-card xl:order-none xl:min-h-0">
           <div className="flex items-center justify-between border-b border-border/60 px-3 py-2.5">
             <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">
               Estrutura do Projeto
@@ -261,7 +261,7 @@ function PlannerProjectDetail() {
         </aside>
 
         {/* Coluna 2 — Viewport */}
-        <section className="relative flex min-h-0 flex-col overflow-hidden rounded-xl border border-border/60 bg-card">
+        <section className="order-1 relative flex min-h-[580px] flex-col overflow-hidden rounded-xl border border-border/60 bg-card xl:order-none xl:min-h-0">
           {/* Toolbar flutuante superior */}
           <div className="pointer-events-none absolute inset-x-0 top-3 z-10 flex justify-center">
             <div className="pointer-events-auto flex items-center gap-1 rounded-xl border border-border/60 bg-background/85 p-1.5 shadow-lg backdrop-blur-md">
@@ -277,7 +277,7 @@ function PlannerProjectDetail() {
           </div>
 
           {/* Canvas */}
-          <div className="relative min-h-0 flex-1 bg-[#0a1020]">
+          <div className="relative min-h-[520px] flex-1 bg-[#0a1020]">
             <EditorCanvas
               mode={viewportMode}
               controls={{ showGrid: gridOn, view, showLights: lightOn }}
@@ -336,7 +336,7 @@ function PlannerProjectDetail() {
 
         {/* Coluna 3 — IA Copiloto */}
         {aiOpen ? (
-          <aside className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border/60 bg-card">
+          <aside className="order-3 flex min-h-[520px] flex-col overflow-hidden rounded-xl border border-border/60 bg-card xl:order-none xl:min-h-0">
             <div className="min-h-0 flex-1">
               <PlannerAIPanel className="h-full w-full" onClose={() => setAiOpen(false)} />
             </div>

@@ -176,7 +176,7 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
 
   if (!room || !model) {
     return (
-      <div className="grid h-[560px] place-items-center rounded-xl border border-border/60 bg-muted/20 text-sm text-muted-foreground">
+      <div className="grid min-h-[420px] place-items-center rounded-xl border border-border/60 bg-muted/20 text-sm text-muted-foreground">
         Selecione um cômodo para visualizar em 3D.
       </div>
     );
@@ -187,9 +187,9 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
     : null;
 
   return (
-    <div className="grid h-[620px] grid-cols-[220px_1fr_260px] gap-2 rounded-xl border border-border/60 bg-background/40 p-2">
+    <div className="grid min-h-[520px] grid-cols-1 gap-2 rounded-xl border border-border/60 bg-background/40 p-2 xl:h-[620px] xl:grid-cols-[220px_1fr_260px]">
       {/* Árvore da cena */}
-      <aside className="flex min-h-0 flex-col rounded-md border border-border/60 bg-background/60 p-2">
+      <aside className="hidden min-h-0 flex-col rounded-md border border-border/60 bg-background/60 p-2 xl:flex">
         <header className="mb-2 flex items-center gap-2 px-1 text-xs font-medium text-foreground">
           <Layers className="h-3.5 w-3.5" /> Árvore da cena
         </header>
@@ -319,7 +319,7 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
       </div>
 
       {/* Inspector + parâmetros do viewport */}
-      <aside className="flex min-h-0 flex-col gap-2 overflow-auto rounded-md border border-border/60 bg-background/60 p-3 text-xs">
+      <aside className="hidden min-h-0 flex-col gap-2 overflow-auto rounded-md border border-border/60 bg-background/60 p-3 text-xs xl:flex">
         <section>
           <header className="mb-2 flex items-center gap-2 text-xs font-medium text-foreground">
             <Move3D className="h-3.5 w-3.5" /> Parâmetros do 3D

@@ -17,6 +17,7 @@ import { saveProjectSnapshot, type JsonObject } from "@/lib/planner-snapshots.fu
 import {
   createEnvironment,
   createProject,
+  ensureProjectRoomShells,
   createRoom,
   upsertProject,
   usePlannerEditor,
@@ -324,13 +325,14 @@ export function usePlannerChat() {
       const startedWithoutProject = !editor.state.project;
       const shouldOpenEditorAfterCreate =
         startedWithoutProject || pathname.endsWith("/planner/projetos/novo");
-      if (boot.changed) {
-        if (editor.state.project) editor.updateProject(() => boot.project);
-        else editor.loadProject(boot.project);
+      const operableProject = ensureProjectRoomShells(boot.project);
+      if (boot.changed || operableProject !== boot.project) {
+        if (editor.state.project) editor.updateProject(() => operableProject);
+        else editor.loadProject(operableProject);
         editor.select({ environmentId: boot.environmentId, roomId: boot.roomId });
       }
 
-      const project = boot.project;
+      const project = operableProject;
       const activeEnvironmentId = boot.environmentId;
       const activeRoomId = boot.roomId;
 
@@ -468,18 +470,19 @@ export function usePlannerChat() {
 
         // Aplica mutações do projeto no editor — canal ÚNICO (Undo/Redo/Autosave).
         if (mutatedProject !== project) {
-          if (editor.state.project) editor.updateProject(() => mutatedProject);
+          const hasLoadedProject = Boolean(editor.state.project);
+          if (hasLoadedProject) editor.updateProject(() => mutatedProject);
           else editor.loadProject(mutatedProject);
           editor.select({ environmentId: activeEnvironmentId, roomId: activeRoomId });
+          upsertProject(tenantId, mutatedProject);
 
           // Quando a IA cria a partir do wizard/sem editor aberto, o usuário não
           // vê o resultado porque a página /novo mostra apenas uma prévia estática.
           // Persistimos o snapshot e abrimos o editor real do projeto criado.
-          upsertProject(tenantId, mutatedProject);
           if (shouldOpenEditorAfterCreate) {
             try {
               if (activeCompany?.id) {
-                if (startedWithoutProject) {
+                if (!hasLoadedProject) {
                   await createProjectOnServer({
                     data: {
                       id: mutatedProject.id,
