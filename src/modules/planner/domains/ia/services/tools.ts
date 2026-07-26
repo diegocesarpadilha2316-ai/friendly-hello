@@ -27,6 +27,11 @@ import {
 } from "@/modules/planner/shared";
 import { matchDescription } from "./matcher";
 import { applyLayout, type LayoutShape, type LayoutPieceSpec } from "./layout";
+import {
+  applyFinishing,
+  FINISHING_PRESETS,
+  type FinishingScope,
+} from "./finishing";
 
 export interface ToolContext {
   environmentId: string;
@@ -629,6 +634,37 @@ export function toolLayoutRoom(
   return { project: res.project, summary, affectedIds: [] };
 }
 
+// ───── Acabamento automático (Parte 4) ─────
+
+export function toolApplyFinishing(
+  project: PlannerProject,
+  ctx: ToolContext,
+  args: { preset: string; scope?: FinishingScope },
+): ToolExecutionResult {
+  const { result, error } = applyFinishing(
+    project,
+    { environmentId: ctx.environmentId, roomId: ctx.roomId },
+    { presetId: args.preset, scope: args.scope },
+  );
+  if (!result) {
+    const list = FINISHING_PRESETS.map((p) => `"${p.id}"`).join(", ");
+    return {
+      project,
+      summary: `${error ?? "Preset inválido."} Disponíveis: ${list}.`,
+      affectedIds: [],
+    };
+  }
+  const scopeLabel = args.scope && args.scope !== "all" ? ` (${args.scope})` : "";
+  return {
+    project: result.project,
+    summary:
+      result.applied === 0
+        ? `Nada no escopo${scopeLabel} para aplicar "${result.preset.label}".`
+        : `Acabamento "${result.preset.label}" aplicado em ${result.applied} peça(s)${scopeLabel}.`,
+    affectedIds: [],
+  };
+}
+
 // Registro para descoberta/documentação (futuro Marketplace de tools).
 export type ToolName =
   | "insert_item"
@@ -648,7 +684,8 @@ export type ToolName =
   | "center"
   | "set_style"
   | "panel_ripado"
-  | "set_front_type";
+  | "set_front_type"
+  | "apply_finishing";
 
 export interface ToolDescriptor {
   name: ToolName;
@@ -675,6 +712,7 @@ export const PLANNER_TOOL_REGISTRY: readonly ToolDescriptor[] = [
   { name: "set_style", label: "Aplicar estilo", description: "Minimalista, clássico, industrial, luxo, moderno." },
   { name: "panel_ripado", label: "Painel ripado", description: "Insere um painel decorativo ripado." },
   { name: "set_front_type", label: "Trocar frente", description: "Troca a frente para vidro, reeded, sólido ou aberto." },
+  { name: "apply_finishing", label: "Acabamento automático", description: "Aplica um preset coordenado (cor, material, tampo, frente, ferragem, LED) em todos os móveis do cômodo — ou apenas nos aéreos, balcões, torre, painel ou tampos." },
 ];
 
 // Bindings entre nomes e funções — usados pelo executor.
@@ -697,6 +735,7 @@ export const TOOL_FUNCTIONS = {
   set_style: toolSetStyle,
   panel_ripado: toolPanelRipado,
   set_front_type: toolSetFrontType,
+  apply_finishing: toolApplyFinishing,
 } as const;
 
 // Sinal explícito de que `fromPrimitive` e `PlannerEnvironment` são reexportados

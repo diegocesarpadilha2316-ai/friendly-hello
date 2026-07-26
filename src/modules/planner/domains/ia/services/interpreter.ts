@@ -227,6 +227,34 @@ export function interpret(input: string): PlannerIntent {
     intents.push({ tool: "change_material", args: { material: "Quartzo" } });
   }
 
+  // ── Acabamento automático (preset coordenado) ──
+  const FINISHING_MATCHERS: Array<{ id: string; words: string[] }> = [
+    { id: "louro-freijo-reeded", words: ["louro freijo", "louro-freijo", "freijo reeded", "freijo canelado"] },
+    { id: "off-white-minimalista", words: ["off white", "off-white", "branco minimalista"] },
+    { id: "carvalho-grafite-industrial", words: ["carvalho grafite", "grafite industrial", "industrial grafite"] },
+    { id: "nogueira-luxo", words: ["nogueira luxo", "nogueira premium", "luxo nogueira"] },
+    { id: "freijo-cumaru", words: ["freijo cumaru", "cumaru freijo"] },
+  ];
+  if (has(t, "acabamento", "aplique acabamento", "aplicar acabamento", "aplique o acabamento", "acabamento automatico", "harmonize", "harmonizar")) {
+    const scope =
+      has(t, "aereo", "aereos") ? "aereos"
+      : has(t, "balcao", "balcoes") ? "balcoes"
+      : has(t, "torre") ? "torre"
+      : has(t, "painel") ? "painel"
+      : has(t, "tampo", "bancada") ? "tampos"
+      : "all";
+    const match = FINISHING_MATCHERS.find((f) => f.words.some((w) => t.includes(w)));
+    if (match) {
+      intents.push({ tool: "apply_finishing", args: { preset: match.id, scope } });
+    }
+  } else {
+    // Detecção implícita: se o usuário citou o nome do preset diretamente.
+    const match = FINISHING_MATCHERS.find((f) => f.words.some((w) => t.includes(w)));
+    if (match && has(t, "aplique", "aplicar", "deixe", "coloca", "coloque", "usa", "use", "usar")) {
+      intents.push({ tool: "apply_finishing", args: { preset: match.id, scope: "all" } });
+    }
+  }
+
   // ── Inserção genérica pelo subtipo mencionado ──
   if (intents.length === 0 && has(t, "adicione", "adicionar", "insira", "inserir", "coloque", "coloca", "adiciona")) {
     for (const { subtype, words } of SUBTYPE_KEYWORDS) {
