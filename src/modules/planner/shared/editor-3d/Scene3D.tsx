@@ -199,6 +199,8 @@ function Wall({
   selected: boolean;
   onSelect: (id: string | null) => void;
 }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const matRef = useRef<THREE.MeshStandardMaterial>(null);
   const pos = explodeVec(w.cx, w.cz, w.height / 2, center, viewport.explode);
   const clipped =
     viewport.sectionHeight != null && w.height / 2 > (viewport.sectionHeight / 1000);
@@ -209,10 +211,39 @@ function Wall({
     w.materialId,
     [w.length, w.height],
     selected ? COLORS.wallSel : (w.overrideColor ?? COLORS.wall),
-    { wireframe, transparent: opacity < 1, opacity, roughness: 0.85, metalness: 0.05 },
+    { wireframe, transparent: true, opacity, roughness: 0.85, metalness: 0.05 },
   );
+  // Auto-fade: se a parede está ENTRE a câmera e o centro do ambiente,
+  // deixamos ela quase invisível para o usuário sempre enxergar os móveis
+  // (regra "câmera nunca escondida por parede"). O usuário não precisa
+  // apertar nenhum botão — o Planner cuida disso a cada frame.
+  useFrame(({ camera }) => {
+    if (!matRef.current) return;
+    const base = opacity;
+    let target = base;
+    if (viewport.autoFadeNearWalls && !selected) {
+      const wallPos = new THREE.Vector3(pos.x, pos.y, pos.z);
+      const camToCenter = new THREE.Vector3().subVectors(center, camera.position);
+      const camToWall = new THREE.Vector3().subVectors(wallPos, camera.position);
+      const distCenter = camToCenter.length();
+      const distWall = camToWall.length();
+      // Alinhado com o vetor câmera→centro e mais perto que o centro?
+      // Então essa parede está bloqueando a visão — apagamos.
+      camToCenter.normalize();
+      camToWall.normalize();
+      const aligned = camToWall.dot(camToCenter);
+      if (aligned > 0.35 && distWall < distCenter * 1.05) {
+        target = Math.min(base, 0.08);
+      }
+    }
+    const current = matRef.current.opacity;
+    matRef.current.opacity = current + (target - current) * 0.25;
+    matRef.current.transparent = matRef.current.opacity < 0.999;
+    matRef.current.depthWrite = matRef.current.opacity > 0.6;
+  });
   return (
     <mesh
+      ref={meshRef}
       position={[pos.x, pos.y, pos.z]}
       rotation={[0, w.rotationY, 0]}
       castShadow
@@ -223,7 +254,7 @@ function Wall({
       }}
     >
       <boxGeometry args={[w.length, w.height, w.thickness]} />
-      <meshStandardMaterial {...props} />
+      <meshStandardMaterial ref={matRef} {...props} />
     </mesh>
   );
 }
@@ -513,6 +544,48 @@ function ApplyViewPreset({
   return null;
 }
 
+/**
+ * Reenquadramento automático "de apresentação".
+ *
+ * Sempre que o `autoFitVersion` do viewport muda (por exemplo, quando a
+ * IA acaba de gerar um ambiente completo), a câmera pula para uma posição
+ * fora da sala, olhando o centro em um ângulo de ~35° — nunca dentro de
+ * parede, nunca dentro de teto. É o "primeiro enquadramento" prometido
+ * pelo Dioris Planner: o usuário digita "quero uma cozinha" e vê o
+ * projeto inteiro imediatamente.
+ */
+function AutoFitCamera({
+  version,
+  center,
+  diag,
+  wallHeight,
+}: {
+  version: number;
+  center: THREE.Vector3;
+  diag: number;
+  wallHeight: number;
+}) {
+  const { camera } = useThree();
+  const centerRef = useRef(center);
+  const diagRef = useRef(diag);
+  const wallRef = useRef(wallHeight);
+  centerRef.current = center;
+  diagRef.current = diag;
+  wallRef.current = wallHeight;
+  useEffect(() => {
+    const c = centerRef.current;
+    const d = Math.max(6, diagRef.current * 1.35);
+    // Câmera na diagonal SE, ~1.65m do chão (linha do olho humano),
+    // afastada o suficiente para o ambiente inteiro caber no frame.
+    const eyeY = Math.max(1.4, (wallRef.current / 1000) * 0.55);
+    camera.position.set(c.x + d * 0.75, eyeY + d * 0.35, c.z + d * 0.75);
+    camera.lookAt(c.x, eyeY * 0.6, c.z);
+    camera.updateProjectionMatrix();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [version, camera]);
+  return null;
+}
+
 function AutoResize() {
   const ref = useRef<THREE.Group>(null!);
   useFrame(() => {
@@ -707,6 +780,7 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
             <Furniture key={f.id} f={f} center={center} viewport={viewport} selected={selectedId === f.id} onSelect={onSelect} />
           ))}
           {viewport.sectionHeight == null &&
+            !(viewport.autoHideCeiling !== false && !viewport.cinematic) &&
             model.ceilings.map((s) => (
               <Slab key={s.id} s={s} kind="ceiling" center={center} viewport={viewport} selected={selectedId === s.id} onSelect={onSelect} />
             ))}
@@ -714,6 +788,12 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
       </group>
 
       <Cameras mode={viewport.camera} />
+      <AutoFitCamera
+        version={viewport.autoFitVersion ?? 0}
+        center={center}
+        diag={diag}
+        wallHeight={viewport.wallHeight}
+      />
       {viewport.cinematic && viewport.render === "material" ? <CinematicFX /> : null}
     </Canvas>
   );
