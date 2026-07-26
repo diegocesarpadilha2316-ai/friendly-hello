@@ -26,6 +26,7 @@ import {
   type Editor2DPrimitive,
 } from "@/modules/planner/shared";
 import { matchDescription } from "./matcher";
+import { applyLayout, type LayoutShape, type LayoutPieceSpec } from "./layout";
 
 export interface ToolContext {
   environmentId: string;
@@ -603,10 +604,36 @@ export function toolInsertDescribed(
   };
 }
 
+// ───── Layout inteligente (Parte 3) ─────
+
+export function toolLayoutRoom(
+  project: PlannerProject,
+  ctx: ToolContext,
+  args: { shape: LayoutShape; pieces: readonly LayoutPieceSpec[] },
+): ToolExecutionResult {
+  const res = applyLayout(project, ctx, args);
+  const shapeLabel =
+    args.shape === "linear"
+      ? "linear"
+      : args.shape === "L"
+      ? "em L"
+      : args.shape === "U"
+      ? "em U"
+      : "paralelo";
+  const summary =
+    res.placed === 0
+      ? `Nada foi posicionado (${res.reasons.slice(0, 2).join("; ")}).`
+      : `Layout ${shapeLabel} aplicado — ${res.placed} peça(s) posicionada(s)${
+          res.skipped ? `, ${res.skipped} ignorada(s)` : ""
+        }.`;
+  return { project: res.project, summary, affectedIds: [] };
+}
+
 // Registro para descoberta/documentação (futuro Marketplace de tools).
 export type ToolName =
   | "insert_item"
   | "insert_described"
+  | "layout_room"
   | "create_room_preset"
   | "change_material"
   | "change_color"
@@ -632,6 +659,7 @@ export interface ToolDescriptor {
 export const PLANNER_TOOL_REGISTRY: readonly ToolDescriptor[] = [
   { name: "insert_item", label: "Inserir peça", description: "Adiciona um item da biblioteca ao cômodo ativo." },
   { name: "insert_described", label: "Inserir por descrição", description: "Casa uma descrição livre (ex.: 'aéreo 800 vidro reeded louro freijó') com um item real do catálogo e insere já com dimensões e acabamento aplicados." },
+  { name: "layout_room", label: "Layout do cômodo", description: "Distribui uma lista de peças ao longo das paredes em configurações linear, L, U ou paralela — respeitando dimensões e folgas." },
   { name: "create_room_preset", label: "Criar ambiente", description: "Monta um ambiente completo (cozinha, closet, etc.)." },
   { name: "change_material", label: "Trocar material", description: "Substitui o material dos móveis." },
   { name: "change_color", label: "Trocar acabamento", description: "Substitui a cor/acabamento dos móveis." },
@@ -653,6 +681,7 @@ export const PLANNER_TOOL_REGISTRY: readonly ToolDescriptor[] = [
 export const TOOL_FUNCTIONS = {
   insert_item: toolInsertItem,
   insert_described: toolInsertDescribed,
+  layout_room: toolLayoutRoom,
   create_room_preset: toolCreateRoomPreset,
   change_material: toolChangeMaterial,
   change_color: toolChangeColor,
