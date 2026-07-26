@@ -224,7 +224,7 @@ export function CabinetMesh(props: CabinetMeshProps) {
               <meshStandardMaterial {...frontMatProps} />
             </mesh>
             {/* Puxador horizontal centralizado */}
-            <mesh position={[0, 0, FRONT_T / 2 + 8]} castShadow>
+            <mesh position={[0, 0, FRONT_T / 2 + 0.008]} castShadow>
               <boxGeometry args={[Math.min(0.32, (width - 2 * GAP) * 0.5), 0.012, 0.008]} />
               <meshStandardMaterial color="#c9cdd4" metalness={0.9} roughness={0.25} />
             </mesh>
