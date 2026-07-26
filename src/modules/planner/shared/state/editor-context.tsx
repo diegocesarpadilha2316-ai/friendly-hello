@@ -227,7 +227,7 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
     async (projectId: string) => {
       try {
         const result = await loadSnapshotFn({ data: { id: projectId } });
-        if (!result) {
+        if (!result || !result.meta) {
           const local = loadLocalProject(tenantId, projectId);
           if (local) {
             dispatch({ type: "load", project: local });
