@@ -24,7 +24,8 @@ export const Route = createFileRoute("/api/ai/chat")({
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${key}`,
+              "Lovable-API-Key": key,
+              "X-Lovable-AIG-SDK": "dioris-planner",
             },
             body,
           },
