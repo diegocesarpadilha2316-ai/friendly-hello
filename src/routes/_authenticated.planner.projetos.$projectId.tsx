@@ -224,7 +224,13 @@ function PlannerProjectDetail() {
           <div className="relative min-h-[520px] flex-1">
             <EditorCanvas
               mode={viewportMode === "2d" ? "2d" : "3d"}
-              controls={{ showGrid: gridOn, view: "perspectiva", showLights: ledsOn }}
+              controls={{
+                showGrid: gridOn,
+                view: "perspectiva",
+                showLights: ledsOn,
+                openDoors: doorsOpen,
+                openDrawers: drawersOpen,
+              }}
             />
           </div>
 
