@@ -21,6 +21,7 @@ import {
   Scissors,
   Sparkles,
   ZapOff,
+  ArrowDownToLine,
 } from "lucide-react";
 import { Button } from "@/core/components/ui-kit";
 import { cn } from "@/lib/utils";
@@ -249,6 +250,24 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
               title="Corte horizontal"
             >
               <Scissors className="h-3.5 w-3.5" /> Corte
+            </ToolbarButton>
+            <ToolbarButton
+              active={viewport.wallHeight < 2500 || viewport.wallOpacity < 0.9}
+              onClick={() =>
+                setViewport((v) => {
+                  // 3 estados: [Cheia 2700 / opaca] → [Rebaixada 900 / opaca]
+                  // → [Oculta 2700 / transparente 0.15] → volta a cheia.
+                  const full = v.wallHeight >= 2500 && v.wallOpacity >= 0.9;
+                  const low = v.wallHeight < 2500 && v.wallOpacity >= 0.9;
+                  if (full) return { ...v, wallHeight: 900, wallOpacity: 1 };
+                  if (low) return { ...v, wallHeight: 2700, wallOpacity: 0.15 };
+                  return { ...v, wallHeight: 2700, wallOpacity: 1 };
+                })
+              }
+              title="Rebaixar / ocultar paredes (cicla: cheia → 900mm → transparente)"
+            >
+              <ArrowDownToLine className="h-3.5 w-3.5" />
+              {viewport.wallHeight < 2500 ? "Rebaixada" : viewport.wallOpacity < 0.9 ? "Oculta" : "Paredes"}
             </ToolbarButton>
             <span className="mx-1 h-4 w-px bg-border/60" />
             <ToolbarButton
