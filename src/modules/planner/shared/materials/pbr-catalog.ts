@@ -164,21 +164,17 @@ export function findPbrMaterialByLabel(label: string | null | undefined): PbrMat
     .trim();
   if (!t) return null;
   const list = Array.from(CATALOG.values());
-  // 1) match exato por pattern normalizado
-  const exact = list.find(
-    (m) =>
-      m.pattern
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "") === t,
-  );
-  if (exact) return exact;
-  // 2) match parcial (contains) em pattern ou nome
-  const partial = list.find((m) => {
-    const p = (m.pattern + " " + m.name)
+  const normp = (s: string | null | undefined) =>
+    (s ?? "")
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "");
+  // 1) match exato por pattern normalizado
+  const exact = list.find((m) => normp(m.pattern) === t);
+  if (exact) return exact;
+  // 2) match parcial (contains) em pattern ou nome
+  const partial = list.find((m) => {
+    const p = normp((m.pattern ?? "") + " " + m.name);
     return p.includes(t) || t.includes(p);
   });
   return partial ?? null;
