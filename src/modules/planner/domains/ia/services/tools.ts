@@ -516,6 +516,44 @@ export function toolPanelRipado(
   return { project: next, summary: "Painel ripado adicionado.", affectedIds: [] };
 }
 
+// ───── Frente/porta (vidro, reeded, sólida, aberta) ─────
+
+export function toolSetFrontType(
+  project: PlannerProject,
+  ctx: ToolContext,
+  args: { type: "vidro" | "reeded" | "solid" | "aberto"; subtype?: string },
+): ToolExecutionResult {
+  const room = getRoom(project, ctx);
+  if (!room) return { project, summary: "Sem cômodo ativo.", affectedIds: [] };
+  const all = applySelection(room, ctx);
+  const targets = args.subtype
+    ? all.filter((f) => {
+        const it = f.catalogItemId ? findCatalogItem(f.catalogItemId) : null;
+        return it?.subtype === args.subtype;
+      })
+    : all;
+  if (targets.length === 0) {
+    return { project, summary: `Nenhum ${args.subtype ?? "móvel"} para trocar a frente.`, affectedIds: [] };
+  }
+  const next = mutateFurniture(project, ctx, targets, (f) => ({
+    ...f,
+    params: { ...f.params, frontType: args.type, "eng:front": args.type },
+  }));
+  const label =
+    args.type === "vidro"
+      ? "vidro"
+      : args.type === "reeded"
+      ? "vidro canelado (reeded)"
+      : args.type === "aberto"
+      ? "aberto (sem porta)"
+      : "sólido";
+  return {
+    project: next,
+    summary: `Frente alterada para ${label} em ${targets.length} móvel(is).`,
+    affectedIds: targets.map((t) => t.id),
+  };
+}
+
 // Registro para descoberta/documentação (futuro Marketplace de tools).
 export type ToolName =
   | "insert_item"
@@ -532,7 +570,8 @@ export type ToolName =
   | "remove"
   | "center"
   | "set_style"
-  | "panel_ripado";
+  | "panel_ripado"
+  | "set_front_type";
 
 export interface ToolDescriptor {
   name: ToolName;
@@ -556,6 +595,7 @@ export const PLANNER_TOOL_REGISTRY: readonly ToolDescriptor[] = [
   { name: "center", label: "Centralizar", description: "Centraliza no cômodo." },
   { name: "set_style", label: "Aplicar estilo", description: "Minimalista, clássico, industrial, luxo, moderno." },
   { name: "panel_ripado", label: "Painel ripado", description: "Insere um painel decorativo ripado." },
+  { name: "set_front_type", label: "Trocar frente", description: "Troca a frente para vidro, reeded, sólido ou aberto." },
 ];
 
 // Bindings entre nomes e funções — usados pelo executor.
@@ -575,6 +615,7 @@ export const TOOL_FUNCTIONS = {
   center: (p: PlannerProject, c: ToolContext) => toolCenter(p, c),
   set_style: toolSetStyle,
   panel_ripado: toolPanelRipado,
+  set_front_type: toolSetFrontType,
 } as const;
 
 // Sinal explícito de que `fromPrimitive` e `PlannerEnvironment` são reexportados
