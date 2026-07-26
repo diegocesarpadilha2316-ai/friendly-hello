@@ -85,7 +85,7 @@ function PlannerProjectsIndexPage() {
             />
             <Button size="sm" asChild>
               <Link to="/planner/projetos/novo">
-                <PlusCircle className="mr-2 h-4 w-4" /> Novo projeto
+                <Sparkles className="mr-2 h-4 w-4" /> Abrir Dioris IA
               </Link>
             </Button>
           </div>
