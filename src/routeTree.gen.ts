@@ -94,6 +94,7 @@ import { Route as AuthenticatedAdminObservabilidadeRouteImport } from './routes/
 import { Route as AuthenticatedAdminBlogRouteImport } from './routes/_authenticated.admin.blog'
 import { Route as AuthenticatedAdminBillingRouteImport } from './routes/_authenticated.admin.billing'
 import { Route as AuthenticatedAdminBibliotecaRouteImport } from './routes/_authenticated.admin.biblioteca'
+import { Route as AuthenticatedPlannerProjetosIndexRouteImport } from './routes/_authenticated.planner.projetos.index'
 import { Route as ApiPublicV1StatusRouteImport } from './routes/api/public/v1/status'
 import { Route as ApiPublicV1PingRouteImport } from './routes/api/public/v1/ping'
 import { Route as ApiPublicV1OpenapiRouteImport } from './routes/api/public/v1/openapi'
@@ -565,6 +566,12 @@ const AuthenticatedAdminBibliotecaRoute =
     path: '/biblioteca',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedPlannerProjetosIndexRoute =
+  AuthenticatedPlannerProjetosIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPlannerProjetosRoute,
+  } as any)
 const ApiPublicV1StatusRoute = ApiPublicV1StatusRouteImport.update({
   id: '/api/public/v1/status',
   path: '/api/public/v1/status',
@@ -699,6 +706,7 @@ export interface FileRoutesByFullPath {
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
   '/api/public/v1/status': typeof ApiPublicV1StatusRoute
+  '/planner/projetos/': typeof AuthenticatedPlannerProjetosIndexRoute
   '/api/public/v1/webhooks/mercadopago': typeof ApiPublicV1WebhooksMercadopagoRoute
   '/api/public/v1/workers/email': typeof ApiPublicV1WorkersEmailRoute
   '/api/public/v1/workers/render': typeof ApiPublicV1WorkersRenderRoute
@@ -759,7 +767,6 @@ export interface FileRoutesByTo {
   '/planner/materiais': typeof AuthenticatedPlannerMateriaisRoute
   '/planner/orcamentos': typeof AuthenticatedPlannerOrcamentosRoute
   '/planner/producao': typeof AuthenticatedPlannerProducaoRoute
-  '/planner/projetos': typeof AuthenticatedPlannerProjetosRouteWithChildren
   '/planner/render': typeof AuthenticatedPlannerRenderRoute
   '/planner/video': typeof AuthenticatedPlannerVideoRoute
   '/planner/visao': typeof AuthenticatedPlannerVisaoRoute
@@ -790,6 +797,7 @@ export interface FileRoutesByTo {
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
   '/api/public/v1/status': typeof ApiPublicV1StatusRoute
+  '/planner/projetos': typeof AuthenticatedPlannerProjetosIndexRoute
   '/api/public/v1/webhooks/mercadopago': typeof ApiPublicV1WebhooksMercadopagoRoute
   '/api/public/v1/workers/email': typeof ApiPublicV1WorkersEmailRoute
   '/api/public/v1/workers/render': typeof ApiPublicV1WorkersRenderRoute
@@ -886,6 +894,7 @@ export interface FileRoutesById {
   '/api/public/v1/openapi': typeof ApiPublicV1OpenapiRoute
   '/api/public/v1/ping': typeof ApiPublicV1PingRoute
   '/api/public/v1/status': typeof ApiPublicV1StatusRoute
+  '/_authenticated/planner/projetos/': typeof AuthenticatedPlannerProjetosIndexRoute
   '/api/public/v1/webhooks/mercadopago': typeof ApiPublicV1WebhooksMercadopagoRoute
   '/api/public/v1/workers/email': typeof ApiPublicV1WorkersEmailRoute
   '/api/public/v1/workers/render': typeof ApiPublicV1WorkersRenderRoute
@@ -981,6 +990,7 @@ export interface FileRouteTypes {
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
     | '/api/public/v1/status'
+    | '/planner/projetos/'
     | '/api/public/v1/webhooks/mercadopago'
     | '/api/public/v1/workers/email'
     | '/api/public/v1/workers/render'
@@ -1041,7 +1051,6 @@ export interface FileRouteTypes {
     | '/planner/materiais'
     | '/planner/orcamentos'
     | '/planner/producao'
-    | '/planner/projetos'
     | '/planner/render'
     | '/planner/video'
     | '/planner/visao'
@@ -1072,6 +1081,7 @@ export interface FileRouteTypes {
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
     | '/api/public/v1/status'
+    | '/planner/projetos'
     | '/api/public/v1/webhooks/mercadopago'
     | '/api/public/v1/workers/email'
     | '/api/public/v1/workers/render'
@@ -1167,6 +1177,7 @@ export interface FileRouteTypes {
     | '/api/public/v1/openapi'
     | '/api/public/v1/ping'
     | '/api/public/v1/status'
+    | '/_authenticated/planner/projetos/'
     | '/api/public/v1/webhooks/mercadopago'
     | '/api/public/v1/workers/email'
     | '/api/public/v1/workers/render'
@@ -1784,6 +1795,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminBibliotecaRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/planner/projetos/': {
+      id: '/_authenticated/planner/projetos/'
+      path: '/'
+      fullPath: '/planner/projetos/'
+      preLoaderRoute: typeof AuthenticatedPlannerProjetosIndexRouteImport
+      parentRoute: typeof AuthenticatedPlannerProjetosRoute
+    }
     '/api/public/v1/status': {
       id: '/api/public/v1/status'
       path: '/api/public/v1/status'
@@ -1864,6 +1882,7 @@ const AuthenticatedAdminRouteWithChildren =
 interface AuthenticatedPlannerProjetosRouteChildren {
   AuthenticatedPlannerProjetosProjectIdRoute: typeof AuthenticatedPlannerProjetosProjectIdRoute
   AuthenticatedPlannerProjetosNovoRoute: typeof AuthenticatedPlannerProjetosNovoRoute
+  AuthenticatedPlannerProjetosIndexRoute: typeof AuthenticatedPlannerProjetosIndexRoute
 }
 
 const AuthenticatedPlannerProjetosRouteChildren: AuthenticatedPlannerProjetosRouteChildren =
@@ -1872,6 +1891,8 @@ const AuthenticatedPlannerProjetosRouteChildren: AuthenticatedPlannerProjetosRou
       AuthenticatedPlannerProjetosProjectIdRoute,
     AuthenticatedPlannerProjetosNovoRoute:
       AuthenticatedPlannerProjetosNovoRoute,
+    AuthenticatedPlannerProjetosIndexRoute:
+      AuthenticatedPlannerProjetosIndexRoute,
   }
 
 const AuthenticatedPlannerProjetosRouteWithChildren =
