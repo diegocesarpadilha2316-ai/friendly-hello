@@ -203,6 +203,11 @@ const ROOM_BLUEPRINTS: Readonly<Record<string, RoomBlueprint>> = {
       { catalogItemId: "banqueta-alta", xRatio: 0.35, yRatio: 0.4 },
       { catalogItemId: "banqueta-alta", xRatio: 0.55, yRatio: 0.4 },
       { catalogItemId: "banqueta-alta", xRatio: 0.75, yRatio: 0.4 },
+      // Objetos sobre a bancada — dão vida à cozinha
+      { catalogItemId: "livros-decor", xRatio: 0.15, yRatio: 0.08 },
+      { catalogItemId: "planta-suculenta", xRatio: 0.25, yRatio: 0.08 },
+      { catalogItemId: "vaso-planta-medio", xRatio: 0.9, yRatio: 0.08 },
+      { catalogItemId: "luminaria-piso", xRatio: 0.1, yRatio: 0.5 },
     ],
   },
   closet: {
@@ -220,6 +225,8 @@ const ROOM_BLUEPRINTS: Readonly<Record<string, RoomBlueprint>> = {
       { catalogItemId: "tapete-passadeira", xRatio: 0.5, yRatio: 0.5 },
       { catalogItemId: "puff", xRatio: 0.5, yRatio: 0.5 },
       { catalogItemId: "luminaria-piso", xRatio: 0.15, yRatio: 0.5 },
+      { catalogItemId: "espelho-redondo", xRatio: 0.5, yRatio: 0.08 },
+      { catalogItemId: "vaso-planta-medio", xRatio: 0.9, yRatio: 0.9 },
     ],
   },
   dormitorio: {
@@ -237,6 +244,9 @@ const ROOM_BLUEPRINTS: Readonly<Record<string, RoomBlueprint>> = {
       { catalogItemId: "luminaria-mesa", xRatio: 0.68, yRatio: 0.35 },
       { catalogItemId: "vaso-planta-medio", xRatio: 0.08, yRatio: 0.9 },
       { catalogItemId: "quadro-triptico", xRatio: 0.5, yRatio: 0.05 },
+      // Criados-mudos ao lado da cama
+      { catalogItemId: "criado-mudo", xRatio: 0.28, yRatio: 0.4 },
+      { catalogItemId: "criado-mudo", xRatio: 0.72, yRatio: 0.4 },
     ],
   },
   sala: {
@@ -255,6 +265,9 @@ const ROOM_BLUEPRINTS: Readonly<Record<string, RoomBlueprint>> = {
       { catalogItemId: "planta-ficus", xRatio: 0.9, yRatio: 0.85 },
       { catalogItemId: "luminaria-piso", xRatio: 0.1, yRatio: 0.5 },
       { catalogItemId: "quadro-abstrato", xRatio: 0.25, yRatio: 0.05 },
+      { catalogItemId: "tv-65", xRatio: 0.5, yRatio: 0.08 },
+      { catalogItemId: "livros-decor", xRatio: 0.4, yRatio: 0.5 },
+      { catalogItemId: "vaso-planta-medio", xRatio: 0.6, yRatio: 0.5 },
     ],
   },
   escritorio: {
