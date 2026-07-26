@@ -517,9 +517,19 @@ function AutoResize() {
 
 export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps) {
   const { cx, cz } = centerOffset(model);
-  const center = useMemo(() => new THREE.Vector3(cx, viewport.wallHeight / 2000, cz), [cx, cz, viewport.wallHeight]);
+  // Alvo da câmera: 1/3 da altura da parede (~olho baixo). Isso ancora o
+  // piso (y=0) no terço inferior da tela e reforça a percepção de escala.
+  // NUNCA usar o centro do bounding box (meio do volume) — o ambiente
+  // pareceria flutuando.
+  const center = useMemo(
+    () => new THREE.Vector3(cx, Math.max(0.6, viewport.wallHeight / 3000), cz),
+    [cx, cz, viewport.wallHeight],
+  );
   const diag = Math.hypot(model.bounds.maxX - model.bounds.minX, model.bounds.maxZ - model.bounds.minZ) || 8;
   const camDist = Math.max(6, diag * 1.2);
+  // Altura da câmera: um pouco acima da linha do olho (1.6 m) sem
+  // exagerar — piso sempre visível na base do frame.
+  const camHeight = Math.max(1.6, camDist * 0.5);
   const daytime = viewport.daytime ?? "noon";
   // Presets de horário — sol (posição/cor/intensidade), fill e ambiente.
   const dayPreset = useMemo(() => {
@@ -581,7 +591,7 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
     <Canvas
       shadows
       dpr={[1, 1.5]}
-      camera={{ position: [cx + camDist * 0.7, camDist * 0.6, cz + camDist * 0.7], fov: 45, near: 0.05, far: 500 }}
+      camera={{ position: [cx + camDist * 0.7, camHeight, cz + camDist * 0.7], fov: 45, near: 0.05, far: 500 }}
       gl={{ antialias: true, powerPreference: "high-performance" }}
       onCreated={({ gl }) => {
         gl.toneMapping = THREE.ACESFilmicToneMapping;
