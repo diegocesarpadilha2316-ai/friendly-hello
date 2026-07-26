@@ -265,6 +265,32 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
             >
               <Sparkles className="h-3.5 w-3.5" /> Foto
             </ToolbarButton>
+            <span className="mx-1 h-4 w-px bg-border/60" />
+            {(["morning", "noon", "golden", "night"] as const).map((d) => (
+              <ToolbarButton
+                key={d}
+                active={(viewport.daytime ?? "noon") === d}
+                onClick={() =>
+                  setViewport((v) => ({
+                    ...v,
+                    daytime: d,
+                    // Céu/sol só aparecem em modo Material
+                    render: v.render === "material" ? v.render : "material",
+                  }))
+                }
+                title={
+                  d === "morning"
+                    ? "Manhã — sol baixo a leste"
+                    : d === "noon"
+                    ? "Meio-dia — sol alto"
+                    : d === "golden"
+                    ? "Golden hour — sol dourado"
+                    : "Noite — estrelado"
+                }
+              >
+                {d === "morning" ? "🌅" : d === "noon" ? "☀️" : d === "golden" ? "🌇" : "🌙"}
+              </ToolbarButton>
+            ))}
           </div>
         </div>
 
