@@ -388,9 +388,10 @@ export function toolCreateRoomPreset(
   const parts = [`${res.placed} peças encostadas nas paredes de ${room.name}`];
   if (decorPlaced > 0) parts.push(`${decorPlaced} itens de decoração`);
   if (res.skipped > 0) parts.push(`${res.skipped} ignoradas`);
+  const audit = auditLines.length > 0 ? ` ${auditLines.join(" ")}` : "";
   return {
     project: next,
-    summary: `${blueprint.label} criado — ${parts.join(", ")}.`,
+    summary: `${blueprint.label} criado — ${parts.join(", ")}.${audit}`,
     affectedIds: [],
   };
 }
