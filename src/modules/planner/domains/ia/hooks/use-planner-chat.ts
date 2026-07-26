@@ -10,7 +10,11 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { aiGenerateText, aiGenerateJson } from "@/core/ai";
 import { useTenant } from "@/core/providers/TenantProvider";
+import { useAuth } from "@/core/providers/AuthProvider";
 import {
+  createEnvironment,
+  createProject,
+  createRoom,
   usePlannerEditor,
   loadRules,
 } from "@/modules/planner/shared";
@@ -18,7 +22,7 @@ import { runAgent } from "../services/agent";
 import { PLANNER_TOOL_REGISTRY } from "../services/tools";
 import { FINISHING_PRESETS } from "../services/finishing";
 import type { ParsedIntent } from "../services/interpreter";
-import type { PlannerProject } from "@/modules/planner/shared";
+import type { PlannerProject, PlannerRoomType } from "@/modules/planner/shared";
 import type { ToolContext } from "../services/tools";
 import type {
   PlannerAIMessage,
@@ -125,6 +129,107 @@ function buildPlannerNoContextSystemPrompt(project: PlannerProject | null | unde
   ].join("\n");
 }
 
+function normalizePrompt(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function inferRoomType(prompt: string): PlannerRoomType {
+  const normalized = normalizePrompt(prompt);
+  if (normalized.includes("cozinha")) return "cozinha";
+  if (normalized.includes("closet")) return "closet";
+  if (normalized.includes("banheiro") || normalized.includes("lavabo")) return "banheiro";
+  if (normalized.includes("quarto") || normalized.includes("dormitorio")) return "dormitorio";
+  if (normalized.includes("sala") || normalized.includes("living")) return "sala";
+  if (normalized.includes("escritorio") || normalized.includes("home office")) return "escritorio";
+  if (normalized.includes("lavanderia")) return "lavanderia";
+  return "cozinha";
+}
+
+function labelForRoomType(type: PlannerRoomType): string {
+  const labels: Record<PlannerRoomType, string> = {
+    closet: "Closet",
+    dormitorio: "Dormitório",
+    banheiro: "Banheiro",
+    lavanderia: "Lavanderia",
+    escritorio: "Home Office",
+    cozinha: "Cozinha",
+    sala: "Sala",
+    comercial: "Comercial",
+    corporativo: "Corporativo",
+    outro: "Ambiente",
+  };
+  return labels[type];
+}
+
+function ensureOperablePlannerContext(
+  current: PlannerProject | null,
+  selectedEnvironmentId: string | null,
+  selectedRoomId: string | null,
+  meta: { prompt: string; tenantId: string; ownerId: string },
+): { project: PlannerProject; environmentId: string; roomId: string; changed: boolean } {
+  const roomType = inferRoomType(meta.prompt);
+  const fallbackProject =
+    current ??
+    createProject({
+      tenantId: meta.tenantId,
+      ownerId: meta.ownerId,
+      name: `Projeto IA — ${labelForRoomType(roomType)}`,
+      briefing: {
+        environmentType: roomType,
+        style: normalizePrompt(meta.prompt).includes("classico") ? "classico" : "moderno",
+        notes: meta.prompt,
+      },
+    });
+
+  const selectedEnv = selectedEnvironmentId
+    ? fallbackProject.environments.find((env) => env.id === selectedEnvironmentId)
+    : null;
+  const selectedRoom = selectedEnv && selectedRoomId
+    ? selectedEnv.rooms.find((room) => room.id === selectedRoomId)
+    : null;
+
+  if (selectedEnv && selectedRoom) {
+    return {
+      project: fallbackProject,
+      environmentId: selectedEnv.id,
+      roomId: selectedRoom.id,
+      changed: false,
+    };
+  }
+
+  const env = selectedEnv ?? fallbackProject.environments[0] ?? createEnvironment({ name: "Ambiente principal" });
+  const room = selectedRoom ?? env.rooms[0] ?? createRoom({
+    name: labelForRoomType(roomType),
+    type: roomType,
+    width: roomType === "cozinha" ? 4200 : 3600,
+    depth: roomType === "cozinha" ? 3200 : 3000,
+    height: 2700,
+  });
+
+  const envWithRoom = env.rooms.some((r) => r.id === room.id)
+    ? env
+    : { ...env, rooms: [...env.rooms, room], updatedAt: new Date().toISOString() };
+  const hasEnv = fallbackProject.environments.some((item) => item.id === envWithRoom.id);
+  const project = {
+    ...fallbackProject,
+    environments: hasEnv
+      ? fallbackProject.environments.map((item) => item.id === envWithRoom.id ? envWithRoom : item)
+      : [...fallbackProject.environments, envWithRoom],
+  };
+
+  return {
+    project,
+    environmentId: envWithRoom.id,
+    roomId: room.id,
+    changed: true,
+  };
+}
+
 export const PLANNER_QUICK_ACTIONS: readonly PlannerAIQuickAction[] = [
   { id: "kitchen", label: "Crie uma cozinha moderna", prompt: "Crie uma cozinha moderna com ilha e LED." },
   { id: "closet", label: "Crie um closet", prompt: "Crie um closet completo minimalista." },
@@ -144,7 +249,9 @@ interface ChatState {
 export function usePlannerChat() {
   const editor = usePlannerEditor();
   const { activeCompany } = useTenant();
+  const { user } = useAuth();
   const tenantId = activeCompany?.id ?? "anonymous";
+  const ownerId = user?.id ?? "anonymous";
   const runAI = useServerFn(aiGenerateText);
   const runAIJson = useServerFn(aiGenerateJson);
 
@@ -200,27 +307,21 @@ export function usePlannerChat() {
         status: "thinking",
       }));
 
-      const project = editor.state.project;
-      if (!project || !editor.state.selectedEnvironmentId || !editor.state.selectedRoomId) {
-        const controller = new AbortController();
-        abortRef.current = controller;
-        setState((s) => ({ ...s, status: "streaming" }));
-        const reply = await callLovableProxy(
-          buildPlannerNoContextSystemPrompt(project),
-          `Mensagem do usuário: ${trimmed}`,
-          { maxTokens: 650, temperature: 0.45, signal: controller.signal },
-        );
-        patchMessage(assistantId, (m) => ({
-          ...m,
-          content:
-            reply?.trim() ||
-            "Estou online. Posso conversar, planejar ambientes e sugerir materiais agora; para aplicar alterações no editor, abra ou crie um projeto e selecione um cômodo.",
-          status: "done",
-        }));
-        abortRef.current = null;
-        setState((s) => ({ ...s, status: "idle" }));
-        return;
+      const boot = ensureOperablePlannerContext(
+        editor.state.project,
+        editor.state.selectedEnvironmentId,
+        editor.state.selectedRoomId,
+        { prompt: trimmed, tenantId, ownerId },
+      );
+      if (boot.changed) {
+        if (editor.state.project) editor.updateProject(() => boot.project);
+        else editor.loadProject(boot.project);
+        editor.select({ environmentId: boot.environmentId, roomId: boot.roomId });
       }
+
+      const project = boot.project;
+      const activeEnvironmentId = boot.environmentId;
+      const activeRoomId = boot.roomId;
 
       const controller = new AbortController();
       abortRef.current = controller;
@@ -236,8 +337,8 @@ export function usePlannerChat() {
           message: trimmed,
           project,
           ctx: {
-            environmentId: editor.state.selectedEnvironmentId,
-            roomId: editor.state.selectedRoomId,
+            environmentId: activeEnvironmentId,
+            roomId: activeRoomId,
           },
           rules,
           signal: controller.signal,
@@ -356,7 +457,8 @@ export function usePlannerChat() {
 
         // Aplica mutações do projeto no editor — canal ÚNICO (Undo/Redo/Autosave).
         if (mutatedProject !== project) {
-          editor.updateProject(() => mutatedProject);
+          if (editor.state.project) editor.updateProject(() => mutatedProject);
+          else editor.loadProject(mutatedProject);
         }
 
         setState((s) => ({ ...s, status: "idle" }));
@@ -372,7 +474,7 @@ export function usePlannerChat() {
         setState((s) => ({ ...s, status: "error" }));
       }
     },
-    [state.status, editor, tenantId, patchMessage, runAI, runAIJson],
+    [state.status, editor, tenantId, ownerId, patchMessage, runAI, runAIJson],
   );
 
   const editMessage = useCallback(

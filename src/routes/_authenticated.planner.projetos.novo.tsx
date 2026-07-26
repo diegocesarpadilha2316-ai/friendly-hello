@@ -9,6 +9,7 @@ const WizardPreview3D = lazy(() =>
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { createProjectRow } from "@/lib/planner-projects.functions";
+import { saveProjectSnapshot, type JsonObject } from "@/lib/planner-snapshots.functions";
 import {
   ArrowLeft,
   ArrowRight,
@@ -120,6 +121,7 @@ function NewProjectWizard() {
   };
 
   const createOnServer = useServerFn(createProjectRow);
+  const saveSnapshotOnServer = useServerFn(saveProjectSnapshot);
   const queryClient = useQueryClient();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -163,6 +165,15 @@ function NewProjectWizard() {
       await createOnServer({
         data: {
           id: project.id,
+          name: project.name,
+          client: project.client ?? null,
+        },
+      });
+      await saveSnapshotOnServer({
+        data: {
+          id: project.id,
+          snapshot: bootstrapped as unknown as JsonObject,
+          version: bootstrapped.version,
           name: project.name,
           client: project.client ?? null,
         },
