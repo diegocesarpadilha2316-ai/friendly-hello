@@ -37,6 +37,7 @@ import {
 import { getPbrMaterial, getPbrRoughnessBias, isPbrId } from "../materials/pbr-catalog";
 import { GlassFront } from "./GlassFront";
 import { DecorMesh, isDecorSubtype } from "./DecorMesh";
+import { CabinetMesh, isCabinetSubtype } from "./CabinetMesh";
 import { CinematicFX } from "./CinematicFX";
 
 interface Scene3DProps {
@@ -53,7 +54,7 @@ const COLORS = {
   ceiling: "#6b7280",
   door: "#f59e0b",
   window: "#06b6d4",
-  furniture: "#a78bfa",
+  furniture: "#b78a5c", // freijó neutro — evita "box roxo"
   furnitureSel: "#8b5cf6",
 };
 
@@ -350,6 +351,37 @@ function Furniture({
           color={selected ? COLORS.furnitureSel : f.overrideColor}
           selected={selected}
         />
+      </group>
+    );
+  }
+  const cabinet = viewport.render !== "wireframe" && isCabinetSubtype(f.subtype);
+  if (cabinet) {
+    return (
+      <group
+        position={[pos.x, pos.y, pos.z]}
+        rotation={[0, f.rotationY, 0]}
+        onClick={(e: ThreeEvent<MouseEvent>) => {
+          e.stopPropagation();
+          onSelect(f.id);
+        }}
+      >
+        <CabinetMesh
+          subtype={f.subtype as never}
+          width={f.width}
+          height={f.height}
+          depth={f.depth}
+          bodyProps={props}
+          selected={selected}
+        />
+        {(f.frontType === "vidro" || f.frontType === "reeded") ? (
+          <GlassFront
+            width={f.width}
+            height={f.height}
+            depth={f.depth}
+            variant={f.frontType}
+            tint={f.glassTint}
+          />
+        ) : null}
       </group>
     );
   }
