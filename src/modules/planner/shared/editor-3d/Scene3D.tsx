@@ -16,6 +16,8 @@ import {
   Bounds,
   ContactShadows,
   SoftShadows,
+  Sky,
+  Stars,
 } from "@react-three/drei";
 import * as THREE from "three";
 import type {
@@ -457,6 +459,62 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
   const center = useMemo(() => new THREE.Vector3(cx, viewport.wallHeight / 2000, cz), [cx, cz, viewport.wallHeight]);
   const diag = Math.hypot(model.bounds.maxX - model.bounds.minX, model.bounds.maxZ - model.bounds.minZ) || 8;
   const camDist = Math.max(6, diag * 1.2);
+  const daytime = viewport.daytime ?? "noon";
+  // Presets de horário — sol (posição/cor/intensidade), fill e ambiente.
+  const dayPreset = useMemo(() => {
+    const d = Math.max(20, diag * 2);
+    switch (daytime) {
+      case "morning":
+        return {
+          sun: [d * 0.9, d * 0.35, d * 0.15] as [number, number, number],
+          sunColor: "#ffd9a8", sunIntensity: 2.0,
+          fillColor: "#a8c5ff", fillIntensity: 0.4,
+          hemi: ["#ffe1b8", "#1a1f2e", 0.35] as [string, string, number],
+          skyDist: 450000, turbidity: 8, rayleigh: 3.2, mieCoefficient: 0.006, mieDirectionalG: 0.85,
+          bgFallback: "#7ea8d8",
+          envPreset: "sunset" as const,
+          envIntensity: 1.1,
+          showSky: true, showStars: false,
+        };
+      case "golden":
+        return {
+          sun: [-d * 0.9, d * 0.28, d * 0.35] as [number, number, number],
+          sunColor: "#ffb066", sunIntensity: 2.6,
+          fillColor: "#7c8fb5", fillIntensity: 0.35,
+          hemi: ["#ffd0a0", "#1a1420", 0.3] as [string, string, number],
+          skyDist: 450000, turbidity: 12, rayleigh: 5, mieCoefficient: 0.01, mieDirectionalG: 0.92,
+          bgFallback: "#d69564",
+          envPreset: "sunset" as const,
+          envIntensity: 1.3,
+          showSky: true, showStars: false,
+        };
+      case "night":
+        return {
+          sun: [d * 0.4, d * 0.05, -d] as [number, number, number],
+          sunColor: "#a8c0ff", sunIntensity: 0.25,
+          fillColor: "#5b6e9b", fillIntensity: 0.15,
+          hemi: ["#3a4a70", "#0a0d18", 0.2] as [string, string, number],
+          skyDist: 450000, turbidity: 2, rayleigh: 0.2, mieCoefficient: 0.001, mieDirectionalG: 0.5,
+          bgFallback: "#050813",
+          envPreset: "night" as const,
+          envIntensity: 0.5,
+          showSky: false, showStars: true,
+        };
+      default: // noon
+        return {
+          sun: [d * 0.3, d, d * 0.4] as [number, number, number],
+          sunColor: "#fff4e0", sunIntensity: 2.4,
+          fillColor: "#a8c5ff", fillIntensity: 0.35,
+          hemi: ["#dbe6ff", "#141822", 0.3] as [string, string, number],
+          skyDist: 450000, turbidity: 6, rayleigh: 1.5, mieCoefficient: 0.005, mieDirectionalG: 0.8,
+          bgFallback: "#87b4e6",
+          envPreset: "city" as const,
+          envIntensity: 1.0,
+          showSky: true, showStars: false,
+        };
+    }
+  }, [daytime, diag]);
+  const useSky = viewport.render === "material" && dayPreset.showSky;
 
   return (
     <Canvas
@@ -473,18 +531,35 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
       }}
       onPointerMissed={() => onSelect(null)}
     >
-      <color attach="background" args={["#0b0f1a"]} />
+      {viewport.render === "material" ? (
+        <color attach="background" args={[dayPreset.bgFallback]} />
+      ) : (
+        <color attach="background" args={["#0b0f1a"]} />
+      )}
+      {useSky ? (
+        <Sky
+          distance={dayPreset.skyDist}
+          sunPosition={dayPreset.sun}
+          turbidity={dayPreset.turbidity}
+          rayleigh={dayPreset.rayleigh}
+          mieCoefficient={dayPreset.mieCoefficient}
+          mieDirectionalG={dayPreset.mieDirectionalG}
+        />
+      ) : null}
+      {viewport.render === "material" && dayPreset.showStars ? (
+        <Stars radius={200} depth={80} count={4000} factor={4} fade speed={0.5} />
+      ) : null}
       {/* PCSS: penumbra realista, custo baixo — só quando materiais estão ativos */}
       {viewport.render === "material" && viewport.showLights ? (
         <SoftShadows size={18} samples={12} focus={0.9} />
       ) : null}
-      <ambientLight intensity={viewport.showLights ? 0.18 : 0.12} />
+      <ambientLight intensity={viewport.showLights ? (daytime === "night" ? 0.08 : 0.18) : 0.12} />
       {viewport.showLights ? (
         <>
           <directionalLight
-            position={[cx + 8, 14, cz + 6]}
-            intensity={2.2}
-            color="#fff4e0"
+            position={[cx + dayPreset.sun[0] * 0.05, dayPreset.sun[1] * 0.05 + 4, cz + dayPreset.sun[2] * 0.05]}
+            intensity={dayPreset.sunIntensity}
+            color={dayPreset.sunColor}
             castShadow
             shadow-mapSize-width={2048}
             shadow-mapSize-height={2048}
@@ -499,15 +574,15 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
           {/* Rim/fill frio para volumetria */}
           <directionalLight
             position={[cx - 6, 6, cz - 8]}
-            intensity={0.35}
-            color="#a8c5ff"
+            intensity={dayPreset.fillIntensity}
+            color={dayPreset.fillColor}
           />
-          <hemisphereLight args={["#dbe6ff", "#141822", 0.28]} />
+          <hemisphereLight args={dayPreset.hemi} />
         </>
       ) : null}
       {/* HDRI IBL sempre ativo em modo material — sem alterar cor de fundo */}
       {viewport.render === "material" ? (
-        <Environment preset="warehouse" background={false} environmentIntensity={0.9} />
+        <Environment preset={dayPreset.envPreset} background={false} environmentIntensity={dayPreset.envIntensity} />
       ) : null}
       <ApplyViewPreset view={viewport.view} center={center} diag={diag} />
       {/* Contact shadow suave no chão — enraíza os móveis mesmo em modo wireframe */}
