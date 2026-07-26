@@ -10,21 +10,18 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireTenant } from "@/core/middleware/require-tenant";
 
-type JsonPrimitive = string | number | boolean | null;
-export type JsonValue = JsonPrimitive | { [k: string]: JsonValue } | JsonValue[];
-export type JsonObject = { [k: string]: JsonValue };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type JsonObject = Record<string, any>;
 
-const jsonValue: z.ZodType<JsonValue> = z.lazy(() =>
-  z.union([
-    z.string(),
-    z.number(),
-    z.boolean(),
-    z.null(),
-    z.array(jsonValue),
-    z.record(z.string(), jsonValue),
-  ]),
-);
-const snapshotSchema: z.ZodType<JsonObject> = z.record(z.string(), jsonValue);
+// Snapshot é payload JSON opaco do editor. Validamos apenas que é um objeto;
+// serializamos via JSON.stringify/parse para remover `undefined` que o Zod
+// estrito rejeitaria e o Postgres/JSONB não aceita.
+const snapshotSchema = z
+  .unknown()
+  .refine((v) => v !== null && typeof v === "object" && !Array.isArray(v), {
+    message: "snapshot deve ser objeto",
+  })
+  .transform((v) => JSON.parse(JSON.stringify(v)) as JsonObject);
 
 export const loadProjectSnapshot = createServerFn({ method: "GET" })
   .middleware([requireTenant])
