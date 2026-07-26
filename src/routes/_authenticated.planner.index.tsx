@@ -128,16 +128,26 @@ function PlannerDashboard() {
   const billing = useBillingSummary();
 
   const fetchList = useServerFn(listProjects);
+  const hasTenant = Boolean(activeCompany?.id);
   const { data: rows } = useSuspenseQuery(
-    projectsDashboardOptions(tenantId, () => fetchList()),
+    projectsDashboardOptions(tenantId, async () => {
+      if (!hasTenant) return [];
+      try {
+        const result = await fetchList();
+        return Array.isArray(result) ? result : [];
+      } catch {
+        return [];
+      }
+    }),
   );
+  const rowsArray: PlannerProjectRowDTO[] = Array.isArray(rows) ? rows : [];
 
   // Merge remote metadata with local bootstrap (environments/rooms live in the
   // browser bridge until Etapa B moves them into snapshots).
   const projects = useMemo<DashboardProject[]>(() => {
     const local = loadProjects(tenantId);
     const localById = new Map(local.map((p) => [String(p.id), p]));
-    return rows.map((r) => {
+    return rowsArray.map((r) => {
       const l = localById.get(r.id);
       const envs = l?.environments ?? [];
       return {
@@ -150,7 +160,7 @@ function PlannerDashboard() {
         rooms: envs.reduce((s, e) => s + e.rooms.length, 0),
       };
     });
-  }, [rows, tenantId]);
+  }, [rowsArray, tenantId]);
 
   const active = projects.filter((p) => p.status === "in_progress" || p.status === "review").length;
   const recent = projects.slice(0, 6);
