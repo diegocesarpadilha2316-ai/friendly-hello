@@ -21,6 +21,7 @@ import {
   Image as ImageIcon,
   History,
   CheckCircle2,
+  ClipboardList,
 } from "lucide-react";
 import { Button, EmptyState } from "@/core/components/ui-kit";
 import { cn } from "@/lib/utils";
@@ -28,7 +29,16 @@ import { useTenant } from "@/core/providers/TenantProvider";
 import {
   usePlannerEditor,
   EditorCanvas,
+  Inspector,
 } from "@/modules/planner/shared";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 export const Route = createFileRoute("/_authenticated/planner/projetos/$projectId")({
   component: PlannerProjectDetail,
@@ -60,6 +70,7 @@ function PlannerProjectDetail() {
   const [snapOn, setSnapOn] = useState(true);
   const [gridOn, setGridOn] = useState(true);
   const [zoom, setZoom] = useState(85);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   useEffect(() => {
     if (!activeCompany?.id) return;
@@ -199,6 +210,13 @@ function PlannerProjectDetail() {
               <ToolBtn active={ledsOn} onClick={() => setLedsOn((v) => !v)} icon={Lightbulb} label="Ligar LEDs" />
               <ToolBtn active={measuring} onClick={() => setMeasuring((v) => !v)} icon={Ruler} label="Medir" />
               <ToolBtn active={showStructure} onClick={() => setShowStructure((v) => !v)} icon={Eye} label="Mostrar estrutura" />
+              <span className="mx-1 h-8 w-px bg-border/60" />
+              <ToolBtn
+                active={detailsOpen}
+                onClick={() => setDetailsOpen(true)}
+                icon={ClipboardList}
+                label="Detalhes do móvel"
+              />
             </div>
           </div>
 
@@ -298,6 +316,27 @@ function PlannerProjectDetail() {
           </div>
         </aside>
       </div>
+
+      <Sheet open={detailsOpen} onOpenChange={setDetailsOpen}>
+        <SheetContent
+          side="right"
+          className="w-full max-w-md overflow-hidden border-l border-border/60 bg-background/95 p-0 backdrop-blur sm:max-w-lg"
+        >
+          <SheetHeader className="border-b border-border/60 px-5 py-4">
+            <SheetTitle className="flex items-center gap-2 text-base">
+              <ClipboardList className="h-4 w-4 text-primary" />
+              Detalhes do móvel
+            </SheetTitle>
+            <SheetDescription className="text-xs">
+              Engenharia completa da peça selecionada — dimensões, chapa, ferragens,
+              acabamento e lista de corte automática.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="h-[calc(100vh-96px)] overflow-hidden px-3 py-3">
+            <Inspector />
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
