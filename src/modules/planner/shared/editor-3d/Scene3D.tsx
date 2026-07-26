@@ -30,6 +30,7 @@ import {
   subscribeLibrary,
   type LibraryMaterial,
 } from "../../domains/catalog/services/library-supabase";
+import { getPbrMaterial, getPbrRoughnessBias, isPbrId } from "../materials/pbr-catalog";
 import { GlassFront } from "./GlassFront";
 
 interface Scene3DProps {
@@ -58,14 +59,14 @@ const textureLoader = new THREE.TextureLoader();
 textureLoader.setCrossOrigin("anonymous");
 const textureCache = new Map<string, THREE.Texture>();
 
-function loadTexture(url: string): THREE.Texture {
+function loadTexture(url: string, srgb = true): THREE.Texture {
   const cached = textureCache.get(url);
   if (cached) return cached;
   const tex = textureLoader.load(url);
   tex.wrapS = THREE.RepeatWrapping;
   tex.wrapT = THREE.RepeatWrapping;
   tex.anisotropy = 4;
-  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
   textureCache.set(url, tex);
   return tex;
 }
@@ -93,9 +94,16 @@ function useTexturedMaterialProps(
 ) {
   const lib = useLibraryMaterial(materialId);
   return useMemo(() => {
+    const pbr = isPbrId(materialId) ? getPbrMaterial(materialId!) : null;
+    const roughBias = getPbrRoughnessBias(materialId);
     const props: {
       color: string;
       map?: THREE.Texture;
+      normalMap?: THREE.Texture;
+      normalScale?: THREE.Vector2;
+      aoMap?: THREE.Texture;
+      roughnessMap?: THREE.Texture;
+      metalnessMap?: THREE.Texture;
       roughness: number;
       metalness: number;
       wireframe: boolean;
@@ -103,7 +111,7 @@ function useTexturedMaterialProps(
       opacity: number;
     } = {
       color: lib?.colorHex || fallbackColor,
-      roughness: overrides.roughness ?? 0.75,
+      roughness: Math.min(1, Math.max(0, (overrides.roughness ?? 0.75) + roughBias)),
       metalness: overrides.metalness ?? 0.05,
       wireframe: overrides.wireframe ?? false,
       transparent: overrides.transparent ?? false,
@@ -127,9 +135,35 @@ function useTexturedMaterialProps(
       }
       tex.repeat.set(repX, repY);
       props.map = tex;
+
+      // Aplica mapas PBR completos (Normal + ARM) quando disponíveis.
+      if (pbr) {
+        const applyTiling = (t: THREE.Texture) => {
+          t.wrapS = THREE.RepeatWrapping;
+          t.wrapT = THREE.RepeatWrapping;
+          if (lib.grain === "horizontal") {
+            t.center.set(0.5, 0.5);
+            t.rotation = Math.PI / 2;
+          }
+          t.repeat.set(repX, repY);
+          t.needsUpdate = true;
+        };
+        const nrm = loadTexture(pbr.maps.normal, false).clone();
+        applyTiling(nrm);
+        props.normalMap = nrm;
+        props.normalScale = new THREE.Vector2(1, 1);
+
+        const arm = loadTexture(pbr.maps.arm, false).clone();
+        applyTiling(arm);
+        // Three.js lê aoMap=R, roughnessMap=G, metalnessMap=B automaticamente
+        // quando bindado à mesma textura ARM combinada.
+        props.aoMap = arm;
+        props.roughnessMap = arm;
+        props.metalnessMap = arm;
+      }
     }
     return props;
-  }, [lib?.id, lib?.colorHex, lib?.textureUrl, lib?.widthMm, lib?.lengthMm, lib?.grain, meshSizeM[0], meshSizeM[1], fallbackColor, overrides.roughness, overrides.metalness, overrides.wireframe, overrides.transparent, overrides.opacity]);
+  }, [materialId, lib?.id, lib?.colorHex, lib?.textureUrl, lib?.widthMm, lib?.lengthMm, lib?.grain, meshSizeM[0], meshSizeM[1], fallbackColor, overrides.roughness, overrides.metalness, overrides.wireframe, overrides.transparent, overrides.opacity]);
 }
 
 function centerOffset(model: Scene3DModel) {
