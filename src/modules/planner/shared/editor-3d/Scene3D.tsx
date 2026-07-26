@@ -38,6 +38,7 @@ import { getPbrMaterial, getPbrRoughnessBias, isPbrId } from "../materials/pbr-c
 import { GlassFront } from "./GlassFront";
 import { DecorMesh, isDecorSubtype } from "./DecorMesh";
 import { CabinetMesh, isCabinetSubtype } from "./CabinetMesh";
+import { ApplianceMesh, isApplianceSubtype } from "./ApplianceMesh";
 import { CinematicFX } from "./CinematicFX";
 
 interface Scene3DProps {
@@ -349,6 +350,28 @@ function Furniture({
           height={f.height}
           depth={f.depth}
           color={selected ? COLORS.furnitureSel : f.overrideColor}
+          selected={selected}
+        />
+      </group>
+    );
+  }
+  const appliance = viewport.render !== "wireframe" && isApplianceSubtype(f.subtype);
+  if (appliance) {
+    return (
+      <group
+        position={[pos.x, pos.z !== undefined ? pos.y - f.height / 2 : 0, pos.z]}
+        rotation={[0, f.rotationY, 0]}
+        onClick={(e: ThreeEvent<MouseEvent>) => {
+          e.stopPropagation();
+          onSelect(f.id);
+        }}
+      >
+        <ApplianceMesh
+          subtype={f.subtype as never}
+          width={f.width}
+          height={f.height}
+          depth={f.depth}
+          color={f.overrideColor}
           selected={selected}
         />
       </group>
