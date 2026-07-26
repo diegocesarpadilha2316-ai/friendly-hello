@@ -49,6 +49,7 @@ interface EditorState {
   future: readonly PlannerProject[];
   selectedEnvironmentId: string | null;
   selectedRoomId: string | null;
+  selectedNodeId: string | null;
   dirty: boolean;
   lastSavedAt: string | null;
 }
@@ -57,6 +58,7 @@ type EditorAction =
   | { type: "load"; project: PlannerProject | null }
   | { type: "update"; project: PlannerProject }
   | { type: "select"; environmentId?: string | null; roomId?: string | null }
+  | { type: "select-node"; nodeId: string | null }
   | { type: "undo" }
   | { type: "redo" }
   | { type: "saved"; at: string };
@@ -78,6 +80,7 @@ function reducer(state: EditorState, action: EditorAction): EditorState {
         future: [],
         selectedEnvironmentId: action.project?.environments[0]?.id ?? null,
         selectedRoomId: action.project?.environments[0]?.rooms[0]?.id ?? null,
+        selectedNodeId: null,
         dirty: false,
         lastSavedAt: action.project?.updatedAt ?? null,
       };
@@ -94,7 +97,14 @@ function reducer(state: EditorState, action: EditorAction): EditorState {
           action.environmentId !== undefined ? action.environmentId : state.selectedEnvironmentId,
         selectedRoomId:
           action.roomId !== undefined ? action.roomId : state.selectedRoomId,
+        // Trocar de cômodo/ambiente limpa a seleção fina.
+        selectedNodeId:
+          action.environmentId !== undefined || action.roomId !== undefined
+            ? null
+            : state.selectedNodeId,
       };
+    case "select-node":
+      return { ...state, selectedNodeId: action.nodeId };
     case "undo": {
       if (!state.project || state.past.length === 0) return state;
       const previous = state.past[state.past.length - 1];
@@ -130,6 +140,13 @@ interface EditorContextValue {
   loadProjectById: (projectId: string) => void;
   updateProject: (updater: (p: PlannerProject) => PlannerProject) => void;
   select: (patch: { environmentId?: string | null; roomId?: string | null }) => void;
+  /**
+   * Seleção fina de um nó da cena (móvel, parede, porta…). A IA consome
+   * `selectedNodeId` para operar tools sobre o item ativo sem exigir que
+   * o usuário informe qual é — quando o usuário clica no viewport ou na
+   * árvore, este é o canal único de seleção.
+   */
+  selectNode: (nodeId: string | null) => void;
   undo: () => void;
   redo: () => void;
   saveNow: () => void;
@@ -148,6 +165,7 @@ const initialState: EditorState = {
   future: [],
   selectedEnvironmentId: null,
   selectedRoomId: null,
+  selectedNodeId: null,
   dirty: false,
   lastSavedAt: null,
 };
@@ -316,6 +334,10 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const selectNode = useCallback((nodeId: string | null) => {
+    dispatch({ type: "select-node", nodeId });
+  }, []);
+
   const undo = useCallback(() => dispatch({ type: "undo" }), []);
   const redo = useCallback(() => dispatch({ type: "redo" }), []);
 
@@ -402,6 +424,7 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
       loadProjectById,
       updateProject,
       select,
+      selectNode,
       undo,
       redo,
       saveNow,
@@ -411,7 +434,7 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
       canUndo: state.past.length > 0,
       canRedo: state.future.length > 0,
     }),
-    [state, loadProject, loadProjectById, updateProject, select, undo, redo, saveNow, snapshotVersion, restoreVersion, versions],
+    [state, loadProject, loadProjectById, updateProject, select, selectNode, undo, redo, saveNow, snapshotVersion, restoreVersion, versions],
   );
 
   return <EditorContext.Provider value={value}>{children}</EditorContext.Provider>;

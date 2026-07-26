@@ -104,6 +104,22 @@ function buildPlannerSystemPrompt(
   const briefing = p.briefing
     ? `Briefing: estilo=${p.briefing.style ?? "—"}, ambiente=${p.briefing.environmentType ?? "—"}, área=${p.briefing.areaM2 ?? "—"}m², orçamento=${p.briefing.budget ?? "—"}.`
     : "";
+  // Descreve o item selecionado (se houver) — a IA usa isso para agir
+  // sobre "essa porta", "esse armário", "aqui" sem exigir nomes técnicos.
+  let selectionLine = "Nenhum item selecionado no viewport.";
+  const selectedId = ctx.selectionIds?.[0];
+  if (selectedId && room) {
+    const node = room.nodeOrder.map((id) => room.nodes[id]).find((n) => n?.id === selectedId);
+    if (node) {
+      const params = node.params as Record<string, unknown>;
+      const w = (params.width as number | undefined) ?? 0;
+      const h = (params.height as number | undefined) ?? 0;
+      const d = (params.depth as number | undefined) ?? 0;
+      const material = (params.material as string | undefined) ?? "—";
+      const color = (params.color as string | undefined) ?? "—";
+      selectionLine = `Item selecionado: ${node.label ?? node.kind} (${node.kind}) — ${w}×${d}×${h}mm, material=${material}, cor/acabamento=${color}. Quando o usuário disser "esse/essa/aqui/este armário" refira-se a ESTE item; as tools de mutação já operam sobre ele automaticamente — NÃO peça para o usuário informar qual é.`;
+    }
+  }
   return [
     "Você é a **Dioris Planner**, uma projetista virtual sênior de móveis planejados e interiores, em pt-BR.",
     "Fale como uma projetista humana experiente conversando com o cliente: calorosa, curta, natural e propositiva — nunca como um chatbot ou formulário.",
@@ -115,6 +131,7 @@ function buildPlannerSystemPrompt(
     "5. Respostas curtas (2-4 linhas). Zero jargão técnico com o cliente leigo; use termos de marcenaria só quando ele demonstrar domínio.",
     "6. **Seja propositiva como uma arquiteta sênior**: sempre que o projeto for criado ou alterado, sugira 1 melhoria concreta e natural — ex.: 'Posso puxar LED quente por baixo dos aéreos pra dar aquele glow.', 'Ficaria elegante trocar as frentes por Freijó com puxador cava.', 'Sugiro ampliar a ilha em 20 cm pra melhorar a circulação.', 'Uma torre quente aqui deixaria a cozinha bem mais funcional.'. Nunca duas sugestões de uma vez, nunca em bullets — em tom de conversa.",
     "7. Ao criar o ambiente, ele já nasce **completo e apresentável**: piso, paredes, teto, iluminação natural + cênica, móveis planejados, eletros e decoração (tapetes, plantas, quadros, luminárias). Não descreva isso em lista — comente como projetista ('deixei a bancada com um vaso de suculenta e um pendente cluster sobre a ilha').",
+    "8. **Edição por seleção**: quando houver 'Item selecionado' abaixo, TODAS as tools de mutação (change_material, change_color, resize, set_front_type, open_all, convert_to, remove, duplicate, mirror, rotate, change_hardware, toggle_led) já atuam APENAS sobre esse item. Use `convert_to` para pedidos como 'transforme esse armário em torre quente' ou 'vira cristaleira'. Use `set_front_type` para 'troque essa porta por vidro'/'coloque um basculante'/'quero reeded'. Nunca peça ao usuário o ID nem o nome técnico do item — o sistema já sabe.",
     "Biblioteca oficial disponível (mapeie sempre o pedido a estes itens reais):",
     "Biblioteca disponível (mapeie sempre o pedido do usuário a estes itens reais):",
     "• Marcenaria: aéreos, balcões, gaveteiros, torres, roupeiros, closets, painéis, ilhas, bancadas, nichos, cristaleiras.",
@@ -130,6 +147,7 @@ function buildPlannerSystemPrompt(
     `Projeto ativo: "${p.name}" (v${p.version}).`,
     env ? `Ambiente ativo: "${env.name}".` : "Nenhum ambiente selecionado.",
     room ? `Cômodo ativo: "${room.name}" (${room.dimensions.width}×${room.dimensions.depth}×${room.dimensions.height} mm).` : "Nenhum cômodo selecionado.",
+    selectionLine,
     briefing,
   ]
     .filter(Boolean)
@@ -367,6 +385,10 @@ export function usePlannerChat() {
       const project = operableProject;
       const activeEnvironmentId = boot.environmentId;
       const activeRoomId = boot.roomId;
+      // Seleção fina — quando o usuário clicou num móvel no viewport ou
+      // na árvore, todas as tools passam a mirar naquele item.
+      const selectedNodeId = editor.state.selectedNodeId;
+      const selectionIds = selectedNodeId ? [selectedNodeId] : undefined;
 
       const controller = new AbortController();
       abortRef.current = controller;
@@ -384,6 +406,7 @@ export function usePlannerChat() {
           ctx: {
             environmentId: activeEnvironmentId,
             roomId: activeRoomId,
+            selectionIds,
           },
           rules,
           signal: controller.signal,

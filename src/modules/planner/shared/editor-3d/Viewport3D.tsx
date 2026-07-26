@@ -117,13 +117,17 @@ export interface Viewport3DControls {
 }
 
 export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {}) {
-  const { state } = usePlannerEditor();
+  const { state, selectNode } = usePlannerEditor();
   const room = state.project?.environments
     .find((e) => e.id === state.selectedEnvironmentId)
     ?.rooms.find((r) => r.id === state.selectedRoomId);
 
   const [viewport, setViewport] = useState<Viewport3DState>(DEFAULT_VIEWPORT_3D);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  // A seleção agora vive no PlannerEditorProvider — a IA lê o mesmo
+  // `selectedNodeId` para operar tools sobre o item que o usuário
+  // clicou no viewport ou na árvore da cena.
+  const selectedId = state.selectedNodeId;
+  const setSelectedId = selectNode;
 
   // Sincroniza controles externos (barra inferior do editor) com o estado
   // interno do viewport, sem introduzir stores novos.

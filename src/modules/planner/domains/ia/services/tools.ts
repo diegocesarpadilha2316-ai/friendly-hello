@@ -673,6 +673,57 @@ export function toolSetFrontType(
   };
 }
 
+// ───── Converter item selecionado para outro subtipo (IA editora) ─────
+
+/**
+ * "Transforme esse armário em uma torre quente." — troca o CatalogItem
+ * subjacente do móvel selecionado preservando posição, rotação e (quando
+ * possível) dimensões. Sem seleção, aplica sobre TODOS os móveis do
+ * cômodo (raro; útil quando o usuário fala "troque todos os aéreos por
+ * cristaleira", por exemplo).
+ */
+export function toolConvertTo(
+  project: PlannerProject,
+  ctx: ToolContext,
+  args: { description?: string; subtype?: string; catalogItemId?: string },
+): ToolExecutionResult {
+  const room = getRoom(project, ctx);
+  if (!room) return { project, summary: "Sem cômodo ativo.", affectedIds: [] };
+  const targets = applySelection(room, ctx);
+  if (targets.length === 0) {
+    return { project, summary: "Selecione um móvel para converter.", affectedIds: [] };
+  }
+  const target =
+    (args.catalogItemId && findCatalogItem(args.catalogItemId)) ||
+    (args.description && matchDescription(args.description, {
+      subtype: args.subtype as CatalogSubtype | undefined,
+    })?.item) ||
+    (args.subtype && firstItem(args.subtype));
+  if (!target) {
+    return {
+      project,
+      summary: `Não encontrei um item compatível com "${args.description ?? args.subtype ?? args.catalogItemId}".`,
+      affectedIds: [],
+    };
+  }
+  const next = mutateFurniture(project, ctx, targets, (f) => ({
+    ...f,
+    catalogItemId: target.id,
+    label: target.name,
+    // Preserva x/y/rotation; adota dimensões default do novo item quando
+    // fazem sentido (torre é bem mais alta que um balcão, por exemplo).
+    width: target.parametric.defaults.width ?? f.width,
+    depth: target.parametric.defaults.depth ?? f.depth,
+    height: target.parametric.defaults.height ?? f.height,
+    params: { ...f.params, "eng:convertedFrom": f.catalogItemId ?? "" },
+  }));
+  return {
+    project: next,
+    summary: `${targets.length} móvel(is) convertido(s) para ${target.name}.`,
+    affectedIds: targets.map((t) => t.id),
+  };
+}
+
 // ───── Inserção paramétrica a partir de descrição livre (Parte 2) ─────
 
 export function toolInsertDescribed(
@@ -797,6 +848,7 @@ export type ToolName =
   | "set_style"
   | "panel_ripado"
   | "set_front_type"
+  | "convert_to"
   | "apply_finishing";
 
 export interface ToolDescriptor {
@@ -824,6 +876,7 @@ export const PLANNER_TOOL_REGISTRY: readonly ToolDescriptor[] = [
   { name: "set_style", label: "Aplicar estilo", description: "Minimalista, clássico, industrial, luxo, moderno." },
   { name: "panel_ripado", label: "Painel ripado", description: "Insere um painel decorativo ripado." },
   { name: "set_front_type", label: "Trocar frente", description: "Troca a frente para vidro, reeded, sólido ou aberto." },
+  { name: "convert_to", label: "Converter em outro módulo", description: "Converte o móvel selecionado em outro tipo — ex.: 'transforme esse armário em torre quente', 'vira cristaleira'. Preserva posição." },
   { name: "apply_finishing", label: "Acabamento automático", description: "Aplica um preset coordenado (cor, material, tampo, frente, ferragem, LED) em todos os móveis do cômodo — ou apenas nos aéreos, balcões, torre, painel ou tampos." },
 ];
 
@@ -847,6 +900,7 @@ export const TOOL_FUNCTIONS = {
   set_style: toolSetStyle,
   panel_ripado: toolPanelRipado,
   set_front_type: toolSetFrontType,
+  convert_to: toolConvertTo,
   apply_finishing: toolApplyFinishing,
 } as const;
 
