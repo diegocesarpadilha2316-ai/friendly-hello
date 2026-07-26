@@ -148,14 +148,27 @@ export function applyLayout(
     const height = match.overrides.height ?? match.item.parametric.defaults.height;
 
     for (let i = 0; i < count; i++) {
-      const wall = nextWall(spec.wall);
-      const cur = cursors[wall];
-      const len = wallLength(wall, roomW, roomD);
-      if (cur.offset + width + MARGIN_MM > len) {
+      // Tolerância zero: tenta parede preferida primeiro, depois qualquer
+      // outra da forma escolhida (L/U/paralela). Só marca skipped quando
+      // TODAS as paredes disponíveis estiverem cheias.
+      const preferred = spec.wall && walls.includes(spec.wall) ? spec.wall : undefined;
+      const order: LayoutWall[] = preferred
+        ? [preferred, ...walls.filter((w) => w !== preferred)]
+        : [nextWall()];
+      // Se `order` só tem 1 parede (fila circular), garante fallback total.
+      const tryOrder = preferred ? order : [order[0], ...walls.filter((w) => w !== order[0])];
+      let wall: LayoutWall | null = null;
+      for (const w of tryOrder) {
+        const c = cursors[w];
+        const len = wallLength(w, roomW, roomD);
+        if (c.offset + width + MARGIN_MM <= len) { wall = w; break; }
+      }
+      if (!wall) {
         skipped++;
-        reasons.push(`parede ${wall} cheia — ${match.item.name} ignorado`);
+        reasons.push(`sem parede disponível — ${match.item.name} ignorado (largura ${width}mm)`);
         continue;
       }
+      const cur = cursors[wall];
       const place = placementFor(wall, cur.offset, match.item, width, depth, roomW, roomD);
       next = insertItemIntoProject(next, target, match.item, {
         at: place.at,
