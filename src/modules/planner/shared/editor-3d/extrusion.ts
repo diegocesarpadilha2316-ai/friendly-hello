@@ -10,6 +10,15 @@ import { listPrimitives } from "../editor-2d/serialization";
 import type { PlannerRoom } from "../types/project";
 
 const MM = 1 / 1000;
+/**
+ * Espessura do slab de piso/teto (m). O piso é ancorado de modo que sua
+ * face SUPERIOR fique exatamente em y=0 (plano do mundo). Isso faz com
+ * que a grade, as sombras de contato e a base dos móveis coincidam no
+ * mesmo plano — origem única do ambiente 3D.
+ */
+const SLAB_THICKNESS = 0.02;
+/** Piso: centro do slab um pouco abaixo de zero, topo em y=0. */
+const FLOOR_CENTER_Y = -SLAB_THICKNESS / 2;
 
 export interface WallDescriptor {
   id: string;
@@ -115,7 +124,7 @@ function extrudeSlab(
     width: p.width * MM,
     depth: p.depth * MM,
     y,
-    thickness: 0.02,
+    thickness: SLAB_THICKNESS,
     materialId: p.materialId,
   };
 }
@@ -144,6 +153,8 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
   const openings: OpeningDescriptor[] = [];
   const furniture: FurnitureDescriptor[] = [];
   const wallH = wallHeight * MM;
+  /** Teto: centro do slab logo acima da altura da parede, face inferior em y=wallH. */
+  const CEILING_CENTER_Y = wallH + SLAB_THICKNESS / 2;
 
   // Cores customizadas por nó (definidas via ProjectTree → params.__color).
   const colorFor = (id: string): string | undefined => {
@@ -154,8 +165,8 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
 
   for (const p of primitives) {
     if (p.kind === "wall") walls.push({ ...extrudeWall(p, wallHeight), overrideColor: colorFor(p.id) });
-    else if (p.kind === "floor") floors.push({ ...extrudeSlab(p, 0), overrideColor: colorFor(p.id) });
-    else if (p.kind === "ceiling") ceilings.push({ ...extrudeSlab(p, wallH), overrideColor: colorFor(p.id) });
+    else if (p.kind === "floor") floors.push({ ...extrudeSlab(p, FLOOR_CENTER_Y), overrideColor: colorFor(p.id) });
+    else if (p.kind === "ceiling") ceilings.push({ ...extrudeSlab(p, CEILING_CENTER_Y), overrideColor: colorFor(p.id) });
     else if (p.kind === "opening") openings.push({ ...extrudeOpening(p), overrideColor: colorFor(p.id) });
     else if (p.kind === "furniture") {
       const w = p.width * MM;
@@ -180,12 +191,26 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
         if (v === "false" || v === 0 || v === "0") return false;
         return undefined;
       };
-      // Altura do centro real (Y) por subtype — respeita padrões de marcenaria:
-      // aéreo suspenso a 1400mm, prateleira 1200mm, torre/balcão/gaveteiro no piso.
-      const uppers = new Set(["aereo", "prateleira", "nicho", "painel", "cristaleira"]);
-      const baseY = uppers.has(p.subtype)
-        ? 1.4 + h / 2  // aéreo pendurado
-        : h / 2;       // apoiado no piso
+      // ── Ancoragem Y do móvel (Y = 0 é o TOPO do piso) ──
+      // Módulos DE PAREDE reais (suspensos a 1400 mm do piso): apenas
+      // aéreo, nicho e prateleira. Painel, cristaleira, roupeiro, torre
+      // etc. são módulos de piso e nascem apoiados. Um override explícito
+      // `mount:y` (bottom em mm) sempre vence — usado pela IA/inspetor.
+      const uppers = new Set(["aereo", "nicho", "prateleira"]);
+      const overrideBottomMm = numParam("mount:y") ?? numParam("mount:baseY");
+      let bottomY: number;
+      if (overrideBottomMm != null) {
+        bottomY = overrideBottomMm * MM;
+      } else if (uppers.has(p.subtype)) {
+        bottomY = 1.4; // suspenso a 1.4 m
+      } else {
+        bottomY = 0;   // apoiado no piso (y=0)
+      }
+      // Clamp: nunca enterra abaixo do piso, nunca ultrapassa o teto.
+      const ceilY = wallH > 0 ? wallH : Infinity;
+      if (bottomY < 0) bottomY = 0;
+      if (bottomY + h > ceilY) bottomY = Math.max(0, ceilY - h);
+      const baseY = bottomY + h / 2;
       furniture.push({
         id: p.id,
         subtype: p.subtype,
@@ -219,8 +244,8 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
       cz: (room.dimensions.depth / 2) * MM,
       width: room.dimensions.width * MM,
       depth: room.dimensions.depth * MM,
-      y: 0,
-      thickness: 0.02,
+      y: FLOOR_CENTER_Y,
+      thickness: SLAB_THICKNESS,
     });
   }
 
