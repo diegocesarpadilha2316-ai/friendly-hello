@@ -18,6 +18,7 @@ import {
   CABINET_SUBTYPES,
   aabbOverlap,
 } from "./physics";
+import { getPlannerEventBus, bridgeToWindow } from "../events";
 
 export interface InsertionTarget {
   environmentId: string;
@@ -98,8 +99,6 @@ export function insertItemIntoProject(
     const room = env?.rooms.find((r) => r.id === target.roomId);
     const last = room ? listPrimitives(room).at(-1) : undefined;
     if (last) {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { getPlannerEventBus, bridgeToWindow } = require("../events") as typeof import("../events");
       const bus = getPlannerEventBus();
       bus.emit("ui:item-inserted", { primitiveId: last.id, roomId: target.roomId });
       bus.emit("ui:focus-selection", { primitiveId: last.id });
