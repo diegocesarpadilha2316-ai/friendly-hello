@@ -5,6 +5,7 @@
 export * from "./types";
 export * from "./catalog";
 export * from "./insert";
+export * from "./physics";
 export * from "./use-favorites";
 export { LibraryPanel } from "./LibraryPanel";
 export { CatalogRealPanel } from "./CatalogRealPanel";
