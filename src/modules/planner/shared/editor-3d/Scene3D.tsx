@@ -501,6 +501,113 @@ function Cameras({ mode }: { mode: Viewport3DState["camera"] }) {
 }
 
 /**
+ * Enquadramento suave da peça selecionada.
+ *
+ * Dispara quando o usuário aperta "F" (frame) com um item selecionado.
+ * Interpola posição da câmera e o alvo do OrbitControls até um ângulo
+ * confortável em torno do bounding box da peça — sem quebrar a
+ * navegação manual (o usuário continua orbitando normalmente depois).
+ */
+function FocusOnSelection({
+  model,
+  selectedId,
+  center,
+  viewport,
+}: {
+  model: Scene3DModel;
+  selectedId: string | null;
+  center: THREE.Vector3;
+  viewport: Viewport3DState;
+}) {
+  const { camera, controls } = useThree() as unknown as {
+    camera: THREE.PerspectiveCamera;
+    controls: (THREE.EventDispatcher & { target: THREE.Vector3; update?: () => void }) | null;
+  };
+  const [tick, setTick] = useState(0);
+  const anim = useRef<{
+    active: boolean;
+    fromPos: THREE.Vector3;
+    toPos: THREE.Vector3;
+    fromTgt: THREE.Vector3;
+    toTgt: THREE.Vector3;
+    t: number;
+  }>({
+    active: false,
+    fromPos: new THREE.Vector3(),
+    toPos: new THREE.Vector3(),
+    fromTgt: new THREE.Vector3(),
+    toTgt: new THREE.Vector3(),
+    t: 0,
+  });
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      // Ignora atalhos dentro de inputs (Inspector, chat, etc.)
+      const el = document.activeElement as HTMLElement | null;
+      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)) return;
+      if (e.key === "f" || e.key === "F") setTick((n) => n + 1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  useEffect(() => {
+    if (!selectedId || tick === 0) return;
+    // Localiza a peça no modelo para calcular centro + raio de enquadramento.
+    const fu = model.furniture.find((x) => x.id === selectedId);
+    const wl = model.walls.find((x) => x.id === selectedId);
+    const op = model.openings.find((x) => x.id === selectedId);
+    let cx = 0, cy = 0, cz = 0, radius = 1;
+    if (fu) {
+      cx = fu.cx - center.x; cy = fu.y; cz = fu.cz - center.z;
+      radius = Math.hypot(fu.width, fu.height, fu.depth) * 0.6;
+    } else if (wl) {
+      cx = wl.cx - center.x; cy = wl.height / 2; cz = wl.cz - center.z;
+      radius = Math.hypot(wl.length, wl.height) * 0.6;
+    } else if (op) {
+      cx = op.cx - center.x; cy = op.y; cz = op.cz - center.z;
+      radius = Math.hypot(op.width, op.height) * 0.7;
+    } else return;
+    const dist = Math.max(1.4, radius * 2.2);
+    // Aproxima na diagonal frontal-superior do item mantendo a orientação
+    // atual da câmera (mesmo azimute) — o usuário reconhece "para onde foi".
+    const dir = new THREE.Vector3().subVectors(camera.position, controls?.target ?? center).setY(0);
+    if (dir.lengthSq() < 1e-6) dir.set(1, 0, 1);
+    dir.normalize();
+    const target = new THREE.Vector3(cx, cy, cz);
+    const desired = target.clone().add(dir.multiplyScalar(dist)).setY(cy + dist * 0.55);
+    anim.current = {
+      active: true,
+      fromPos: camera.position.clone(),
+      toPos: desired,
+      fromTgt: (controls?.target ?? center).clone(),
+      toTgt: target,
+      t: 0,
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tick, selectedId]);
+
+  useFrame((_, dt) => {
+    const a = anim.current;
+    if (!a.active) return;
+    a.t = Math.min(1, a.t + dt / 0.65); // ~650ms
+    const e = 1 - Math.pow(1 - a.t, 3); // easeOutCubic
+    camera.position.lerpVectors(a.fromPos, a.toPos, e);
+    if (controls?.target) {
+      controls.target.lerpVectors(a.fromTgt, a.toTgt, e);
+      controls.update?.();
+    } else {
+      camera.lookAt(a.toTgt);
+    }
+    if (a.t >= 1) a.active = false;
+  });
+
+  // Não renderiza — apenas gerencia foco. Silencia lint de dep desnecessária.
+  void viewport;
+  return null;
+}
+
+/**
  * Move a câmera para presets ortogonais/perspectivos quando `viewport.view`
  * muda. Roda uma única vez por mudança de view — depois disso o usuário
  * segue livre com OrbitControls.
@@ -794,6 +901,7 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
         diag={diag}
         wallHeight={viewport.wallHeight}
       />
+      <FocusOnSelection model={model} selectedId={selectedId} center={center} viewport={viewport} />
       {viewport.cinematic && viewport.render === "material" ? <CinematicFX /> : null}
     </Canvas>
   );
