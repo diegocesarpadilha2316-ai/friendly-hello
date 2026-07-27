@@ -196,7 +196,11 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
       // aéreo, nicho e prateleira. Painel, cristaleira, roupeiro, torre
       // etc. são módulos de piso e nascem apoiados. Um override explícito
       // `mount:y` (bottom em mm) sempre vence — usado pela IA/inspetor.
-      const uppers = new Set(["aereo", "nicho", "prateleira"]);
+      // Módulos que NASCEM SUSPENSOS na parede quando nenhum override é
+      // dado. `prateleira` foi removido: shelves genéricos costumam ficar
+      // em várias alturas e o comportamento antigo dava sensação de
+      // "flutuando". `nicho` e `aereo` continuam suspensos por padrão.
+      const uppers = new Set(["aereo", "nicho"]);
       const overrideBottomMm = numParam("mount:y") ?? numParam("mount:baseY");
       let bottomY: number;
       if (overrideBottomMm != null) {

@@ -351,8 +351,14 @@ function Furniture({
   onSelect: (id: string | null) => void;
 }) {
   const pos = explodeVec(f.cx, f.cz, f.y, center, viewport.explode);
+  // Aterramento garantido no render: independente do que o extrusor
+  // enviou, base do móvel nunca fica abaixo de y=0 (topo do piso).
+  // Para módulos suspensos (base > 0) mantemos a altura original.
+  const rawBottom = pos.y - f.height / 2;
+  const safeBottom = rawBottom < 0 ? 0 : rawBottom;
+  const safeCenterY = safeBottom + f.height / 2;
   const clipped =
-    viewport.sectionHeight != null && f.y - f.height / 2 > viewport.sectionHeight / 1000;
+    viewport.sectionHeight != null && safeBottom > viewport.sectionHeight / 1000;
   if (clipped) return null;
   const fallback = selected ? COLORS.furnitureSel : (f.overrideColor ?? COLORS.furniture);
   const props = useTexturedMaterialProps(
@@ -367,7 +373,7 @@ function Furniture({
   if (decor) {
     return (
       <group
-        position={[pos.x, pos.z !== undefined ? pos.y - f.height / 2 : 0, pos.z]}
+        position={[pos.x, safeBottom, pos.z]}
         rotation={[0, f.rotationY, 0]}
         onClick={(e: ThreeEvent<MouseEvent>) => {
           e.stopPropagation();
@@ -389,7 +395,7 @@ function Furniture({
   if (appliance) {
     return (
       <group
-        position={[pos.x, pos.z !== undefined ? pos.y - f.height / 2 : 0, pos.z]}
+        position={[pos.x, safeBottom, pos.z]}
         rotation={[0, f.rotationY, 0]}
         onClick={(e: ThreeEvent<MouseEvent>) => {
           e.stopPropagation();
@@ -411,7 +417,7 @@ function Furniture({
   if (cabinet) {
     return (
       <group
-        position={[pos.x, pos.y, pos.z]}
+        position={[pos.x, safeCenterY, pos.z]}
         rotation={[0, f.rotationY, 0]}
         onClick={(e: ThreeEvent<MouseEvent>) => {
           e.stopPropagation();
@@ -446,7 +452,7 @@ function Furniture({
   }
   return (
     <mesh
-      position={[pos.x, pos.y, pos.z]}
+      position={[pos.x, safeCenterY, pos.z]}
       rotation={[0, f.rotationY, 0]}
       castShadow
       receiveShadow
@@ -783,7 +789,7 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
     <Canvas
       shadows
       dpr={[1, 1.5]}
-      camera={{ position: [cx + camDist * 0.7, camHeight, cz + camDist * 0.7], fov: 45, near: 0.05, far: 500 }}
+      camera={{ position: [cx + camDist * 0.7, camHeight, cz + camDist * 0.7], fov: 38, near: 0.05, far: 500 }}
       gl={{ antialias: true, powerPreference: "high-performance" }}
       onCreated={({ gl }) => {
         gl.toneMapping = THREE.ACESFilmicToneMapping;
@@ -824,10 +830,10 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
             intensity={dayPreset.sunIntensity}
             color={dayPreset.sunColor}
             castShadow
-            shadow-mapSize-width={2048}
-            shadow-mapSize-height={2048}
-            shadow-bias={-0.0002}
-            shadow-normalBias={0.05}
+            shadow-mapSize-width={4096}
+            shadow-mapSize-height={4096}
+            shadow-bias={-0.00015}
+            shadow-normalBias={0.04}
             shadow-camera-far={60}
             shadow-camera-left={-diag}
             shadow-camera-right={diag}
@@ -851,12 +857,12 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
       {/* Contact shadow suave no chão — enraíza os móveis mesmo em modo wireframe */}
       {viewport.showLights ? (
         <ContactShadows
-          position={[cx, 0.001, cz]}
+          position={[cx, 0.002, cz]}
           scale={Math.max(diag * 2, 20)}
-          resolution={1024}
-          blur={2.4}
+          resolution={2048}
+          blur={1.8}
           far={4}
-          opacity={0.55}
+          opacity={0.72}
           color="#000000"
         />
       ) : null}
