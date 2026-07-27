@@ -87,6 +87,18 @@ export const CATALOG_ITEMS: readonly CatalogItem[] = [
   item("mod-balcao-cozinha", "Balcão de Cozinha", "balcao", "modulos",
     { width: 1200, depth: 600, height: 900 },
     { description: "Balcão de cozinha com tampo integrado, base e rodapé.", tags: ["balcao", "cozinha"] }),
+  item("mod-balcao-pia-cuba", "Balcão de Pia com Cuba", "balcao", "modulos",
+    { width: 1500, depth: 600, height: 900 },
+    {
+      description: "Módulo inferior de cozinha para pia, com cuba inox integrada, tampo e base técnica.",
+      tags: ["balcao", "pia", "cuba", "cozinha", "hidraulica", "sink"],
+      parametric: {
+        extra: {
+          "eng:sink": { kind: "boolean", label: "Cuba integrada", default: true },
+          "eng:plumbing": { kind: "select", label: "Hidráulica", default: "sink", options: ["sink"] },
+        },
+      },
+    }),
   item("mod-gaveteiro-3g", "Gaveteiro 3 Gavetas", "gaveteiro", "modulos",
     { width: 600, depth: 500, height: 900 }, { tags: ["gaveteiro", "cozinha", "dormitorio"] }),
   item("mod-nicho-quadrado", "Nicho Quadrado", "nicho", "modulos",
@@ -287,7 +299,7 @@ export const CATALOG_COLLECTIONS: readonly CatalogCollection[] = [
     id: "cozinha-essencial",
     label: "Cozinha Essencial",
     description: "Kit inicial de cozinha — balcão, aéreos, tampo e ilha.",
-    itemIds: ["mod-balcao-cozinha", "mod-aereo-porta", "tampo-quartzo", "mod-ilha-central"],
+    itemIds: ["mod-balcao-pia-cuba", "mod-aereo-porta", "tampo-quartzo", "mod-ilha-central"],
   },
   {
     id: "dormitorio-completo",

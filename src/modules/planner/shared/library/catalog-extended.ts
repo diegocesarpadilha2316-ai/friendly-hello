@@ -106,7 +106,7 @@ const BALCOES: CatalogItem[] = [
   ...serie("balcao-2p-2g", "Balcão 2P/2G", "balcao", "modulos", [700, 800, 900, 1000, 1200], 580, 900, ["balcao", "cozinha"]),
   ...serie("balcao-3g",    "Balcão 3 Gavetas", "balcao", "modulos", [400, 500, 600, 700], 580, 900, ["balcao", "gaveteiro"]),
   ...serie("balcao-4g",    "Balcão 4 Gavetas", "balcao", "modulos", [500, 600, 700, 800], 580, 900, ["balcao", "gaveteiro"]),
-  mk("balcao-gourmet",   "Balcão Gourmet c/ Cuba", "balcao", "modulos", 1500, 600, 900, { tags: ["balcao", "gourmet"] }),
+  mk("balcao-gourmet",   "Balcão Gourmet c/ Cuba", "balcao", "modulos", 1500, 600, 900, { tags: ["balcao", "gourmet", "pia", "cuba", "cozinha", "hidraulica", "sink"] }),
   mk("balcao-bar",       "Balcão Bar Alto",        "balcao", "modulos", 1500, 500, 1100, { tags: ["balcao", "bar"] }),
   mk("balcao-cava",      "Balcão Cava de Vinhos",  "balcao", "modulos", 600, 580, 900, { tags: ["balcao", "vinho"] }),
 ];
