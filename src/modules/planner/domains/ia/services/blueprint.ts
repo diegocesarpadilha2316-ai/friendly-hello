@@ -228,6 +228,7 @@ export function validateBlueprint(bp: PlannerBlueprint): BlueprintValidation {
 export interface RoomPresetArgs {
   preset: string;
   style?: string;
+  material?: string;
   pieces?: { description: string; count?: number; wall?: LayoutWall; width?: number; height?: number; depth?: number }[];
   noBlueprintPieces?: boolean;
 }
