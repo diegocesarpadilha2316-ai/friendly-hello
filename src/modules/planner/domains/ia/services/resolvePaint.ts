@@ -63,7 +63,7 @@ export function resolvePaint(input: string | null | undefined): ResolvedPaint | 
   const pbr = findPbrMaterialByLabel(raw);
   if (pbr) {
     return {
-      label: (pbr.pattern ?? pbr.name) as string,
+      label: pbr.pattern ?? pbr.name ?? raw,
       materialId: pbr.id,
       colorHex: pbr.colorHex,
     };
