@@ -488,7 +488,40 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
             viewport={viewport}
             selectedId={selectedId}
             onSelect={setSelectedId}
+            gizmoMode={gizmoMode}
+            onCommitTransform={commitTransform}
           />
+        </div>
+
+        {/* Barra de gizmos — flutuante, canto superior direito. */}
+        <div className="pointer-events-auto absolute right-2 top-11 z-20 flex items-center gap-1 rounded-md border border-border/50 bg-background/60 p-1 backdrop-blur">
+          <ToolbarButton
+            active={gizmoMode === "translate"}
+            onClick={() => setGizmoMode("translate")}
+            title="Mover (T)"
+          >
+            <Move3D className="h-3.5 w-3.5" /> Mover
+          </ToolbarButton>
+          <ToolbarButton
+            active={gizmoMode === "rotate"}
+            onClick={() => setGizmoMode("rotate")}
+            title="Girar (R)"
+          >
+            <RotateCw className="h-3.5 w-3.5" /> Girar
+          </ToolbarButton>
+          <span className="mx-1 h-4 w-px bg-border/60" />
+          <ToolbarButton
+            onClick={duplicateSelected}
+            title="Duplicar seleção (Ctrl+D)"
+          >
+            <Copy className="h-3.5 w-3.5" /> Duplicar
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={deleteSelected}
+            title="Excluir seleção (Delete)"
+          >
+            <Trash2 className="h-3.5 w-3.5" /> Excluir
+          </ToolbarButton>
         </div>
 
         {/* Status bar */}
