@@ -13,10 +13,12 @@ import {
   Menu,
   Store,
   Calculator,
-  Scissors,
   Settings,
+  Image as ImageIcon,
+  Layers,
+  Bot,
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { Component, useState, type ErrorInfo, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { PlannerAIFab } from "@/modules/planner/domains/ia";
 import { Button } from "@/components/ui/button";
@@ -38,13 +40,14 @@ const GROUPS: readonly Group[] = [
       { to: "/planner", label: "Dashboard", icon: LayoutDashboard, exact: true },
       { to: "/planner/projetos", label: "Projetos", icon: FolderKanban },
       { to: "/planner/biblioteca", label: "Catálogo", icon: Boxes },
+      { to: "/planner/materiais", label: "Materiais", icon: Layers },
+      { to: "/planner/assets", label: "Assets", icon: ImageIcon },
     ],
   },
   {
     label: "Engenharia & Produção",
     items: [
       { to: "/planner/engenharia", label: "Engenharia", icon: Wrench },
-      { to: "/planner/engenharia", label: "Lista de Corte", icon: Scissors },
       { to: "/planner/orcamentos", label: "Orçamento", icon: Calculator },
       { to: "/planner/producao", label: "Produção", icon: Factory },
       { to: "/planner/marketplace", label: "Marketplace", icon: Store },
@@ -61,6 +64,7 @@ const GROUPS: readonly Group[] = [
     label: "IA Copiloto",
     items: [
       { to: "/planner/ia", label: "IA de Projeto", icon: Sparkles },
+      { to: "/planner/ia-studio", label: "IA Studio", icon: Bot },
       { to: "/planner/visao", label: "IA Visão", icon: ScanEye },
       { to: "/planner/decoradora", label: "IA Decoradora", icon: Palette },
     ],
@@ -160,10 +164,53 @@ export function PlannerLayout({ children }: { children?: ReactNode }) {
           <span className="text-sm font-medium">Dioris Planner</span>
         </header>
 
-        <main className="min-w-0 flex-1">{children ?? <Outlet />}</main>
+        <main className="min-w-0 flex-1">
+          <PlannerErrorBoundary key={pathname}>
+            {children ?? <Outlet />}
+          </PlannerErrorBoundary>
+        </main>
       </div>
 
       <PlannerAIFab />
     </div>
   );
+}
+
+// Boundary local: crash em uma subpágina do Planner não derruba a sidebar.
+// Reset automático por key={pathname} — trocar de página limpa o estado.
+class PlannerErrorBoundary extends Component<
+  { children: ReactNode },
+  { error: Error | null }
+> {
+  state = { error: null as Error | null };
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("[Planner] Boundary capturou erro:", error, info);
+  }
+  private handleRetry = () => this.setState({ error: null });
+  render() {
+    if (!this.state.error) return this.props.children;
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center px-6">
+        <div className="max-w-md text-center">
+          <h2 className="text-lg font-semibold text-foreground">
+            Esta página não carregou
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Ocorreu um erro ao renderizar esta seção do Planner. Seu projeto
+            está seguro — você pode tentar novamente ou navegar para outra
+            área.
+          </p>
+          <p className="mt-3 text-xs font-mono text-muted-foreground/70">
+            {this.state.error.message}
+          </p>
+          <Button className="mt-5" onClick={this.handleRetry}>
+            Tentar novamente
+          </Button>
+        </div>
+      </div>
+    );
+  }
 }
