@@ -49,6 +49,27 @@ export function loadProject(tenantId: string, id: string): PlannerProject | null
   return loadProjects(tenantId).find((p) => p.id === id) ?? null;
 }
 
+/**
+ * Fallback: procura o projeto em qualquer tenant salvo no localStorage.
+ * Útil quando o tenant ativo demora a resolver ou mudou entre sessões e o
+ * projeto foi criado sob outro escopo (evita "Projeto não encontrado"
+ * quando o dado está localmente disponível).
+ */
+export function loadProjectAnywhere(id: string): { tenantId: string; project: PlannerProject } | null {
+  if (!isBrowser()) return null;
+  const prefix = `dioris:planner:${STORAGE_VERSION}:`;
+  const suffix = ":projects";
+  for (let i = 0; i < window.localStorage.length; i++) {
+    const key = window.localStorage.key(i);
+    if (!key || !key.startsWith(prefix) || !key.endsWith(suffix)) continue;
+    const tenantId = key.slice(prefix.length, key.length - suffix.length);
+    const list = safeParse<PlannerProject[]>(window.localStorage.getItem(key), []);
+    const hit = list.find((p) => p.id === id);
+    if (hit) return { tenantId, project: hit };
+  }
+  return null;
+}
+
 export function upsertProject(tenantId: string, project: PlannerProject): void {
   const list = loadProjects(tenantId);
   const idx = list.findIndex((p) => p.id === project.id);
