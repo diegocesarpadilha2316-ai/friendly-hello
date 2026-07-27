@@ -29,6 +29,8 @@ import { usePlannerEditor } from "../state/editor-context";
 import { buildScene3D } from "./extrusion";
 import { DEFAULT_VIEWPORT_3D, type Camera3DMode, type Camera3DView, type Render3DMode, type Viewport3DState } from "./types";
 import { Scene3D } from "./Scene3D";
+import type { PlannerProject, PlannerRoom } from "../types/project";
+import { RotateCw, Trash2, Copy } from "lucide-react";
 
 const CAM_LABEL: Record<Camera3DMode, string> = {
   orbit: "Orbit",
@@ -121,12 +123,13 @@ export interface Viewport3DControls {
 }
 
 export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {}) {
-  const { state, selectNode } = usePlannerEditor();
+  const { state, selectNode, updateProject } = usePlannerEditor();
   const room = state.project?.environments
     .find((e) => e.id === state.selectedEnvironmentId)
     ?.rooms.find((r) => r.id === state.selectedRoomId);
 
   const [viewport, setViewport] = useState<Viewport3DState>(DEFAULT_VIEWPORT_3D);
+  const [gizmoMode, setGizmoMode] = useState<"translate" | "rotate">("translate");
   // Reenquadramento automático: sempre que a IA (ou o próprio usuário)
   // troca de cômodo, ou o cômodo muda de tamanho/número de móveis, o
   // Planner "apresenta" o ambiente inteiro de novo. Sem isso, um projeto
