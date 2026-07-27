@@ -40,6 +40,7 @@ import {
   loadProjectVersion,
   type JsonObject,
 } from "@/lib/planner-snapshots.functions";
+import { getPlannerEventBus, bridgeToWindow } from "../events";
 
 const HISTORY_LIMIT = 50;
 // Janela de coalescência do histórico: alterações consecutivas no mesmo
@@ -100,7 +101,19 @@ function reducer(state: EditorState, action: EditorAction): EditorState {
       const past = shouldCoalesce
         ? state.past
         : [...state.past, state.project].slice(-HISTORY_LIMIT);
-      return { ...state, project: next, past, future: [], dirty: true, lastEditAt: now };
+      // Invariante de seleção: se o nó selecionado desapareceu no update
+      // (foi excluído, ou o cômodo foi trocado), limpa o `selectedNodeId`.
+      // Sem isso, Inspector e Scene3D operam sobre referência morta.
+      const selectionSurvives = nodeExists(next, state.selectedNodeId);
+      return {
+        ...state,
+        project: next,
+        past,
+        future: [],
+        dirty: true,
+        lastEditAt: now,
+        selectedNodeId: selectionSurvives ? state.selectedNodeId : null,
+      };
     }
     case "select":
       return {
