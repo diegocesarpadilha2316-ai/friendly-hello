@@ -10,6 +10,7 @@
  */
 import type { ToolName } from "./tools";
 import { buildBlueprint, blueprintToPreset, validateBlueprint } from "./blueprint";
+import { decompose } from "./decomposer";
 
 export interface ParsedIntent {
   tool: ToolName;
@@ -133,10 +134,49 @@ export function interpret(input: string): PlannerIntent {
     "quero", "queria", "gostaria", "preciso", "projeto", "ambiente",
     "gera", "gerar", "montar",
   );
+  const wantsInsertVerb = has(
+    t,
+    "insira", "inserir", "insere", "adicione", "adicionar", "adiciona",
+    "coloque", "coloca", "poe", "poem", "bota", "bote", "cria", "crie",
+    "criar", "faca", "faz", "monta", "montar", "quero", "queria",
+    "preciso", "gostaria", "gera", "gerar",
+  );
+  const ambientWords = has(
+    t,
+    "projeto", "ambiente", "cozinha", "closet", "dormitorio", "quarto",
+    "sala", "estar", "living", "escritorio", "home office", "banheiro",
+    "lavabo", "lavanderia", "completo", "completa", "inteir", "todo",
+    "toda",
+  );
   {
     let matchedPreset: string | null = null;
     for (const { preset, words } of PRESET_KEYWORDS) {
       if (words.some((w) => t.includes(w))) { matchedPreset = preset; break; }
+    }
+    // ── ROTA A: Módulo específico sem ambiente ──
+    // Se o usuário pediu peça(s) específica(s) ("faz um balcão de pia",
+    // "adiciona um aéreo 800", "insere torre quente") SEM mencionar um
+    // ambiente ou pedir "projeto/ambiente completo", inserimos apenas o
+    // que foi pedido no cômodo atual — nada de recriar a cozinha inteira.
+    if (!matchedPreset && !ambientWords && wantsInsertVerb) {
+      const dec = decompose(raw);
+      if (dec.modules.length > 0) {
+        const bp = buildBlueprint(raw);
+        const material = bp.material;
+        for (const m of dec.modules) {
+          const alreadyHasFinish =
+            /(freijo|nogueira|carvalho|branco|preto|grafite|chumbo|off\s*white|quartzo|cumaru|louro)/i.test(
+              m.description,
+            );
+          const description =
+            material && !alreadyHasFinish ? `${m.description} ${material}` : m.description;
+          intents.push({
+            tool: "insert_described",
+            args: { description, count: m.count },
+          });
+        }
+        return { type: "command", intents };
+      }
     }
     // Se citou só o nome do ambiente (ex.: "cozinha moderna"), ou pediu
     // genericamente ("quero um projeto"), cria mesmo assim.
