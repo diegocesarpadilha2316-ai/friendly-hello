@@ -37,6 +37,7 @@ import { usePlannerEditor } from "../state/editor-context";
 import { listPrimitives } from "../editor-2d/serialization";
 import type { Editor2DPrimitive } from "../editor-2d/types";
 import type { PlannerParametricNode } from "../types/project";
+import { getPlannerEventBus, bridgeToWindow } from "../events";
 import { MATERIAL_BRANDS, findBrand } from "./materials";
 import { HARDWARE_ITEMS, listHardware } from "./hardware";
 import {
@@ -292,9 +293,9 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
 
   const focusInViewport = () => {
     selectNode(current.id);
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new CustomEvent("planner:focus-selection", { detail: { id: current.id } }));
-    }
+    const bus = getPlannerEventBus();
+    bus.emit("ui:focus-selection", { primitiveId: current.id });
+    bridgeToWindow("ui:focus-selection", { primitiveId: current.id });
   };
 
   return (

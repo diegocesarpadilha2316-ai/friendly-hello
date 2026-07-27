@@ -40,6 +40,7 @@ import {
   loadProjectVersion,
   type JsonObject,
 } from "@/lib/planner-snapshots.functions";
+import { getPlannerEventBus, bridgeToWindow } from "../events";
 
 const HISTORY_LIMIT = 50;
 // Janela de coalescência do histórico: alterações consecutivas no mesmo
@@ -100,7 +101,19 @@ function reducer(state: EditorState, action: EditorAction): EditorState {
       const past = shouldCoalesce
         ? state.past
         : [...state.past, state.project].slice(-HISTORY_LIMIT);
-      return { ...state, project: next, past, future: [], dirty: true, lastEditAt: now };
+      // Invariante de seleção: se o nó selecionado desapareceu no update
+      // (foi excluído, ou o cômodo foi trocado), limpa o `selectedNodeId`.
+      // Sem isso, Inspector e Scene3D operam sobre referência morta.
+      const selectionSurvives = nodeExists(next, state.selectedNodeId);
+      return {
+        ...state,
+        project: next,
+        past,
+        future: [],
+        dirty: true,
+        lastEditAt: now,
+        selectedNodeId: selectionSurvives ? state.selectedNodeId : null,
+      };
     }
     case "select":
       return {
@@ -211,11 +224,101 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
   const { activeCompany } = useTenant();
   const tenantId = activeCompany?.id ?? "anonymous";
 
+  // Rastreadores para o efeito de emissão do bus. Guardamos versão e
+  // projectId da última emissão para diferenciar update / load / save
+  // sem espionar as `dispatches` diretamente (o reducer é puro).
+  const lastEmittedRef = useRef<{
+    projectId: string | null;
+    version: number;
+    lastSavedAt: string | null;
+    selectedNodeId: string | null;
+    pastLen: number;
+    futureLen: number;
+  }>({
+    projectId: null,
+    version: -1,
+    lastSavedAt: null,
+    selectedNodeId: null,
+    pastLen: 0,
+    futureLen: 0,
+  });
+
   const loadSnapshotFn = useServerFn(loadProjectSnapshot);
   const saveSnapshotFn = useServerFn(saveProjectSnapshot);
   const listVersionsFn = useServerFn(listProjectVersions);
   const createVersionFn = useServerFn(createProjectVersion);
   const loadVersionFn = useServerFn(loadProjectVersion);
+
+  // Emissão centralizada no bus. Rodar aqui (fora do reducer) garante que
+  // o commit do React já ocorreu — subscribers leem o estado consistente.
+  useEffect(() => {
+    const bus = getPlannerEventBus();
+    const last = lastEmittedRef.current;
+    const project = state.project;
+
+    // Sem projeto ativo: nada a emitir.
+    if (!project) {
+      lastEmittedRef.current = {
+        projectId: null,
+        version: -1,
+        lastSavedAt: null,
+        selectedNodeId: null,
+        pastLen: 0,
+        futureLen: 0,
+      };
+      return;
+    }
+
+    const projectChanged = last.projectId !== project.id;
+    const versionChanged = last.version !== project.version;
+
+    if (projectChanged) {
+      const payload = { projectId: project.id, version: project.version };
+      bus.emit("project:loaded", payload);
+      bridgeToWindow("project:loaded", payload);
+    } else if (versionChanged) {
+      // Diferencia undo/redo de edição normal pela variação das pilhas.
+      const undone = state.past.length < last.pastLen && state.future.length > last.futureLen;
+      const redone = state.past.length > last.pastLen && state.future.length < last.futureLen;
+      const payload = { projectId: project.id, version: project.version };
+      if (undone) {
+        bus.emit("project:undone", payload);
+        bridgeToWindow("project:undone", payload);
+      } else if (redone) {
+        bus.emit("project:redone", payload);
+        bridgeToWindow("project:redone", payload);
+      }
+      bus.emit("project:updated", { ...payload, reason: undone ? "undo" : redone ? "redo" : "edit" });
+      bridgeToWindow("project:updated", { ...payload, reason: undone ? "undo" : redone ? "redo" : "edit" });
+    }
+
+    if (state.lastSavedAt && state.lastSavedAt !== last.lastSavedAt) {
+      const payload = { projectId: project.id, version: project.version, at: state.lastSavedAt };
+      bus.emit("project:saved", payload);
+      bridgeToWindow("project:saved", payload);
+    }
+
+    if (state.selectedNodeId !== last.selectedNodeId) {
+      const payload = { projectId: project.id, nodeId: state.selectedNodeId };
+      bus.emit("project:node-selected", payload);
+      bridgeToWindow("project:node-selected", payload);
+    }
+
+    lastEmittedRef.current = {
+      projectId: project.id,
+      version: project.version,
+      lastSavedAt: state.lastSavedAt,
+      selectedNodeId: state.selectedNodeId,
+      pastLen: state.past.length,
+      futureLen: state.future.length,
+    };
+  }, [
+    state.project,
+    state.lastSavedAt,
+    state.selectedNodeId,
+    state.past.length,
+    state.future.length,
+  ]);
 
   const refreshVersions = useCallback(
     async (projectId: string) => {
@@ -474,7 +577,8 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
       } else if (e.code === "Space" || key === " ") {
         // Ctrl/Cmd+Space → foco na IA Copiloto do Planner.
         e.preventDefault();
-        window.dispatchEvent(new CustomEvent("planner:focus-ai"));
+        getPlannerEventBus().emit("ui:focus-ai", {});
+        bridgeToWindow("ui:focus-ai", {});
       }
     };
     window.addEventListener("keydown", handler);

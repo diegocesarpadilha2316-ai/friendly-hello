@@ -20,6 +20,7 @@ import {
   TransformControls,
 } from "@react-three/drei";
 import * as THREE from "three";
+import { getPlannerEventBus } from "../events";
 import type {
   Scene3DModel,
   WallDescriptor,
@@ -640,12 +641,15 @@ function FocusOnSelection({
       if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)) return;
       if (e.key === "f" || e.key === "F") setTick((n) => n + 1);
     };
-    const onFocusEvent = () => setTick((n) => n + 1);
     window.addEventListener("keydown", onKey);
-    window.addEventListener("planner:focus-selection", onFocusEvent as EventListener);
+    // Assina o bus tipado. O bridgeToWindow ainda reemite para `window`,
+    // então listeners legados continuam funcionando; aqui usamos o bus
+    // diretamente para pegar também emissões que não passem pela ponte.
+    const bus = getPlannerEventBus();
+    const offFocus = bus.on("ui:focus-selection", () => setTick((n) => n + 1));
     return () => {
       window.removeEventListener("keydown", onKey);
-      window.removeEventListener("planner:focus-selection", onFocusEvent as EventListener);
+      offFocus();
     };
   }, []);
 
