@@ -78,10 +78,36 @@ function detectSubtype(text: string): CatalogSubtype | null {
 
 // ─────────── dimensão ───────────
 // Aceita "80", "800", "80cm", "1,20m", "2m", "1200mm".
+function toMillimeters(value: number, unit?: string): number {
+  if (unit === "mm") return Math.round(value);
+  if (unit === "cm") return Math.round(value * 10);
+  if (unit === "m") return Math.round(value * 1000);
+  if (value < 10 && !Number.isInteger(value)) return Math.round(value * 1000);
+  if (value < 100) return Math.round(value * 10);
+  return Math.round(value);
+}
+
+function parseDimensionByLabel(text: string, labels: readonly string[]): number | null {
+  const label = labels.join("|");
+  const before = new RegExp(`(\\d+(?:[.,]\\d+)?)\\s*(mm|cm|m)?\\s*(?:de\\s*)?(?:${label})`, "i");
+  const after = new RegExp(`(?:${label})\\s*(?:de\\s*)?(\\d+(?:[.,]\\d+)?)\\s*(mm|cm|m)?`, "i");
+  const m = text.match(before) ?? text.match(after);
+  if (!m) return null;
+  const value = Number(m[1].replace(",", "."));
+  if (!Number.isFinite(value)) return null;
+  const mm = toMillimeters(value, m[2]);
+  return mm >= 30 && mm <= 5000 ? mm : null;
+}
+
 function parseWidth(text: string): number | null {
+  const labeled = parseDimensionByLabel(text, ["largura", "larg", "comprimento"]);
+  if (labeled != null) return labeled;
   // Ignora números que qualificam contagem (portas/gavetas/prateleiras) para
   // não confundir "3 portas" com 3m ou "4 gavetas" com 4m.
-  const sanitized = text.replace(/\b(\d+(?:[.,]\d+)?)\s*(porta|gaveta|prateleir)/g, "");
+  const sanitized = text
+    .replace(/\b(\d+(?:[.,]\d+)?)\s*(porta|gaveta|prateleir)/g, "")
+    .replace(/\b\d+(?:[.,]\d+)?\s*(?:mm|cm|m)?\s*(?:de\s*)?(?:altura|alto|profundidade|prof|fundo)\b/g, "")
+    .replace(/\b(?:altura|alto|profundidade|prof|fundo)\s*(?:de\s*)?\d+(?:[.,]\d+)?\s*(?:mm|cm|m)?\b/g, "");
   const m = sanitized.match(/(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?\b/g);
   if (!m) return null;
   for (const raw of m) {
@@ -90,16 +116,22 @@ function parseWidth(text: string): number | null {
     const rawNum = mm[1];
     const n = Number(rawNum.replace(",", "."));
     const unit = mm[2];
-    let val: number;
-    if (unit === "mm") val = n;
-    else if (unit === "cm") val = n * 10;
-    else if (unit === "m") val = n * 1000;
-    else if (n < 10 && /[.,]/.test(rawNum)) val = n * 1000; // "1.2" => metros (só decimais)
-    else if (n < 100) val = n * 10; // "80" => 800mm (cm)
-    else val = n; // já em mm
+    const val = toMillimeters(n, unit);
     if (val >= 200 && val <= 4000) return Math.round(val);
   }
   return null;
+}
+
+function parseHeight(text: string): number | null {
+  return parseDimensionByLabel(text, ["altura", "alto", "ate o teto", "até o teto"]);
+}
+
+function parseDepth(text: string): number | null {
+  return parseDimensionByLabel(text, ["profundidade", "prof", "fundo"]);
+}
+
+function clampParam(value: number, range: { min: number; max: number }): number {
+  return Math.max(range.min, Math.min(range.max, value));
 }
 
 // ─────────── frente ───────────
@@ -236,6 +268,8 @@ export function matchDescription(
   let item: CatalogItem | null = null;
   if (fallback?.catalogItemId) item = findCatalogItem(fallback.catalogItemId) ?? null;
   const wantedWidth = parseWidth(t);
+  const wantedHeight = parseHeight(t);
+  const wantedDepth = parseDepth(t);
   const wantedDoors = detectDoorCount(t);
   const wantedDrawers = detectDrawerCount(t);
 
@@ -246,10 +280,19 @@ export function matchDescription(
   const reasons: string[] = [`item: ${item.name}`];
 
   if (wantedWidth != null) {
-    const range = item.parametric.width;
-    const clamped = Math.max(range.min, Math.min(range.max, wantedWidth));
+    const clamped = clampParam(wantedWidth, item.parametric.width);
     overrides.width = clamped;
     reasons.push(`largura ${clamped}mm`);
+  }
+  if (wantedHeight != null) {
+    const clamped = clampParam(wantedHeight, item.parametric.height);
+    overrides.height = clamped;
+    reasons.push(`altura ${clamped}mm`);
+  }
+  if (wantedDepth != null) {
+    const clamped = clampParam(wantedDepth, item.parametric.depth);
+    overrides.depth = clamped;
+    reasons.push(`profundidade ${clamped}mm`);
   }
 
   const params: MatchResult["params"] = {};
