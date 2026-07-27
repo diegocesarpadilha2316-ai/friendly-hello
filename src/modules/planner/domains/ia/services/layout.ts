@@ -11,32 +11,10 @@
  *   rotação em graus (0 = frente virada para +y, 90 = frente para +x, etc.)
  */
 import type { PlannerProject } from "@/modules/planner/shared";
-import { insertItemIntoProject, type CatalogItem } from "@/modules/planner/shared";
+import { insertItemIntoProject, REAL_DEPTH_BY_SUBTYPE, WALL_OFFSET_MM, type CatalogItem } from "@/modules/planner/shared";
 import { matchDescription } from "./matcher";
 
 export type LayoutShape = "linear" | "L" | "U" | "paralela";
-
-// Espelha o mapa de profundidades reais aplicado por
-// `insertItemIntoProject` (src/modules/planner/shared/library/insert.ts).
-// Se o layout calcular a posição com uma profundidade e o insert armazenar
-// outra, o móvel fica descolado da parede — a auditoria confirmou o bug.
-const REAL_DEPTH_BY_SUBTYPE: Record<string, number> = {
-  aereo: 350,
-  prateleira: 300,
-  nicho: 300,
-  painel: 40,
-  balcao: 600,
-  tampo: 600,
-  bancada: 600,
-  ilha: 900,
-  torre: 600,
-  gaveteiro: 500,
-  closet: 600,
-  roupeiro: 600,
-  armario: 600,
-  "guarda-roupa": 600,
-  cristaleira: 400,
-};
 
 export interface LayoutPieceSpec {
   description: string;
@@ -98,7 +76,7 @@ function placementFor(
   // então metade fica DENTRO do cômodo. Somamos esse offset + 2mm de folga
   // para o fundo do móvel ficar flush com a face interna da parede, sem
   // atravessar.
-  const WALL_OFFSET = 50 + 2;
+  const WALL_OFFSET = WALL_OFFSET_MM;
   const halfW = width / 2;
   const halfD = depth / 2;
   switch (wall) {
