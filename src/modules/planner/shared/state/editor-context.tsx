@@ -31,7 +31,11 @@ import type {
 } from "../types/project";
 import type { PlannerProjectId } from "../types";
 import { createProject, ensureProjectRoomShells } from "../factories/project";
-import { loadProject as loadLocalProject, upsertProject as upsertLocalProject } from "../persistence/local-store";
+import {
+  loadProject as loadLocalProject,
+  upsertProject as upsertLocalProject,
+  loadProjectAnywhere,
+} from "../persistence/local-store";
 import {
   loadProjectSnapshot,
   saveProjectSnapshot,
