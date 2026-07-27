@@ -92,12 +92,6 @@ export const CATALOG_ITEMS: readonly CatalogItem[] = [
     {
       description: "Módulo inferior de cozinha para pia, com cuba inox integrada, tampo e base técnica.",
       tags: ["balcao", "pia", "cuba", "cozinha", "hidraulica", "sink"],
-      parametric: {
-        extra: {
-          "eng:sink": { kind: "boolean", label: "Cuba integrada", default: true },
-          "eng:plumbing": { kind: "select", label: "Hidráulica", default: "sink", options: ["sink"] },
-        },
-      },
     }),
   item("mod-gaveteiro-3g", "Gaveteiro 3 Gavetas", "gaveteiro", "modulos",
     { width: 600, depth: 500, height: 900 }, { tags: ["gaveteiro", "cozinha", "dormitorio"] }),
