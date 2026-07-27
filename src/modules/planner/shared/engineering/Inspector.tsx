@@ -469,6 +469,20 @@ function patchNodeParams(
   return { ...nodes, [furnitureId]: { ...node, params: nextParams } };
 }
 
+function pieceLabel(f: Furniture): string {
+  const p = f.params ?? {};
+  const brand = typeof p.brand === "string" ? p.brand : "";
+  const line = typeof p.line === "string" ? p.line : "";
+  const suffix = [brand, line].filter(Boolean).join(" ");
+  return suffix ? `${f.subtype} · ${suffix}` : String(f.subtype);
+}
+
+function normalizeRotation(v: number): number {
+  if (!Number.isFinite(v)) return 0;
+  const n = ((v % 360) + 360) % 360;
+  return n;
+}
+
 function patchDim(
   current: Furniture,
   value: number,
