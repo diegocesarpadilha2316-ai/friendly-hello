@@ -9,6 +9,7 @@
 import type { PlannerProject, PlannerRoom } from "../types/project";
 import type { Editor2DPrimitive } from "../editor-2d/types";
 import { makePrimitiveId, upsertPrimitive } from "../editor-2d/room-ops";
+import { listPrimitives } from "../editor-2d/serialization";
 import type { CatalogItem } from "./types";
 import {
   WALL_OFFSET_MM,
@@ -136,7 +137,7 @@ function applyInsertion(room: PlannerRoom, item: CatalogItem, opts: InsertionOpt
   // Prevenção de colisão: se o ponto final choca com um móvel existente,
   // desliza ao longo da parede procurando o próximo slot livre. Se falhar,
   // aceita a posição original (usuário sempre pode mover manualmente).
-  const existing = room.primitives.filter(
+  const existing = listPrimitives(room).filter(
     (p): p is Editor2DPrimitive & { kind: "furniture" } => p.kind === "furniture",
   );
   if (existing.length > 0 && isCabinet) {
