@@ -6,7 +6,8 @@
  * A cor principal vem do material da biblioteca (props do <meshStandardMaterial>
  * repassados via prop `bodyMaterialProps`); quando ausente, cai em freijó neutro.
  */
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
 export type CabinetSubtype =
@@ -24,6 +25,41 @@ const CABINET_SUBTYPES = new Set<CabinetSubtype>([
 
 export function isCabinetSubtype(s: string | undefined): s is CabinetSubtype {
   return !!s && CABINET_SUBTYPES.has(s as CabinetSubtype);
+}
+
+/**
+ * Wrapper que interpola suavemente rotação Y e deslocamento Z do grupo
+ * até os valores alvo, dando feel de "abrir e fechar" real em portas
+ * e gavetas (usa damp com dt real do frame — timing-independent).
+ */
+function AnimatedOpen({
+  position,
+  baseZ,
+  targetRotY = 0,
+  targetOffsetZ = 0,
+  lambda = 8,
+  children,
+}: {
+  position: [number, number, number];
+  baseZ?: number;
+  targetRotY?: number;
+  targetOffsetZ?: number;
+  lambda?: number;
+  children: React.ReactNode;
+}) {
+  const ref = useRef<THREE.Group>(null);
+  useFrame((_, dt) => {
+    const g = ref.current;
+    if (!g) return;
+    g.rotation.y = THREE.MathUtils.damp(g.rotation.y, targetRotY, lambda, dt);
+    const targetZ = (baseZ ?? position[2]) + targetOffsetZ;
+    g.position.z = THREE.MathUtils.damp(g.position.z, targetZ, lambda, dt);
+  });
+  return (
+    <group ref={ref} position={position}>
+      {children}
+    </group>
+  );
 }
 
 interface CabinetMeshProps {
@@ -229,10 +265,11 @@ export function CabinetMesh(props: CabinetMeshProps) {
         const PROT = 0.004; // 4mm de protrusão do frame
         const railZ = FRONT_T + PROT / 2;
         return (
-          <group
+          <AnimatedOpen
             key={`door-${i}`}
             position={[cx + (hingeSide * doorW) / 2, 0, halfD - INSET]}
-            rotation={[0, openAngle, 0]}
+            targetRotY={openAngle}
+            lambda={7}
           >
             {/* Painel base da porta (recessed panel) — levemente mais escuro */}
             <mesh position={[(-hingeSide * doorW) / 2, 0, FRONT_T / 2]} castShadow receiveShadow>
@@ -295,7 +332,7 @@ export function CabinetMesh(props: CabinetMeshProps) {
                 <meshStandardMaterial color="#a8adb5" metalness={0.9} roughness={0.35} />
               </mesh>
             ))}
-          </group>
+          </AnimatedOpen>
         );
       })}
 
@@ -308,8 +345,15 @@ export function CabinetMesh(props: CabinetMeshProps) {
         const RAIL = Math.min(0.06, Math.min(drW, drH) * 0.16);
         const PROT = 0.004;
         const railZ = FRONT_T + PROT / 2;
+        const baseZ = halfD - INSET + FRONT_T / 2;
         return (
-          <group key={`dr-${i}`} position={[0, cy, halfD - INSET + FRONT_T / 2 + outset]}>
+          <AnimatedOpen
+            key={`dr-${i}`}
+            position={[0, cy, baseZ]}
+            baseZ={baseZ}
+            targetOffsetZ={outset}
+            lambda={9}
+          >
             {/* Painel base (recessed) */}
             <mesh castShadow receiveShadow>
               <boxGeometry args={[drW, drH, FRONT_T]} />
@@ -381,17 +425,33 @@ export function CabinetMesh(props: CabinetMeshProps) {
                 ))}
               </>
             ) : null}
-          </group>
+          </AnimatedOpen>
         );
       })}
 
       {/* Contorno de seleção */}
-      {selected ? (
-        <mesh>
-          <boxGeometry args={[width * 1.01, height * 1.01, depth * 1.01]} />
-          <meshBasicMaterial color="#8b5cf6" wireframe transparent opacity={0.35} />
-        </mesh>
-      ) : null}
+      {selected ? <SelectionHalo width={width} height={height} depth={depth} /> : null}
     </group>
+  );
+}
+
+/**
+ * Contorno pulsante para o móvel selecionado — dá feedback visual
+ * imediato sem cobrir o mesh e desaparece ao clicar em outro item.
+ */
+function SelectionHalo({ width, height, depth }: { width: number; height: number; depth: number }) {
+  const ref = useRef<THREE.Mesh>(null);
+  useFrame((state) => {
+    const m = ref.current;
+    if (!m) return;
+    const t = state.clock.elapsedTime;
+    const pulse = 0.28 + Math.sin(t * 3) * 0.08;
+    (m.material as THREE.MeshBasicMaterial).opacity = pulse;
+  });
+  return (
+    <mesh ref={ref}>
+      <boxGeometry args={[width * 1.015, height * 1.015, depth * 1.015]} />
+      <meshBasicMaterial color="#8b5cf6" wireframe transparent opacity={0.32} />
+    </mesh>
   );
 }
