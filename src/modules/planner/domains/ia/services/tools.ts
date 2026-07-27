@@ -32,6 +32,7 @@ import {
   FINISHING_PRESETS,
   type FinishingScope,
 } from "./finishing";
+import { resolvePaint } from "./resolvePaint";
 
 export interface ToolContext {
   environmentId: string;
@@ -366,9 +367,16 @@ export function toolCreateRoomPreset(
     const currentRoom = getRoom(next, ctx);
     if (currentRoom) {
       const all = furnitureInRoom(currentRoom);
+      const paint = resolvePaint(finish);
       next = mutateFurniture(next, ctx, all, (f) => ({
         ...f,
-        params: { ...f.params, color: finish, material: finish },
+        materialId: paint?.materialId ?? f.materialId,
+        params: {
+          ...f.params,
+          color: finish,
+          material: finish,
+          ...(paint ? { __color: paint.colorHex } : {}),
+        },
       }));
     }
   }
@@ -436,9 +444,15 @@ export function toolChangeMaterial(
   if (!room) return { project, summary: "Sem cômodo ativo.", affectedIds: [] };
   const targets = applySelection(room, ctx);
   if (targets.length === 0) return { project, summary: "Não há móveis para alterar.", affectedIds: [] };
+  const paint = resolvePaint(args.material);
   const next = mutateFurniture(project, ctx, targets, (f) => ({
     ...f,
-    params: { ...f.params, material: args.material },
+    materialId: paint?.materialId ?? f.materialId,
+    params: {
+      ...f.params,
+      material: args.material,
+      ...(paint ? { __color: paint.colorHex } : {}),
+    },
   }));
   return {
     project: next,
@@ -456,9 +470,15 @@ export function toolChangeColor(
   if (!room) return { project, summary: "Sem cômodo ativo.", affectedIds: [] };
   const targets = applySelection(room, ctx);
   if (targets.length === 0) return { project, summary: "Não há móveis para colorir.", affectedIds: [] };
+  const paint = resolvePaint(args.color);
   const next = mutateFurniture(project, ctx, targets, (f) => ({
     ...f,
-    params: { ...f.params, color: args.color },
+    materialId: paint?.materialId ?? f.materialId,
+    params: {
+      ...f.params,
+      color: args.color,
+      ...(paint ? { __color: paint.colorHex } : {}),
+    },
   }));
   return {
     project: next,
@@ -672,13 +692,16 @@ export function toolSetStyle(
   const style = styleMap[args.style];
   if (!style) return { project, summary: `Estilo "${args.style}" não reconhecido.`, affectedIds: [] };
   const targets = furnitureInRoom(room);
+  const paint = resolvePaint(style.color);
   const next = mutateFurniture(project, ctx, targets, (f) => ({
     ...f,
+    materialId: paint?.materialId ?? f.materialId,
     params: {
       ...f.params,
       color: style.color,
       material: style.material,
       "eng:style": args.style,
+      ...(paint ? { __color: paint.colorHex } : {}),
     },
   }));
   return {
@@ -833,6 +856,7 @@ export function toolInsertDescribed(
       at: { x: startX + i * step, y: startY },
       overrides: match.overrides,
       params: match.params,
+      materialId: match.materialId,
     });
   }
   return {
