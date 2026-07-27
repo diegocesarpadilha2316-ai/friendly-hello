@@ -44,7 +44,7 @@ interface ModuleToken {
 const TOKENS: ModuleToken[] = [
   { id: "armario", label: "Armário", re: /armari/, descBase: "armário", wall: "bottom" },
   { id: "aereo", label: "Aéreo", re: /aereo/, descBase: "aéreo", wall: "bottom" },
-  { id: "balcao-pia", label: "Balcão da pia", re: /balcao\s+(?:da\s+)?pia|balcao\s+pia|pia/, descBase: "balcão da pia", wall: "bottom" },
+  { id: "balcao-pia", label: "Balcão da pia", re: /balcao\s+(?:d[ea]\s+)?pia|balcao\s+pia|\bpia\b|cuba/, descBase: "balcão da pia com cuba inox", wall: "bottom" },
   { id: "balcao", label: "Balcão", re: /balcao/, descBase: "balcão", wall: "bottom" },
   { id: "gaveteiro", label: "Gaveteiro", re: /gaveteir/, descBase: "gaveteiro", wall: "bottom" },
   { id: "porta-condimentos", label: "Porta-condimentos", re: /porta[-\s]?condiment|porta[-\s]?tempero|especiari/, descBase: "gaveteiro 300mm porta-temperos", wall: "bottom" },
