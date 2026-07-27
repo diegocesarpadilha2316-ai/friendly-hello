@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { ClientOnly } from "@tanstack/react-router";
 import { Ruler, Move3D, Undo2, Redo2, Save, PanelLeftOpen, PanelLeftClose, Boxes, Wrench } from "lucide-react";
 import { Button } from "@/core/components/ui-kit";
