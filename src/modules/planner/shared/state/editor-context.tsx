@@ -421,6 +421,16 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
             void refreshVersions(normalizedLocal.id);
             return;
           }
+          // Fallback: procura o projeto em qualquer tenant salvo localmente
+          // — resolve o caso em que o projeto foi criado antes do tenant
+          // ativo resolver (evita "Projeto não encontrado" indevido).
+          const anywhere = loadProjectAnywhere(projectId);
+          if (anywhere) {
+            const normalizedAny = ensureProjectRoomShells(anywhere.project);
+            dispatch({ type: "load", project: normalizedAny });
+            void refreshVersions(normalizedAny.id);
+            return;
+          }
           dispatch({ type: "load", project: null });
           setVersions([]);
           return;
@@ -476,6 +486,13 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
           const normalizedLocal = ensureProjectRoomShells(local);
           dispatch({ type: "load", project: normalizedLocal });
           void refreshVersions(normalizedLocal.id);
+          return;
+        }
+        const anywhere = loadProjectAnywhere(projectId);
+        if (anywhere) {
+          const normalizedAny = ensureProjectRoomShells(anywhere.project);
+          dispatch({ type: "load", project: normalizedAny });
+          void refreshVersions(normalizedAny.id);
           return;
         }
         dispatch({ type: "load", project: null });
