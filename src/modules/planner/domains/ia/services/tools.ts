@@ -306,6 +306,8 @@ export function toolCreateRoomPreset(
   args: {
     preset: string;
     style?: string;
+    /** Material/cor global aplicado a todos os móveis criados. */
+    material?: string;
     /**
      * Peças customizadas (decompositor). Quando presentes, substituem as
      * peças padrão do blueprint — o ambiente segue trazendo shell + decor.
@@ -320,6 +322,10 @@ export function toolCreateRoomPreset(
     }[];
     /** Some peças do blueprint sem substituir por nada (só shell/decor). */
     noBlueprintPieces?: boolean;
+    /** Quando o usuário deu peças específicas, evitamos poluir com decor
+     *  padrão do blueprint (banquetas, quadros, tapete) — o ambiente sai
+     *  focado exatamente no que foi pedido. Default: true. */
+    skipDecorWhenCustom?: boolean;
   },
 ): ToolExecutionResult {
   const blueprint = ROOM_BLUEPRINTS[args.preset];
@@ -352,8 +358,24 @@ export function toolCreateRoomPreset(
   // frações do cômodo. Isso deixa o viewport com cara de projeto real,
   // não de biblioteca vazia.
   let next = res.project;
+  // Aplica material global a todos os móveis recém-criados. Isso garante
+  // que "cozinha preta" / "armário preto" fique realmente preto, sem
+  // depender de qualificadores por peça.
+  if (args.material) {
+    const finish = args.material;
+    const currentRoom = getRoom(next, ctx);
+    if (currentRoom) {
+      const all = furnitureInRoom(currentRoom);
+      next = mutateFurniture(next, ctx, all, (f) => ({
+        ...f,
+        params: { ...f.params, color: finish, material: finish },
+      }));
+    }
+  }
   let decorPlaced = 0;
-  const decorItems = blueprint.decor ?? [];
+  const customPieces = !!(args.pieces && args.pieces.length > 0);
+  const skipDecor = customPieces && (args.skipDecorWhenCustom ?? true);
+  const decorItems = skipDecor ? [] : (blueprint.decor ?? []);
   for (const spec of decorItems) {
     const item = spec.catalogItemId
       ? findCatalogItem(spec.catalogItemId)

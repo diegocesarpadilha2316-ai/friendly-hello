@@ -44,7 +44,7 @@ interface ModuleToken {
 const TOKENS: ModuleToken[] = [
   { id: "armario", label: "Armário", re: /armari/, descBase: "armário", wall: "bottom" },
   { id: "aereo", label: "Aéreo", re: /aereo/, descBase: "aéreo", wall: "bottom" },
-  { id: "balcao-pia", label: "Balcão da pia", re: /balcao\s+(?:da\s+)?pia|balcao\s+pia|pia/, descBase: "balcão da pia", wall: "bottom" },
+  { id: "balcao-pia", label: "Balcão da pia", re: /balcao\s+(?:d[ea]\s+)?pia|balcao\s+pia|\bpia\b|cuba/, descBase: "balcão da pia com cuba inox", wall: "bottom" },
   { id: "balcao", label: "Balcão", re: /balcao/, descBase: "balcão", wall: "bottom" },
   { id: "gaveteiro", label: "Gaveteiro", re: /gaveteir/, descBase: "gaveteiro", wall: "bottom" },
   { id: "porta-condimentos", label: "Porta-condimentos", re: /porta[-\s]?condiment|porta[-\s]?tempero|especiari/, descBase: "gaveteiro 300mm porta-temperos", wall: "bottom" },
@@ -242,13 +242,21 @@ export function decompose(input: string): Decomposition {
 
   for (const chunk of chunks) {
     if (!chunk) continue;
-    // Encontra o token cuja regex casa mais cedo (mais específico primeiro).
+    // Escolhe o token cuja regex casa o MAIOR trecho da frase (mais
+    // específico vence). Isso garante que "balcão de pia" case com
+    // `balcao-pia` (12 chars) e não com `balcao` (6 chars) — mesmo que
+    // `balcao` apareça primeiro no chunk.
     let matched: ModuleToken | null = null;
+    let bestLen = 0;
     let earliest = Infinity;
     for (const tok of TOKENS) {
       const m = chunk.match(tok.re);
-      if (m && m.index != null && m.index < earliest) {
+      if (!m || m.index == null) continue;
+      const len = m[0].length;
+      // Prefere maior match; empates ficam com o que aparece mais cedo.
+      if (len > bestLen || (len === bestLen && m.index < earliest)) {
         matched = tok;
+        bestLen = len;
         earliest = m.index;
       }
     }
