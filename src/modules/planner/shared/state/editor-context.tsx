@@ -42,6 +42,10 @@ import {
 } from "@/lib/planner-snapshots.functions";
 
 const HISTORY_LIMIT = 50;
+// Janela de coalescência do histórico: alterações consecutivas no mesmo
+// nó dentro deste intervalo mesclam com o último estado do past — evita
+// entulhar Undo com micro-passos de arrastar/redimensionar.
+const HISTORY_COALESCE_MS = 250;
 
 interface EditorState {
   project: PlannerProject | null;
@@ -52,6 +56,7 @@ interface EditorState {
   selectedNodeId: string | null;
   dirty: boolean;
   lastSavedAt: string | null;
+  lastEditAt: number;
 }
 
 type EditorAction =
@@ -83,12 +88,19 @@ function reducer(state: EditorState, action: EditorAction): EditorState {
         selectedNodeId: null,
         dirty: false,
         lastSavedAt: action.project?.updatedAt ?? null,
+        lastEditAt: 0,
       };
     case "update": {
       if (!state.project) return state;
       const next = bump(action.project);
-      const past = [...state.past, state.project].slice(-HISTORY_LIMIT);
-      return { ...state, project: next, past, future: [], dirty: true };
+      const now = Date.now();
+      // Coalesce: se a última edição foi há menos de HISTORY_COALESCE_MS,
+      // não empilha um novo estado — mantém o snapshot anterior no past.
+      const shouldCoalesce = now - state.lastEditAt < HISTORY_COALESCE_MS && state.past.length > 0;
+      const past = shouldCoalesce
+        ? state.past
+        : [...state.past, state.project].slice(-HISTORY_LIMIT);
+      return { ...state, project: next, past, future: [], dirty: true, lastEditAt: now };
     }
     case "select":
       return {
@@ -108,23 +120,29 @@ function reducer(state: EditorState, action: EditorAction): EditorState {
     case "undo": {
       if (!state.project || state.past.length === 0) return state;
       const previous = state.past[state.past.length - 1];
+      const stillExists = previous && nodeExists(previous, state.selectedNodeId);
       return {
         ...state,
         project: previous,
         past: state.past.slice(0, -1),
         future: [state.project, ...state.future].slice(0, HISTORY_LIMIT),
         dirty: true,
+        selectedNodeId: stillExists ? state.selectedNodeId : null,
+        lastEditAt: 0,
       };
     }
     case "redo": {
       if (!state.project || state.future.length === 0) return state;
       const next = state.future[0];
+      const stillExists = nodeExists(next, state.selectedNodeId);
       return {
         ...state,
         project: next,
         past: [...state.past, state.project].slice(-HISTORY_LIMIT),
         future: state.future.slice(1),
         dirty: true,
+        selectedNodeId: stillExists ? state.selectedNodeId : null,
+        lastEditAt: 0,
       };
     }
     case "saved":
@@ -132,6 +150,21 @@ function reducer(state: EditorState, action: EditorAction): EditorState {
     default:
       return state;
   }
+}
+
+/**
+ * Verifica se um `nodeId` (móvel/parede/abertura/laje) ainda existe no
+ * projeto após undo/redo. Sem essa verificação, o Inspector renderiza um
+ * item fantasma e a próxima edição estoura em referência inexistente.
+ */
+function nodeExists(project: PlannerProject, nodeId: string | null): boolean {
+  if (!nodeId) return false;
+  for (const env of project.environments) {
+    for (const room of env.rooms) {
+      if (room.nodes && Object.prototype.hasOwnProperty.call(room.nodes, nodeId)) return true;
+    }
+  }
+  return false;
 }
 
 interface EditorContextValue {
@@ -168,6 +201,7 @@ const initialState: EditorState = {
   selectedNodeId: null,
   dirty: false,
   lastSavedAt: null,
+  lastEditAt: 0,
 };
 
 export function PlannerEditorProvider({ children }: { children: ReactNode }) {
@@ -242,6 +276,31 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
       if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
     };
   }, [state.dirty, state.project, persist]);
+
+  // Flush do autosave em eventos críticos: aba escondida, navegação ou
+  // fechamento. Garante que a última edição não se perca no debounce.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const flushLocal = () => {
+      if (!state.dirty || !state.project) return;
+      // Escrita local é síncrona — atende ao "salvar antes de fechar".
+      // A gravação remota é oportunista (pode falhar em beforeunload).
+      try {
+        upsertLocalProject(tenantId, state.project);
+      } catch {
+        /* localStorage cheio: ignora */
+      }
+    };
+    const onHidden = () => {
+      if (document.visibilityState === "hidden") flushLocal();
+    };
+    window.addEventListener("beforeunload", flushLocal);
+    document.addEventListener("visibilitychange", onHidden);
+    return () => {
+      window.removeEventListener("beforeunload", flushLocal);
+      document.removeEventListener("visibilitychange", onHidden);
+    };
+  }, [state.dirty, state.project, tenantId]);
 
   const loadProjectById = useCallback(
     async (projectId: string) => {
@@ -342,6 +401,11 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
   const redo = useCallback(() => dispatch({ type: "redo" }), []);
 
   const saveNow = useCallback(() => {
+    // Cancela debounce pendente para não gerar POST duplicado.
+    if (autosaveTimer.current) {
+      clearTimeout(autosaveTimer.current);
+      autosaveTimer.current = null;
+    }
     if (state.project) void persist(state.project);
   }, [state.project, persist]);
 
