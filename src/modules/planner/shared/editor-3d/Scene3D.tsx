@@ -17,6 +17,7 @@ import {
   SoftShadows,
   Sky,
   Stars,
+  TransformControls,
 } from "@react-three/drei";
 import * as THREE from "three";
 import type {
@@ -45,6 +46,15 @@ interface Scene3DProps {
   viewport: Viewport3DState;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
+  /**
+   * Modo do gizmo 3D. `null` desativa. Comita apenas em mouse-up para
+   * evitar chuva de updates no reducer.
+   */
+  gizmoMode?: "translate" | "rotate" | null;
+  onCommitTransform?: (
+    id: string,
+    patch: { xMm: number; yMm: number; rotationDeg: number },
+  ) => void;
 }
 
 const COLORS = {
