@@ -42,6 +42,7 @@ interface ModuleToken {
 }
 
 const TOKENS: ModuleToken[] = [
+  { id: "armario", label: "Armário", re: /armari/, descBase: "armário", wall: "bottom" },
   { id: "aereo", label: "Aéreo", re: /aereo/, descBase: "aéreo", wall: "bottom" },
   { id: "balcao-pia", label: "Balcão da pia", re: /balcao\s+(?:da\s+)?pia|balcao\s+pia|pia/, descBase: "balcão da pia", wall: "bottom" },
   { id: "balcao", label: "Balcão", re: /balcao/, descBase: "balcão", wall: "bottom" },
@@ -80,6 +81,12 @@ export interface DecomposedModule {
   doors?: number;
   /** Gavetas explícitas (`4 gavetas`). */
   drawers?: number;
+  /** Largura explícita em mm. */
+  width?: number;
+  /** Altura explícita em mm. */
+  height?: number;
+  /** Profundidade explícita em mm. */
+  depth?: number;
 }
 
 export interface Decomposition {
@@ -119,6 +126,73 @@ function chunkIsOnlyPreamble(chunk: string): boolean {
   return words.every((w) => PREAMBLE_WORDS.has(w) || ENV_WORDS.has(w));
 }
 
+function toMillimeters(value: number, unit?: string): number {
+  if (unit === "m") return Math.round(value * 1000);
+  if (unit === "cm") return Math.round(value * 10);
+  if (unit === "mm") return Math.round(value);
+  if (value < 10 && !Number.isInteger(value)) return Math.round(value * 1000);
+  if (value < 100) return Math.round(value * 10);
+  return Math.round(value);
+}
+
+function parseDimensionByLabel(text: string, labels: readonly string[]): number | undefined {
+  const label = labels.join("|");
+  const before = new RegExp(`(\\d+(?:[.,]\\d+)?)\\s*(mm|cm|m)?\\s*(?:de\\s*)?(?:${label})`, "i");
+  const after = new RegExp(`(?:${label})\\s*(?:de\\s*)?(\\d+(?:[.,]\\d+)?)\\s*(mm|cm|m)?`, "i");
+  const m = text.match(before) ?? text.match(after);
+  if (!m) return undefined;
+  const value = Number(m[1].replace(",", "."));
+  if (!Number.isFinite(value)) return undefined;
+  const mm = toMillimeters(value, m[2]);
+  return mm >= 40 && mm <= 5000 ? mm : undefined;
+}
+
+function extractDimensions(text: string): { width?: number; height?: number; depth?: number } {
+  const seq = text.match(/(\d+(?:[.,]\d+)?)\s*(?:mm|cm|m)?\s*(?:x|×)\s*(\d+(?:[.,]\d+)?)\s*(?:mm|cm|m)?\s*(?:x|×)\s*(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?/i);
+  if (seq) {
+    const unit = seq[4];
+    const width = toMillimeters(Number(seq[1].replace(",", ".")), unit);
+    const height = toMillimeters(Number(seq[2].replace(",", ".")), unit);
+    const depth = toMillimeters(Number(seq[3].replace(",", ".")), unit);
+    return { width, height, depth };
+  }
+  return {
+    width: parseDimensionByLabel(text, ["largura", "larg", "comprimento"]),
+    height: parseDimensionByLabel(text, ["altura", "alto", "ate o teto", "até o teto"]),
+    depth: parseDimensionByLabel(text, ["profundidade", "prof", "fundo"]),
+  };
+}
+
+function extractWall(text: string): LayoutWall | undefined {
+  if (/parede\s+(?:da\s+)?esquerda|lado\s+esquerdo|a\s+esquerda/.test(text)) return "left";
+  if (/parede\s+(?:da\s+)?direita|lado\s+direito|a\s+direita/.test(text)) return "right";
+  if (/parede\s+(?:do\s+)?fundo|ao\s+fundo|no\s+fundo/.test(text)) return "top";
+  if (/parede\s+(?:frontal|da\s+frente)|na\s+frente|frontal/.test(text)) return "bottom";
+  return undefined;
+}
+
+function extractFinish(text: string): string | undefined {
+  if (/louro\s+freijo|louro-freijo/.test(text)) return "Louro Freijó";
+  if (/freijo/.test(text)) return "Freijó";
+  if (/preto\s+absoluto|preto|preta/.test(text)) return "Preto Absoluto";
+  if (/branco\s+tx|branco|branca/.test(text)) return "Branco TX";
+  if (/off\s+white|off-white/.test(text)) return "Off White";
+  if (/nogueira/.test(text)) return "Nogueira";
+  if (/carvalho/.test(text)) return "Carvalho";
+  if (/grafite|chumbo/.test(text)) return "Grafite";
+  return undefined;
+}
+
+function chunkIsOnlyQualifier(chunk: string): boolean {
+  if (chunkIsOnlyPreamble(chunk)) return true;
+  const cleaned = chunk
+    .replace(/\d+(?:[.,]\d+)?\s*(mm|cm|m)?/g, " ")
+    .replace(/\b(largura|larg|altura|alto|profundidade|prof|fundo|parede|esquerda|direita|frente|frontal|preto|preta|absoluto|freijo|louro|branco|branca|tx|off|white|nogueira|carvalho|grafite|chumbo|cor|na|no|da|do|de|com|encostad[ao])\b/g, " ")
+    .replace(/[.,;:!?]/g, " ")
+    .trim();
+  return cleaned.length === 0;
+}
+
 function extractNumber(chunk: string, kind: "porta" | "gaveta"): number | undefined {
   const re = new RegExp(`(\\d+)\\s*${kind}`, "i");
   const m = chunk.match(re);
@@ -154,11 +228,11 @@ function extractCount(chunk: string): number {
 export function decompose(input: string): Decomposition {
   const t = norm(input);
   const preset = PRESETS.find((p) => p.words.some((w) => t.includes(w)))?.preset ?? null;
+  const globalDimensions = extractDimensions(t);
+  const globalWall = extractWall(t);
+  const globalFinish = extractFinish(t);
 
-  // Só decompõe pedaços após conectores — evita capturar palavras avulsas
-  // do preamble ("quero uma cozinha com..." → "cozinha" fica no preamble).
   const chunks = t
-    .replace(/^.*?\bcom\b/, "") // corta preamble até "com"
     .split(CONNECTORS)
     .map((c) => c.trim())
     .filter(Boolean);
@@ -185,23 +259,35 @@ export function decompose(input: string): Decomposition {
       else if (/porta/.test(chunk)) matched = TOKENS.find((x) => x.id === "aereo") ?? null;
     }
     if (!matched) {
-      if (chunk.length > 2 && !chunkIsOnlyPreamble(chunk)) unresolved.push(chunk);
+      if (chunk.length > 2 && !chunkIsOnlyQualifier(chunk)) unresolved.push(chunk);
       continue;
     }
     const count = extractCount(chunk);
     const doors = extractNumber(chunk, "porta");
     const drawers = extractNumber(chunk, "gaveta");
+    const localDimensions = extractDimensions(chunk);
+    const width = localDimensions.width ?? globalDimensions.width;
+    const height = localDimensions.height ?? globalDimensions.height;
+    const depth = localDimensions.depth ?? globalDimensions.depth;
+    const wall = extractWall(chunk) ?? globalWall ?? matched.wall;
     const bits: string[] = [matched.descBase];
+    if (width) bits.push(`${width}mm largura`);
+    if (height) bits.push(`${height}mm altura`);
+    if (depth) bits.push(`${depth}mm profundidade`);
     if (doors) bits.push(`${doors} portas`);
     if (drawers) bits.push(`${drawers} gavetas`);
+    if (globalFinish) bits.push(globalFinish);
     modules.push({
       raw: chunk,
       label: matched.label,
       description: bits.join(" "),
-      wall: matched.wall,
+      wall,
       count,
       doors,
       drawers,
+      width,
+      height,
+      depth,
     });
   }
 
@@ -214,6 +300,9 @@ export function toLayoutPieces(dec: Decomposition): LayoutPieceSpec[] {
     description: m.description,
     count: m.count,
     wall: m.wall,
+    width: m.width,
+    height: m.height,
+    depth: m.depth,
   }));
 }
 
