@@ -76,7 +76,7 @@ function placementFor(
   // então metade fica DENTRO do cômodo. Somamos esse offset + 2mm de folga
   // para o fundo do móvel ficar flush com a face interna da parede, sem
   // atravessar.
-  const WALL_OFFSET = 50 + 2;
+  const WALL_OFFSET = WALL_OFFSET_MM;
   const halfW = width / 2;
   const halfD = depth / 2;
   switch (wall) {
