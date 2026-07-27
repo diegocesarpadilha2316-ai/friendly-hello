@@ -293,6 +293,20 @@ export function interpret(input: string): PlannerIntent {
     }
   }
 
+  // ── Blueprint implícito ──
+  // Pedidos curtos de módulo sem verbo/ambiente (ex.: "Roupeiro 6 portas")
+  // ainda são comandos válidos. A IA interpreta intenção → Blueprint → Engine.
+  if (intents.length === 0) {
+    const bp = buildBlueprint(raw);
+    const validation = validateBlueprint(bp);
+    if (validation.ok && bp.modules.length > 0 && bp.unresolved.length === 0) {
+      intents.push({
+        tool: "create_room_preset",
+        args: blueprintToPreset(bp) as unknown as Record<string, unknown>,
+      });
+    }
+  }
+
   if (intents.length > 0) return { type: "command", intents };
 
   return {
