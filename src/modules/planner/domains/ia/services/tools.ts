@@ -310,7 +310,14 @@ export function toolCreateRoomPreset(
      * Peças customizadas (decompositor). Quando presentes, substituem as
      * peças padrão do blueprint — o ambiente segue trazendo shell + decor.
      */
-    pieces?: readonly { description: string; count?: number; wall?: "bottom" | "top" | "left" | "right" }[];
+    pieces?: readonly {
+      description: string;
+      count?: number;
+      wall?: "bottom" | "top" | "left" | "right";
+      width?: number;
+      height?: number;
+      depth?: number;
+    }[];
     /** Some peças do blueprint sem substituir por nada (só shell/decor). */
     noBlueprintPieces?: boolean;
   },

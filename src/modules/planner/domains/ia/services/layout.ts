@@ -43,6 +43,10 @@ export interface LayoutPieceSpec {
   count?: number;
   /** parede preferida (bottom/top/left/right) — opcional */
   wall?: LayoutWall;
+  /** Overrides explícitos vindos do Blueprint, em mm. */
+  width?: number;
+  height?: number;
+  depth?: number;
 }
 
 export type LayoutWall = "bottom" | "top" | "left" | "right";
@@ -154,7 +158,11 @@ export function applyLayout(
   const roomW = room.dimensions.width;
   const roomD = room.dimensions.depth;
 
-  const walls = wallsFor(args.shape);
+  const baseWalls = wallsFor(args.shape);
+  const requestedWalls = args.pieces
+    .map((piece) => piece.wall)
+    .filter((wall): wall is LayoutWall => Boolean(wall));
+  const walls = Array.from(new Set([...baseWalls, ...requestedWalls]));
   const reserves: Record<LayoutWall, { start: number; end: number }> = {
     bottom: cornerReserve("bottom", walls),
     top: cornerReserve("top", walls),
@@ -190,12 +198,13 @@ export function applyLayout(
       reasons.push(`ignorado: "${spec.description}" (sem casamento)`);
       continue;
     }
-    const width = match.overrides.width ?? match.item.parametric.defaults.width;
+    const width = spec.width ?? match.overrides.width ?? match.item.parametric.defaults.width;
     const depth =
-      match.overrides.depth
+      spec.depth
+      ?? match.overrides.depth
       ?? REAL_DEPTH_BY_SUBTYPE[String(match.item.subtype)]
       ?? match.item.parametric.defaults.depth;
-    const height = match.overrides.height ?? match.item.parametric.defaults.height;
+    const height = spec.height ?? match.overrides.height ?? match.item.parametric.defaults.height;
 
     for (let i = 0; i < count; i++) {
       // Tolerância zero: tenta parede preferida primeiro, depois qualquer

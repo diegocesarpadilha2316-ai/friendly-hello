@@ -51,6 +51,12 @@ export interface BlueprintModule {
   drawers?: number;
   /** Parede sugerida (Engine pode promover a L/U se necessário). */
   wall?: LayoutWall;
+  /** Largura explícita em mm. */
+  width?: number;
+  /** Altura explícita em mm. */
+  height?: number;
+  /** Profundidade explícita em mm. */
+  depth?: number;
 }
 
 export interface PlannerBlueprint {
@@ -98,6 +104,7 @@ const MATERIAL_WORDS: Array<{ material: string; words: string[] }> = [
   { material: "Branco TX", words: ["branco tx", "branco", "branca"] },
   { material: "Grafite", words: ["grafite", "chumbo"] },
   { material: "Quartzo", words: ["quartzo"] },
+  { material: "Preto Absoluto", words: ["preto absoluto", "preto", "preta"] },
 ];
 
 function detectStyle(t: string): BlueprintStyle | undefined {
@@ -136,6 +143,9 @@ export function buildBlueprint(input: string, override?: { environment?: string 
     doors: m.doors,
     drawers: m.drawers,
     wall: m.wall,
+    width: m.width,
+    height: m.height,
+    depth: m.depth,
   }));
 
   return {
@@ -196,6 +206,9 @@ export function validateBlueprint(bp: PlannerBlueprint): BlueprintValidation {
     if (m.count < 1 || m.count > 20) errors.push(`${m.label}: quantidade inválida (${m.count}).`);
     if (m.doors != null && (m.doors < 1 || m.doors > 8)) errors.push(`${m.label}: portas inválidas (${m.doors}).`);
     if (m.drawers != null && (m.drawers < 1 || m.drawers > 8)) errors.push(`${m.label}: gavetas inválidas (${m.drawers}).`);
+    if (m.width != null && (m.width < 150 || m.width > 5000)) errors.push(`${m.label}: largura inválida (${m.width}mm).`);
+    if (m.height != null && (m.height < 100 || m.height > 3200)) errors.push(`${m.label}: altura inválida (${m.height}mm).`);
+    if (m.depth != null && (m.depth < 30 || m.depth > 1400)) errors.push(`${m.label}: profundidade inválida (${m.depth}mm).`);
   }
 
   const ok = errors.length === 0;
@@ -215,7 +228,7 @@ export function validateBlueprint(bp: PlannerBlueprint): BlueprintValidation {
 export interface RoomPresetArgs {
   preset: string;
   style?: string;
-  pieces?: { description: string; count?: number; wall?: LayoutWall }[];
+  pieces?: { description: string; count?: number; wall?: LayoutWall; width?: number; height?: number; depth?: number }[];
   noBlueprintPieces?: boolean;
 }
 
@@ -229,6 +242,9 @@ export function blueprintToPreset(bp: PlannerBlueprint): RoomPresetArgs {
     description: m.description,
     count: m.count,
     wall: m.wall,
+    width: m.width,
+    height: m.height,
+    depth: m.depth,
   }));
   return {
     preset: bp.environment,

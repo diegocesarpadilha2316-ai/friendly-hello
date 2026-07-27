@@ -140,7 +140,9 @@ function applyInsertion(room: PlannerRoom, item: CatalogItem, opts: InsertionOpt
       rotation = 90;
     }
   }
-  // Clampa o CENTRO do móvel para manter os 4 cantos dentro do cômodo.
+  // `Editor2DPrimitive.x/y` armazenam o canto superior esquerdo do retângulo
+  // paramétrico; portanto o centro precisa manter width/depth dentro da sala.
+  // A rotação define orientação visual, mas não muda o contrato persistido.
   const minX = WALL + halfW;
   const maxX = Math.max(minX, roomW - WALL - halfW);
   const minY = WALL + halfD;

@@ -6,7 +6,7 @@
  * — TODAS as mutações fluem por `updateProject`, herdando Undo/Redo,
  * Autosave, Histórico e sincronização com 2D/3D/Biblioteca.
  */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Ruler, PackageOpen, Wrench, Palette, Layers as LayersIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/core/providers/TenantProvider";
@@ -56,10 +56,19 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
   const tenantId = activeCompany?.id ?? "anonymous";
   const rules = useMemo(() => loadRules(tenantId), [tenantId]);
   const { list, environmentId, roomId } = useFurnitureList();
-  const { updateProject } = usePlannerEditor();
+  const { state, updateProject, selectNode } = usePlannerEditor();
   const [selectedId, setSelectedId] = useState<string | null>(
-    initialFurnitureId ?? list[list.length - 1]?.id ?? null,
+    initialFurnitureId ?? state.selectedNodeId ?? list[list.length - 1]?.id ?? null,
   );
+  useEffect(() => {
+    const externalId = initialFurnitureId ?? state.selectedNodeId;
+    if (externalId && list.some((f) => f.id === externalId)) {
+      setSelectedId(externalId);
+      return;
+    }
+    if (selectedId && list.some((f) => f.id === selectedId)) return;
+    setSelectedId(list[list.length - 1]?.id ?? null);
+  }, [initialFurnitureId, list, selectedId, state.selectedNodeId]);
   const current = list.find((f) => f.id === selectedId) ?? list[list.length - 1] ?? null;
 
   if (!environmentId || !roomId) {
@@ -147,7 +156,10 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
         </div>
         <select
           value={current.id}
-          onChange={(e) => setSelectedId(e.target.value)}
+          onChange={(e) => {
+            setSelectedId(e.target.value);
+            selectNode(e.target.value);
+          }}
           className="w-full rounded-md border border-border bg-background px-2 py-1.5 text-sm"
         >
           {list.map((f) => (
@@ -294,7 +306,7 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
           <ul className="mt-2 max-h-40 overflow-y-auto rounded-md border border-border/60 bg-muted/20 p-2 text-[11px] leading-tight">
             {decomposition.parts.map((p) => (
               <li key={p.id} className="flex items-center justify-between gap-2 py-0.5">
-                <span className="truncate">
+                <span className="min-w-0 flex-1 break-words">
                   <span className="text-muted-foreground">{p.qty}×</span> {p.label}
                 </span>
                 <span className="tabular-nums text-muted-foreground">

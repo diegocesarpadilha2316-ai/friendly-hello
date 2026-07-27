@@ -68,7 +68,7 @@ const GROUPS: readonly Group[] = [
   {
     label: "Sistema",
     items: [
-      { to: "/configuracoes", label: "Configurações", icon: Settings },
+      { to: "/planner/configurador", label: "Configurações", icon: Settings },
     ],
   },
 ];
