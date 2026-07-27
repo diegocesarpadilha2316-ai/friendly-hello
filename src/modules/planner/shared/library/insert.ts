@@ -140,11 +140,17 @@ function applyInsertion(room: PlannerRoom, item: CatalogItem, opts: InsertionOpt
       rotation = 90;
     }
   }
-  // Clampa o CENTRO do móvel para manter os 4 cantos dentro do cômodo.
-  const minX = WALL + halfW;
-  const maxX = Math.max(minX, roomW - WALL - halfW);
-  const minY = WALL + halfD;
-  const maxY = Math.max(minY, roomD - WALL - halfD);
+  // Clampa o CENTRO do móvel para manter a pegada rotacionada dentro do cômodo.
+  // Para paredes esquerda/direita (90/270°), a profundidade ocupa o eixo X e
+  // a largura ocupa o eixo Y. Usar sempre halfW em X afastava móveis da parede.
+  const normalizedRotation = (((rotation ?? 0) % 360) + 360) % 360;
+  const rotatedFootprint = normalizedRotation === 90 || normalizedRotation === 270;
+  const footprintHalfX = rotatedFootprint ? halfD : halfW;
+  const footprintHalfY = rotatedFootprint ? halfW : halfD;
+  const minX = WALL + footprintHalfX;
+  const maxX = Math.max(minX, roomW - WALL - footprintHalfX);
+  const minY = WALL + footprintHalfY;
+  const maxY = Math.max(minY, roomD - WALL - footprintHalfY);
   at = {
     x: Math.min(Math.max(at.x, minX), maxX),
     y: Math.min(Math.max(at.y, minY), maxY),

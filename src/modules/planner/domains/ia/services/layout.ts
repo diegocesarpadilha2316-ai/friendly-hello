@@ -158,7 +158,11 @@ export function applyLayout(
   const roomW = room.dimensions.width;
   const roomD = room.dimensions.depth;
 
-  const walls = wallsFor(args.shape);
+  const baseWalls = wallsFor(args.shape);
+  const requestedWalls = args.pieces
+    .map((piece) => piece.wall)
+    .filter((wall): wall is LayoutWall => Boolean(wall));
+  const walls = Array.from(new Set([...baseWalls, ...requestedWalls]));
   const reserves: Record<LayoutWall, { start: number; end: number }> = {
     bottom: cornerReserve("bottom", walls),
     top: cornerReserve("top", walls),

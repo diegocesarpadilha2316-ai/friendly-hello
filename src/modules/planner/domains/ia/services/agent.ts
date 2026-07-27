@@ -115,14 +115,10 @@ export async function* runAgent(input: AgentInput): AsyncGenerator<AgentChunk, v
     return;
   }
 
-  // command — antes de rodar o plano local, deixa o LLM enriquecer/refazer o plano
-  // se ele conhecer detalhes que o interpretador heurístico não captou.
-  let intents: readonly ParsedIntent[] = parsed.intents;
-  if (input.llmPlan) {
-    const remote = await tryLLMPlan(input);
-    if (remote && remote.length >= intents.length) intents = remote;
-  }
-  yield* runCommand(intents, input);
+  // command — o plano determinístico local é a fonte de verdade quando já
+  // entendeu o pedido. O LLM só planeja em `unknown`; aqui ele não pode
+  // sobrescrever medidas, parede alvo, material ou Blueprint validados.
+  yield* runCommand(parsed.intents, input);
 }
 
 async function* runCommand(
