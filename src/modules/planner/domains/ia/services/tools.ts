@@ -692,13 +692,16 @@ export function toolSetStyle(
   const style = styleMap[args.style];
   if (!style) return { project, summary: `Estilo "${args.style}" não reconhecido.`, affectedIds: [] };
   const targets = furnitureInRoom(room);
+  const paint = resolvePaint(style.color);
   const next = mutateFurniture(project, ctx, targets, (f) => ({
     ...f,
+    materialId: paint?.materialId ?? f.materialId,
     params: {
       ...f.params,
       color: style.color,
       material: style.material,
       "eng:style": args.style,
+      ...(paint ? { __color: paint.colorHex } : {}),
     },
   }));
   return {
