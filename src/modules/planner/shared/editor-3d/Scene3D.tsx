@@ -990,6 +990,23 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
               <Slab key={s.id} s={s} kind="ceiling" center={center} viewport={viewport} selected={selectedId === s.id} onSelect={onSelect} />
             ))}
           {selectedId ? <BoundingBox id={selectedId} model={model} center={center} viewport={viewport} /> : null}
+          {(() => {
+            // Gizmo só aparece para MÓVEIS selecionados, em modo válido e
+            // com "explode" zerado (a inversão do explode não é feita).
+            if (!gizmoMode || !onCommitTransform || !selectedId) return null;
+            if ((viewport.explode ?? 0) > 0) return null;
+            const fu = model.furniture.find((x) => x.id === selectedId);
+            if (!fu) return null;
+            return (
+              <FurnitureGizmo
+                fu={fu}
+                center={center}
+                viewport={viewport}
+                mode={gizmoMode}
+                onCommit={onCommitTransform}
+              />
+            );
+          })()}
       </group>
 
       <Cameras mode={viewport.camera} />
