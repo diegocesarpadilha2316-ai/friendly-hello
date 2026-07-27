@@ -29,6 +29,13 @@ export interface InsertionOptions {
   rotation?: number;
   overrides?: Partial<{ width: number; depth: number; height: number }>;
   params?: Readonly<Record<string, string | number | boolean | null>>;
+  /**
+   * ID de material da biblioteca (ex.: "pbr:preto-absoluto"). Quando
+   * presente, é gravado no top-level do primitive — o Scene3D aplica
+   * textura PBR real. Se ausente, o `params.__color` (hex) serve como
+   * fallback via overrideColor.
+   */
+  materialId?: string;
 }
 
 export function buildFurniturePrimitive(item: CatalogItem, opts: InsertionOptions = {}): Editor2DPrimitive {
@@ -51,6 +58,7 @@ export function buildFurniturePrimitive(item: CatalogItem, opts: InsertionOption
     depth,
     height,
     rotation: opts.rotation ?? 0,
+    materialId: opts.materialId,
     params: {
       material: item.material ?? "",
       color: item.color ?? "",
