@@ -17,6 +17,7 @@ import {
   SoftShadows,
   Sky,
   Stars,
+  TransformControls,
 } from "@react-three/drei";
 import * as THREE from "three";
 import type {
@@ -45,6 +46,15 @@ interface Scene3DProps {
   viewport: Viewport3DState;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
+  /**
+   * Modo do gizmo 3D. `null` desativa. Comita apenas em mouse-up para
+   * evitar chuva de updates no reducer.
+   */
+  gizmoMode?: "translate" | "rotate" | null;
+  onCommitTransform?: (
+    id: string,
+    patch: { xMm: number; yMm: number; rotationDeg: number },
+  ) => void;
 }
 
 const COLORS = {
@@ -476,6 +486,83 @@ function Furniture({
   );
 }
 
+/**
+ * Gizmo interativo (translate/rotate) para o móvel selecionado. Usa um
+ * `Group` proxy sincronizado com o descritor de extrusão e comita no
+ * mouse-up — evita floods no reducer durante o arrasto. A altura Y é
+ * travada: a base fica sempre no piso (aterramento garantido).
+ */
+function FurnitureGizmo({
+  fu,
+  center,
+  viewport,
+  mode,
+  onCommit,
+}: {
+  fu: FurnitureDescriptor;
+  center: THREE.Vector3;
+  viewport: Viewport3DState;
+  mode: "translate" | "rotate";
+  onCommit: (id: string, patch: { xMm: number; yMm: number; rotationDeg: number }) => void;
+}) {
+  const proxyRef = useRef<THREE.Group>(null);
+  const [attached, setAttached] = useState<THREE.Group | null>(null);
+  const worldPos = explodeVec(fu.cx, fu.cz, fu.y, center, viewport.explode);
+
+  // Sincroniza a proxy com o descritor sempre que a seleção ou a
+  // posição extraída muda (após um commit, por exemplo).
+  useEffect(() => {
+    const g = proxyRef.current;
+    if (!g) return;
+    g.position.set(worldPos.x, worldPos.y, worldPos.z);
+    g.rotation.set(0, fu.rotationY, 0);
+    setAttached(g);
+  }, [fu.id, worldPos.x, worldPos.y, worldPos.z, fu.rotationY]);
+
+  const commit = () => {
+    const g = proxyRef.current;
+    if (!g) return;
+    // world → params mm (top-left). rotation stored = -worldRotY em graus.
+    const cxMm = g.position.x * 1000;
+    const czMm = g.position.z * 1000;
+    const xMm = Math.round(cxMm - (fu.width * 1000) / 2);
+    const yMm = Math.round(czMm - (fu.depth * 1000) / 2);
+    let rotationDeg = Math.round((-g.rotation.y * 180) / Math.PI);
+    rotationDeg = Math.round(rotationDeg / 15) * 15; // snap 15°
+    onCommit(fu.id, { xMm, yMm, rotationDeg });
+  };
+
+  return (
+    <>
+      <group ref={proxyRef} />
+      {attached ? (
+        mode === "translate" ? (
+          <TransformControls
+            object={attached}
+            mode="translate"
+            size={0.75}
+            space="world"
+            translationSnap={0.05}
+            showY={false}
+            onMouseUp={commit}
+          />
+        ) : (
+          <TransformControls
+            object={attached}
+            mode="rotate"
+            size={0.75}
+            space="world"
+            rotationSnap={THREE.MathUtils.degToRad(15)}
+            showX={false}
+            showZ={false}
+            onMouseUp={commit}
+          />
+        )
+      ) : null}
+    </>
+  );
+}
+
 function BoundingBox({ id, model, center, viewport }: { id: string; model: Scene3DModel; center: THREE.Vector3; viewport: Viewport3DState }) {
   const target = useMemo(() => {
     const w = model.walls.find((x) => x.id === id);
@@ -713,7 +800,7 @@ function AutoResize() {
   return null;
 }
 
-export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps) {
+export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCommitTransform }: Scene3DProps) {
   const { cx, cz } = centerOffset(model);
   // Alvo da câmera: 1/3 da altura da parede (~olho baixo). Isso ancora o
   // piso (y=0) no terço inferior da tela e reforça a percepção de escala.
@@ -903,6 +990,23 @@ export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps)
               <Slab key={s.id} s={s} kind="ceiling" center={center} viewport={viewport} selected={selectedId === s.id} onSelect={onSelect} />
             ))}
           {selectedId ? <BoundingBox id={selectedId} model={model} center={center} viewport={viewport} /> : null}
+          {(() => {
+            // Gizmo só aparece para MÓVEIS selecionados, em modo válido e
+            // com "explode" zerado (a inversão do explode não é feita).
+            if (!gizmoMode || !onCommitTransform || !selectedId) return null;
+            if ((viewport.explode ?? 0) > 0) return null;
+            const fu = model.furniture.find((x) => x.id === selectedId);
+            if (!fu) return null;
+            return (
+              <FurnitureGizmo
+                fu={fu}
+                center={center}
+                viewport={viewport}
+                mode={gizmoMode}
+                onCommit={onCommitTransform}
+              />
+            );
+          })()}
       </group>
 
       <Cameras mode={viewport.camera} />

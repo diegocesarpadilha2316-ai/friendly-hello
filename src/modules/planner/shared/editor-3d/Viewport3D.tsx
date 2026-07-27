@@ -29,6 +29,8 @@ import { usePlannerEditor } from "../state/editor-context";
 import { buildScene3D } from "./extrusion";
 import { DEFAULT_VIEWPORT_3D, type Camera3DMode, type Camera3DView, type Render3DMode, type Viewport3DState } from "./types";
 import { Scene3D } from "./Scene3D";
+import type { PlannerProject, PlannerRoom } from "../types/project";
+import { RotateCw, Trash2, Copy } from "lucide-react";
 
 const CAM_LABEL: Record<Camera3DMode, string> = {
   orbit: "Orbit",
@@ -121,12 +123,13 @@ export interface Viewport3DControls {
 }
 
 export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {}) {
-  const { state, selectNode } = usePlannerEditor();
+  const { state, selectNode, updateProject } = usePlannerEditor();
   const room = state.project?.environments
     .find((e) => e.id === state.selectedEnvironmentId)
     ?.rooms.find((r) => r.id === state.selectedRoomId);
 
   const [viewport, setViewport] = useState<Viewport3DState>(DEFAULT_VIEWPORT_3D);
+  const [gizmoMode, setGizmoMode] = useState<"translate" | "rotate">("translate");
   // Reenquadramento automático: sempre que a IA (ou o próprio usuário)
   // troca de cômodo, ou o cômodo muda de tamanho/número de móveis, o
   // Planner "apresenta" o ambiente inteiro de novo. Sem isso, um projeto
@@ -188,6 +191,106 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
 
   const model = useMemo(() => (room ? buildScene3D(room, viewport.wallHeight) : null), [room, viewport.wallHeight]);
 
+  // ---------------------------------------------------------------
+  // Mutação do cômodo a partir do 3D — mesmo pipeline do Editor2D.
+  // Passa por updateProject(), portanto: Undo/Redo, autosave, árvore
+  // e Inspector permanecem 100 % sincronizados com o banco.
+  // ---------------------------------------------------------------
+  const envId = state.selectedEnvironmentId;
+  const roomId = state.selectedRoomId;
+  const mutateRoom = (fn: (r: PlannerRoom) => PlannerRoom) => {
+    if (!envId || !roomId) return;
+    updateProject((p: PlannerProject) => ({
+      ...p,
+      environments: p.environments.map((env) =>
+        env.id !== envId
+          ? env
+          : {
+              ...env,
+              rooms: env.rooms.map((r) => (r.id === roomId ? fn(r) : r)),
+              updatedAt: new Date().toISOString(),
+            },
+      ),
+    }));
+  };
+
+  const commitTransform = (
+    id: string,
+    patch: { xMm: number; yMm: number; rotationDeg: number },
+  ) => {
+    mutateRoom((r) => {
+      const node = r.nodes[id];
+      if (!node || node.kind !== "module") return r;
+      const p = node.params as Record<string, string | number | boolean | null>;
+      const wMm = Number(p.width) || 0;
+      const dMm = Number(p.depth) || 0;
+      // Clamp aos limites do cômodo (mantém o móvel dentro das paredes).
+      const maxX = Math.max(0, r.dimensions.width - wMm);
+      const maxY = Math.max(0, r.dimensions.depth - dMm);
+      const xMm = Math.min(Math.max(0, patch.xMm), maxX);
+      const yMm = Math.min(Math.max(0, patch.yMm), maxY);
+      // Colisão AABB leve (tolera 5 mm de encosto entre móveis).
+      const collides = Object.values(r.nodes).some((n) => {
+        if (n.id === id || n.kind !== "module") return false;
+        const q = n.params as Record<string, string | number | boolean | null>;
+        if (q.role !== "furniture") return false;
+        const bx1 = Number(q.x) || 0;
+        const by1 = Number(q.y) || 0;
+        const bw = Number(q.width) || 0;
+        const bd = Number(q.depth) || 0;
+        return (
+          xMm < bx1 + bw - 5 &&
+          xMm + wMm > bx1 + 5 &&
+          yMm < by1 + bd - 5 &&
+          yMm + dMm > by1 + 5
+        );
+      });
+      if (collides) return r; // aborta o commit — a proxy do gizmo será
+      // re-sincronizada no próximo render pelo useEffect do FurnitureGizmo.
+      const nextParams = { ...node.params, x: xMm, y: yMm, rotation: patch.rotationDeg };
+      return {
+        ...r,
+        nodes: {
+          ...r.nodes,
+          [id]: { ...node, params: nextParams },
+        },
+        updatedAt: new Date().toISOString(),
+      };
+    });
+  };
+
+  const deleteSelected = () => {
+    if (!selectedId) return;
+    mutateRoom((r) => {
+      if (!r.nodes[selectedId]) return r;
+      const { [selectedId]: _, ...rest } = r.nodes;
+      return {
+        ...r,
+        nodes: rest,
+        nodeOrder: r.nodeOrder.filter((n) => n !== selectedId),
+        updatedAt: new Date().toISOString(),
+      };
+    });
+    setSelectedId(null);
+  };
+
+  const duplicateSelected = () => {
+    if (!selectedId) return;
+    mutateRoom((r) => {
+      const src = r.nodes[selectedId];
+      if (!src || src.kind !== "module") return r;
+      const newId = `${src.id}-copy-${Math.random().toString(36).slice(2, 8)}`;
+      const srcParams = src.params as Record<string, string | number | boolean | null>;
+      const params = { ...srcParams, x: (Number(srcParams.x) || 0) + 300 };
+      return {
+        ...r,
+        nodes: { ...r.nodes, [newId]: { ...src, id: newId, params } },
+        nodeOrder: [...r.nodeOrder, newId],
+        updatedAt: new Date().toISOString(),
+      };
+    });
+  };
+
   const sceneNodes = useMemo(() => {
     if (!model) return [] as { id: string; label: string; kind: string }[];
     return [
@@ -218,12 +321,28 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
         case "w": setViewport((v) => ({ ...v, render: v.render === "wireframe" ? "solid" : "wireframe" })); break;
         case "m": setViewport((v) => ({ ...v, render: v.render === "material" ? "solid" : "material" })); break;
         case "g": setViewport((v) => ({ ...v, showGrid: !v.showGrid })); break;
+        case "t": setGizmoMode("translate"); break;
+        case "r":
+          if (e.ctrlKey || e.metaKey) return;
+          setGizmoMode("rotate");
+          break;
+        case "delete":
+        case "backspace":
+          deleteSelected();
+          break;
+        case "d":
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            duplicateSelected();
+          }
+          break;
         case "escape": setSelectedId(null); break;
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId, envId, roomId]);
 
   if (!room || !model) {
     return (
@@ -369,7 +488,40 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
             viewport={viewport}
             selectedId={selectedId}
             onSelect={setSelectedId}
+            gizmoMode={gizmoMode}
+            onCommitTransform={commitTransform}
           />
+        </div>
+
+        {/* Barra de gizmos — flutuante, canto superior direito. */}
+        <div className="pointer-events-auto absolute right-2 top-11 z-20 flex items-center gap-1 rounded-md border border-border/50 bg-background/60 p-1 backdrop-blur">
+          <ToolbarButton
+            active={gizmoMode === "translate"}
+            onClick={() => setGizmoMode("translate")}
+            title="Mover (T)"
+          >
+            <Move3D className="h-3.5 w-3.5" /> Mover
+          </ToolbarButton>
+          <ToolbarButton
+            active={gizmoMode === "rotate"}
+            onClick={() => setGizmoMode("rotate")}
+            title="Girar (R)"
+          >
+            <RotateCw className="h-3.5 w-3.5" /> Girar
+          </ToolbarButton>
+          <span className="mx-1 h-4 w-px bg-border/60" />
+          <ToolbarButton
+            onClick={duplicateSelected}
+            title="Duplicar seleção (Ctrl+D)"
+          >
+            <Copy className="h-3.5 w-3.5" /> Duplicar
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={deleteSelected}
+            title="Excluir seleção (Delete)"
+          >
+            <Trash2 className="h-3.5 w-3.5" /> Excluir
+          </ToolbarButton>
         </div>
 
         {/* Status bar */}
