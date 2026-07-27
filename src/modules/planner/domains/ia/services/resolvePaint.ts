@@ -65,7 +65,7 @@ export function resolvePaint(input: string | null | undefined): ResolvedPaint | 
     return {
       label: pbr.pattern ?? pbr.name ?? raw,
       materialId: pbr.id,
-      colorHex: pbr.colorHex,
+      colorHex: pbr.colorHex ?? "#888888",
     };
   }
 
