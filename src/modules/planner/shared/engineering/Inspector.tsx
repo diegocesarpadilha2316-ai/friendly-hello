@@ -164,7 +164,7 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
         >
           {list.map((f) => (
             <option key={f.id} value={f.id}>
-              {f.subtype} · {f.width}×{f.depth}×{f.height} mm
+              {pieceLabel(f)} · {f.width}×{f.depth}×{f.height} mm
             </option>
           ))}
         </select>
@@ -179,10 +179,15 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
         </Section>
 
         <Section icon={Ruler} title="Dimensões (mm)">
-          <NumberRow label="Largura" value={current.width} onChange={(v) => patchDim(current, v, "width", updateProject, environmentId, roomId)} />
-          <NumberRow label="Profundidade" value={current.depth} onChange={(v) => patchDim(current, v, "depth", updateProject, environmentId, roomId)} />
-          <NumberRow label="Altura" value={current.height} onChange={(v) => patchDim(current, v, "height", updateProject, environmentId, roomId)} />
-          <NumberRow label="Rotação" value={current.rotation} onChange={(v) => patchDim(current, v, "rotation", updateProject, environmentId, roomId)} suffix="°" />
+          <NumberRow label="Largura" value={current.width} min={100} max={6000} onChange={(v) => patchDim(current, v, "width", updateProject, environmentId, roomId)} />
+          <NumberRow label="Profundidade" value={current.depth} min={100} max={2000} onChange={(v) => patchDim(current, v, "depth", updateProject, environmentId, roomId)} />
+          <NumberRow label="Altura" value={current.height} min={100} max={3500} onChange={(v) => patchDim(current, v, "height", updateProject, environmentId, roomId)} />
+          <NumberRow label="Rotação" value={current.rotation} step={90} onChange={(v) => patchDim(current, normalizeRotation(v), "rotation", updateProject, environmentId, roomId)} suffix="°" />
+        </Section>
+
+        <Section icon={Ruler} title="Posição (mm)">
+          <NumberRow label="X" value={current.x} onChange={(v) => patchDim(current, v, "x", updateProject, environmentId, roomId)} />
+          <NumberRow label="Y" value={current.y} onChange={(v) => patchDim(current, v, "y", updateProject, environmentId, roomId)} />
         </Section>
 
         <Section icon={LayersIcon} title="Chapa & Acabamento">
@@ -345,20 +350,55 @@ function NumberRow({
   value,
   onChange,
   suffix,
+  min,
+  max,
+  step,
 }: {
   label: string;
   value: number;
   onChange: (v: number) => void;
   suffix?: string;
+  min?: number;
+  max?: number;
+  step?: number;
 }) {
+  // Commit-on-blur / Enter: evita spam de updates enquanto o usuário digita
+  // "1200" (que passaria por 1, 12, 120, 1200). Mantém input controlado
+  // localmente até confirmação. Sincroniza com valor externo quando muda.
+  const [draft, setDraft] = useState<string>(() =>
+    Number.isFinite(value) ? String(value) : "0",
+  );
+  useEffect(() => {
+    setDraft(Number.isFinite(value) ? String(value) : "0");
+  }, [value]);
+  const commit = () => {
+    const parsed = Number(draft);
+    if (!Number.isFinite(parsed)) {
+      setDraft(String(value));
+      return;
+    }
+    let v = parsed;
+    if (typeof min === "number") v = Math.max(min, v);
+    if (typeof max === "number") v = Math.min(max, v);
+    if (v !== value) onChange(v);
+    setDraft(String(v));
+  };
   return (
     <label className="flex items-center justify-between gap-2 text-xs">
       <span className="capitalize text-muted-foreground">{label}</span>
       <span className="flex items-center gap-1">
         <input
           type="number"
-          value={Number.isFinite(value) ? value : 0}
-          onChange={(e) => onChange(Number(e.target.value))}
+          value={draft}
+          min={min}
+          max={max}
+          step={step}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") { e.currentTarget.blur(); }
+            if (e.key === "Escape") { setDraft(String(value)); e.currentTarget.blur(); }
+          }}
           className="w-24 rounded-md border border-border bg-background px-2 py-1 text-right text-xs tabular-nums"
         />
         {suffix ? <span className="text-[10px] text-muted-foreground">{suffix}</span> : null}
@@ -432,7 +472,7 @@ function patchNodeParams(
 function patchDim(
   current: Furniture,
   value: number,
-  key: "width" | "depth" | "height" | "rotation",
+  key: "width" | "depth" | "height" | "rotation" | "x" | "y",
   updateProject: ReturnType<typeof usePlannerEditor>["updateProject"],
   environmentId: string,
   roomId: string,
