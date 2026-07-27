@@ -161,11 +161,7 @@ function nodeExists(project: PlannerProject, nodeId: string | null): boolean {
   if (!nodeId) return false;
   for (const env of project.environments) {
     for (const room of env.rooms) {
-      if (room.walls?.some((w) => w.id === nodeId)) return true;
-      if (room.floors?.some((f) => f.id === nodeId)) return true;
-      if (room.ceilings?.some((c) => c.id === nodeId)) return true;
-      if (room.openings?.some((o) => o.id === nodeId)) return true;
-      if (room.furniture?.some((f) => f.id === nodeId)) return true;
+      if (room.nodes && Object.prototype.hasOwnProperty.call(room.nodes, nodeId)) return true;
     }
   }
   return false;
