@@ -723,7 +723,7 @@ function AutoResize() {
   return null;
 }
 
-export function Scene3D({ model, viewport, selectedId, onSelect }: Scene3DProps) {
+export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCommitTransform }: Scene3DProps) {
   const { cx, cz } = centerOffset(model);
   // Alvo da câmera: 1/3 da altura da parede (~olho baixo). Isso ancora o
   // piso (y=0) no terço inferior da tela e reforça a percepção de escala.
