@@ -312,9 +312,17 @@ export function matchDescription(
     reasons.push(`frente ${front}`);
   }
   const color = detectColor(t);
+  let matchedMaterialId: string | undefined;
   if (color) {
     params.color = color;
     reasons.push(`acabamento ${color}`);
+    const paint = resolvePaint(color);
+    if (paint) {
+      matchedMaterialId = paint.materialId;
+      // Fallback visual: extrusion lê params.__color quando não há
+      // material da biblioteca casado.
+      params["__color"] = paint.colorHex;
+    }
   }
   const material = detectMaterial(t);
   if (material) {
@@ -330,5 +338,5 @@ export function matchDescription(
     reasons.push(`${wantedDrawers} gaveta(s)`);
   }
 
-  return { item, overrides, params, reasons };
+  return { item, overrides, params, reasons, materialId: matchedMaterialId };
 }

@@ -212,6 +212,7 @@ export function applyLayout(
         rotation: place.rotation,
         overrides: { width, depth, height },
         params: match.params,
+        materialId: match.materialId,
       });
       cur.offset += width + GAP_MM;
       placed++;
