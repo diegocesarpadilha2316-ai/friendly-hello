@@ -221,7 +221,7 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
     mutateRoom((r) => {
       const node = r.nodes[id];
       if (!node || node.kind !== "module") return r;
-      const p = node.params as Record<string, unknown>;
+      const p = node.params as Record<string, string | number | boolean | null>;
       const wMm = Number(p.width) || 0;
       const dMm = Number(p.depth) || 0;
       // Clamp aos limites do cômodo (mantém o móvel dentro das paredes).
@@ -232,7 +232,7 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
       // Colisão AABB leve (tolera 5 mm de encosto entre móveis).
       const collides = Object.values(r.nodes).some((n) => {
         if (n.id === id || n.kind !== "module") return false;
-        const q = n.params as Record<string, unknown>;
+        const q = n.params as Record<string, string | number | boolean | null>;
         if (q.role !== "furniture") return false;
         const bx1 = Number(q.x) || 0;
         const by1 = Number(q.y) || 0;
@@ -247,14 +247,12 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
       });
       if (collides) return r; // aborta o commit — a proxy do gizmo será
       // re-sincronizada no próximo render pelo useEffect do FurnitureGizmo.
+      const nextParams = { ...node.params, x: xMm, y: yMm, rotation: patch.rotationDeg };
       return {
         ...r,
         nodes: {
           ...r.nodes,
-          [id]: {
-            ...node,
-            params: { ...node.params, x: xMm, y: yMm, rotation: patch.rotationDeg },
-          },
+          [id]: { ...node, params: nextParams },
         },
         updatedAt: new Date().toISOString(),
       };
@@ -282,8 +280,8 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
       const src = r.nodes[selectedId];
       if (!src || src.kind !== "module") return r;
       const newId = `${src.id}-copy-${Math.random().toString(36).slice(2, 8)}`;
-      const params = { ...(src.params as Record<string, unknown>) };
-      params.x = (Number(params.x) || 0) + 300;
+      const srcParams = src.params as Record<string, string | number | boolean | null>;
+      const params = { ...srcParams, x: (Number(srcParams.x) || 0) + 300 };
       return {
         ...r,
         nodes: { ...r.nodes, [newId]: { ...src, id: newId, params } },
