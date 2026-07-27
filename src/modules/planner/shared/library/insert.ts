@@ -93,21 +93,21 @@ export function insertItemIntoProject(
   // Módulo 05: dispara evento para o Editor abrir o Inspector no item recém
   // inserido e enquadrar a câmera. O ID do último primitivo inserido está no
   // final da lista do cômodo alvo.
-  if (typeof window !== "undefined") {
-    try {
-      const env = next.environments.find((e) => e.id === target.environmentId);
-      const room = env?.rooms.find((r) => r.id === target.roomId);
-      const last = room ? listPrimitives(room).at(-1) : undefined;
-      if (last) {
-        window.dispatchEvent(
-          new CustomEvent("planner:item-inserted", { detail: { primitiveId: last.id, roomId: target.roomId } }),
-        );
-        window.dispatchEvent(
-          new CustomEvent("planner:focus-selection", { detail: { primitiveId: last.id } }),
-        );
-      }
-    } catch { /* ambientes sem window/CustomEvent */ }
-  }
+  try {
+    const env = next.environments.find((e) => e.id === target.environmentId);
+    const room = env?.rooms.find((r) => r.id === target.roomId);
+    const last = room ? listPrimitives(room).at(-1) : undefined;
+    if (last) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { getPlannerEventBus, bridgeToWindow } = require("../events") as typeof import("../events");
+      const bus = getPlannerEventBus();
+      bus.emit("ui:item-inserted", { primitiveId: last.id, roomId: target.roomId });
+      bus.emit("ui:focus-selection", { primitiveId: last.id });
+      // Compat: listeners legados em `window` continuam recebendo.
+      bridgeToWindow("ui:item-inserted", { primitiveId: last.id, roomId: target.roomId });
+      bridgeToWindow("ui:focus-selection", { primitiveId: last.id });
+    }
+  } catch { /* ambientes sem window/CustomEvent ou bus */ }
   return next;
 }
 
