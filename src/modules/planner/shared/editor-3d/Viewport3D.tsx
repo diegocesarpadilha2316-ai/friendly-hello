@@ -191,6 +191,108 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
 
   const model = useMemo(() => (room ? buildScene3D(room, viewport.wallHeight) : null), [room, viewport.wallHeight]);
 
+  // ---------------------------------------------------------------
+  // Mutação do cômodo a partir do 3D — mesmo pipeline do Editor2D.
+  // Passa por updateProject(), portanto: Undo/Redo, autosave, árvore
+  // e Inspector permanecem 100 % sincronizados com o banco.
+  // ---------------------------------------------------------------
+  const envId = state.selectedEnvironmentId;
+  const roomId = state.selectedRoomId;
+  const mutateRoom = (fn: (r: PlannerRoom) => PlannerRoom) => {
+    if (!envId || !roomId) return;
+    updateProject((p: PlannerProject) => ({
+      ...p,
+      environments: p.environments.map((env) =>
+        env.id !== envId
+          ? env
+          : {
+              ...env,
+              rooms: env.rooms.map((r) => (r.id === roomId ? fn(r) : r)),
+              updatedAt: new Date().toISOString(),
+            },
+      ),
+    }));
+  };
+
+  const commitTransform = (
+    id: string,
+    patch: { xMm: number; yMm: number; rotationDeg: number },
+  ) => {
+    mutateRoom((r) => {
+      const node = r.nodes[id];
+      if (!node || node.kind !== "module") return r;
+      const p = node.params as Record<string, unknown>;
+      const wMm = Number(p.width) || 0;
+      const dMm = Number(p.depth) || 0;
+      // Clamp aos limites do cômodo (mantém o móvel dentro das paredes).
+      const maxX = Math.max(0, r.dimensions.width - wMm);
+      const maxY = Math.max(0, r.dimensions.depth - dMm);
+      const xMm = Math.min(Math.max(0, patch.xMm), maxX);
+      const yMm = Math.min(Math.max(0, patch.yMm), maxY);
+      // Colisão AABB leve (tolera 5 mm de encosto entre móveis).
+      const collides = Object.values(r.nodes).some((n) => {
+        if (n.id === id || n.kind !== "module") return false;
+        const q = n.params as Record<string, unknown>;
+        if (q.role !== "furniture") return false;
+        const bx1 = Number(q.x) || 0;
+        const by1 = Number(q.y) || 0;
+        const bw = Number(q.width) || 0;
+        const bd = Number(q.depth) || 0;
+        return (
+          xMm < bx1 + bw - 5 &&
+          xMm + wMm > bx1 + 5 &&
+          yMm < by1 + bd - 5 &&
+          yMm + dMm > by1 + 5
+        );
+      });
+      if (collides) return r; // aborta o commit — a proxy do gizmo será
+      // re-sincronizada no próximo render pelo useEffect do FurnitureGizmo.
+      return {
+        ...r,
+        nodes: {
+          ...r.nodes,
+          [id]: {
+            ...node,
+            params: { ...node.params, x: xMm, y: yMm, rotation: patch.rotationDeg },
+          },
+        },
+        updatedAt: new Date().toISOString(),
+      };
+    });
+  };
+
+  const deleteSelected = () => {
+    if (!selectedId) return;
+    mutateRoom((r) => {
+      if (!r.nodes[selectedId]) return r;
+      const { [selectedId]: _, ...rest } = r.nodes;
+      return {
+        ...r,
+        nodes: rest,
+        nodeOrder: r.nodeOrder.filter((n) => n !== selectedId),
+        updatedAt: new Date().toISOString(),
+      };
+    });
+    setSelectedId(null);
+  };
+
+  const duplicateSelected = () => {
+    if (!selectedId) return;
+    mutateRoom((r) => {
+      const src = r.nodes[selectedId];
+      if (!src || src.kind !== "module") return r;
+      const newId = `${src.id}-copy-${Math.random().toString(36).slice(2, 8)}`;
+      const params = { ...(src.params as Record<string, unknown>) };
+      params.x = (Number(params.x) || 0) + 300;
+      return {
+        ...r,
+        nodes: { ...r.nodes, [newId]: { ...src, id: newId, params } },
+        nodeOrder: [...r.nodeOrder, newId],
+        updatedAt: new Date().toISOString(),
+      };
+    });
+  };
+
   const sceneNodes = useMemo(() => {
     if (!model) return [] as { id: string; label: string; kind: string }[];
     return [
@@ -221,12 +323,28 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
         case "w": setViewport((v) => ({ ...v, render: v.render === "wireframe" ? "solid" : "wireframe" })); break;
         case "m": setViewport((v) => ({ ...v, render: v.render === "material" ? "solid" : "material" })); break;
         case "g": setViewport((v) => ({ ...v, showGrid: !v.showGrid })); break;
+        case "t": setGizmoMode("translate"); break;
+        case "r":
+          if (e.ctrlKey || e.metaKey) return;
+          setGizmoMode("rotate");
+          break;
+        case "delete":
+        case "backspace":
+          deleteSelected();
+          break;
+        case "d":
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            duplicateSelected();
+          }
+          break;
         case "escape": setSelectedId(null); break;
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId, envId, roomId]);
 
   if (!room || !model) {
     return (
