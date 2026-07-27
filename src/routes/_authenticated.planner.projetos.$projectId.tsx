@@ -78,13 +78,27 @@ function PlannerProjectDetail() {
   const [zoom] = useState(100);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  // Distingue "carregando" de "não encontrado". Sem isso, o gap entre o
+  // dispatch inicial e a resolução do loadSnapshotFn mostra a tela de
+  // "Projeto não encontrado" por alguns ms — foi o que o usuário viu.
+  const [loadStatus, setLoadStatus] = useState<"idle" | "loading" | "loaded" | "missing">("idle");
 
   useEffect(() => {
     if (!activeCompany?.id) return;
-    loadProjectById(projectId);
+    let cancelled = false;
+    setLoadStatus("loading");
+    Promise.resolve(loadProjectById(projectId)).finally(() => {
+      if (!cancelled) setLoadStatus("loaded");
+    });
+    return () => { cancelled = true; };
   }, [activeCompany?.id, projectId, loadProjectById]);
 
   const project = state.project;
+  // Só consideramos "faltando" depois que o load terminou E o projeto que
+  // está no reducer não corresponde ao id pedido (ou é null).
+  const projectMatchesRoute = project?.id === projectId;
+  const isLoading = loadStatus === "loading" || (loadStatus !== "loaded" && !projectMatchesRoute);
+  const isMissing = loadStatus === "loaded" && !projectMatchesRoute;
   const selectedEnv = useMemo(
     () => project?.environments.find((e) => e.id === state.selectedEnvironmentId),
     [project, state.selectedEnvironmentId],
@@ -139,19 +153,44 @@ function PlannerProjectDetail() {
     toast.success("Projeto exportado (.dioris.json)");
   };
 
-  if (!project) {
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-6">
+        <div className="flex flex-col items-center gap-3 text-muted-foreground">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <p className="text-sm">Carregando projeto…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isMissing || !project) {
     return (
       <div className="p-6">
         <EmptyState
           icon={<Home className="h-6 w-6" />}
           title="Projeto não encontrado"
-          description="Este projeto pode ter sido removido ou pertence a outro tenant."
+          description="Este projeto pode ter sido removido, pertence a outro tenant, ou você perdeu conexão. Tente recarregar."
           action={
-            <Link to="/planner/projetos">
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setLoadStatus("loading");
+                  Promise.resolve(loadProjectById(projectId)).finally(() =>
+                    setLoadStatus("loaded"),
+                  );
+                }}
+              >
+                Tentar novamente
               </Button>
-            </Link>
+              <Link to="/planner/projetos">
+                <Button variant="outline" size="sm">
+                  <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
+                </Button>
+              </Link>
+            </div>
           }
         />
       </div>
