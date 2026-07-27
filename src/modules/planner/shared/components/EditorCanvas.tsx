@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { ClientOnly } from "@tanstack/react-router";
 import { Ruler, Move3D, Undo2, Redo2, Save, PanelLeftOpen, PanelLeftClose, Boxes, Wrench } from "lucide-react";
 import { Button } from "@/core/components/ui-kit";
@@ -30,6 +30,19 @@ export function EditorCanvas({ mode, controls }: { mode: Mode; controls?: Editor
   const { state, canUndo, canRedo, undo, redo, saveNow, updateProject } = usePlannerEditor();
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [inspectorOpen, setInspectorOpen] = useState(false);
+  // Abre o Inspector automaticamente quando o usuário seleciona um móvel
+  // (clique no 2D/3D ou pela árvore/IA). Mantém o toggle manual íntegro
+  // — só força a abertura; o fechamento continua sob controle do usuário.
+  useEffect(() => {
+    if (!state.selectedNodeId) return;
+    const room = state.project?.environments
+      .find((e) => e.id === state.selectedEnvironmentId)
+      ?.rooms.find((r) => r.id === state.selectedRoomId);
+    const node = room?.nodes[state.selectedNodeId];
+    if (node?.kind === "module" && node.params["role"] === "furniture") {
+      setInspectorOpen(true);
+    }
+  }, [state.selectedNodeId, state.selectedEnvironmentId, state.selectedRoomId, state.project]);
   const room = state.project?.environments
     .find((e) => e.id === state.selectedEnvironmentId)
     ?.rooms.find((r) => r.id === state.selectedRoomId);
