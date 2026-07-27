@@ -7,5 +7,8 @@ export * from "./catalog";
 export * from "./insert";
 export * from "./physics";
 export * from "./use-favorites";
+export * from "./taxonomy";
+export * from "./search-index";
+export * from "./filters";
 export { LibraryPanel } from "./LibraryPanel";
 export { CatalogRealPanel } from "./CatalogRealPanel";

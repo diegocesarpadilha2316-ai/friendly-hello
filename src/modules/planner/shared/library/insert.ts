@@ -79,7 +79,7 @@ export function insertItemIntoProject(
   item: CatalogItem,
   opts: InsertionOptions = {},
 ): PlannerProject {
-  return {
+  const next: PlannerProject = {
     ...project,
     environments: project.environments.map((env) => {
       if (env.id !== target.environmentId) return env;
@@ -90,6 +90,25 @@ export function insertItemIntoProject(
       };
     }),
   };
+  // Módulo 05: dispara evento para o Editor abrir o Inspector no item recém
+  // inserido e enquadrar a câmera. O ID do último primitivo inserido está no
+  // final da lista do cômodo alvo.
+  if (typeof window !== "undefined") {
+    try {
+      const env = next.environments.find((e) => e.id === target.environmentId);
+      const room = env?.rooms.find((r) => r.id === target.roomId);
+      const last = room ? listPrimitives(room).at(-1) : undefined;
+      if (last) {
+        window.dispatchEvent(
+          new CustomEvent("planner:item-inserted", { detail: { primitiveId: last.id, roomId: target.roomId } }),
+        );
+        window.dispatchEvent(
+          new CustomEvent("planner:focus-selection", { detail: { primitiveId: last.id } }),
+        );
+      }
+    } catch { /* ambientes sem window/CustomEvent */ }
+  }
+  return next;
 }
 
 function applyInsertion(room: PlannerRoom, item: CatalogItem, opts: InsertionOptions): PlannerRoom {

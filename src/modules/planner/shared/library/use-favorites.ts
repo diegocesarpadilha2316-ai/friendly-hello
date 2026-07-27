@@ -10,7 +10,9 @@ import { useCallback, useEffect, useState } from "react";
 
 const KEY_FAV = "dioris.planner.library.favorites";
 const KEY_RECENT = "dioris.planner.library.recents";
+const KEY_USAGE = "dioris.planner.library.usage";
 const RECENT_LIMIT = 12;
+const TOP_LIMIT = 20;
 
 function readList(key: string): string[] {
   if (typeof window === "undefined") return [];
@@ -33,13 +35,41 @@ function writeList(key: string, list: readonly string[]) {
   }
 }
 
+function readUsage(): Record<string, number> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(KEY_USAGE);
+    if (!raw) return {};
+    const obj = JSON.parse(raw) as unknown;
+    if (obj && typeof obj === "object") {
+      const out: Record<string, number> = {};
+      for (const [k, v] of Object.entries(obj)) {
+        if (typeof v === "number" && Number.isFinite(v)) out[k] = v;
+      }
+      return out;
+    }
+    return {};
+  } catch {
+    return {};
+  }
+}
+
+function writeUsage(u: Record<string, number>) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(KEY_USAGE, JSON.stringify(u));
+  } catch { /* ignore */ }
+}
+
 export function useLibraryFavorites() {
   const [favorites, setFavorites] = useState<readonly string[]>([]);
   const [recents, setRecents] = useState<readonly string[]>([]);
+  const [usage, setUsage] = useState<Record<string, number>>({});
 
   useEffect(() => {
     setFavorites(readList(KEY_FAV));
     setRecents(readList(KEY_RECENT));
+    setUsage(readUsage());
   }, []);
 
   const toggleFavorite = useCallback((id: string) => {
@@ -56,6 +86,11 @@ export function useLibraryFavorites() {
       writeList(KEY_RECENT, next);
       return next;
     });
+    setUsage((prev) => {
+      const next = { ...prev, [id]: (prev[id] ?? 0) + 1 };
+      writeUsage(next);
+      return next;
+    });
   }, []);
 
   const clearRecents = useCallback(() => {
@@ -63,5 +98,10 @@ export function useLibraryFavorites() {
     writeList(KEY_RECENT, []);
   }, []);
 
-  return { favorites, recents, toggleFavorite, registerRecent, clearRecents };
+  const mostUsed: readonly string[] = Object.entries(usage)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, TOP_LIMIT)
+    .map(([id]) => id);
+
+  return { favorites, recents, mostUsed, usage, toggleFavorite, registerRecent, clearRecents };
 }
