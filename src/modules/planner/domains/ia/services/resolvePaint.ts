@@ -41,6 +41,25 @@ const NAMED_HEX: Record<string, string> = {
   fendi: "#8f8579",
 };
 
+const NAMED_PBR: Record<string, string> = {
+  preto: "pbr:preto-absoluto",
+  "preto absoluto": "pbr:preto-absoluto",
+  branco: "pbr:branco-tx",
+  "branco tx": "pbr:branco-tx",
+  "off white": "pbr:off-white",
+  grafite: "pbr:grafite",
+  freijo: "pbr:freijo-natural",
+  "louro freijo": "pbr:louro-freijo",
+  carvalho: "pbr:carvalho-natural",
+  nogueira: "pbr:nogueira",
+  cumaru: "pbr:cumaru",
+  imbuia: "pbr:imbuia",
+  amendoa: "pbr:amendoa",
+  areia: "pbr:areia",
+  ipe: "pbr:ipe",
+  fendi: "pbr:fendi",
+};
+
 function normalize(s: string): string {
   return s
     .toLowerCase()
@@ -72,7 +91,7 @@ export function resolvePaint(input: string | null | undefined): ResolvedPaint | 
   // 2) Alias humano → hex (sem PBR)
   for (const [alias, hex] of Object.entries(NAMED_HEX)) {
     if (key === alias || key.includes(alias) || alias.includes(key)) {
-      return { label: raw, colorHex: hex };
+      return { label: raw, materialId: NAMED_PBR[alias], colorHex: hex };
     }
   }
 

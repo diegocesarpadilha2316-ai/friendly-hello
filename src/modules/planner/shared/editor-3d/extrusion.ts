@@ -81,6 +81,7 @@ export interface FurnitureDescriptor {
   openDoors?: boolean;
   openDrawers?: boolean;
   led?: boolean;
+  hasSink?: boolean;
 }
 
 export interface Scene3DModel {
@@ -191,6 +192,10 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
         if (v === "false" || v === 0 || v === "0") return false;
         return undefined;
       };
+      const hasSink =
+        boolParam("eng:sink") === true ||
+        boolParam("hasSink") === true ||
+        /(?:pia|cuba|sob-pia|balcao-gourmet)/i.test(`${p.catalogItemId} ${p.params?.["eng:plumbing"] ?? ""}`);
       // ── Ancoragem Y do móvel (Y = 0 é o TOPO do piso) ──
       // Módulos DE PAREDE reais (suspensos a 1400 mm do piso): apenas
       // aéreo, nicho e prateleira. Painel, cristaleira, roupeiro, torre
@@ -236,6 +241,7 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
         openDoors: boolParam("mod:openDoors") ?? boolParam("openDoors"),
         openDrawers: boolParam("mod:openDrawers") ?? boolParam("openDrawers"),
         led: boolParam("mod:led") ?? boolParam("led"),
+        hasSink,
       });
     }
   }

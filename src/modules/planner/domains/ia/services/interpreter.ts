@@ -49,6 +49,20 @@ function has(text: string, ...words: string[]): boolean {
   return words.some((w) => text.includes(w));
 }
 
+const CREATE_VERBS = [
+  "cria", "crie", "criar", "faca", "faco", "faz", "fazer", "feito",
+  "monta", "montar", "quero", "queria", "gostaria", "preciso",
+  "projeto", "ambiente", "gera", "gerar", "mande", "mandei", "pedi",
+];
+
+const INSERT_VERBS = [
+  "insira", "inserir", "insere", "adicione", "adicionar", "adiciona",
+  "coloque", "coloca", "poe", "poem", "bota", "bote", "cria", "crie",
+  "criar", "faca", "faco", "faz", "fazer", "feito", "monta", "montar",
+  "quero", "queria", "preciso", "gostaria", "gera", "gerar", "mande",
+  "mandei", "pedi",
+];
+
 function parseNumber(text: string, fallback?: number): number | undefined {
   const m = text.match(/(-?\d+(?:[.,]\d+)?)/);
   if (!m) return fallback;
@@ -128,19 +142,8 @@ export function interpret(input: string): PlannerIntent {
   // ── Criação de ambiente completo ──
   // Dispara sempre que o usuário mencionar o nome do ambiente OU pedir
   // genericamente "quero um projeto" / "faz um projeto" (default: cozinha).
-  const wantsCreate = has(
-    t,
-    "cria", "crie", "criar", "faca", "faz", "monta", "montar",
-    "quero", "queria", "gostaria", "preciso", "projeto", "ambiente",
-    "gera", "gerar", "montar",
-  );
-  const wantsInsertVerb = has(
-    t,
-    "insira", "inserir", "insere", "adicione", "adicionar", "adiciona",
-    "coloque", "coloca", "poe", "poem", "bota", "bote", "cria", "crie",
-    "criar", "faca", "faz", "monta", "montar", "quero", "queria",
-    "preciso", "gostaria", "gera", "gerar",
-  );
+  const wantsCreate = has(t, ...CREATE_VERBS);
+  const wantsInsertVerb = has(t, ...INSERT_VERBS);
   const ambientWords = has(
     t,
     "projeto", "ambiente", "cozinha", "closet", "dormitorio", "quarto",
@@ -161,6 +164,29 @@ export function interpret(input: string): PlannerIntent {
     if (!matchedPreset && !ambientWords && wantsInsertVerb) {
       const dec = decompose(raw);
       if (dec.modules.length > 0) {
+        const bp = buildBlueprint(raw);
+        const material = bp.material;
+        for (const m of dec.modules) {
+          const alreadyHasFinish =
+            /(freijo|nogueira|carvalho|branco|preto|grafite|chumbo|off\s*white|quartzo|cumaru|louro)/i.test(
+              m.description,
+            );
+          const description =
+            material && !alreadyHasFinish ? `${m.description} ${material}` : m.description;
+          intents.push({
+            tool: "insert_described",
+            args: { description, count: m.count },
+          });
+        }
+        return { type: "command", intents };
+      }
+    }
+    // ROTA A.1: mesmo quando o verbo veio escrito como "faço/fazer/mandei fazer"
+    // ou o usuário digitou uma frase curta sem verbo canônico, uma peça técnica
+    // reconhecida deve continuar sendo inserção pontual — nunca preset genérico.
+    if (!matchedPreset && !ambientWords) {
+      const dec = decompose(raw);
+      if (dec.modules.length > 0 && dec.unresolved.length === 0) {
         const bp = buildBlueprint(raw);
         const material = bp.material;
         for (const m of dec.modules) {

@@ -76,6 +76,7 @@ interface CabinetMeshProps {
   doorsCount?: number;
   shelvesCount?: number;
   led?: boolean;
+  hasSink?: boolean;
 }
 
 interface CabinetComposition {
@@ -178,6 +179,27 @@ export function CabinetMesh(props: CabinetMeshProps) {
         <boxGeometry args={[width, T, depth]} />
         <meshStandardMaterial {...bodyProps} color={bodyColor} />
       </mesh>
+      {/* Cuba/pia integrada — torna "balcão de pia" visualmente diferente de balcão genérico. */}
+      {props.hasSink ? (
+        <group position={[0, halfH + 0.004, halfD * 0.12]}>
+          <mesh receiveShadow>
+            <boxGeometry args={[Math.min(width * 0.42, 0.62), 0.018, Math.min(depth * 0.42, 0.42)]} />
+            <meshStandardMaterial color="#b8bec8" metalness={0.75} roughness={0.22} />
+          </mesh>
+          <mesh position={[0, 0.006, 0]}>
+            <boxGeometry args={[Math.min(width * 0.34, 0.5), 0.012, Math.min(depth * 0.32, 0.32)]} />
+            <meshStandardMaterial color="#3f4652" metalness={0.35} roughness={0.3} />
+          </mesh>
+          <mesh position={[Math.min(width * 0.17, 0.26), 0.08, -Math.min(depth * 0.16, 0.16)]} rotation={[0, 0, Math.PI / 2]} castShadow>
+            <torusGeometry args={[0.045, 0.006, 10, 28, Math.PI]} />
+            <meshStandardMaterial color="#cbd1d9" metalness={0.9} roughness={0.18} />
+          </mesh>
+          <mesh position={[Math.min(width * 0.17, 0.26), 0.025, -Math.min(depth * 0.16, 0.16)]} castShadow>
+            <cylinderGeometry args={[0.012, 0.014, 0.055, 18]} />
+            <meshStandardMaterial color="#cbd1d9" metalness={0.9} roughness={0.18} />
+          </mesh>
+        </group>
+      ) : null}
       {/* Base */}
       <mesh position={[0, -halfH + T / 2, 0]} castShadow receiveShadow>
         <boxGeometry args={[width, T, depth]} />
