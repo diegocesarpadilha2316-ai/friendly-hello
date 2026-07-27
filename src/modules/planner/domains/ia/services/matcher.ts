@@ -14,6 +14,7 @@ import {
   type CatalogItem,
   type CatalogSubtype,
 } from "@/modules/planner/shared";
+import { resolvePaint } from "./resolvePaint";
 
 export type FrontType = "vidro" | "reeded" | "solid" | "aberto";
 
@@ -22,6 +23,8 @@ export interface MatchResult {
   overrides: { width?: number; depth?: number; height?: number };
   params: Record<string, string | number | boolean>;
   reasons: string[];
+  /** Material PBR resolvido (via resolvePaint). Callers propagam ao primitive. */
+  materialId?: string;
 }
 
 const norm = (s: string) =>
@@ -131,7 +134,13 @@ function parseDepth(text: string): number | null {
 }
 
 function clampParam(value: number, range: { min: number; max: number }): number {
-  return Math.max(range.min, Math.min(range.max, value));
+  // Range permissivo: quando o usuário pede uma medida explícita, aceitamos
+  // até 3× fora do range paramétrico do catálogo. O motor de layout ainda
+  // valida colisão/parede, mas a intenção do usuário nunca é silenciosamente
+  // reduzida.
+  const lo = Math.min(range.min, Math.round(range.min * 0.4));
+  const hi = Math.max(range.max, Math.round(range.max * 3));
+  return Math.max(lo, Math.min(hi, value));
 }
 
 // ─────────── frente ───────────
