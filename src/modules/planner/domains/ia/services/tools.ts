@@ -358,30 +358,19 @@ export function toolCreateRoomPreset(
   // frações do cômodo. Isso deixa o viewport com cara de projeto real,
   // não de biblioteca vazia.
   let next = res.project;
-  // Aplica material global antes da decoração para todos os móveis
-  // recém-criados. Isso garante que "cozinha preta" fique realmente
-  // preta, sem depender de qualificadores por peça.
+  // Aplica material global a todos os móveis recém-criados. Isso garante
+  // que "cozinha preta" / "armário preto" fique realmente preto, sem
+  // depender de qualificadores por peça.
   if (args.material) {
     const finish = args.material;
-    next = {
-      ...next,
-      environments: next.environments.map((env) =>
-        env.id !== ctx.environmentId
-          ? env
-          : {
-              ...env,
-              rooms: env.rooms.map((r) => {
-                if (r.id !== ctx.roomId) return r;
-                const patched: typeof r.nodes = {};
-                for (const [id, node] of Object.entries(r.nodes)) {
-                  if (node.kind !== "furniture") { patched[id] = node; continue; }
-                  patched[id] = { ...node, params: { ...node.params, color: finish, material: finish } };
-                }
-                return { ...r, nodes: patched };
-              }),
-            },
-      ),
-    };
+    const currentRoom = getRoom(next, ctx);
+    if (currentRoom) {
+      const all = furnitureInRoom(currentRoom);
+      next = mutateFurniture(next, ctx, all, (f) => ({
+        ...f,
+        params: { ...f.params, color: finish, material: finish },
+      }));
+    }
   }
   let decorPlaced = 0;
   const customPieces = !!(args.pieces && args.pieces.length > 0);
