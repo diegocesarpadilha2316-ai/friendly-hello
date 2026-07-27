@@ -7,7 +7,7 @@
  * Autosave, Histórico e sincronização com 2D/3D/Biblioteca.
  */
 import { useEffect, useMemo, useState } from "react";
-import { Ruler, PackageOpen, Wrench, Palette, Layers as LayersIcon } from "lucide-react";
+import { Ruler, PackageOpen, Wrench, Palette, Layers as LayersIcon, Crosshair } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/core/providers/TenantProvider";
 import { Button } from "@/core/components/ui-kit";
@@ -168,6 +168,22 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
             </option>
           ))}
         </select>
+        <button
+          type="button"
+          onClick={() => {
+            if (!current) return;
+            selectNode(current.id);
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("planner:focus-selection", { detail: { id: current.id } }));
+            }
+          }}
+          className="flex w-full items-center justify-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-2 py-1.5 text-xs font-medium text-primary transition hover:bg-primary/20"
+          title="Ver detalhes e enquadrar a peça no viewport 3D (atalho: F)"
+        >
+          <Crosshair className="h-3.5 w-3.5" />
+          Ver detalhes / Focar no viewport
+          <span className="ml-1 rounded bg-primary/20 px-1.5 py-0.5 text-[10px] font-mono">F</span>
+        </button>
       </header>
 
       <div className="flex-1 space-y-4 overflow-y-auto pr-1">

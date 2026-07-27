@@ -547,8 +547,13 @@ function FocusOnSelection({
       if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)) return;
       if (e.key === "f" || e.key === "F") setTick((n) => n + 1);
     };
+    const onFocusEvent = () => setTick((n) => n + 1);
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("planner:focus-selection", onFocusEvent as EventListener);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("planner:focus-selection", onFocusEvent as EventListener);
+    };
   }, []);
 
   useEffect(() => {
