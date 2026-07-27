@@ -96,7 +96,7 @@ function SceneTree({
                 : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
           >
-            <span className="truncate">{n.label}</span>
+            <span className="min-w-0 flex-1 break-words leading-snug">{n.label}</span>
             <span className="ml-2 shrink-0 rounded bg-background/60 px-1.5 py-0.5 text-[10px] uppercase tracking-wide">
               {n.kind}
             </span>
