@@ -187,7 +187,7 @@ function chunkIsOnlyQualifier(chunk: string): boolean {
   if (chunkIsOnlyPreamble(chunk)) return true;
   const cleaned = chunk
     .replace(/\d+(?:[.,]\d+)?\s*(mm|cm|m)?/g, " ")
-    .replace(/\b(largura|larg|altura|alto|profundidade|prof|fundo|parede|esquerda|direita|frente|frontal|preto|preta|absoluto|freijo|louro|branco|branca|tx|off|white|nogueira|carvalho|grafite|chumbo|cor|na|no|da|do|de|com|encostad[ao])\b/g, " ")
+    .replace(/\b(largura|larg|altura|alto|profundidade|prof|fundo|parede|esquerda|direita|frente|frontal|preto|preta|absoluto|freijo|louro|branco|branca|tx|off|white|nogueira|carvalho|grafite|chumbo|cor|na|no|da|do|de|com|coloque|coloca|encoste|encosta|encostad[ao]|ele|ela|lado)\b/g, " ")
     .replace(/[.,;:!?]/g, " ")
     .trim();
   return cleaned.length === 0;
