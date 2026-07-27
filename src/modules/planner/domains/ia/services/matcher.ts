@@ -74,6 +74,11 @@ const DECOR_HINTS: Array<{ subtype: CatalogSubtype; words: string[] }> = [
 ];
 
 function detectSubtype(text: string): CatalogSubtype | null {
+  // Cozinha real: "balcão de pia" no português do usuário é um módulo
+  // inferior COM cuba, não um balcão genérico. Mantém subtype balcao para
+  // layout de piso, mas força o matcher a procurar a variante com cuba.
+  if (/balcao\s+(?:d[ea]\s+)?pia|balcao\s+pia|balcao.*cuba/.test(text)) return "balcao";
+  if (/armari[oa]\s+(?:sob\s+)?(?:d[ea]\s+)?pia|armari[oa].*cuba/.test(text)) return "armario";
   for (const h of SUBTYPE_HINTS) if (h.words.some((w) => text.includes(w))) return h.subtype;
   for (const h of DECOR_HINTS) if (h.words.some((w) => text.includes(w))) return h.subtype;
   return null;
@@ -222,6 +227,27 @@ const NAME_HINTS: readonly string[] = [
   "correr", "vidro", "reeded", "canelad",
 ];
 
+function semanticPriority(c: CatalogItem, subtype: CatalogSubtype, text: string): number {
+  const id = c.id.toLowerCase();
+  const name = c.name.toLowerCase();
+  const tags = c.tags.join(" ").toLowerCase();
+  const haystack = `${id} ${name} ${tags}`;
+  let s = 0;
+
+  const wantsSink = /\bpia\b|\bcuba\b|balcao\s+(?:d[ea]\s+)?pia|sob\s+pia/.test(text);
+  if (wantsSink) {
+    if (subtype === "balcao" && (id === "balcao-gourmet" || haystack.includes("cuba"))) s += 1800;
+    if (subtype === "armario" && (id.startsWith("arm-sob-pia") || haystack.includes("sob pia") || tags.includes("pia"))) s += 1800;
+    if (!haystack.includes("pia") && !haystack.includes("cuba")) s -= 500;
+  }
+
+  if (/\bcooktop\b/.test(text) && haystack.includes("cooktop")) s += 1200;
+  if (/\bforno\b|micro-?ondas/.test(text) && (haystack.includes("forno") || haystack.includes("micro"))) s += 1200;
+  if (/\bbar\b/.test(text) && haystack.includes("bar")) s += 900;
+
+  return s;
+}
+
 function pickBestItem(
   subtype: CatalogSubtype,
   wantedWidth: number | null,
@@ -236,6 +262,7 @@ function pickBestItem(
   const score = (c: CatalogItem): number => {
     const nameLc = c.name.toLowerCase();
     let s = 0;
+    s += semanticPriority(c, subtype, text);
     // fidelidade de largura: peso alto (a diferença já entra invertida)
     if (wantedWidth != null) {
       const dist = Math.abs(c.parametric.defaults.width - wantedWidth);
@@ -336,6 +363,12 @@ export function matchDescription(
   if (wantedDrawers != null) {
     params["mod:drawers"] = wantedDrawers;
     reasons.push(`${wantedDrawers} gaveta(s)`);
+  }
+  const itemHaystack = `${item.id} ${item.name} ${item.tags.join(" ")}`.toLowerCase();
+  if (/\bpia\b|\bcuba\b|sob\s+pia/.test(t) || itemHaystack.includes("cuba") || itemHaystack.includes("pia")) {
+    params["eng:sink"] = true;
+    params["eng:plumbing"] = "sink";
+    reasons.push("cuba/pia integrada");
   }
 
   return { item, overrides, params, reasons, materialId: matchedMaterialId };

@@ -103,8 +103,8 @@ const CONNECTORS = /,|;| e | mais | \+ | com | contendo /gi;
 // Elas apenas anunciam a intenção ("quero uma cozinha", "faz um closet")
 // e o blueprint padrão do ambiente cobre o resto.
 const PREAMBLE_WORDS = new Set([
-  "quero","queria","gostaria","preciso","cria","crie","criar","faca","faz",
-  "monta","montar","gera","gerar","projeto","ambiente","um","uma","o","a",
+  "quero","queria","gostaria","preciso","cria","crie","criar","faca","faco","faz",
+  "fazer","feito","monta","montar","gera","gerar","mande","mandei","pedi","projeto","ambiente","um","uma","o","a",
   "novo","nova","modelo","design","estilo","por","favor","de","do","da",
   "para","pra","planejad","planejada","planejado","completo","completa","simples",
   "pequen","pequena","pequeno","moderna","moderno","classic","classica","classico",
