@@ -238,8 +238,18 @@ export interface RoomPresetArgs {
  * substituem o blueprint padrão do ambiente (mantendo shell + decor).
  */
 export function blueprintToPreset(bp: PlannerBlueprint): RoomPresetArgs {
+  // Enriquecemos a descrição com o material/cor global do blueprint,
+  // desde que a descrição ainda não traga um acabamento explícito.
+  // O matcher paramétrico usa a descrição para escolher item + finish,
+  // então isso garante que "armário preto" chegue como "armário Preto
+  // Absoluto" e não como armário genérico louro freijó.
+  const material = bp.material;
+  const hasFinish = (d: string) =>
+    /(freijo|nogueira|carvalho|branco|preto|grafite|chumbo|off\s*white|quartzo|cumaru|louro)/i.test(d);
   const pieces = bp.modules.map((m) => ({
-    description: m.description,
+    description: material && !hasFinish(m.description)
+      ? `${m.description} ${material}`
+      : m.description,
     count: m.count,
     wall: m.wall,
     width: m.width,
@@ -249,6 +259,7 @@ export function blueprintToPreset(bp: PlannerBlueprint): RoomPresetArgs {
   return {
     preset: bp.environment,
     style: bp.style,
+    ...(material ? { material } : {}),
     ...(pieces.length > 0 ? { pieces } : {}),
   };
 }
