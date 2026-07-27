@@ -10,6 +10,13 @@ import type { PlannerProject, PlannerRoom } from "../types/project";
 import type { Editor2DPrimitive } from "../editor-2d/types";
 import { makePrimitiveId, upsertPrimitive } from "../editor-2d/room-ops";
 import type { CatalogItem } from "./types";
+import {
+  WALL_OFFSET_MM,
+  CLEARANCE_MM,
+  REAL_DEPTH_BY_SUBTYPE,
+  CABINET_SUBTYPES,
+  aabbOverlap,
+} from "./physics";
 
 export interface InsertionTarget {
   environmentId: string;
@@ -80,43 +87,17 @@ function applyInsertion(room: PlannerRoom, item: CatalogItem, opts: InsertionOpt
   const roomW = room.dimensions.width;
   const roomD = room.dimensions.depth;
   const width = opts.overrides?.width ?? item.parametric.defaults.width;
-  // Profundidades reais de marcenaria por subtype (mm) — sobrescrevem o
-  // default do catálogo quando este vier fora do padrão de mercado.
-  const depthBySubtype: Record<string, number> = {
-    aereo: 350,
-    prateleira: 300,
-    nicho: 300,
-    painel: 40,
-    balcao: 600,
-    tampo: 600,
-    bancada: 600,
-    ilha: 900,
-    torre: 600,
-    gaveteiro: 500,
-    closet: 600,
-    roupeiro: 600,
-    armario: 600,
-    "guarda-roupa": 600,
-    cristaleira: 400,
-  };
   const normalizedDepth =
     opts.overrides?.depth ??
-    depthBySubtype[String(item.subtype)] ??
+    REAL_DEPTH_BY_SUBTYPE[String(item.subtype)] ??
     item.parametric.defaults.depth;
   const depth = normalizedDepth;
-  // Espessura da parede (~100mm centralizada) — 50mm interno + 2mm folga.
-  const WALL = 52;
+  const WALL = WALL_OFFSET_MM;
   const raw = opts.at ?? { x: roomW / 2, y: roomD / 2 };
   const halfW = width / 2;
   const halfD = depth / 2;
 
-  // Snap-to-wall automático: se o usuário não fixou uma rotação e o item é um
-  // módulo de marcenaria (não decoração/eletro isolado), encosta na parede
-  // mais próxima do ponto solicitado, com o fundo flush na face interna.
-  const isCabinet = new Set([
-    "aereo","balcao","torre","gaveteiro","closet","roupeiro","armario",
-    "guarda-roupa","cristaleira","prateleira","nicho","painel","tampo","bancada","ilha",
-  ]).has(String(item.subtype));
+  const isCabinet = CABINET_SUBTYPES.has(String(item.subtype));
   let at = raw;
   let rotation = opts.rotation;
   if (isCabinet && opts.rotation === undefined) {
@@ -151,6 +132,41 @@ function applyInsertion(room: PlannerRoom, item: CatalogItem, opts: InsertionOpt
     x: Math.min(Math.max(at.x, minX), maxX),
     y: Math.min(Math.max(at.y, minY), maxY),
   };
+
+  // Prevenção de colisão: se o ponto final choca com um móvel existente,
+  // desliza ao longo da parede procurando o próximo slot livre. Se falhar,
+  // aceita a posição original (usuário sempre pode mover manualmente).
+  const existing = room.primitives.filter(
+    (p): p is Editor2DPrimitive & { kind: "furniture" } => p.kind === "furniture",
+  );
+  if (existing.length > 0 && isCabinet) {
+    const candidate = { x: at.x - halfW, y: at.y - halfD, width, depth, rotation };
+    const collides = () =>
+      existing.some((p) => aabbOverlap(candidate, p, CLEARANCE_MM));
+    if (collides()) {
+      // Determina eixo de deslizamento pela parede (horizontal para bottom/top).
+      const horizontal = rotation === 0 || rotation === 180 || rotation === undefined;
+      const step = (horizontal ? width : depth) + CLEARANCE_MM;
+      const axisMin = horizontal ? minX : minY;
+      const axisMax = horizontal ? maxX : maxY;
+      const start = horizontal ? at.x : at.y;
+      let found = false;
+      for (let k = 1; k <= 24 && !found; k++) {
+        for (const sign of [1, -1]) {
+          const v = start + sign * step * k;
+          if (v < axisMin || v > axisMax) continue;
+          if (horizontal) {
+            candidate.x = v - halfW;
+            at = { x: v, y: at.y };
+          } else {
+            candidate.y = v - halfD;
+            at = { x: at.x, y: v };
+          }
+          if (!collides()) { found = true; break; }
+        }
+      }
+    }
+  }
   return upsertPrimitive(
     room,
     buildFurniturePrimitive(item, { ...opts, at, rotation, overrides: { ...opts.overrides, depth } }),
