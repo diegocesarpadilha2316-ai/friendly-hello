@@ -384,6 +384,9 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
           <span className="inline-flex items-center gap-1">
             <Pointer className="h-3 w-3" /> {selected ? selected.label : "Nenhuma seleção"}
           </span>
+          <span className="hidden md:inline-flex items-center gap-1 opacity-70">
+            Tecla <kbd className="rounded border border-border/60 bg-background/80 px-1">F</kbd> enquadra a seleção
+          </span>
         </div>
       </div>
 
