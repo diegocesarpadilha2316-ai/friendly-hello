@@ -13,3 +13,4 @@ export * from "./editor-2d";
 export * from "./editor-3d";
 export * from "./library";
 export * from "./engineering";
+export * from "./construction";
