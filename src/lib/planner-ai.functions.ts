@@ -284,7 +284,9 @@ export const recordAiToolCall = createServerFn({ method: "POST" })
         message_id: data.messageId ?? null,
         company_id: context.tenantId,
         tool_name: data.toolName,
-        args: data.args ?? {},
+        // Auditoria: tool calls são auto-declaradas pelo cliente. Marcamos a
+        // origem para que o histórico não seja confundido com execução server-side.
+        args: { ...(data.args ?? {}), _origin: "client", _reportedBy: context.userId },
         result: data.result ?? null,
         status: data.status,
         summary: data.summary ?? null,
