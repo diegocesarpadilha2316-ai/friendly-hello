@@ -70,10 +70,10 @@ export async function debitCreditsOrThrow(
   const balance = typeof balanceData === "number" ? balanceData : 0;
 
   if (balance < amount) {
-    throw new Response(
-      JSON.stringify({ code: "insufficient_credits", balance, need: amount }),
-      { status: 402, headers: { "content-type": "application/json" } },
-    );
+    throw new Response(JSON.stringify({ code: "insufficient_credits", balance, need: amount }), {
+      status: 402,
+      headers: { "content-type": "application/json" },
+    });
   }
 
   // Ledger is append-only via service_role — user client has no INSERT policy.
@@ -96,9 +96,7 @@ export async function debitCreditsOrThrow(
   if (balance >= LOW_THRESHOLD && newBalance < LOW_THRESHOLD) {
     void (async () => {
       try {
-        const { notifyLowCredits } = await import(
-          "@/core/notifications/notify.server"
-        );
+        const { notifyLowCredits } = await import("@/core/notifications/notify.server");
         await notifyLowCredits({
           companyId: tenantId,
           userId,
