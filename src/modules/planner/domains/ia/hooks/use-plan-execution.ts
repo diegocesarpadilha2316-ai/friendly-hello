@@ -132,7 +132,7 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
       if (generated.status === "ready") {
         void runner
           .run()
-          .then(finishMemory)
+          .then((p) => finishRef.current(p))
           .catch((error: unknown) => {
             const message =
               error instanceof Error ? error.message : "Falha inesperada na execução.";
@@ -144,7 +144,7 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
       }
       return generated;
     },
-    [buildRunner, commit, finishMemory, tenantId],
+    [buildRunner, commit, tenantId],
   );
 
   const finishMemory = useCallback(
@@ -178,6 +178,7 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
     },
     [editor.state.project, tenantId],
   );
+  finishRef.current = finishMemory;
 
   const runNow = useCallback(
     (mode: "run" | "resume" | "retry") => {
