@@ -828,6 +828,28 @@ export function usePlannerChat() {
           return;
         }
 
+        // Etapa 10 — memória do projeto: somente turnos concluídos, somente
+        // tool calls bem-sucedidas. Erros/cancelamentos nunca chegam aqui.
+        try {
+          updateMemoryFromTurn({
+            tenantId,
+            userMessage: trimmed,
+            project: mutatedProject,
+            environmentId: activeEnvironmentId,
+            roomId: activeRoomId,
+            toolCalls: toolCalls.map((c) => ({
+              name: c.name,
+              args: (c.args ?? {}) as Record<string, unknown>,
+              status: c.status,
+              agent: c.agent,
+              message: c.message,
+            })),
+            outcome: "done",
+          });
+        } catch (e) {
+          console.warn("[planner-chat] memória do projeto não pôde ser atualizada", e);
+        }
+
         // Persistência da resposta + telemetria das tools executadas no cliente.
         if (sessionId) {
           const assistantMessageId = await persistMessage(

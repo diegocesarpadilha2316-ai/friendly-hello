@@ -20,3 +20,6 @@ export * from "./services";
 export * from "./agents";
 export * from "./hooks";
 export * from "./components";
+
+// Etapa 10 — Memória Inteligente do Projeto.
+export * from "./memory";

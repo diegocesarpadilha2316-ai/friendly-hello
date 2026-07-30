@@ -19,6 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/core/components/ui-kit";
 import { usePlannerChat } from "../hooks/use-planner-chat";
+import { ProjectMemoryPanel } from "./ProjectMemoryPanel";
 import type { PlannerAIMessage } from "../types";
 
 export interface PlannerAIPanelProps {
@@ -77,6 +78,9 @@ export function PlannerAIPanel({ variant = "docked", className, onClose }: Plann
           ) : null}
         </div>
       </header>
+
+      {/* Memória do Projeto (Etapa 10) */}
+      <ProjectMemoryPanel />
 
       {/* Mensagens */}
       <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
