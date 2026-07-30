@@ -27,8 +27,15 @@ export function PlannerAIFab() {
       </button>
 
       {open && (
-        <div className="fixed bottom-24 right-6 z-40 h-[min(640px,calc(100vh-140px))]">
-          <PlannerAIPanel onClose={() => setOpen(false)} />
+        // Mobile: folha de largura total (nunca sai da tela) com altura em dvh
+        // para não ficar atrás da barra do navegador. Desktop: painel ancorado.
+        <div
+          className={cn(
+            "fixed inset-x-3 bottom-24 z-50 h-[min(70dvh,640px)]",
+            "sm:inset-x-auto sm:right-6 sm:h-[min(640px,calc(100dvh-140px))]",
+          )}
+        >
+          <PlannerAIPanel onClose={() => setOpen(false)} className="h-full" />
         </div>
       )}
     </>

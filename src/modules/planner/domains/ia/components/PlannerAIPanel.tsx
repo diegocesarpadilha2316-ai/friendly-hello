@@ -50,8 +50,8 @@ export function PlannerAIPanel({ variant = "docked", className, onClose }: Plann
   return (
     <div
       className={cn(
-        "flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-border/60 bg-background/95 shadow-2xl backdrop-blur",
-        variant === "docked" && "w-[380px]",
+        "relative z-10 flex h-full min-h-0 w-full max-w-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-background/95 shadow-2xl backdrop-blur [pointer-events:auto]",
+        variant === "docked" && "sm:w-[380px]",
         className,
       )}
     >
@@ -84,7 +84,10 @@ export function PlannerAIPanel({ variant = "docked", className, onClose }: Plann
       <ProjectMemoryPanel />
 
       {/* Mensagens */}
-      <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
+      <div
+        ref={scrollRef}
+        className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-3 py-4 sm:px-4"
+      >
         {chat.messages.map((m) => (
           <MessageRow key={m.id} message={m} onEdit={chat.editMessage} />
         ))}
