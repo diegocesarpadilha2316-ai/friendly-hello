@@ -160,54 +160,8 @@ export function PlanPreviewCard(props: PlanPreviewCardProps) {
       )}
       </div>
 
-      {/* Área de ações própria, sempre visível no final do card e fora do
-          scroll interno — em mobile cada botão ocupa 100% da largura. */}
-      <div className="relative z-10 grid gap-2 border-t border-border/60 bg-card/95 p-3 sm:grid-cols-2">
-        {executing && (
-          <Button
-            variant="secondary"
-            className="min-h-11 w-full [touch-action:manipulation]"
-            onClick={props.onPause}
-          >
-            <Pause className="mr-1.5 h-4 w-4" /> Pausar
-          </Button>
-        )}
-        {paused && (
-          <Button
-            className="min-h-11 w-full [touch-action:manipulation]"
-            onClick={props.onResume}
-          >
-            <Play className="mr-1.5 h-4 w-4" /> Retomar
-          </Button>
-        )}
-        {failed && (
-          <Button
-            variant="secondary"
-            className="min-h-11 w-full [touch-action:manipulation]"
-            onClick={props.onRetry}
-          >
-            <RotateCcw className="mr-1.5 h-4 w-4" /> Repetir falhas
-          </Button>
-        )}
-        {!terminal && !waitingUser && (
-          <Button
-            variant="ghost"
-            className="min-h-11 w-full [touch-action:manipulation]"
-            onClick={props.onCancel}
-          >
-            <X className="mr-1.5 h-4 w-4" /> Cancelar
-          </Button>
-        )}
-        {plan.checkpointId && (
-          <Button
-            variant="ghost"
-            className="min-h-11 w-full [touch-action:manipulation]"
-            onClick={props.onRollback}
-          >
-            <Undo2 className="mr-1.5 h-4 w-4" /> Desfazer plano
-          </Button>
-        )}
-      </div>
+      {/* Card 100% somente leitura: nenhum botão de seleção/ação.
+          Todo o controle acontece pela conversa no chat. */}
     </div>
   );
 }
