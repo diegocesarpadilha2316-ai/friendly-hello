@@ -8,3 +8,4 @@ export { Viewport3D } from "./Viewport3D";
 export { Scene3D } from "./Scene3D";
 export * from "./types";
 export * from "./extrusion";
+export * from "./furniture-style";
