@@ -48,6 +48,12 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
   const editor = usePlannerEditor();
   const [plan, setPlan] = useState<ProjectPlan | null>(null);
   const runnerRef = useRef<PlanRunner | null>(null);
+  // Referência síncrona do projeto canônico. Ao criar o primeiro projeto,
+  // React ainda não concluiu o render quando o plano auto-inicia; depender de
+  // `editor.state.project` nessa janela fazia todas as etapas falharem com
+  // "Nenhum projeto ativo" mesmo com o viewport já exibindo o cômodo.
+  const projectRef = useRef<PlannerProject | null>(editor.state.project);
+  projectRef.current = editor.state.project ?? projectRef.current;
   const ctxRef = useRef<ToolContext | null>(null);
   const messageRef = useRef<string>("");
   const finishRef = useRef<(plan: ProjectPlan) => void>(() => {});
@@ -75,8 +81,9 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
         plan: base,
         tenantId,
         ctx,
-        getProject: () => editor.state.project,
+        getProject: () => projectRef.current,
         applyProject: (project) => {
+          projectRef.current = project;
           if (editor.state.project) editor.updateProject(() => project);
           else editor.loadProject(project);
         },
@@ -125,6 +132,7 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
       });
       if (!generated.steps.length) return null;
       ctxRef.current = input.ctx;
+      projectRef.current = input.project;
       messageRef.current = input.message;
       const runner = buildRunner(generated, input.ctx);
       commit(generated);
@@ -182,11 +190,17 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
   finishRef.current = finishMemory;
 
   const runNow = useCallback(
-    (mode: "run" | "resume" | "retry") => {
+    (mode: "run" | "resume" | "retry" | "restart") => {
       const runner = ensureRunner();
       if (!runner) return;
       const exec =
-        mode === "resume" ? runner.resume() : mode === "retry" ? runner.retryFailed() : runner.run();
+        mode === "resume"
+          ? runner.resume()
+          : mode === "retry"
+            ? runner.retryFailed()
+            : mode === "restart"
+              ? runner.restart()
+              : runner.run();
       void exec.then(finishMemory).catch((error: unknown) => {
         // Nunca deixar a UI presa: erro inesperado encerra o estado
         // pendente com motivo visível e permite tentar de novo.
@@ -200,7 +214,15 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
     [ensureRunner, finishMemory],
   );
 
-  const execute = useCallback(() => runNow("run"), [runNow]);
+  const execute = useCallback(() => {
+    const current = runnerRef.current?.current ?? plan;
+    const terminal =
+      current?.status === "completed" ||
+      current?.status === "partially_completed" ||
+      current?.status === "cancelled" ||
+      current?.status === "failed";
+    runNow(terminal ? "restart" : "run");
+  }, [plan, runNow]);
   const resume = useCallback(() => runNow("resume"), [runNow]);
   const retryFailed = useCallback(() => runNow("retry"), [runNow]);
 
