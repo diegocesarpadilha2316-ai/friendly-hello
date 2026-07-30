@@ -676,7 +676,7 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
         setVersions([]);
       }
     },
-    [loadSnapshotFn, refreshVersions, tenantId],
+    [loadSnapshotFn, refreshVersions, tenantId, resetSync],
   );
 
   const updateProject = useCallback(
