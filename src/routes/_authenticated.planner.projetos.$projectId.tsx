@@ -268,7 +268,7 @@ function PlannerProjectDetail() {
         <section className="relative flex min-h-[560px] flex-col overflow-hidden rounded-2xl border border-border/60 bg-[#0a0f1c] shadow-[inset_0_1px_0_hsl(var(--border)/0.4)]">
           {/* Toolbar CAD — ancorada (não flutua sobre o canvas) */}
           <div className="z-20 shrink-0 border-b border-border/60 bg-background/85 px-2 py-1.5 backdrop-blur">
-            <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex flex-wrap items-center gap-1">
               <ToolBtn
                 active={viewportMode === "2d"}
                 onClick={() => setViewportMode("2d")}
