@@ -277,6 +277,7 @@ function Wall({
     [w.length, w.height],
     selected ? COLORS.wallSel : (w.overrideColor ?? COLORS.wall),
     { wireframe, transparent: true, opacity, roughness: 0.85, metalness: 0.05 },
+    "wall",
   );
   // Auto-fade: se a parede está ENTRE a câmera e o centro do ambiente,
   // deixamos ela quase invisível para o usuário sempre enxergar os móveis
@@ -348,6 +349,7 @@ function Slab({
     [s.width, s.depth],
     fallback,
     { wireframe: viewport.render === "wireframe", roughness: 0.9, metalness: 0.02 },
+    kind,
   );
   return (
     <mesh
@@ -431,6 +433,7 @@ function Furniture({
     [f.width, f.height],
     fallback,
     { wireframe: viewport.render === "wireframe", roughness: 0.6, metalness: 0.05 },
+    "furniture",
   );
   // Decoração procedural: sofá, cama, planta, luminária, etc. — renderiza
   // silhueta reconhecível em vez do box padrão. Wireframe volta ao box.
