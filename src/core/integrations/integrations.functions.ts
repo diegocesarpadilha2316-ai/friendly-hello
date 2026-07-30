@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireTenant } from "@/core/middleware/require-tenant";
 import { PROVIDER_CATALOG } from "./providers/stubs";
+import { WEBHOOK_COLUMNS } from "./registry-data.server";
 import type {
   Integration,
   IntegrationEvent,
