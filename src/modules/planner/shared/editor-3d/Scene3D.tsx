@@ -522,6 +522,10 @@ function Furniture({
           shelvesCount={f.shelvesCount}
           led={f.led}
           hasSink={f.hasSink}
+          style={f.style}
+          handleStyle={f.handleStyle}
+          hardwareFinish={f.hardwareFinish}
+          frontStyle={f.frontStyle}
         />
         {(f.frontType === "vidro" || f.frontType === "reeded") ? (
           <GlassFront

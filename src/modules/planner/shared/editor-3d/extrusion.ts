@@ -82,6 +82,11 @@ export interface FurnitureDescriptor {
   openDrawers?: boolean;
   led?: boolean;
   hasSink?: boolean;
+  /** Linha de marcenaria (design spec) — estilo e ferragens. */
+  style?: string;
+  handleStyle?: string;
+  hardwareFinish?: string;
+  frontStyle?: string;
 }
 
 export interface Scene3DModel {
@@ -179,6 +184,13 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
           ? (ft as "vidro" | "reeded" | "solid" | "aberto")
           : undefined;
       const tint = typeof p.params?.["glass:tint"] === "string" ? (p.params["glass:tint"] as string) : undefined;
+      const strParam = (...keys: string[]): string | undefined => {
+        for (const k of keys) {
+          const v = p.params?.[k];
+          if (typeof v === "string" && v.trim() !== "") return v;
+        }
+        return undefined;
+      };
       const numParam = (k: string): number | undefined => {
         const v = p.params?.[k];
         if (typeof v === "number" && Number.isFinite(v)) return v;
@@ -242,6 +254,10 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
         openDrawers: boolParam("mod:openDrawers") ?? boolParam("openDrawers"),
         led: boolParam("mod:led") ?? boolParam("led"),
         hasSink,
+        style: strParam("style", "mod:style", "design:style", "estilo"),
+        handleStyle: strParam("mod:handle", "handle", "puxador"),
+        hardwareFinish: strParam("mod:hardware", "hardware", "ferragem"),
+        frontStyle: strParam("mod:front", "front:style"),
       });
     }
   }
