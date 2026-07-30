@@ -567,7 +567,7 @@ export function usePlannerChat() {
   // sem barra de progresso, uma frase só e nunca repetida.
   const announcedPlanRef = useRef<string | null>(null);
   const planStatus = planning.plan?.status ?? null;
-  const planId = planning.plan?.id ?? null;
+  const planId = planning.plan?.planId ?? null;
   useEffect(() => {
     if (!planId || !planStatus) return;
     const terminal =
