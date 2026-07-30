@@ -25,6 +25,15 @@ import { matchDescription } from "./matcher";
 import { applyLayout, type LayoutShape, type LayoutPieceSpec } from "./layout";
 import { applyFinishing, FINISHING_PRESETS, type FinishingScope } from "./finishing";
 import { resolvePaint } from "./resolvePaint";
+import {
+  analyzeRoom,
+  composeDecor,
+  composeLayout,
+  describeAnalysis,
+  describeQuality,
+  rebalanceComposition,
+  type Rect,
+} from "../composition";
 
 export interface ToolContext {
   environmentId: string;
