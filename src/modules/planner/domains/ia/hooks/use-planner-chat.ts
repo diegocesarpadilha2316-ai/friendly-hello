@@ -631,7 +631,7 @@ export function usePlannerChat() {
         patchMessage(assistantId, (m) => ({
           ...m,
           status: "done",
-          content: `Perfeito — anotei **${trimmed}** e já comecei. Acompanhe o progresso abaixo.`,
+          content: `Show, ${trimmed} então. Já tô montando aqui pra você.`,
         }));
         setState((s) => ({ ...s, status: "idle" }));
         sendingRef.current = false;
@@ -649,8 +649,8 @@ export function usePlannerChat() {
           ...m,
           status: "done",
           content: yes
-            ? "Confirmado — executando agora. Acompanhe o progresso abaixo."
-            : "Ok, não vou apagar nada. O que você quer fazer?",
+            ? "Beleza, tô fazendo agora."
+            : "Ok, não mexi em nada. Me diz o que você prefere.",
         }));
         setState((s) => ({ ...s, status: "idle" }));
         sendingRef.current = false;
@@ -677,30 +677,20 @@ export function usePlannerChat() {
           },
         });
         if (proposed) {
-          const lines = proposed.steps.map((s) => `${s.position + 1}. ${s.title}`).join("\n");
-          // Só perguntamos o que é indispensável; recomendações viram
-          // suposições visíveis e nunca interrompem o fluxo.
+          // Só perguntamos o que é indispensável; nada de listar etapas,
+          // suposições ou progresso — a conversa fica igual à de uma pessoa.
           const blocking = proposed.missingInformation.filter((m) => m.level === "obrigatoria");
-          const pendencies = blocking.map((m) => `• ${m.question}`).join("\n");
-          const assumptions = proposed.assumptions.map((a) => `• ${a.label}`).join("\n");
-          const closing =
+          const firstQuestion = blocking[0]?.question;
+          const content =
             proposed.status === "ready"
-              ? "\nJá comecei a executar — acompanhe o progresso abaixo."
-              : pendencies
-                ? "\nResponda aqui no chat e eu sigo automaticamente."
-                : "\nResponda **sim** para eu seguir com esta operação.";
+              ? "Perfeito, já tô montando isso pra você. Daqui a pouco aparece aí no viewport."
+              : firstQuestion
+                ? firstQuestion
+                : "Só me confirma: pode seguir com isso? (é só dizer sim)";
           patchMessage(assistantId, (m) => ({
             ...m,
             status: "done",
-            content: [
-              `Entendi: **${proposed.title}**. Vou seguir esta sequência:`,
-              lines,
-              assumptions && proposed.status === "ready" ? `\n${assumptions}` : "",
-              pendencies ? `\nSó preciso saber:\n${pendencies}` : "",
-              closing,
-            ]
-              .filter(Boolean)
-              .join("\n"),
+            content,
           }));
           setState((s) => ({ ...s, status: "idle" }));
           sendingRef.current = false;
