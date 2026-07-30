@@ -1,0 +1,197 @@
+/**
+ * Etapa 11 — Partes 3 e 4: detecção de informações ausentes e
+ * suposições controladas.
+ *
+ * Tudo é derivado do pedido + estado real do projeto + memória. Nada de
+ * rede: heurística determinística pt-BR. Informações opcionais nunca
+ * interrompem o fluxo; obrigatórias colocam o plano em
+ * `awaiting_information`.
+ */
+import type { PlannerProject } from "@/modules/planner/shared";
+import type { ProjectMemory } from "../memory/types";
+import type { PlanRequestKind, PlanAssumption, PlanMissingInfo } from "./types";
+
+const norm = (s: string) =>
+  s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+const STYLES = [
+  "moderno",
+  "minimalista",
+  "classico",
+  "industrial",
+  "escandinavo",
+  "rustico",
+  "contemporaneo",
+  "luxo",
+];
+
+const MATERIALS = [
+  "freijo",
+  "carvalho",
+  "nogueira",
+  "off white",
+  "branco",
+  "grafite",
+  "preto",
+  "amendoa",
+  "cinza",
+  "ripado",
+];
+
+export interface RequestFacts {
+  readonly widthMm: number | null;
+  readonly depthMm: number | null;
+  readonly heightMm: number | null;
+  readonly style: string | null;
+  readonly material: string | null;
+  readonly wall: string | null;
+  readonly hasSelection: boolean;
+}
+
+/** Converte um número com unidade em milímetros inteiros. */
+function toMm(value: number, unit: string | undefined): number {
+  const u = (unit ?? "m").toLowerCase();
+  if (u.startsWith("mm")) return Math.round(value);
+  if (u.startsWith("cm")) return Math.round(value * 10);
+  return Math.round(value * 1000);
+}
+
+/** "3 por 4 metros", "3x4 m", "300 x 400 cm". */
+function parseDimensions(text: string): { width: number; depth: number } | null {
+  const re = /(\d+(?:[.,]\d+)?)\s*(?:x|por)\s*(\d+(?:[.,]\d+)?)\s*(mm|cm|m|metros?)?/i;
+  const m = text.match(re);
+  if (!m) return null;
+  const a = Number(m[1].replace(",", "."));
+  const b = Number(m[2].replace(",", "."));
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+  const unit = m[3]?.toLowerCase().startsWith("metro") ? "m" : m[3];
+  const width = toMm(a, unit);
+  const depth = toMm(b, unit);
+  if (width < 600 || depth < 600 || width > 30_000 || depth > 30_000) return null;
+  return { width, depth };
+}
+
+function parseHeight(text: string): number | null {
+  const m = text.match(/(?:pe[- ]?direito|altura)\D{0,12}(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?/i);
+  if (!m) return null;
+  const value = Number(m[1].replace(",", "."));
+  if (!Number.isFinite(value)) return null;
+  const mm = toMm(value, m[2]);
+  return mm >= 1800 && mm <= 6000 ? mm : null;
+}
+
+export function extractFacts(
+  message: string,
+  project: PlannerProject | null,
+  memory: ProjectMemory | null,
+  hasSelection: boolean,
+): RequestFacts {
+  const t = norm(message);
+  const dims = parseDimensions(t);
+  const style = STYLES.find((s) => t.includes(s)) ?? memory?.style ?? null;
+  const material =
+    MATERIALS.find((m) => t.includes(m)) ??
+    memory?.materials[0]?.value ??
+    project?.briefing?.style ??
+    null;
+  const wall = t.match(/\bparede\s+(esquerda|direita|frontal|fundo|norte|sul|leste|oeste)\b/)?.[1] ?? null;
+  return {
+    widthMm: dims?.width ?? null,
+    depthMm: dims?.depth ?? null,
+    heightMm: parseHeight(t),
+    style,
+    material,
+    wall,
+    hasSelection,
+  };
+}
+
+const REFERS_TO_WALL = /\b(nessa|nesta|essa|esta|aquela)\s+parede\b/i;
+
+export interface RequirementAnalysis {
+  readonly missing: readonly PlanMissingInfo[];
+  readonly assumptions: readonly PlanAssumption[];
+}
+
+/**
+ * Regras:
+ *  - medidas críticas, parede alvo e material específico NUNCA são
+ *    assumidos em silêncio;
+ *  - pé-direito, profundidade padrão e estilo podem ser inferidos com
+ *    segurança, mas a suposição fica sempre visível ao usuário.
+ */
+export function analyzeRequirements(input: {
+  readonly message: string;
+  readonly kind: PlanRequestKind;
+  readonly facts: RequestFacts;
+  readonly project: PlannerProject | null;
+  readonly roomHasDimensions: boolean;
+}): RequirementAnalysis {
+  const { message, kind, facts, roomHasDimensions } = input;
+  const missing: PlanMissingInfo[] = [];
+  const assumptions: PlanAssumption[] = [];
+
+  if (kind === "projeto_completo") {
+    if (!facts.widthMm && !facts.depthMm && !roomHasDimensions) {
+      missing.push({
+        key: "dimensoes",
+        question: "Quais são as medidas do ambiente (largura x profundidade, em metros)?",
+        level: "obrigatoria",
+      });
+    }
+    if (!facts.style) {
+      missing.push({
+        key: "estilo",
+        question: "Qual estilo você prefere — moderno, clássico, industrial ou minimalista?",
+        level: "recomendada",
+      });
+    }
+    if (!facts.material) {
+      missing.push({
+        key: "material",
+        question: "Tem um acabamento em mente (por exemplo Freijó, Carvalho ou Off White)?",
+        level: "recomendada",
+      });
+    }
+  }
+
+  if (kind === "plano_intermediario" && REFERS_TO_WALL.test(message) && !facts.wall && !facts.hasSelection) {
+    missing.push({
+      key: "parede",
+      question: "Em qual parede? (esquerda, direita, frontal ou fundo)",
+      level: "obrigatoria",
+    });
+  }
+
+  if (!facts.heightMm) {
+    assumptions.push({
+      key: "pe_direito",
+      label: "Vou considerar pé-direito de 2,70 m porque a altura não foi informada.",
+      value: "2700",
+      editable: true,
+    });
+  }
+  if (kind === "projeto_completo" && facts.style) {
+    assumptions.push({
+      key: "estilo",
+      label: `Estilo aplicado: ${facts.style}.`,
+      value: facts.style,
+      editable: true,
+    });
+  }
+  if (facts.material) {
+    assumptions.push({
+      key: "material",
+      label: `Acabamento base: ${facts.material} (confirmado no catálogo antes de aplicar).`,
+      value: facts.material,
+      editable: true,
+    });
+  }
+
+  // Perguntas por turno: no máximo 2, priorizando obrigatórias.
+  const ordered = [...missing].sort((a, b) => (a.level === "obrigatoria" ? -1 : 1));
+  return { missing: ordered.slice(0, 2), assumptions };
+}
