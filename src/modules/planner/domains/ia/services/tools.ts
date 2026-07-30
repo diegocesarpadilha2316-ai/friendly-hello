@@ -25,6 +25,15 @@ import { matchDescription } from "./matcher";
 import { applyLayout, type LayoutShape, type LayoutPieceSpec } from "./layout";
 import { applyFinishing, FINISHING_PRESETS, type FinishingScope } from "./finishing";
 import { resolvePaint } from "./resolvePaint";
+import {
+  analyzeRoom,
+  composeDecor,
+  composeLayout,
+  describeAnalysis,
+  describeQuality,
+  rebalanceComposition,
+  type Rect,
+} from "../composition";
 
 export interface ToolContext {
   environmentId: string;
@@ -344,12 +353,28 @@ export function toolCreateRoomPreset(
       : args.noBlueprintPieces
         ? []
         : blueprint.pieces;
-  // Tolerância zero: quando o usuário fornece peças específicas, garantimos
-  // shape com paredes suficientes (mínimo L) — o motor faz fallback entre
-  // paredes disponíveis antes de skippar.
-  const shape =
-    args.pieces && args.pieces.length > 3 && blueprint.shape === "linear" ? "L" : blueprint.shape;
-  const res = applyLayout(project, ctx, { shape, pieces: piecesToPlace });
+
+  // ── 1) ANÁLISE PRÉ-GERAÇÃO ─────────────────────────────────────────────
+  // Lê o cômodo real (área, proporção, paredes, portas, janelas, luz
+  // natural, circulação exigida) ANTES de posicionar qualquer volume.
+  const analysis = analyzeRoom(room, {
+    environment: args.preset,
+    style: args.style ?? blueprint.style ?? null,
+  });
+
+  // ── 2) COMPOSIÇÃO DOS VOLUMES ──────────────────────────────────────────
+  // Distribui os módulos por equilíbrio, proporção, alinhamento,
+  // continuidade, ergonomia e funcionalidade (não por espaço vazio).
+  const composition = composeLayout(analysis, piecesToPlace);
+  // Tolerância zero: mantém o fallback de forma quando o pedido é grande.
+  const shape: LayoutShape =
+    args.pieces && args.pieces.length > 3 && composition.shape === "linear"
+      ? "L"
+      : composition.shape;
+  const res = applyLayout(project, ctx, {
+    shape,
+    pieces: composition.pieces.length > 0 ? composition.pieces : piecesToPlace,
+  });
 
   // ── Decoração contextual ────────────────────────────────────────────────
   // Além dos módulos de marcenaria, o ambiente ganha itens decorativos
@@ -381,6 +406,21 @@ export function toolCreateRoomPreset(
   let decorPlaced = 0;
   const customPieces = !!(args.pieces && args.pieces.length > 0);
   const skipDecor = customPieces && (args.skipDecorWhenCustom ?? true);
+  // Do blueprint mantemos apenas os móveis FUNCIONAIS (cama, sofá, mesa,
+  // criado-mudo, banquetas…). A camada puramente decorativa passa a ser
+  // decidida pela Inteligência de Composição, com base em estilo, área,
+  // circulação e equilíbrio visual.
+  const FUNCTIONAL_SUBTYPES = new Set([
+    "cama",
+    "sofa",
+    "mesa",
+    "cadeira",
+    "poltrona",
+    "criado-mudo",
+    "aparador",
+    "estante",
+    "banqueta",
+  ]);
   const decorItems = skipDecor ? [] : (blueprint.decor ?? []);
   for (const spec of decorItems) {
     const item = spec.catalogItemId
@@ -389,6 +429,7 @@ export function toolCreateRoomPreset(
         ? (matchDescription(spec.description)?.item ?? null)
         : null;
     if (!item) continue;
+    if (!FUNCTIONAL_SUBTYPES.has(String(item.subtype))) continue;
     const at = {
       x: Math.round(room.dimensions.width * spec.xRatio),
       y: Math.round(room.dimensions.depth * spec.yRatio),
@@ -399,6 +440,50 @@ export function toolCreateRoomPreset(
       params: spec.rotation != null ? { rotation: spec.rotation } : undefined,
     });
     decorPlaced += 1;
+  }
+
+  // ── 3) DECORAÇÃO AUTOMÁTICA COERENTE ───────────────────────────────────
+  // Complementa o ambiente sem exagerar: âncora, iluminação, verde, arte,
+  // objetos e conforto — todos dentro do repertório do estilo escolhido.
+  let qualityLine = "";
+  if (!skipDecor) {
+    const roomAfter = getRoom(next, ctx);
+    const occupied: Rect[] = roomAfter
+      ? furnitureInRoom(roomAfter).map((f) => {
+          const rot = ((f.rotation % 180) + 180) % 180;
+          const swapped = rot > 45 && rot < 135;
+          const w = swapped ? f.depth : f.width;
+          const d = swapped ? f.width : f.depth;
+          return { x: f.x, y: f.y, w, d };
+        })
+      : [];
+
+    const sizeOf = (id: string) => {
+      const it = findCatalogItem(id);
+      if (!it) return null;
+      return { w: it.parametric.defaults.width, d: it.parametric.defaults.depth };
+    };
+
+    const proposed = composeDecor({ analysis, occupied, sizeOf });
+
+    // ── 4) CONTROLE DE QUALIDADE + REORGANIZAÇÃO AUTOMÁTICA ─────────────
+    const { decor: finalDecor, report, passes } = rebalanceComposition(
+      analysis,
+      occupied,
+      proposed,
+    );
+
+    for (const d of finalDecor) {
+      const item = findCatalogItem(d.catalogItemId);
+      if (!item) continue;
+      next = insertItemIntoProject(next, ctx, item, {
+        at: { x: d.x, y: d.y },
+        params: d.rotation != null ? { rotation: d.rotation } : undefined,
+      });
+      decorPlaced += 1;
+    }
+    qualityLine =
+      `${describeQuality(report)}` + (passes > 0 ? ` (reorganizado ${passes}×)` : "");
   }
 
   // ── Auditoria Modo Engenharia ──────────────────────────────────────────
@@ -428,7 +513,11 @@ export function toolCreateRoomPreset(
   const audit = auditLines.length > 0 ? ` ${auditLines.join(" ")}` : "";
   return {
     project: next,
-    summary: `${blueprint.label} criado — ${parts.join(", ")}.${audit}`,
+    summary:
+      `${blueprint.label} criado — ${parts.join(", ")}.${audit}\n` +
+      `${describeAnalysis(analysis)}\n` +
+      `${composition.notes.join(" · ")}.` +
+      (qualityLine ? `\n${qualityLine}` : ""),
     affectedIds: [],
   };
 }
