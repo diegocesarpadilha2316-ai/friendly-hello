@@ -3,14 +3,16 @@ import { z } from "zod";
 import { createUserScopedClient } from "@/core/lib/supabase/server-user.server";
 import { debitCreditsOrThrow, refundCreditsBestEffort } from "@/core/billing/debit.server";
 import { priceAiAssistantMessage } from "@/core/billing/pricing";
+import { AI_MODEL_CATALOG } from "@/core/ai/catalog";
 
 /**
  * Proxy autenticado do Copiloto IA para o Lovable AI Gateway.
  *
- * Segurança (Etapa 0):
+ * Segurança (Etapa 0/7):
  *  - exige Bearer token válido do Supabase (401 sem sessão);
  *  - exige tenant ativo em `company_members` (403 caso contrário);
  *  - valida formato e tamanho do payload (400 / 413);
+ *  - whitelist estrita de campos e allowlist de modelos;
  *  - debita créditos ANTES de chamar o provedor (402 se saldo insuficiente);
  *  - estorna (`refund`) se o provedor falhar — nunca cobra sem entregar;
  *  - nunca retorna 2xx sem que o débito obrigatório tenha sido gravado;
@@ -22,6 +24,9 @@ const MAX_MESSAGE_CHARS = 24_000;
 const MAX_MESSAGES = 80;
 const MAX_TOTAL_CHARS = 200_000;
 
+const ALLOWED_MODELS = new Set(AI_MODEL_CATALOG.filter((m) => m.enabled).map((m) => m.id));
+const DEFAULT_MODEL = "google/gemini-3.6-flash";
+
 const messageSchema = z.object({
   role: z.enum(["system", "user", "assistant", "tool"]),
   content: z.union([z.string(), z.array(z.unknown()), z.null()]).optional(),
@@ -30,16 +35,24 @@ const messageSchema = z.object({
   tool_calls: z.array(z.unknown()).max(40).optional(),
 });
 
-const payloadSchema = z
-  .object({
-    model: z.string().min(1).max(200).optional(),
-    stream: z.boolean().optional(),
-    temperature: z.number().min(0).max(2).optional(),
-    max_tokens: z.number().int().positive().max(32_000).nullable().optional(),
-    messages: z.array(messageSchema).min(1).max(MAX_MESSAGES),
-    tools: z.array(z.unknown()).max(80).optional(),
-  })
-  .passthrough();
+const toolSchema = z.object({
+  type: z.literal("function"),
+  function: z.object({
+    name: z.string().min(1).max(120),
+    description: z.string().max(2_000).optional(),
+    parameters: z.record(z.unknown()).optional(),
+  }),
+});
+
+const payloadSchema = z.object({
+  model: z.string().min(1).max(200).optional(),
+  stream: z.boolean().optional(),
+  temperature: z.number().min(0).max(2).optional(),
+  max_tokens: z.number().int().positive().max(32_000).nullable().optional(),
+  messages: z.array(messageSchema).min(1).max(MAX_MESSAGES),
+  tools: z.array(toolSchema).max(80).optional(),
+  client_message_id: z.string().max(120).optional(),
+});
 
 function json(body: unknown, status: number): Response {
   return new Response(JSON.stringify(body), {
@@ -56,6 +69,11 @@ function contentLength(content: unknown): number {
   } catch {
     return 0;
   }
+}
+
+function normalizeModel(model: string | null | undefined): string {
+  const id = model ?? DEFAULT_MODEL;
+  return ALLOWED_MODELS.has(id) ? id : DEFAULT_MODEL;
 }
 
 export const Route = createFileRoute("/api/ai/chat")({
@@ -131,15 +149,19 @@ export const Route = createFileRoute("/api/ai/chat")({
         }
         if (totalChars > MAX_TOTAL_CHARS) return json({ error: "payload_too_large" }, 413);
 
+        const model = normalizeModel(parsed.data.model);
+        const stream = parsed.data.stream === true;
+
         /* --------------- 4. Débito obrigatório (antes do provedor) --------- */
         const estimatedTokensIn = Math.ceil(totalChars / 4);
         const cost = priceAiAssistantMessage({ tokensIn: estimatedTokensIn });
         const debitMeta = {
           surface: "planner.copilot",
-          model: parsed.data.model ?? null,
+          model,
           messages: messages.length,
-          stream: parsed.data.stream === true,
+          stream,
           estimated_tokens_in: estimatedTokensIn,
+          client_message_id: parsed.data.client_message_id ?? null,
         };
 
         // Débito obrigatório: se falhar (saldo insuficiente ou erro do ledger),
@@ -148,7 +170,7 @@ export const Route = createFileRoute("/api/ai/chat")({
           await debitCreditsOrThrow(supabase, tenantId, userId, {
             amount: cost,
             reason: "ai.message.assistant",
-            reference: parsed.data.model ?? null,
+            reference: model,
             metadata: debitMeta,
           });
         } catch (err) {
@@ -169,7 +191,7 @@ export const Route = createFileRoute("/api/ai/chat")({
           refundCreditsBestEffort(tenantId as string, userId, {
             amount: cost,
             reason: "ai.message.assistant.refund",
-            reference: parsed.data.model ?? null,
+            reference: model,
             metadata: { ...debitMeta, refund_stage: stage },
           });
 
@@ -180,6 +202,16 @@ export const Route = createFileRoute("/api/ai/chat")({
           return json({ error: "service_unavailable" }, 503);
         }
 
+        const upstreamBody: Record<string, unknown> = {
+          model,
+          messages,
+          stream,
+        };
+        if (parsed.data.temperature !== undefined)
+          upstreamBody.temperature = parsed.data.temperature;
+        if (parsed.data.max_tokens != null) upstreamBody.max_tokens = parsed.data.max_tokens;
+        if (parsed.data.tools?.length) upstreamBody.tools = parsed.data.tools;
+
         let upstream: Response;
         try {
           upstream = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -189,7 +221,7 @@ export const Route = createFileRoute("/api/ai/chat")({
               "Lovable-API-Key": key,
               "X-Lovable-AIG-SDK": "dioris-planner",
             },
-            body: JSON.stringify(parsed.data),
+            body: JSON.stringify(upstreamBody),
           });
         } catch {
           await refund("upstream_unreachable");
@@ -211,6 +243,7 @@ export const Route = createFileRoute("/api/ai/chat")({
         const ct = upstream.headers.get("content-type");
         if (ct) headers.set("Content-Type", ct);
         headers.set("Cache-Control", "no-store");
+        headers.set("X-Dioris-AI-Model", model);
         return new Response(upstream.body, { status: upstream.status, headers });
       },
     },

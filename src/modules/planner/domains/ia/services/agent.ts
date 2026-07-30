@@ -16,12 +16,7 @@ import type { PlannerProject } from "@/modules/planner/shared";
 import type { CompanyManufacturingRules } from "@/modules/planner/shared";
 import { interpret, type ParsedIntent } from "./interpreter";
 import { answerQuestion } from "./questions";
-import {
-  TOOL_FUNCTIONS,
-  type ToolContext,
-  type ToolExecutionResult,
-  type ToolName,
-} from "./tools";
+import { TOOL_FUNCTIONS, type ToolContext, type ToolExecutionResult, type ToolName } from "./tools";
 
 export interface AgentInput {
   message: string;
@@ -40,6 +35,17 @@ export interface AgentInput {
     project: PlannerProject;
     ctx: ToolContext;
   }) => Promise<string | null>;
+  /**
+   * Callback de streaming opcional — quando fornecido, respostas
+   * conversacionais são geradas em tempo real pelo LLM. O texto final
+   * completo é retornado ao final do generator.
+   */
+  llmReplyStream?: (prompt: {
+    userMessage: string;
+    role: "smalltalk" | "unknown" | "question";
+    project: PlannerProject;
+    ctx: ToolContext;
+  }) => AsyncGenerator<string>;
   /**
    * Callback opcional — quando fornecido, o agent tenta obter do LLM uma
    * lista estruturada de `ParsedIntent`s (tool-calling real) antes de
@@ -67,7 +73,11 @@ function executeIntent(
   ctx: ToolContext,
 ): ToolExecutionResult {
   const fn = TOOL_FUNCTIONS[intent.tool] as
-    | ((p: PlannerProject, c: ToolContext, a: Readonly<Record<string, unknown>>) => ToolExecutionResult)
+    | ((
+        p: PlannerProject,
+        c: ToolContext,
+        a: Readonly<Record<string, unknown>>,
+      ) => ToolExecutionResult)
     | undefined;
   if (!fn) {
     return {
@@ -99,8 +109,12 @@ export async function* runAgent(input: AgentInput): AsyncGenerator<AgentChunk, v
         return;
       }
     }
-    const reply =
-      (await tryLLM(input, parsed.type, input.message)) ?? parsed.reply;
+    if (input.llmReplyStream) {
+      yield* tryLLMStream(input, parsed.type, input.message);
+      yield { kind: "done" };
+      return;
+    }
+    const reply = (await tryLLM(input, parsed.type, input.message)) ?? parsed.reply;
     yield* streamText(reply, input.signal);
     yield { kind: "done" };
     return;
@@ -108,6 +122,11 @@ export async function* runAgent(input: AgentInput): AsyncGenerator<AgentChunk, v
 
   if (parsed.type === "question") {
     const local = answerQuestion(parsed.question, input.project, input.ctx, input.rules);
+    if (input.llmReplyStream) {
+      yield* tryLLMStream(input, "question", input.message, local);
+      yield { kind: "done" };
+      return;
+    }
     const remote = await tryLLM(input, "question", input.message);
     const answer = remote ? `${local}\n\n${remote}` : local;
     yield* streamText(answer, input.signal);
@@ -187,6 +206,32 @@ async function tryLLM(
     return text && text.trim().length > 0 ? text : null;
   } catch {
     return null;
+  }
+}
+
+async function* tryLLMStream(
+  input: AgentInput,
+  role: "smalltalk" | "unknown" | "question",
+  userMessage: string,
+  prefix?: string,
+): AsyncGenerator<AgentChunk> {
+  if (!input.llmReplyStream) return;
+  try {
+    if (prefix) {
+      yield { kind: "text", text: prefix };
+      yield { kind: "text", text: "\n\n" };
+    }
+    for await (const delta of input.llmReplyStream({
+      userMessage,
+      role,
+      project: input.project,
+      ctx: input.ctx,
+    })) {
+      if (input.signal?.aborted) return;
+      if (delta) yield { kind: "text", text: delta };
+    }
+  } catch {
+    // Falha silenciosa no streaming: o hook já marca erro no estado.
   }
 }
 
