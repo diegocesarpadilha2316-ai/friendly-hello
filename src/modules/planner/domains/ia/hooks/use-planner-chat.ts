@@ -39,6 +39,8 @@ import { FINISHING_PRESETS } from "../services/finishing";
 import { streamLovableReply } from "../services/ai-stream";
 import { buildAgentBriefing } from "../agents";
 import { buildMemoryPromptBlock, readMemory, updateMemoryFromTurn } from "../memory";
+import { classifyRequest } from "../planning";
+import { usePlanExecution } from "./use-plan-execution";
 import type { ParsedIntent } from "../services/interpreter";
 import type { PlannerProject, PlannerRoomType } from "@/modules/planner/shared";
 import type { ToolContext } from "../services/tools";
