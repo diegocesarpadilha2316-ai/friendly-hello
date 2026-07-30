@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { hashApiKey, parseAuthHeader } from "./key-hash.server";
+import { parseAuthHeader, verifyApiKey } from "./key-hash.server";
 import { checkRateLimit, incrementQuota } from "./rate-limit.server";
 
 export interface AuthenticatedApiCall {
@@ -12,7 +12,10 @@ export async function authenticateApiRequest(
   supabase: SupabaseClient,
   request: Request,
 ): Promise<AuthenticatedApiCall | { error: string; status: number }> {
-  const parsed = parseAuthHeader(request.headers.get("authorization"));
+  const parsed = parseAuthHeader(
+    request.headers.get("authorization"),
+    request.headers.get("x-api-key"),
+  );
   if (!parsed) return { error: "Missing bearer token", status: 401 };
   const { data: key } = await supabase
     .from("api_keys")
@@ -22,7 +25,7 @@ export async function authenticateApiRequest(
   if (!key || key.status !== "active") return { error: "Invalid API key", status: 401 };
   if (key.expires_at && new Date(key.expires_at as string) < new Date())
     return { error: "API key expired", status: 401 };
-  if (hashApiKey(parsed.secret) !== (key.key_hash as string))
+  if (!verifyApiKey(parsed.secret, key.key_hash as string))
     return { error: "Invalid API key", status: 401 };
   const ips = (key.allowed_ips as string[] | null) ?? [];
   if (ips.length) {
