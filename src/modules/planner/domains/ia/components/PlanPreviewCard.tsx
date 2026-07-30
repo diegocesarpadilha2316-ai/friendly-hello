@@ -9,14 +9,9 @@ import {
   Check,
   CircleDashed,
   Loader2,
-  Pause,
-  Play,
-  RotateCcw,
-  Undo2,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/core/components/ui-kit";
 import type { PlanProgress, PlanStep, ProjectPlan } from "../planning";
 
 export interface PlanPreviewCardProps {
@@ -58,9 +53,8 @@ export function PlanPreviewCard(props: PlanPreviewCardProps) {
   const awaitingConfirm = plan.status === "awaiting_confirmation";
   const awaitingInfo = plan.status === "awaiting_information";
   const failed = plan.status === "failed" || plan.status === "partially_completed";
-  // O plano nunca depende de clique para iniciar: a execução é automática e
-  // este cartão é apenas leitura (progresso + controles úteis).
-  const waitingUser = awaitingConfirm || awaitingInfo;
+  // O plano nunca depende de clique: a execução é automática e este cartão
+  // é 100% somente leitura (progresso + resumo).
 
   return (
     <div className="relative z-10 w-full min-w-0 max-w-full overflow-hidden rounded-xl border border-border/60 bg-card/90 text-sm shadow-sm [touch-action:manipulation] [pointer-events:auto]">
