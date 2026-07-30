@@ -11,10 +11,57 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireTenant } from "@/core/middleware/require-tenant";
 import { debitCreditsBestEffort } from "@/core/billing/debit.server";
-import { priceAiAssistantMessage, CREDIT_PRICES } from "@/core/billing/pricing";
+import { priceAiAssistantMessage } from "@/core/billing/pricing";
 
 export type AiRole = "system" | "user" | "assistant" | "tool";
 export type AiMemoryScope = "project" | "user" | "company";
+
+/* ----------------------------- Infra comum ------------------------------ */
+
+/**
+ * Erros do PostgREST nunca vazam para o cliente: o detalhe fica no log do
+ * servidor e o navegador recebe apenas uma mensagem genérica.
+ */
+function fail(scope: string, error: unknown, status = 400): Response {
+  console.error(`[planner-ai] ${scope}`, error);
+  const messages: Record<string, string> = {
+    "session.create": "Não foi possível criar a sessão.",
+    "session.read": "Não foi possível carregar o histórico.",
+    "session.list": "Não foi possível carregar as sessões.",
+    "session.update": "Não foi possível atualizar a sessão.",
+    "session.delete": "Não foi possível remover a sessão.",
+    "message.append": "Não foi possível salvar a mensagem.",
+    "toolcall.record": "Não foi possível registrar a ferramenta.",
+    "memory.read": "Não foi possível carregar a memória.",
+    "memory.write": "Não foi possível salvar a memória.",
+    "usage.read": "Não foi possível carregar o consumo.",
+    "models.read": "Não foi possível carregar os modelos.",
+  };
+  return new Response(messages[scope] ?? "Operação não concluída.", { status });
+}
+
+const SESSION_COLUMNS =
+  "id,project_id,user_id,model_id,title,summary,message_count,tokens_in,tokens_out,archived,created_at,updated_at";
+const MESSAGE_COLUMNS =
+  "id,session_id,role,content,status,tokens_in,tokens_out,latency_ms,metadata,created_at";
+const TOOL_CALL_COLUMNS =
+  "id,session_id,message_id,tool_name,status,summary,duration_ms,executed_at";
+const MEMORY_COLUMNS = "id,scope,project_id,user_id,key,value,importance,updated_at";
+
+const HISTORY_DEFAULT_LIMIT = 50;
+const HISTORY_MAX_LIMIT = 200;
+
+/** Limita profundidade/tamanho de payloads declarados pelo cliente. */
+function sanitizeJson(value: unknown, maxChars = 4000): Record<string, unknown> | null {
+  if (!value || typeof value !== "object") return null;
+  try {
+    const raw = JSON.stringify(value);
+    if (raw.length <= maxChars) return JSON.parse(raw) as Record<string, unknown>;
+    return { _truncated: true, _bytes: raw.length, preview: raw.slice(0, maxChars) };
+  } catch {
+    return { _unserializable: true };
+  }
+}
 
 /* ------------------------------ Sessions -------------------------------- */
 
