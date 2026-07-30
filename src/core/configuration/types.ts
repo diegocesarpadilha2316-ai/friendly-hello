@@ -48,7 +48,8 @@ export interface ApiKey {
   scopes: readonly string[];
   lastUsedAt: string | null;
   expiresAt: string | null;
-  revokedAt: string | null;
+  /** Coluna canônica `api_keys.status` — 'revoked' substitui o antigo `revoked_at`. */
+  status: "active" | "revoked" | "expired";
   createdAt: string;
 }
 
