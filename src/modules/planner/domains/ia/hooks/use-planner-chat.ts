@@ -74,9 +74,12 @@ async function callLovableProxy(
     };
     if (opts.maxTokens) body.max_tokens = opts.maxTokens;
     if (opts.json) body.response_format = { type: "json_object" };
-    const res = await fetch("/api/ai/chat", {
+    const { AI_PROXY_ENDPOINT, buildAiProxyHeaders } = await import(
+      "@/modules/planner/domains/ai/proxy"
+    );
+    const res = await fetch(AI_PROXY_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: await buildAiProxyHeaders(),
       body: JSON.stringify(body),
       signal: opts.signal,
     });
