@@ -11,6 +11,35 @@
 import type { ToolName } from "./tools";
 import { buildBlueprint, blueprintToPreset, validateBlueprint } from "./blueprint";
 import { decompose } from "./decomposer";
+import { parseEdits } from "./edits";
+import {
+  assumptionsSentence,
+  buildFurnitureSpec,
+  specToDescription,
+  specToParams,
+  type FurnitureSpec,
+} from "./spec";
+
+/**
+ * Ficha Técnica → intent de inserção. O Planner Engine recebe a descrição
+ * canônica (escolha de família/variante no catálogo) mais os params exatos
+ * da ficha (portas, abertura, gavetas, maleiro, cabideiro, espelho, nichos,
+ * puxador, estilo) — nunca um modelo genérico.
+ */
+function specToIntent(spec: FurnitureSpec, count = 1): ParsedIntent {
+  return {
+    tool: "insert_described",
+    args: {
+      description: specToDescription(spec),
+      count,
+      width: spec.width,
+      height: spec.height,
+      depth: spec.depth,
+      params: specToParams(spec),
+    },
+    answerHint: assumptionsSentence(spec) ?? undefined,
+  };
+}
 
 export interface ParsedIntent {
   tool: ToolName;
@@ -189,6 +218,17 @@ export function interpret(input: string): PlannerIntent {
 
   if (has(t, "ajuda", "help", "o que voce faz", "o que vc faz")) {
     return { type: "question", question: { kind: "help" } };
+  }
+
+  // ── Alterações cirúrgicas (antes de qualquer rota de criação) ──
+  // "troque as portas por portas de correr", "aumente a largura para 3 m",
+  // "coloque 4 gavetas internas" — mexem só no que foi citado.
+  const edits = parseEdits(raw);
+  if (edits.length > 0) {
+    return {
+      type: "command",
+      intents: edits.map((e) => ({ tool: e.tool, args: e.args, answerHint: e.change })),
+    };
   }
 
   const intents: ParsedIntent[] = [];
