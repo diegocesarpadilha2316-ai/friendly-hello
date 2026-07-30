@@ -92,7 +92,11 @@ export function extractFacts(
 ): RequestFacts {
   const t = norm(message);
   const dims = parseDimensions(t);
-  const style = STYLES.find((s) => t.includes(s)) ?? memory?.style ?? null;
+  // Comparação por radical: "contemporânea" também casa com "contemporaneo".
+  const style =
+    STYLES.find((s) => t.includes(s) || t.includes(s.slice(0, Math.max(5, s.length - 1)))) ??
+    memory?.style ??
+    null;
   const material =
     MATERIALS.find((m) => t.includes(m)) ??
     memory?.materials[0]?.value ??
