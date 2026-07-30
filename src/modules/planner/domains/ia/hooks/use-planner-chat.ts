@@ -84,9 +84,8 @@ async function callLovableProxy(
     };
     if (opts.maxTokens) body.max_tokens = opts.maxTokens;
     if (opts.json) body.response_format = { type: "json_object" };
-    const { AI_PROXY_ENDPOINT, buildAiProxyHeaders } = await import(
-      "@/modules/planner/domains/ai/proxy"
-    );
+    const { AI_PROXY_ENDPOINT, buildAiProxyHeaders } =
+      await import("@/modules/planner/domains/ai/proxy");
     const res = await fetch(AI_PROXY_ENDPOINT, {
       method: "POST",
       headers: await buildAiProxyHeaders(),
@@ -108,10 +107,7 @@ async function callLovableProxy(
 }
 
 /** Prompt de sistema mínimo que dá contexto do projeto/cômodo ativo ao LLM. */
-function buildPlannerSystemPrompt(
-  p: PlannerProject,
-  ctx: ToolContext,
-): string {
+function buildPlannerSystemPrompt(p: PlannerProject, ctx: ToolContext): string {
   const env = p.environments.find((e) => e.id === ctx.environmentId);
   const room = env?.rooms.find((r) => r.id === ctx.roomId);
   const briefing = p.briefing
@@ -159,7 +155,9 @@ function buildPlannerSystemPrompt(
     "Regra: sempre que possível, use `insert_described` com uma descrição rica (subtype + largura + cor + frente) para casar com um item real do catálogo.",
     `Projeto ativo: "${p.name}" (v${p.version}).`,
     env ? `Ambiente ativo: "${env.name}".` : "Nenhum ambiente selecionado.",
-    room ? `Cômodo ativo: "${room.name}" (${room.dimensions.width}×${room.dimensions.depth}×${room.dimensions.height} mm).` : "Nenhum cômodo selecionado.",
+    room
+      ? `Cômodo ativo: "${room.name}" (${room.dimensions.width}×${room.dimensions.depth}×${room.dimensions.height} mm).`
+      : "Nenhum cômodo selecionado.",
     selectionLine,
     briefing,
   ]
@@ -257,9 +255,10 @@ function ensureOperablePlannerContext(
   const selectedEnv = selectedEnvironmentId
     ? fallbackProject.environments.find((env) => env.id === selectedEnvironmentId)
     : null;
-  const selectedRoom = selectedEnv && selectedRoomId
-    ? selectedEnv.rooms.find((room) => room.id === selectedRoomId)
-    : null;
+  const selectedRoom =
+    selectedEnv && selectedRoomId
+      ? selectedEnv.rooms.find((room) => room.id === selectedRoomId)
+      : null;
 
   if (selectedEnv && selectedRoom) {
     return {
@@ -270,14 +269,20 @@ function ensureOperablePlannerContext(
     };
   }
 
-  const env = selectedEnv ?? fallbackProject.environments[0] ?? createEnvironment({ name: "Ambiente principal" });
-  const room = selectedRoom ?? env.rooms[0] ?? createRoom({
-    name: labelForRoomType(roomType),
-    type: roomType,
-    width: roomType === "cozinha" ? 4200 : 3600,
-    depth: roomType === "cozinha" ? 3200 : 3000,
-    height: 2700,
-  });
+  const env =
+    selectedEnv ??
+    fallbackProject.environments[0] ??
+    createEnvironment({ name: "Ambiente principal" });
+  const room =
+    selectedRoom ??
+    env.rooms[0] ??
+    createRoom({
+      name: labelForRoomType(roomType),
+      type: roomType,
+      width: roomType === "cozinha" ? 4200 : 3600,
+      depth: roomType === "cozinha" ? 3200 : 3000,
+      height: 2700,
+    });
 
   const envWithRoom = env.rooms.some((r) => r.id === room.id)
     ? env
@@ -286,7 +291,9 @@ function ensureOperablePlannerContext(
   const project = {
     ...fallbackProject,
     environments: hasEnv
-      ? fallbackProject.environments.map((item) => item.id === envWithRoom.id ? envWithRoom : item)
+      ? fallbackProject.environments.map((item) =>
+          item.id === envWithRoom.id ? envWithRoom : item,
+        )
       : [...fallbackProject.environments, envWithRoom],
   };
 
@@ -299,7 +306,11 @@ function ensureOperablePlannerContext(
 }
 
 export const PLANNER_QUICK_ACTIONS: readonly PlannerAIQuickAction[] = [
-  { id: "kitchen", label: "Crie uma cozinha moderna", prompt: "Crie uma cozinha moderna com ilha e LED." },
+  {
+    id: "kitchen",
+    label: "Crie uma cozinha moderna",
+    prompt: "Crie uma cozinha moderna com ilha e LED.",
+  },
   { id: "closet", label: "Crie um closet", prompt: "Crie um closet completo minimalista." },
   { id: "freijo", label: "Troque para Freijó", prompt: "Troque o MDF para Freijó." },
   { id: "open-doors", label: "Abra todas as portas", prompt: "Abra todas as portas." },
@@ -349,6 +360,52 @@ export function usePlannerChat() {
   const abortRef = useRef<AbortController | null>(null);
   const sessionRef = useRef<{ id: string; projectId: string | null } | null>(null);
   const hydratedForRef = useRef<string | null>(null);
+  /** Trava de concorrência: impede duplo clique/reentrância no mesmo envio. */
+  const sendingRef = useRef(false);
+  /** Chave de idempotência do envio atual (reutilizada em retries). */
+  const pendingKeyRef = useRef<{ user: string; assistant: string } | null>(null);
+  const [history, setHistory] = useState<{
+    hasMore: boolean;
+    cursor: string | null;
+    loading: boolean;
+  }>({
+    hasMore: false,
+    cursor: null,
+    loading: false,
+  });
+
+  /** sessionId sobrevive ao reload: guardado por tenant+projeto. */
+  const sessionStorageKey = useCallback(
+    (projectId: string | null) =>
+      `dioris.planner.ai.session.${tenantId}.${projectId ?? "sem-projeto"}`,
+    [tenantId],
+  );
+
+  const readStoredSession = useCallback(
+    (projectId: string | null): string | null => {
+      if (typeof window === "undefined") return null;
+      try {
+        return window.localStorage.getItem(sessionStorageKey(projectId));
+      } catch {
+        return null;
+      }
+    },
+    [sessionStorageKey],
+  );
+
+  const storeSession = useCallback(
+    (projectId: string | null, sessionId: string | null) => {
+      if (typeof window === "undefined") return;
+      try {
+        const key = sessionStorageKey(projectId);
+        if (sessionId) window.localStorage.setItem(key, sessionId);
+        else window.localStorage.removeItem(key);
+      } catch {
+        /* noop */
+      }
+    },
+    [sessionStorageKey],
+  );
 
   /**
    * Garante uma sessão persistida no banco para o projeto ativo.
@@ -360,6 +417,11 @@ export function usePlannerChat() {
       if (!activeCompany?.id) return null;
       const current = sessionRef.current;
       if (current && current.projectId === projectId) return current.id;
+      const stored = readStoredSession(projectId);
+      if (stored) {
+        sessionRef.current = { id: stored, projectId };
+        return stored;
+      }
       const validProject = projectId && isUuid(projectId) ? projectId : null;
       const create = async (pid: string | null) => {
         const row = (await createSessionOnServer({
@@ -370,6 +432,7 @@ export function usePlannerChat() {
           },
         })) as { id: string };
         sessionRef.current = { id: row.id, projectId };
+        storeSession(projectId, row.id);
         return row.id;
       };
       try {
@@ -378,12 +441,12 @@ export function usePlannerChat() {
         try {
           return await create(null);
         } catch (e) {
-          console.warn("[planner-chat] sessão de IA não persistida", e);
+          console.warn("[planner-chat] não foi possível criar a sessão", e);
           return null;
         }
       }
     },
-    [activeCompany?.id, createSessionOnServer],
+    [activeCompany?.id, createSessionOnServer, readStoredSession, storeSession],
   );
 
   const persistMessage = useCallback(
@@ -392,15 +455,22 @@ export function usePlannerChat() {
       role: "user" | "assistant",
       content: string,
       status: string,
+      clientMessageId?: string,
     ): Promise<string | null> => {
       if (!sessionId || !content.trim()) return null;
       try {
         const row = (await appendMessageOnServer({
-          data: { sessionId, role, content: content.slice(0, 200_000), status },
+          data: {
+            sessionId,
+            role,
+            content: content.slice(0, 200_000),
+            status,
+            ...(clientMessageId ? { clientMessageId } : {}),
+          },
         })) as { id: string };
         return row.id;
       } catch (e) {
-        console.warn("[planner-chat] mensagem não persistida", e);
+        console.warn("[planner-chat] não foi possível salvar a mensagem", e);
         return null;
       }
     },
@@ -421,7 +491,7 @@ export function usePlannerChat() {
         })) as { id: string }[];
         const latest = sessions?.[0];
         if (!latest || cancelled) return;
-        const detail = (await getSessionOnServer({ data: { id: latest.id } })) as {
+        const detail = (await getSessionOnServer({ data: { id: latest.id, limit: 50 } })) as {
           messages: {
             id: string;
             role: string;
@@ -429,6 +499,8 @@ export function usePlannerChat() {
             status: string | null;
             created_at: string;
           }[];
+          hasMore: boolean;
+          nextCursor: string | null;
         };
         if (cancelled) return;
         const restored = (detail.messages ?? [])
@@ -438,34 +510,89 @@ export function usePlannerChat() {
             role: m.role as "user" | "assistant",
             content: m.content,
             createdAt: m.created_at,
-            status: "done",
+            status: m.status === "error" ? "error" : "done",
           }));
         sessionRef.current = { id: latest.id, projectId };
+        storeSession(projectId, latest.id);
+        setHistory({
+          hasMore: !!detail.hasMore,
+          cursor: detail.nextCursor ?? null,
+          loading: false,
+        });
         if (restored.length > 0) {
           setState((s) => ({ ...s, messages: restored }));
         }
       } catch (e) {
-        console.warn("[planner-chat] histórico de IA não carregado", e);
+        console.warn("[planner-chat] não foi possível carregar o histórico", e);
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [activeCompany?.id, projectId, listSessionsOnServer, getSessionOnServer]);
+  }, [activeCompany?.id, projectId, listSessionsOnServer, getSessionOnServer, storeSession]);
 
-  const patchMessage = useCallback((id: string, patch: (m: PlannerAIMessage) => PlannerAIMessage) => {
-    setState((s) => ({ ...s, messages: s.messages.map((m) => (m.id === id ? patch(m) : m)) }));
-  }, []);
+  /** Paginação: carrega mensagens anteriores da mesma sessão. */
+  const loadMore = useCallback(async () => {
+    const session = sessionRef.current;
+    if (!session || !history.hasMore || !history.cursor || history.loading) return;
+    setHistory((h) => ({ ...h, loading: true }));
+    try {
+      const detail = (await getSessionOnServer({
+        data: { id: session.id, limit: 50, before: history.cursor },
+      })) as {
+        messages: {
+          id: string;
+          role: string;
+          content: string;
+          status: string | null;
+          created_at: string;
+        }[];
+        hasMore: boolean;
+        nextCursor: string | null;
+      };
+      const older = (detail.messages ?? [])
+        .filter((m) => m.role === "user" || m.role === "assistant")
+        .map<PlannerAIMessage>((m) => ({
+          id: m.id,
+          role: m.role as "user" | "assistant",
+          content: m.content,
+          createdAt: m.created_at,
+          status: m.status === "error" ? "error" : "done",
+        }));
+      setState((s) => ({ ...s, messages: [...older, ...s.messages] }));
+      setHistory({ hasMore: !!detail.hasMore, cursor: detail.nextCursor ?? null, loading: false });
+    } catch (e) {
+      console.warn("[planner-chat] não foi possível carregar o histórico", e);
+      setHistory((h) => ({ ...h, loading: false }));
+    }
+  }, [getSessionOnServer, history.cursor, history.hasMore, history.loading]);
+
+  const patchMessage = useCallback(
+    (id: string, patch: (m: PlannerAIMessage) => PlannerAIMessage) => {
+      setState((s) => ({ ...s, messages: s.messages.map((m) => (m.id === id ? patch(m) : m)) }));
+    },
+    [],
+  );
 
   const cancel = useCallback(() => {
     abortRef.current?.abort();
     abortRef.current = null;
+    sendingRef.current = false;
   }, []);
 
   const send = useCallback(
     async (text: string) => {
       const trimmed = text.trim();
       if (!trimmed || state.status === "streaming" || state.status === "thinking") return;
+      // Trava síncrona — evita duplicação por duplo clique/Enter repetido.
+      if (sendingRef.current) return;
+      sendingRef.current = true;
+      // Chave de idempotência criada uma única vez por envio (reusada em retry).
+      const keys = pendingKeyRef.current ?? {
+        user: `u_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`,
+        assistant: `a_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`,
+      };
+      pendingKeyRef.current = keys;
 
       const userMsg: PlannerAIMessage = {
         id: uid(),
@@ -519,7 +646,7 @@ export function usePlannerChat() {
 
       // Sessão persistida (best-effort) + mensagem do usuário.
       const sessionId = await ensureSession(project.id ?? null, trimmed);
-      await persistMessage(sessionId, "user", trimmed, "ok");
+      await persistMessage(sessionId, "user", trimmed, "ok", keys.user);
       const startedAt = Date.now();
 
       try {
@@ -544,7 +671,7 @@ export function usePlannerChat() {
                 (t) => `- ${t.name}: ${t.description}`,
               ).join("\n");
               const system =
-                "Você é o planejador do Dioris Planner. Traduza o pedido do usuário em uma sequência de chamadas de ferramentas (tool-calling). Responda SOMENTE com JSON válido no formato { \"intents\": [{ \"tool\": string, \"args\": object }] }. Não inclua explicações. Use apenas ferramentas da lista.\n\nFerramentas disponíveis:\n" +
+                'Você é o planejador do Dioris Planner. Traduza o pedido do usuário em uma sequência de chamadas de ferramentas (tool-calling). Responda SOMENTE com JSON válido no formato { "intents": [{ "tool": string, "args": object }] }. Não inclua explicações. Use apenas ferramentas da lista.\n\nFerramentas disponíveis:\n' +
                 catalog +
                 "\n\nSubtypes válidos para insert_item/set_front_type: aereo, balcao, gaveteiro, torre, tampo, ilha, painel, roupeiro, closet, nicho, prateleira, cristaleira, bancada, espelho, porta, gaveta, iluminacao.\nPresets válidos para create_room_preset: cozinha, closet, dormitorio, sala, escritorio, banheiro.\nEstilos válidos para set_style: minimalista, classico, industrial, luxo, moderno.\nTipos válidos para set_front_type: vidro, reeded, solid, aberto.\nPresets de apply_finishing (arg 'preset'): " +
                 FINISHING_PRESETS.map((p) => `"${p.id}" (${p.label})`).join(", ") +
@@ -575,7 +702,11 @@ export function usePlannerChat() {
                 raw = res?.output;
               } catch (e) {
                 console.warn("[planner-chat] gateway com tenant falhou, usando proxy Lovable", e);
-                raw = await callLovableProxy(system, prompt, { json: true, maxTokens: 800, temperature: 0.2 });
+                raw = await callLovableProxy(system, prompt, {
+                  json: true,
+                  maxTokens: 800,
+                  temperature: 0.2,
+                });
               }
               const parsed = typeof raw === "string" ? safeJson(raw) : raw;
               const intents = (parsed as { intents?: unknown } | null)?.intents;
@@ -625,7 +756,9 @@ export function usePlannerChat() {
             buffer += chunk.text;
             patchMessage(assistantId, (m) => ({ ...m, content: buffer, status: "streaming" }));
           } else if (chunk.kind === "tool" && chunk.toolName) {
-            const existing = toolCalls.find((t) => t.status === "pending" && t.name === chunk.toolName);
+            const existing = toolCalls.find(
+              (t) => t.status === "pending" && t.name === chunk.toolName,
+            );
             if (chunk.toolResult) {
               // resultado — atualiza projeto e marca a tool como ok
               mutatedProject = chunk.toolResult.project;
@@ -657,7 +790,11 @@ export function usePlannerChat() {
             if (chunk.toolResult) mutatedProject = chunk.toolResult.project;
             patchMessage(assistantId, (m) => ({ ...m, status: "done" }));
           } else if (chunk.kind === "error") {
-            patchMessage(assistantId, (m) => ({ ...m, status: "error", content: chunk.text ?? m.content }));
+            patchMessage(assistantId, (m) => ({
+              ...m,
+              status: "error",
+              content: chunk.text ?? m.content,
+            }));
           }
         }
 
@@ -695,7 +832,10 @@ export function usePlannerChat() {
                 });
               }
             } catch (e) {
-              console.warn("[planner-chat] snapshot IA não persistiu no servidor; usando cache local", e);
+              console.warn(
+                "[planner-chat] snapshot IA não persistiu no servidor; usando cache local",
+                e,
+              );
             }
             void navigate({
               to: "/planner/projetos/$projectId",
@@ -704,17 +844,37 @@ export function usePlannerChat() {
           }
         }
 
+        const wasCancelled = controller.signal.aborted;
         setState((s) => ({ ...s, status: "idle" }));
         abortRef.current = null;
 
-        // Persistência da resposta + auditoria das tools executadas no cliente.
+        if (wasCancelled) {
+          // Cancelamento nunca vira resposta concluída.
+          patchMessage(assistantId, (m) => ({
+            ...m,
+            status: "error",
+            content: (m.content || "") + "\n\n> Resposta cancelada.",
+          }));
+          sendingRef.current = false;
+          return;
+        }
+
+        // Persistência da resposta + telemetria das tools executadas no cliente.
         if (sessionId) {
           const assistantMessageId = await persistMessage(
             sessionId,
             "assistant",
             buffer || "(sem conteúdo)",
             "ok",
+            keys.assistant,
           );
+          if (!assistantMessageId) {
+            patchMessage(assistantId, (m) => ({
+              ...m,
+              content:
+                (m.content || "") + "\n\n> Esta resposta não foi sincronizada com o servidor.",
+            }));
+          }
           for (const call of toolCalls) {
             try {
               await recordToolCallOnServer({
@@ -723,31 +883,40 @@ export function usePlannerChat() {
                   messageId: assistantMessageId,
                   toolName: call.name,
                   args: (call.args ?? {}) as Record<string, unknown>,
-                  status: call.status === "ok" ? "ok" : call.status === "error" ? "error" : "pending",
+                  status:
+                    call.status === "ok" ? "ok" : call.status === "error" ? "error" : "pending",
                   summary: call.message ?? null,
                   durationMs: Date.now() - startedAt,
                 },
               });
             } catch (e) {
-              console.warn("[planner-chat] tool call não persistida", e);
+              console.warn("[planner-chat] não foi possível registrar a ferramenta", e);
             }
           }
         }
+        // Envio concluído: libera a trava e descarta a chave de idempotência.
+        pendingKeyRef.current = null;
+        sendingRef.current = false;
       } catch (err) {
+        console.warn("[planner-chat] falha ao processar envio", err);
         patchMessage(assistantId, (m) => ({
           ...m,
           status: "error",
           content:
             (m.content || "") +
-            `\n\n> Erro ao processar: ${(err as Error).message ?? String(err)}`,
+            "\n\n> Não foi possível concluir a resposta. Você pode tentar novamente.",
         }));
         setState((s) => ({ ...s, status: "error" }));
+        // A mensagem do usuário permanece salva; a resposta é registrada como erro
+        // (nunca como concluída) e a chave é mantida para o retry ser idempotente.
         await persistMessage(
           sessionId,
           "assistant",
-          `Erro ao processar: ${(err as Error).message ?? String(err)}`,
+          "Resposta não concluída (falha no provedor).",
           "error",
+          keys.assistant,
         );
+        sendingRef.current = false;
       }
     },
     [
@@ -784,8 +953,13 @@ export function usePlannerChat() {
   );
 
   const clear = useCallback(() => {
+    const currentProjectId = sessionRef.current?.projectId ?? null;
+    storeSession(currentProjectId, null);
     sessionRef.current = null;
     hydratedForRef.current = null;
+    pendingKeyRef.current = null;
+    sendingRef.current = false;
+    setHistory({ hasMore: false, cursor: null, loading: false });
     setState({
       messages: [
         {
@@ -799,7 +973,7 @@ export function usePlannerChat() {
       ],
       status: "idle",
     });
-  }, []);
+  }, [storeSession]);
 
   return useMemo(
     () => ({
@@ -810,8 +984,21 @@ export function usePlannerChat() {
       cancel,
       clear,
       editMessage,
+      loadMore,
+      canLoadMore: history.hasMore,
+      loadingHistory: history.loading,
       quickActions: PLANNER_QUICK_ACTIONS,
     }),
-    [state.messages, state.status, send, cancel, clear, editMessage],
+    [
+      state.messages,
+      state.status,
+      send,
+      cancel,
+      clear,
+      editMessage,
+      loadMore,
+      history.hasMore,
+      history.loading,
+    ],
   );
 }
