@@ -513,7 +513,11 @@ export function toolCreateRoomPreset(
   const audit = auditLines.length > 0 ? ` ${auditLines.join(" ")}` : "";
   return {
     project: next,
-    summary: `${blueprint.label} criado — ${parts.join(", ")}.${audit}`,
+    summary:
+      `${blueprint.label} criado — ${parts.join(", ")}.${audit}\n` +
+      `${describeAnalysis(analysis)}\n` +
+      `${composition.notes.join(" · ")}.` +
+      (qualityLine ? `\n${qualityLine}` : ""),
     affectedIds: [],
   };
 }
