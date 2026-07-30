@@ -624,6 +624,9 @@ export function usePlannerChat() {
             selectionIds,
           },
           rules,
+          // Etapa 9 — operações destrutivas só rodam quando o próprio
+          // usuário pediu remoção explicitamente nesta mensagem.
+          confirmDestructive: /\b(remov|apagu?e|apagar|exclu|delet|tire|tirar)/i.test(trimmed),
           signal: controller.signal,
           llmPlan: async ({ userMessage, project: p, ctx }) => {
             try {
