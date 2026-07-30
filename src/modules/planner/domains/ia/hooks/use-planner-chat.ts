@@ -784,6 +784,8 @@ export function usePlannerChat() {
   );
 
   const clear = useCallback(() => {
+    sessionRef.current = null;
+    hydratedForRef.current = null;
     setState({
       messages: [
         {
