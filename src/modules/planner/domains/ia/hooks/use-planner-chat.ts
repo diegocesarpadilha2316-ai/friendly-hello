@@ -548,12 +548,22 @@ export function usePlannerChat() {
   const cancel = useCallback(() => {
     abortRef.current?.abort();
     abortRef.current = null;
+    sendingRef.current = false;
   }, []);
 
   const send = useCallback(
     async (text: string) => {
       const trimmed = text.trim();
       if (!trimmed || state.status === "streaming" || state.status === "thinking") return;
+      // Trava síncrona — evita duplicação por duplo clique/Enter repetido.
+      if (sendingRef.current) return;
+      sendingRef.current = true;
+      // Chave de idempotência criada uma única vez por envio (reusada em retry).
+      const keys = pendingKeyRef.current ?? {
+        user: `u_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`,
+        assistant: `a_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`,
+      };
+      pendingKeyRef.current = keys;
 
       const userMsg: PlannerAIMessage = {
         id: uid(),
