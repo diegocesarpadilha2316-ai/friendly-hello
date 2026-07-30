@@ -62,7 +62,6 @@ export function PlanPreviewCard(props: PlanPreviewCardProps) {
     plan.status === "failed";
   const awaitingConfirm = plan.status === "awaiting_confirmation";
   const awaitingInfo = plan.status === "awaiting_information";
-  const ready = plan.status === "ready" || plan.status === "draft";
   // Regra dura: fora de execução/estado terminal SEMPRE existe um botão
   // habilitado que inicia o plano — nunca um estado sem saída.
   const canStart = !executing && !terminal && !paused;
@@ -162,7 +161,7 @@ export function PlanPreviewCard(props: PlanPreviewCardProps) {
               <button
                 type="button"
                 onClick={() => props.onRemoveStep(step.stepId)}
-                className="text-[10px] text-muted-foreground hover:text-destructive"
+                className="-my-2 shrink-0 px-2 py-2 text-[10px] text-muted-foreground [touch-action:manipulation] hover:text-destructive"
               >
                 remover
               </button>
@@ -175,6 +174,16 @@ export function PlanPreviewCard(props: PlanPreviewCardProps) {
         <p className="mt-3 whitespace-pre-line rounded-lg bg-muted/40 p-2 text-xs text-muted-foreground">
           {plan.finalReport.text}
         </p>
+      )}
+
+      {failed && plan.warnings.length > 0 && (
+        <ul className="mt-3 space-y-1 rounded-lg bg-destructive/10 p-2 text-xs text-destructive">
+          {plan.warnings.map((w, i) => (
+            <li key={i} className="break-words">
+              • {w}
+            </li>
+          ))}
+        </ul>
       )}
       </div>
 
