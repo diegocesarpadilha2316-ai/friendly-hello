@@ -30,7 +30,6 @@ const SINGLETON_TOOLS = new Set([
   "preliminary_cut_list",
   "review_project",
   "check_circulation",
-  "search_material",
 ]);
 
 function signature(step: { tool: string; args: Readonly<Record<string, unknown>> }): string {
