@@ -52,6 +52,18 @@ const HISTORY_LIMIT = 50;
 // entulhar Undo com micro-passos de arrastar/redimensionar.
 const HISTORY_COALESCE_MS = 250;
 
+/** Estados visíveis de sincronização do projeto (Etapa 6). */
+export type PlannerSyncStatus =
+  | "idle"
+  | "modified"
+  | "saving"
+  | "saved"
+  | "unsynced"
+  | "error"
+  | "offline";
+
+const SYNC_RETRY_DELAYS_MS = [2000, 5000, 15000] as const;
+
 interface EditorState {
   project: PlannerProject | null;
   past: readonly PlannerProject[];
