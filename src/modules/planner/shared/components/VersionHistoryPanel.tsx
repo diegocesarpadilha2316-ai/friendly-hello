@@ -95,7 +95,7 @@ export function VersionHistoryPanel() {
                 <Button
                   size="sm"
                   variant="ghost"
-                  onClick={() => handleRestore(v.id)}
+                  onClick={() => handleRestore(v.id, v.label)}
                   disabled={restoringId !== null}
                   title="Restaurar esta versão"
                 >
