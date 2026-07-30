@@ -35,6 +35,8 @@ import {
   usePlannerEditor,
   EditorCanvas,
   Inspector,
+  SyncStatusIndicator,
+  VersionHistoryPanel,
 } from "@/modules/planner/shared";
 import {
   Sheet,
@@ -208,10 +210,7 @@ function PlannerProjectDetail() {
             <h1 className="truncate text-lg font-semibold tracking-tight text-foreground">
               {project.name}
             </h1>
-            <span className="flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-200">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-              {state.dirty ? "Salvando…" : "Auto Save"}
-            </span>
+            <SyncStatusIndicator />
           </div>
           <p className="mt-0.5 text-xs text-slate-400">Cliente: {clientName}</p>
         </div>
