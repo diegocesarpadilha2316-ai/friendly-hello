@@ -111,6 +111,7 @@ function executeIntent(
  */
 export async function* runAgent(input: AgentInput): AsyncGenerator<AgentChunk, void, void> {
   const parsed = interpret(input.message);
+  const convAgents = selectConversationalAgents(input.message);
 
   if (parsed.type === "smalltalk" || parsed.type === "unknown") {
     // Antes de responder só com texto, tenta obter um plano estruturado
@@ -123,27 +124,27 @@ export async function* runAgent(input: AgentInput): AsyncGenerator<AgentChunk, v
       }
     }
     if (input.llmReplyStream) {
-      yield* tryLLMStream(input, parsed.type, input.message);
-      yield { kind: "done" };
+      yield* tryLLMStream(input, parsed.type, input.message, undefined, convAgents);
+      yield { kind: "done", agents: convAgents };
       return;
     }
-    const reply = (await tryLLM(input, parsed.type, input.message)) ?? parsed.reply;
+    const reply = (await tryLLM(input, parsed.type, input.message, convAgents)) ?? parsed.reply;
     yield* streamText(reply, input.signal);
-    yield { kind: "done" };
+    yield { kind: "done", agents: convAgents };
     return;
   }
 
   if (parsed.type === "question") {
     const local = answerQuestion(parsed.question, input.project, input.ctx, input.rules);
     if (input.llmReplyStream) {
-      yield* tryLLMStream(input, "question", input.message, local);
-      yield { kind: "done" };
+      yield* tryLLMStream(input, "question", input.message, local, convAgents);
+      yield { kind: "done", agents: convAgents };
       return;
     }
-    const remote = await tryLLM(input, "question", input.message);
+    const remote = await tryLLM(input, "question", input.message, convAgents);
     const answer = remote ? `${local}\n\n${remote}` : local;
     yield* streamText(answer, input.signal);
-    yield { kind: "done" };
+    yield { kind: "done", agents: convAgents };
     return;
   }
 
