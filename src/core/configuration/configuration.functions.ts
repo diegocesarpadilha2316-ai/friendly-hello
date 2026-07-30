@@ -420,8 +420,11 @@ export const apiKeyCreate = createServerFn({ method: "POST" })
         company_id: context.tenantId,
         name: data.name,
         prefix,
-        hashed_key: hashed,
+        // Coluna canônica única do hash. `hashed_key` não existe no banco real
+        // e não deve ser gravada — sem fallback, sem escrita dupla.
+        key_hash: hashed,
         scopes: data.scopes,
+        status: "active",
         expires_at: data.expiresAt ?? null,
         created_by: context.userId,
       })
@@ -438,7 +441,7 @@ export const apiKeyRevoke = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     const { error } = await context.supabase
       .from("api_keys")
-      .update({ revoked_at: new Date().toISOString() })
+      .update({ status: "revoked", updated_at: new Date().toISOString() })
       .eq("id", data.id)
       .eq("company_id", context.tenantId);
     if (error) throw new Error(error.message);
