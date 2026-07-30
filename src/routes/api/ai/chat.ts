@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { createUserScopedClient } from "@/core/lib/supabase/server-user.server";
-import { debitCreditsBestEffort } from "@/core/billing/debit.server";
+import { debitCreditsOrThrow, refundCreditsBestEffort } from "@/core/billing/debit.server";
 import { priceAiAssistantMessage } from "@/core/billing/pricing";
 
 /**
@@ -11,8 +11,9 @@ import { priceAiAssistantMessage } from "@/core/billing/pricing";
  *  - exige Bearer token válido do Supabase (401 sem sessão);
  *  - exige tenant ativo em `company_members` (403 caso contrário);
  *  - valida formato e tamanho do payload (400 / 413);
- *  - checa saldo de créditos ANTES de chamar o provedor (402);
- *  - debita créditos SOMENTE após resposta bem-sucedida do provedor;
+ *  - debita créditos ANTES de chamar o provedor (402 se saldo insuficiente);
+ *  - estorna (`refund`) se o provedor falhar — nunca cobra sem entregar;
+ *  - nunca retorna 2xx sem que o débito obrigatório tenha sido gravado;
  *  - nunca expõe `LOVABLE_API_KEY` nem detalhes internos nos erros.
  */
 
@@ -130,22 +131,54 @@ export const Route = createFileRoute("/api/ai/chat")({
         }
         if (totalChars > MAX_TOTAL_CHARS) return json({ error: "payload_too_large" }, 413);
 
-        /* -------------------- 4. Pré-checagem de créditos ------------------ */
+        /* --------------- 4. Débito obrigatório (antes do provedor) --------- */
         const estimatedTokensIn = Math.ceil(totalChars / 4);
         const cost = priceAiAssistantMessage({ tokensIn: estimatedTokensIn });
+        const debitMeta = {
+          surface: "planner.copilot",
+          model: parsed.data.model ?? null,
+          messages: messages.length,
+          stream: parsed.data.stream === true,
+          estimated_tokens_in: estimatedTokensIn,
+        };
 
-        const { data: balanceData, error: balanceErr } = await supabase.rpc("credit_balance", {
-          _company_id: tenantId,
-        });
-        if (balanceErr) return json({ error: "billing_unavailable" }, 500);
-        const balance = typeof balanceData === "number" ? balanceData : 0;
-        if (balance < cost) {
-          return json({ code: "insufficient_credits", balance, need: cost }, 402);
+        // Débito obrigatório: se falhar (saldo insuficiente ou erro do ledger),
+        // a requisição termina aqui e o provedor nunca é chamado.
+        try {
+          await debitCreditsOrThrow(supabase, tenantId, userId, {
+            amount: cost,
+            reason: "ai.message.assistant",
+            reference: parsed.data.model ?? null,
+            metadata: debitMeta,
+          });
+        } catch (err) {
+          if (err instanceof Response) {
+            if (err.status === 402) {
+              const body = await err.text().catch(() => "");
+              return new Response(body || JSON.stringify({ code: "insufficient_credits" }), {
+                status: 402,
+                headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+              });
+            }
+            return json({ error: "billing_unavailable" }, 500);
+          }
+          return json({ error: "billing_unavailable" }, 500);
         }
+
+        const refund = (stage: string) =>
+          refundCreditsBestEffort(tenantId as string, userId, {
+            amount: cost,
+            reason: "ai.message.assistant.refund",
+            reference: parsed.data.model ?? null,
+            metadata: { ...debitMeta, refund_stage: stage },
+          });
 
         /* --------------------------- 5. Provedor --------------------------- */
         const key = process.env.LOVABLE_API_KEY;
-        if (!key) return json({ error: "service_unavailable" }, 503);
+        if (!key) {
+          await refund("missing_api_key");
+          return json({ error: "service_unavailable" }, 503);
+        }
 
         let upstream: Response;
         try {
@@ -159,30 +192,21 @@ export const Route = createFileRoute("/api/ai/chat")({
             body: JSON.stringify(parsed.data),
           });
         } catch {
+          await refund("upstream_unreachable");
           return json({ error: "upstream_unavailable" }, 502);
         }
 
         if (!upstream.ok) {
-          // Sem débito: a chamada ao provedor não produziu resposta útil.
+          // Estorno integral: a chamada ao provedor não produziu resposta útil.
+          await refund(`upstream_${upstream.status}`);
           const status = upstream.status === 429 ? 429 : 502;
           return json({ error: "upstream_error", status: upstream.status }, status);
         }
 
-        /* ------------------- 6. Débito (somente em sucesso) ---------------- */
-        void debitCreditsBestEffort(supabase, tenantId, userId, {
-          amount: cost,
-          reason: "ai.message.assistant",
-          reference: parsed.data.model ?? null,
-          // Metadados seguros: sem conteúdo de mensagens e sem tokens/segredos.
-          metadata: {
-            surface: "planner.copilot",
-            model: parsed.data.model ?? null,
-            messages: messages.length,
-            stream: parsed.data.stream === true,
-            estimated_tokens_in: estimatedTokensIn,
-          },
-        });
-
+        /* ---------------------------- 6. Resposta -------------------------- */
+        // Streaming: o débito já está gravado antes do primeiro byte. Uma queda
+        // no meio do stream NÃO gera estorno automático (o provedor já foi
+        // consumido) — apenas falhas antes do 2xx do upstream são estornadas.
         const headers = new Headers();
         const ct = upstream.headers.get("content-type");
         if (ct) headers.set("Content-Type", ct);
