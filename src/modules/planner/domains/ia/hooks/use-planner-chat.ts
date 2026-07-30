@@ -37,6 +37,7 @@ import { runAgent } from "../services/agent";
 import { PLANNER_TOOL_REGISTRY } from "../services/tools";
 import { FINISHING_PRESETS } from "../services/finishing";
 import { streamLovableReply } from "../services/ai-stream";
+import { buildAgentBriefing } from "../agents";
 import type { ParsedIntent } from "../services/interpreter";
 import type { PlannerProject, PlannerRoomType } from "@/modules/planner/shared";
 import type { ToolContext } from "../services/tools";
