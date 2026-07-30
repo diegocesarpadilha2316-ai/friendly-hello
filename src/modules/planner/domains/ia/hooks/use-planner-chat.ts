@@ -617,7 +617,7 @@ export function usePlannerChat() {
 
       // Sessão persistida (best-effort) + mensagem do usuário.
       const sessionId = await ensureSession(project.id ?? null, trimmed);
-      await persistMessage(sessionId, "user", trimmed, "ok");
+      await persistMessage(sessionId, "user", trimmed, "ok", keys.user);
       const startedAt = Date.now();
 
       try {
