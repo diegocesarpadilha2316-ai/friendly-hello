@@ -20,7 +20,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/core/components/ui-kit";
 import { usePlannerChat } from "../hooks/use-planner-chat";
 import { ProjectMemoryPanel } from "./ProjectMemoryPanel";
-import { PlanPreviewCard } from "./PlanPreviewCard";
 import type { PlannerAIMessage } from "../types";
 
 export interface PlannerAIPanelProps {
@@ -101,19 +100,6 @@ export function PlannerAIPanel({ variant = "docked", className, onClose }: Plann
           </div>
         )}
 
-        {/* Etapa 11 — plano estruturado: preview, progresso e resumo final. */}
-        {chat.planning.plan && (
-          <PlanPreviewCard
-            plan={chat.planning.plan}
-            progress={chat.planning.progress}
-            onPause={chat.planning.pause}
-            onResume={chat.planning.resume}
-            onCancel={chat.planning.cancel}
-            onRetry={chat.planning.retryFailed}
-            onRollback={chat.planning.rollback}
-            onDismiss={chat.planning.dismiss}
-          />
-        )}
       </div>
 
       {/* Sugestões rápidas */}
