@@ -41,6 +41,19 @@ function specToIntent(spec: FurnitureSpec, count = 1): ParsedIntent {
   };
 }
 
+/**
+ * Substantivos que representam um MÓVEL de verdade. Trechos como "3 portas
+ * de correr" ou "duas gavetas internas" são atributos do mesmo móvel — não
+ * módulos independentes — e por isso não contam aqui.
+ */
+const REAL_MODULE_NOUN =
+  /armari|aereo|balcao|gaveteir|torre|cristaleir|roupeir|guarda[-\s]?roupa|closet|painel|nicho|prateleir|bancada|tampo|ilha|pia|cuba|coifa|cooktop|forno|geladeira/;
+
+/** Quantos móveis distintos o pedido realmente cita. */
+function realModuleCount(modules: readonly { raw: string }[]): number {
+  return modules.filter((m) => REAL_MODULE_NOUN.test(m.raw)).length;
+}
+
 export interface ParsedIntent {
   tool: ToolName;
   args: Readonly<Record<string, unknown>>;
@@ -276,10 +289,10 @@ export function interpret(input: string): PlannerIntent {
     if (!matchedPreset && !ambientWords && wantsInsertVerb) {
       const dec = decompose(raw);
       // Pedido de UM móvel específico → Ficha Técnica manda.
-      if (dec.modules.length === 1) {
+      if (realModuleCount(dec.modules) <= 1) {
         const spec = buildFurnitureSpec(raw);
         if (spec.type) {
-          return { type: "command", intents: [specToIntent(spec, dec.modules[0].count)] };
+          return { type: "command", intents: [specToIntent(spec, dec.modules[0]?.count ?? 1)] };
         }
       }
       if (dec.modules.length > 0) {
@@ -305,7 +318,7 @@ export function interpret(input: string): PlannerIntent {
     // reconhecida deve continuar sendo inserção pontual — nunca preset genérico.
     if (!matchedPreset && !ambientWords) {
       const dec = decompose(raw);
-      if (dec.modules.length === 1 && dec.unresolved.length === 0) {
+      if (realModuleCount(dec.modules) <= 1 && dec.modules.length > 0) {
         const spec = buildFurnitureSpec(raw);
         if (spec.type) {
           return { type: "command", intents: [specToIntent(spec, dec.modules[0].count)] };
