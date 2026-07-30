@@ -16,7 +16,7 @@ const norm = (s: string) =>
     .trim();
 
 const DESTRUCTIVE = /\b(remova|remover|apague|apagar|exclu\w*|delet\w*|limpe|zerar|refaz|refazer|comece do zero|do zero)\b/;
-const DESTRUCTIVE_WIDE = /\b(tudo|todos|todas|geral|inteir\w+)\b/;
+const DESTRUCTIVE_WIDE = /\b(tudo|todo|toda|todos|todas|geral|inteir\w+)\b/;
 
 const FULL_PROJECT =
   /\b(cozinha|closet|quarto|dormitorio|escritorio|home ?office|sala|banheiro|lavabo|area gourmet|varanda|painel de tv|home theater)\b/;
