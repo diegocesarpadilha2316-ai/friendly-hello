@@ -17,6 +17,8 @@ import type { CompanyManufacturingRules } from "@/modules/planner/shared";
 import { interpret, type ParsedIntent } from "./interpreter";
 import { answerQuestion } from "./questions";
 import { TOOL_FUNCTIONS, type ToolContext, type ToolExecutionResult, type ToolName } from "./tools";
+import { runPlannerTool } from "../tools/runner";
+import type { PlannerToolResult } from "../tools/types";
 import {
   buildAgentPlan,
   describeAgents,
@@ -31,6 +33,8 @@ export interface AgentInput {
   ctx: ToolContext;
   rules: CompanyManufacturingRules;
   signal?: AbortSignal;
+  /** Turno em que o usuário já confirmou operações destrutivas (Etapa 9). */
+  confirmDestructive?: boolean;
   /**
    * Callback opcional — quando fornecido, respostas conversacionais
    * (smalltalk/unknown/question) passam por um LLM real (AI Gateway).
@@ -78,28 +82,39 @@ export interface AgentChunk {
   agent?: PlannerAgentId;
   /** Agentes que participaram do turno — presente no chunk `done`. */
   agents?: readonly PlannerAgentId[];
+  /** Resultado padronizado da ferramenta (Etapa 9). */
+  toolOutcome?: PlannerToolResult;
 }
 
-function executeIntent(
+/**
+ * Etapa 9 — toda execução passa pelo runner canônico: validação estrita
+ * de argumentos, checkpoint, idempotência por `toolCallId`, timeout e
+ * resultado padronizado. Ferramentas fora do registro são recusadas.
+ */
+async function executeIntent(
   intent: ParsedIntent,
   project: PlannerProject,
-  ctx: ToolContext,
-): ToolExecutionResult {
-  const fn = TOOL_FUNCTIONS[intent.tool] as
-    | ((
-        p: PlannerProject,
-        c: ToolContext,
-        a: Readonly<Record<string, unknown>>,
-      ) => ToolExecutionResult)
-    | undefined;
-  if (!fn) {
-    return {
-      project,
-      summary: `Ferramenta desconhecida: ${intent.tool}.`,
-      affectedIds: [],
-    };
-  }
-  return fn(project, ctx, intent.args ?? {});
+  input: AgentInput,
+  toolCallId: string,
+): Promise<{ result: ToolExecutionResult; outcome: PlannerToolResult }> {
+  const run = await runPlannerTool({
+    tool: intent.tool,
+    args: intent.args ?? {},
+    project,
+    ctx: input.ctx,
+    toolCallId,
+    tenantId: input.rules.tenantId,
+    confirmed: input.confirmDestructive,
+    signal: input.signal,
+  });
+  return {
+    result: {
+      project: run.project,
+      summary: run.result.summary,
+      affectedIds: run.result.affectedIds,
+    },
+    outcome: run.result,
+  };
 }
 
 /**
@@ -167,6 +182,8 @@ async function* runCommand(
   let currentAgent: PlannerAgentId | null = null;
   let handle: ReturnType<typeof startAgentRun> | null = null;
   const agentTools: ToolName[] = [];
+  /** Identidade do turno — base da idempotência por `toolCallId`. */
+  const turnId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 
   const closeRun = (success: boolean, error?: string) => {
     if (handle) handle.finish(success, [...agentTools], error);
@@ -189,8 +206,16 @@ async function* runCommand(
     }
     yield { kind: "tool", toolName: step.tool, toolArgs: step.args, agent: step.agent };
     let result: ToolExecutionResult;
+    let outcome: PlannerToolResult;
     try {
-      result = executeIntent(intent, project, input.ctx);
+      const executed = await executeIntent(
+        intent,
+        project,
+        input,
+        `${turnId}:${plan.steps.indexOf(step)}:${step.tool}`,
+      );
+      result = executed.result;
+      outcome = executed.outcome;
     } catch (e) {
       closeRun(false, e instanceof Error ? e.message : "falha na ferramenta");
       yield { kind: "error", text: `Falha ao executar ${step.tool}.` };
@@ -198,12 +223,14 @@ async function* runCommand(
     }
     agentTools.push(step.tool);
     project = result.project;
-    summaries.push(`• ${result.summary}`);
+    const warn = outcome.warnings.length > 0 ? ` (${outcome.warnings[0]})` : "";
+    summaries.push(`• ${result.summary}${outcome.ok ? "" : warn}`);
     yield {
       kind: "tool",
       toolName: step.tool,
       toolArgs: step.args,
       toolResult: result,
+      toolOutcome: outcome,
       agent: step.agent,
     };
     await sleep(60, input.signal);
