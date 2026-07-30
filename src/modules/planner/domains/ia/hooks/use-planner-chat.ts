@@ -614,6 +614,22 @@ export function usePlannerChat() {
       // qualquer mutação. Nada é executado até o usuário mandar executar.
       const classification = classifyRequest(trimmed);
       const activePlan = planRef.current.plan;
+
+      // Se um plano está aguardando informação, a próxima mensagem do
+      // usuário é a resposta: atualiza o plano e executa automaticamente.
+      if (activePlan && activePlan.status === "awaiting_information") {
+        planRef.current.answerAndExecute(trimmed);
+        patchMessage(assistantId, (m) => ({
+          ...m,
+          status: "done",
+          content: `Perfeito — anotei **${trimmed}** e já comecei a executar o plano **${activePlan.title}**. Acompanhe o progresso no cartão abaixo.`,
+        }));
+        setState((s) => ({ ...s, status: "idle" }));
+        sendingRef.current = false;
+        pendingKeyRef.current = null;
+        return;
+      }
+
       const planBusy =
         activePlan &&
         activePlan.status !== "completed" &&
@@ -634,9 +650,16 @@ export function usePlannerChat() {
         });
         if (proposed) {
           const lines = proposed.steps.map((s) => `${s.position + 1}. ${s.title}`).join("\n");
-          const pendencies = proposed.missingInformation
-            .map((m) => `• ${m.question}`)
-            .join("\n");
+          // Só perguntamos o que é indispensável; recomendações viram
+          // suposições visíveis e nunca interrompem o fluxo.
+          const blocking = proposed.missingInformation.filter((m) => m.level === "obrigatoria");
+          const pendencies = blocking.map((m) => `• ${m.question}`).join("\n");
+          const autoStarted = proposed.status === "ready";
+          const closing = autoStarted
+            ? "\nJá comecei a executar — acompanhe o progresso no cartão abaixo."
+            : pendencies
+              ? "\nResponda aqui no chat e eu sigo automaticamente (ou clique em **Executar plano** para usar os padrões)."
+              : "\nRevise as etapas no cartão abaixo e clique em **Executar plano** quando quiser que eu comece.";
           patchMessage(assistantId, (m) => ({
             ...m,
             status: "done",
@@ -644,7 +667,7 @@ export function usePlannerChat() {
               `Montei um plano para **${proposed.title}**:`,
               lines,
               pendencies ? `\nPreciso confirmar antes de começar:\n${pendencies}` : "",
-              "\nRevise as etapas no cartão abaixo e clique em **Executar plano** quando quiser que eu comece.",
+              closing,
             ]
               .filter(Boolean)
               .join("\n"),
