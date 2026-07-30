@@ -59,7 +59,7 @@ export const mapApiKey = (r: Record<string, unknown>): ApiKey => ({
   scopes: ((r.scopes as string[]) ?? []) as readonly string[],
   lastUsedAt: (r.last_used_at as string) ?? null,
   expiresAt: (r.expires_at as string) ?? null,
-  revokedAt: (r.revoked_at as string) ?? null,
+  status: ((r.status as string) ?? "active") as ApiKey["status"],
   createdAt: String(r.created_at),
 });
 

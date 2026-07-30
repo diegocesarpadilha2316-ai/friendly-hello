@@ -1,22 +1,27 @@
 -- Fase 1.15 — API Gateway Enterprise (Dioris Hub)
 
-CREATE TABLE IF NOT EXISTS public.api_keys (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  company_id UUID NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  description TEXT,
-  prefix TEXT NOT NULL,
-  key_hash TEXT NOT NULL,
-  scopes TEXT[] NOT NULL DEFAULT '{}',
-  allowed_ips TEXT[] NOT NULL DEFAULT '{}',
-  status TEXT NOT NULL DEFAULT 'active',
-  expires_at TIMESTAMPTZ,
-  last_used_at TIMESTAMPTZ,
-  created_by UUID,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  UNIQUE (prefix)
-);
+-- ---------------------------------------------------------------------------
+-- api_keys: a tabela é criada UMA ÚNICA VEZ na migration 006
+-- (006_global_configuration.sql), que já adota o formato canônico de produção.
+--
+-- Compatibilidade histórica: esta migration criava a mesma tabela com um
+-- CREATE TABLE IF NOT EXISTS divergente (`key_hash`/`status`/`allowed_ips`
+-- contra `hashed_key`/`revoked_at` da 006). Em banco novo vencia a 006; em
+-- produção vigorava o formato desta. Para eliminar a definição dupla sem
+-- destruir nada, o bloco virou apenas ALTER TABLE ... ADD COLUMN IF NOT EXISTS:
+-- é idempotente, funciona em banco novo e em banco onde a tabela já existe,
+-- não recria a tabela, não faz DROP e não altera dados nem chaves existentes.
+-- ---------------------------------------------------------------------------
+ALTER TABLE public.api_keys ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE public.api_keys ADD COLUMN IF NOT EXISTS allowed_ips TEXT[] NOT NULL DEFAULT '{}';
+ALTER TABLE public.api_keys ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'active';
+ALTER TABLE public.api_keys ADD COLUMN IF NOT EXISTS last_used_at TIMESTAMPTZ;
+ALTER TABLE public.api_keys ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+
+-- UNIQUE (prefix): criado como índice único idempotente. Em produção a
+-- constraint já existe (nome gerado pelo Postgres), então o índice abaixo é
+-- redundante mas inofensivo; em banco novo a 006 já o garante.
+CREATE UNIQUE INDEX IF NOT EXISTS idx_api_keys_prefix_unique ON public.api_keys (prefix);
 CREATE INDEX IF NOT EXISTS idx_api_keys_company ON public.api_keys (company_id);
 
 CREATE TABLE IF NOT EXISTS public.api_endpoints (
@@ -143,9 +148,9 @@ BEGIN
     EXECUTE format($p$
       CREATE POLICY %I ON public.%I FOR ALL TO authenticated
       USING (EXISTS (SELECT 1 FROM public.company_members m
-        WHERE m.company_id = %I.company_id AND m.user_id = auth.uid() AND m.status = 'active'))
+        WHERE m.company_id = %I.company_id AND m.user_id = auth.uid() AND m.active = true))
       WITH CHECK (EXISTS (SELECT 1 FROM public.company_members m
-        WHERE m.company_id = %I.company_id AND m.user_id = auth.uid() AND m.status = 'active'));
+        WHERE m.company_id = %I.company_id AND m.user_id = auth.uid() AND m.active = true));
     $p$, t || '_tenant', t, t, t);
   END LOOP;
 END $$;
@@ -156,19 +161,19 @@ CREATE POLICY api_endpoints_read ON public.api_endpoints FOR SELECT TO authentic
   USING (
     company_id IS NULL OR EXISTS (
       SELECT 1 FROM public.company_members m
-      WHERE m.company_id = api_endpoints.company_id AND m.user_id = auth.uid() AND m.status = 'active'
+      WHERE m.company_id = api_endpoints.company_id AND m.user_id = auth.uid() AND m.active = true
     )
   );
 CREATE POLICY api_endpoints_write ON public.api_endpoints FOR ALL TO authenticated
   USING (
     company_id IS NOT NULL AND EXISTS (
       SELECT 1 FROM public.company_members m
-      WHERE m.company_id = api_endpoints.company_id AND m.user_id = auth.uid() AND m.status = 'active'
+      WHERE m.company_id = api_endpoints.company_id AND m.user_id = auth.uid() AND m.active = true
     )
   )
   WITH CHECK (
     company_id IS NOT NULL AND EXISTS (
       SELECT 1 FROM public.company_members m
-      WHERE m.company_id = api_endpoints.company_id AND m.user_id = auth.uid() AND m.status = 'active'
+      WHERE m.company_id = api_endpoints.company_id AND m.user_id = auth.uid() AND m.active = true
     )
   );

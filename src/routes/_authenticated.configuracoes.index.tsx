@@ -206,7 +206,10 @@ function CompanyTab() {
 
 function PlatformTab() {
   const q = usePlatformSettings();
-  if (!q.data) return <EmptyState title="Sem plataforma configurada" description="Aguardando registros globais." />;
+  if (!q.data)
+    return (
+      <EmptyState title="Sem plataforma configurada" description="Aguardando registros globais." />
+    );
   const p = q.data;
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
@@ -271,15 +274,35 @@ function IntegrationsTab({ category }: { category?: string }) {
   const cols: DataTableColumn<Integration>[] = [
     { id: "provider", header: "Provedor", cell: (r) => r.provider },
     { id: "category", header: "Categoria", cell: (r) => r.category },
-    { id: "enabled", header: "Ativo", cell: (r) => <StatusBadge tone={r.enabled ? "success" : "neutral"}>{r.enabled ? "sim" : "não"}</StatusBadge> },
-    { id: "status", header: "Status", cell: (r) => <StatusBadge tone={statusTone(r.status)}>{r.status}</StatusBadge> },
-    { id: "lastTested", header: "Último teste", cell: (r) => (r.lastTestedAt ? new Date(r.lastTestedAt).toLocaleString("pt-BR") : "—") },
+    {
+      id: "enabled",
+      header: "Ativo",
+      cell: (r) => (
+        <StatusBadge tone={r.enabled ? "success" : "neutral"}>
+          {r.enabled ? "sim" : "não"}
+        </StatusBadge>
+      ),
+    },
+    {
+      id: "status",
+      header: "Status",
+      cell: (r) => <StatusBadge tone={statusTone(r.status)}>{r.status}</StatusBadge>,
+    },
+    {
+      id: "lastTested",
+      header: "Último teste",
+      cell: (r) => (r.lastTestedAt ? new Date(r.lastTestedAt).toLocaleString("pt-BR") : "—"),
+    },
     {
       id: "actions",
       header: "",
       cell: (r) => (
         <div className="flex gap-2">
-          <button type="button" className="text-xs text-primary hover:underline" onClick={() => test.mutate(r.id)}>
+          <button
+            type="button"
+            className="text-xs text-primary hover:underline"
+            onClick={() => test.mutate(r.id)}
+          >
             testar
           </button>
           <button
@@ -319,7 +342,12 @@ function IntegrationsTab({ category }: { category?: string }) {
           adicionar
         </button>
       </div>
-      <DataTable data={list} columns={cols} getRowKey={(r) => r.id} empty="Sem integrações nesta categoria." />
+      <DataTable
+        data={list}
+        columns={cols}
+        getRowKey={(r) => r.id}
+        empty="Sem integrações nesta categoria."
+      />
     </section>
   );
 }
@@ -350,7 +378,9 @@ function SecurityTab() {
           <input
             type="number"
             className="w-full rounded-md border bg-background px-2 py-1.5"
-            value={String(form[k] ?? (s ? ((s as unknown as Record<string, number>)[k] ?? "") : ""))}
+            value={String(
+              form[k] ?? (s ? ((s as unknown as Record<string, number>)[k] ?? "") : ""),
+            )}
             onChange={(e) => setForm((f) => ({ ...f, [k]: e.target.value }))}
           />
         </label>
@@ -386,7 +416,15 @@ function FlagsTab() {
     { id: "key", header: "Chave", cell: (r) => r.key },
     { id: "module", header: "Módulo", cell: (r) => r.module ?? "—" },
     { id: "scope", header: "Escopo", cell: (r) => r.scope },
-    { id: "enabled", header: "Ativa", cell: (r) => <StatusBadge tone={r.enabled ? "success" : "neutral"}>{r.enabled ? "sim" : "não"}</StatusBadge> },
+    {
+      id: "enabled",
+      header: "Ativa",
+      cell: (r) => (
+        <StatusBadge tone={r.enabled ? "success" : "neutral"}>
+          {r.enabled ? "sim" : "não"}
+        </StatusBadge>
+      ),
+    },
     {
       id: "actions",
       header: "",
@@ -395,7 +433,14 @@ function FlagsTab() {
           <button
             type="button"
             className="text-xs text-primary hover:underline"
-            onClick={() => upsert.mutate({ key: r.key, enabled: !r.enabled, module: r.module ?? undefined, scope: r.scope })}
+            onClick={() =>
+              upsert.mutate({
+                key: r.key,
+                enabled: !r.enabled,
+                module: r.module ?? undefined,
+                scope: r.scope,
+              })
+            }
           >
             alternar
           </button>
@@ -434,7 +479,12 @@ function FlagsTab() {
           criar
         </button>
       </div>
-      <DataTable data={[...list]} columns={cols} getRowKey={(r) => r.id} empty="Nenhuma flag cadastrada." />
+      <DataTable
+        data={[...list]}
+        columns={cols}
+        getRowKey={(r) => r.id}
+        empty="Nenhuma flag cadastrada."
+      />
     </section>
   );
 }
@@ -491,7 +541,11 @@ function BackupsTab() {
           onClick={() =>
             save.mutate({
               enabled: Boolean(form.enabled ?? b?.enabled ?? false),
-              frequency: (form.frequency ?? b?.frequency ?? "daily") as "hourly" | "daily" | "weekly" | "monthly",
+              frequency: (form.frequency ?? b?.frequency ?? "daily") as
+                | "hourly"
+                | "daily"
+                | "weekly"
+                | "monthly",
               retentionDays: Number(form.retentionDays ?? b?.retentionDays ?? 30),
               storageProvider: String(form.storageProvider ?? b?.storageProvider ?? "supabase"),
             })
@@ -559,14 +613,30 @@ function ApiKeysTab() {
     { id: "name", header: "Nome", cell: (r) => r.name },
     { id: "prefix", header: "Prefixo", cell: (r) => <code className="text-xs">{r.prefix}</code> },
     { id: "scopes", header: "Escopos", cell: (r) => r.scopes.join(", ") || "—" },
-    { id: "createdAt", header: "Criada", cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR") },
-    { id: "status", header: "Status", cell: (r) => <StatusBadge tone={r.revokedAt ? "danger" : "success"}>{r.revokedAt ? "revogada" : "ativa"}</StatusBadge> },
+    {
+      id: "createdAt",
+      header: "Criada",
+      cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR"),
+    },
+    {
+      id: "status",
+      header: "Status",
+      cell: (r) => (
+        <StatusBadge tone={r.status !== "active" ? "danger" : "success"}>
+          {r.status !== "active" ? "revogada" : "ativa"}
+        </StatusBadge>
+      ),
+    },
     {
       id: "actions",
       header: "",
       cell: (r) =>
-        r.revokedAt ? null : (
-          <button type="button" className="text-xs text-destructive hover:underline" onClick={() => revoke.mutate(r.id)}>
+        r.status !== "active" ? null : (
+          <button
+            type="button"
+            className="text-xs text-destructive hover:underline"
+            onClick={() => revoke.mutate(r.id)}
+          >
             revogar
           </button>
         ),
@@ -602,7 +672,12 @@ function ApiKeysTab() {
           <div className="mt-1 break-all font-mono text-xs">{issued}</div>
         </div>
       )}
-      <DataTable data={[...((q.data ?? []) as readonly ApiKey[])]} columns={cols} getRowKey={(r) => r.id} empty="Nenhuma API key emitida." />
+      <DataTable
+        data={[...((q.data ?? []) as readonly ApiKey[])]}
+        columns={cols}
+        getRowKey={(r) => r.id}
+        empty="Nenhuma API key emitida."
+      />
     </section>
   );
 }

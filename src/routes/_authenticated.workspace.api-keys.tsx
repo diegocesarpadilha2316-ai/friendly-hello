@@ -20,12 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import {
-  useApiKeys,
-  useCreateApiKey,
-  useRevokeApiKey,
-  type ApiKey,
-} from "@/core/configuration";
+import { useApiKeys, useCreateApiKey, useRevokeApiKey, type ApiKey } from "@/core/configuration";
 
 export const Route = createFileRoute("/_authenticated/workspace/api-keys")({
   head: () => ({
@@ -52,7 +47,13 @@ function WorkspaceKeys() {
   const handleCreate = () => {
     if (!name.trim()) return;
     create.mutate(
-      { name: name.trim(), scopes: scopes.split(",").map((s) => s.trim()).filter(Boolean) },
+      {
+        name: name.trim(),
+        scopes: scopes
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
+      },
       {
         onSuccess: (r) => {
           const token = (r as { plainToken?: string })?.plainToken ?? null;
@@ -104,14 +105,15 @@ function WorkspaceKeys() {
               {
                 id: "created",
                 header: "Criada",
-                cell: (r) => (r.createdAt ? new Date(r.createdAt).toLocaleDateString("pt-BR") : "—"),
+                cell: (r) =>
+                  r.createdAt ? new Date(r.createdAt).toLocaleDateString("pt-BR") : "—",
               },
               {
                 id: "status",
                 header: "Status",
                 cell: (r) => (
-                  <StatusBadge tone={r.revokedAt ? "danger" : "success"}>
-                    {r.revokedAt ? "revogada" : "ativa"}
+                  <StatusBadge tone={r.status !== "active" ? "danger" : "success"}>
+                    {r.status !== "active" ? "revogada" : "ativa"}
                   </StatusBadge>
                 ),
               },
@@ -120,7 +122,7 @@ function WorkspaceKeys() {
                 header: "",
                 align: "right",
                 cell: (r) =>
-                  r.revokedAt ? null : (
+                  r.status !== "active" ? null : (
                     <Button
                       size="sm"
                       variant="ghost"
@@ -152,15 +154,25 @@ function WorkspaceKeys() {
           <div className="space-y-3">
             <div>
               <Label>Nome</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Backend produção" />
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ex: Backend produção"
+              />
             </div>
             <div>
               <Label>Escopos (separados por vírgula)</Label>
-              <Input value={scopes} onChange={(e) => setScopes(e.target.value)} placeholder="read, write" />
+              <Input
+                value={scopes}
+                onChange={(e) => setScopes(e.target.value)}
+                placeholder="read, write"
+              />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setOpenCreate(false)}>Cancelar</Button>
+            <Button variant="ghost" onClick={() => setOpenCreate(false)}>
+              Cancelar
+            </Button>
             <Button onClick={handleCreate} disabled={create.isPending || !name.trim()}>
               Criar chave
             </Button>
