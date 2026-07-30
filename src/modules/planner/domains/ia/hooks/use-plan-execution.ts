@@ -34,6 +34,7 @@ export interface UsePlanExecutionResult {
   readonly propose: (input: ProposePlanInput) => ProjectPlan | null;
   readonly execute: () => void;
   readonly confirmAndExecute: () => void;
+  readonly answerAndExecute: (answer?: string) => void;
   readonly pause: () => void;
   readonly resume: () => void;
   readonly cancel: () => void;
@@ -49,6 +50,7 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
   const runnerRef = useRef<PlanRunner | null>(null);
   const ctxRef = useRef<ToolContext | null>(null);
   const messageRef = useRef<string>("");
+  const finishRef = useRef<(plan: ProjectPlan) => void>(() => {});
 
   const projectId = editor.state.project?.id ?? null;
 
@@ -86,6 +88,25 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
     [commit, editor, tenantId],
   );
 
+  /**
+   * Garante um runner vivo. Após reload (ou se o plano veio do
+   * localStorage) o runner não existe e o clique em "Executar plano"
+   * ficava sem efeito — causa raiz do fluxo travado.
+   */
+  const ensureRunner = useCallback((): PlanRunner | null => {
+    if (runnerRef.current) return runnerRef.current;
+    const current = plan;
+    if (!current) return null;
+    const ctx: ToolContext =
+      ctxRef.current ?? {
+        environmentId: editor.state.selectedEnvironmentId ?? "",
+        roomId: editor.state.selectedRoomId ?? "",
+        selectionIds: editor.state.selectedNodeId ? [editor.state.selectedNodeId] : undefined,
+      };
+    ctxRef.current = ctx;
+    return buildRunner(current, ctx);
+  }, [buildRunner, editor.state, plan]);
+
   const propose = useCallback(
     (input: ProposePlanInput): ProjectPlan | null => {
       const room = input.project.environments
@@ -105,8 +126,23 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
       if (!generated.steps.length) return null;
       ctxRef.current = input.ctx;
       messageRef.current = input.message;
-      buildRunner(generated, input.ctx);
+      const runner = buildRunner(generated, input.ctx);
       commit(generated);
+      // Prompt completo (nenhuma pendência obrigatória e nada destrutivo)
+      // executa automaticamente: sem confirmação redundante.
+      if (generated.status === "ready") {
+        void runner
+          .run()
+          .then((p) => finishRef.current(p))
+          .catch((error: unknown) => {
+            const message =
+              error instanceof Error ? error.message : "Falha inesperada na execução.";
+            console.warn("[planner-plan] execução automática falhou", error);
+            setPlan((prev) =>
+              prev ? { ...prev, status: "failed", warnings: [...prev.warnings, message] } : prev,
+            );
+          });
+      }
       return generated;
     },
     [buildRunner, commit, tenantId],
@@ -143,16 +179,25 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
     },
     [editor.state.project, tenantId],
   );
+  finishRef.current = finishMemory;
 
   const runNow = useCallback(
     (mode: "run" | "resume" | "retry") => {
-      const runner = runnerRef.current;
+      const runner = ensureRunner();
       if (!runner) return;
       const exec =
         mode === "resume" ? runner.resume() : mode === "retry" ? runner.retryFailed() : runner.run();
-      void exec.then(finishMemory);
+      void exec.then(finishMemory).catch((error: unknown) => {
+        // Nunca deixar a UI presa: erro inesperado encerra o estado
+        // pendente com motivo visível e permite tentar de novo.
+        const message = error instanceof Error ? error.message : "Falha inesperada na execução.";
+        console.warn("[planner-plan] execução falhou", error);
+        setPlan((prev) =>
+          prev ? { ...prev, status: "failed", warnings: [...prev.warnings, message] } : prev,
+        );
+      });
     },
-    [finishMemory],
+    [ensureRunner, finishMemory],
   );
 
   const execute = useCallback(() => runNow("run"), [runNow]);
@@ -160,9 +205,20 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
   const retryFailed = useCallback(() => runNow("retry"), [runNow]);
 
   const confirmAndExecute = useCallback(() => {
-    runnerRef.current?.confirm();
+    ensureRunner()?.confirm();
     runNow("run");
-  }, [runNow]);
+  }, [ensureRunner, runNow]);
+
+  /** Resposta do usuário à pendência → plano liberado e execução imediata. */
+  const answerAndExecute = useCallback(
+    (answer?: string) => {
+      const runner = ensureRunner();
+      if (!runner) return;
+      runner.answerMissing(answer);
+      runNow("run");
+    },
+    [ensureRunner, runNow],
+  );
 
   const pause = useCallback(() => runnerRef.current?.pause(), []);
   const cancel = useCallback(() => runnerRef.current?.cancel(), []);
@@ -184,6 +240,7 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
     propose,
     execute,
     confirmAndExecute,
+    answerAndExecute,
     pause,
     resume,
     cancel,

@@ -24,6 +24,7 @@ export interface PlanPreviewCardProps {
   readonly progress: PlanProgress | null;
   readonly onExecute: () => void;
   readonly onConfirm: () => void;
+  readonly onAnswer: () => void;
   readonly onPause: () => void;
   readonly onResume: () => void;
   readonly onCancel: () => void;
@@ -61,6 +62,9 @@ export function PlanPreviewCard(props: PlanPreviewCardProps) {
   const awaitingConfirm = plan.status === "awaiting_confirmation";
   const awaitingInfo = plan.status === "awaiting_information";
   const ready = plan.status === "ready" || plan.status === "draft";
+  // Regra dura: fora de execução/estado terminal SEMPRE existe um botão
+  // habilitado que inicia o plano — nunca um estado sem saída.
+  const canStart = !executing && !terminal && !paused;
 
   return (
     <div className="rounded-xl border border-border/60 bg-card/70 p-3 text-sm shadow-sm">
@@ -152,14 +156,24 @@ export function PlanPreviewCard(props: PlanPreviewCardProps) {
       )}
 
       <div className="mt-3 flex flex-wrap gap-2">
-        {ready && (
+        {canStart && ready && (
           <Button size="sm" onClick={props.onExecute}>
             <Play className="mr-1 h-3.5 w-3.5" /> Executar plano
           </Button>
         )}
-        {awaitingConfirm && (
+        {canStart && awaitingConfirm && (
           <Button size="sm" onClick={props.onConfirm}>
             <Play className="mr-1 h-3.5 w-3.5" /> Confirmar e executar
+          </Button>
+        )}
+        {canStart && awaitingInfo && (
+          <Button size="sm" onClick={props.onAnswer}>
+            <Play className="mr-1 h-3.5 w-3.5" /> Executar plano
+          </Button>
+        )}
+        {canStart && !ready && !awaitingConfirm && !awaitingInfo && (
+          <Button size="sm" onClick={props.onExecute}>
+            <Play className="mr-1 h-3.5 w-3.5" /> Executar plano
           </Button>
         )}
         {executing && (

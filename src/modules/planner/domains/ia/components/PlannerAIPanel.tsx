@@ -105,6 +105,7 @@ export function PlannerAIPanel({ variant = "docked", className, onClose }: Plann
             progress={chat.planning.progress}
             onExecute={chat.planning.execute}
             onConfirm={chat.planning.confirmAndExecute}
+            onAnswer={() => chat.planning.answerAndExecute()}
             onPause={chat.planning.pause}
             onResume={chat.planning.resume}
             onCancel={chat.planning.cancel}
