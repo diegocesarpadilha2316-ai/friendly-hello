@@ -439,6 +439,7 @@ export const configurationSnapshot = createServerFn({ method: "GET" })
   .middleware([requireTenant])
   .handler(async ({ context }): Promise<ConfigurationSnapshot> => {
     const s = context.supabase;
+    const reg = await import("@/core/integrations/registry-data.server");
     const [
       platform,
       company,
