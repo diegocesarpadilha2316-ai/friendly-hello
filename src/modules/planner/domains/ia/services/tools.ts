@@ -1146,6 +1146,7 @@ export type ToolName =
   | "set_front_type"
   | "convert_to"
   | "apply_finishing"
+  | "set_module_params"
   // ── Etapa 9 — ferramentas profissionais (consultivas/inspeção) ──
   | "search_material"
   | "estimate_budget"
