@@ -1034,6 +1034,7 @@ export function usePlannerChat() {
       canLoadMore: history.hasMore,
       loadingHistory: history.loading,
       quickActions: PLANNER_QUICK_ACTIONS,
+      planning,
     }),
     [
       state.messages,
@@ -1045,6 +1046,7 @@ export function usePlannerChat() {
       loadMore,
       history.hasMore,
       history.loading,
+      planning,
     ],
   );
 }
