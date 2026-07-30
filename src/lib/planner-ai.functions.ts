@@ -77,16 +77,14 @@ export const listAiSessions = createServerFn({ method: "GET" })
   .handler(async ({ data, context }) => {
     let q = context.supabase
       .from("planner_ai_sessions")
-      .select(
-        "id,project_id,user_id,model_id,title,summary,message_count,tokens_in,tokens_out,archived,created_at,updated_at",
-      )
+      .select(SESSION_COLUMNS)
       .eq("company_id", context.tenantId)
       .order("updated_at", { ascending: false })
       .limit(data.limit ?? 30);
     if (data.projectId) q = q.eq("project_id", data.projectId);
     if (data.archived !== undefined) q = q.eq("archived", data.archived);
     const { data: rows, error } = await q;
-    if (error) throw new Response(error.message, { status: 400 });
+    if (error) throw fail("session.list", error);
     return rows ?? [];
   });
 
@@ -102,7 +100,9 @@ export const createAiSession = createServerFn({ method: "POST" })
   .middleware([requireTenant])
   .inputValidator((data: unknown) => createSessionInput.parse(data ?? {}))
   .handler(async ({ data, context }) => {
-    // Segurança: o projeto informado precisa pertencer ao tenant ativo.
+    // Segurança: o projeto informado precisa existir e pertencer ao tenant
+    // atual (derivado no servidor). Nunca gravamos projectId do navegador
+    // sem validação; falhas retornam 404 genérico (sem revelar existência).
     if (data.projectId) {
       const owns = await context.supabase
         .from("planner_projects")
@@ -110,7 +110,8 @@ export const createAiSession = createServerFn({ method: "POST" })
         .eq("company_id", context.tenantId)
         .eq("id", data.projectId)
         .maybeSingle();
-      if (owns.error || !owns.data) throw new Response("Forbidden", { status: 403 });
+      if (owns.error) throw fail("session.create", owns.error);
+      if (!owns.data) throw new Response("Projeto não encontrado.", { status: 404 });
     }
     const { data: row, error } = await context.supabase
       .from("planner_ai_sessions")
@@ -121,64 +122,90 @@ export const createAiSession = createServerFn({ method: "POST" })
         model_id: data.modelId ?? null,
         title: data.title ?? "Nova conversa",
         summary: null,
-        context: data.context ?? null,
+        context: sanitizeJson(data.context ?? null),
         message_count: 0,
         tokens_in: 0,
         tokens_out: 0,
         archived: false,
       })
-      .select("*")
+      .select(SESSION_COLUMNS)
       .single();
-    if (error) throw new Response(error.message, { status: 400 });
+    if (error) throw fail("session.create", error);
 
     if (data.systemPrompt) {
-      await context.supabase.from("planner_ai_messages").insert({
+      const sys = await context.supabase.from("planner_ai_messages").insert({
         session_id: row.id,
         company_id: context.tenantId,
         role: "system",
         content: data.systemPrompt,
         status: "ok",
       });
+      if (sys.error) console.error("[planner-ai] session.systemPrompt", sys.error);
     }
     return row;
   });
 
+/**
+ * Histórico paginado (cursor cronológico). Por padrão devolve as mensagens
+ * mais recentes; `before` permite carregar as anteriores.
+ */
 export const getAiSession = createServerFn({ method: "GET" })
   .middleware([requireTenant])
   .inputValidator((data: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(data),
+    z
+      .object({
+        id: z.string().uuid(),
+        limit: z.number().int().min(1).max(HISTORY_MAX_LIMIT).optional(),
+        before: z.string().datetime().optional(),
+      })
+      .parse(data),
   )
   .handler(async ({ data, context }) => {
-    const [sessRes, msgsRes, toolRes] = await Promise.all([
-      context.supabase
-        .from("planner_ai_sessions")
-        .select("*")
-        .eq("company_id", context.tenantId)
-        .eq("id", data.id)
-        .maybeSingle(),
-      context.supabase
-        .from("planner_ai_messages")
-        .select(
-          "id,role,content,status,tokens_in,tokens_out,latency_ms,metadata,edited,created_at",
-        )
-        .eq("session_id", data.id)
-        .eq("company_id", context.tenantId)
-        .order("created_at", { ascending: true }),
-      context.supabase
-        .from("planner_ai_tool_calls")
-        .select(
-          "id,message_id,tool_name,args,result,status,summary,affected_ids,duration_ms,executed_at",
-        )
-        .eq("session_id", data.id)
-        .eq("company_id", context.tenantId)
-        .order("executed_at", { ascending: true }),
-    ]);
-    if (sessRes.error) throw new Response(sessRes.error.message, { status: 400 });
-    if (!sessRes.data) throw new Response("Not found", { status: 404 });
+    const limit = data.limit ?? HISTORY_DEFAULT_LIMIT;
+    const sessRes = await context.supabase
+      .from("planner_ai_sessions")
+      .select(SESSION_COLUMNS)
+      .eq("company_id", context.tenantId)
+      .eq("id", data.id)
+      .maybeSingle();
+    if (sessRes.error) throw fail("session.read", sessRes.error);
+    if (!sessRes.data) throw new Response("Sessão não encontrada.", { status: 404 });
+
+    // Busca as N mais recentes (desc) e devolve em ordem cronológica.
+    let msgQuery = context.supabase
+      .from("planner_ai_messages")
+      .select(MESSAGE_COLUMNS)
+      .eq("session_id", data.id)
+      .eq("company_id", context.tenantId)
+      .neq("role", "system")
+      .order("created_at", { ascending: false })
+      .limit(limit + 1);
+    if (data.before) msgQuery = msgQuery.lt("created_at", data.before);
+    const msgsRes = await msgQuery;
+    if (msgsRes.error) throw fail("session.read", msgsRes.error);
+
+    const page = msgsRes.data ?? [];
+    const hasMore = page.length > limit;
+    const messages = (hasMore ? page.slice(0, limit) : page).slice().reverse();
+
+    const messageIds = messages.map((m) => m.id);
+    const toolRes = messageIds.length
+      ? await context.supabase
+          .from("planner_ai_tool_calls")
+          .select(TOOL_CALL_COLUMNS)
+          .eq("session_id", data.id)
+          .eq("company_id", context.tenantId)
+          .in("message_id", messageIds)
+          .order("executed_at", { ascending: true })
+      : { data: [], error: null };
+    if (toolRes.error) throw fail("session.read", toolRes.error);
+
     return {
       session: sessRes.data,
-      messages: msgsRes.data ?? [],
+      messages,
       toolCalls: toolRes.data ?? [],
+      hasMore,
+      nextCursor: hasMore ? messages[0]?.created_at ?? null : null,
     };
   });
 
@@ -198,13 +225,13 @@ export const updateAiSession = createServerFn({ method: "POST" })
     if (data.title !== undefined) patch.title = data.title;
     if (data.summary !== undefined) patch.summary = data.summary;
     if (data.archived !== undefined) patch.archived = data.archived;
-    if (data.context !== undefined) patch.context = data.context;
+    if (data.context !== undefined) patch.context = sanitizeJson(data.context);
     const { error } = await context.supabase
       .from("planner_ai_sessions")
       .update(patch)
       .eq("company_id", context.tenantId)
       .eq("id", data.id);
-    if (error) throw new Response(error.message, { status: 400 });
+    if (error) throw fail("session.update", error);
     return { ok: true as const };
   });
 
@@ -219,7 +246,7 @@ export const deleteAiSession = createServerFn({ method: "POST" })
       .delete()
       .eq("company_id", context.tenantId)
       .eq("id", data.id);
-    if (error) throw new Response(error.message, { status: 400 });
+    if (error) throw fail("session.delete", error);
     return { ok: true as const };
   });
 
