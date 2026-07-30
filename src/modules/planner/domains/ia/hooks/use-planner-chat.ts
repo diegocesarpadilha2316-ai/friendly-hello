@@ -34,7 +34,7 @@ import {
   loadRules,
 } from "@/modules/planner/shared";
 import { runAgent } from "../services/agent";
-import { PLANNER_TOOL_REGISTRY } from "../services/tools";
+import { listToolContracts } from "../tools/registry";
 import { FINISHING_PRESETS } from "../services/finishing";
 import { streamLovableReply } from "../services/ai-stream";
 import { buildAgentBriefing } from "../agents";
@@ -627,11 +627,18 @@ export function usePlannerChat() {
           signal: controller.signal,
           llmPlan: async ({ userMessage, project: p, ctx }) => {
             try {
-              const catalog = PLANNER_TOOL_REGISTRY.map(
-                (t) => `- ${t.name}: ${t.description}`,
-              ).join("\n");
+              // Catálogo derivado do contrato canônico (Etapa 9): nome,
+              // agente responsável, natureza da operação e descrição.
+              const catalog = listToolContracts()
+                .map(
+                  (t) =>
+                    `- ${t.name} [${t.ownerAgent}${t.mutating ? "" : ", consultiva"}${
+                      t.destructive ? ", destrutiva" : ""
+                    }]: ${t.description}`,
+                )
+                .join("\n");
               const system =
-                'Você é o planejador do Dioris Planner. Traduza o pedido do usuário em uma sequência de chamadas de ferramentas (tool-calling). Responda SOMENTE com JSON válido no formato { "intents": [{ "tool": string, "args": object }] }. Não inclua explicações. Use apenas ferramentas da lista.\n\nFerramentas disponíveis:\n' +
+                'Você é o planejador do Dioris Planner. Traduza o pedido do usuário em uma sequência de chamadas de ferramentas (tool-calling). Responda SOMENTE com JSON válido no formato { "intents": [{ "tool": string, "args": object }] }. Não inclua explicações. Use apenas ferramentas da lista.\n\nUNIDADE OBRIGATÓRIA: todas as medidas em MILÍMETROS inteiros (800 = 800 mm; 1,20 m = 1200). Nunca envie centímetros ou metros como número cru.\nNunca invente material, acabamento ou preço: use search_material antes de aplicar acabamento e estimate_budget para valores.\nFerramentas destrutivas (remove) só devem ser planejadas quando o usuário pedir explicitamente.\n\nFerramentas disponíveis:\n' +
                 catalog +
                 "\n\nSubtypes válidos para insert_item/set_front_type: aereo, balcao, gaveteiro, torre, tampo, ilha, painel, roupeiro, closet, nicho, prateleira, cristaleira, bancada, espelho, porta, gaveta, iluminacao.\nPresets válidos para create_room_preset: cozinha, closet, dormitorio, sala, escritorio, banheiro.\nEstilos válidos para set_style: minimalista, classico, industrial, luxo, moderno.\nTipos válidos para set_front_type: vidro, reeded, solid, aberto.\nPresets de apply_finishing (arg 'preset'): " +
                 FINISHING_PRESETS.map((p) => `"${p.id}" (${p.label})`).join(", ") +

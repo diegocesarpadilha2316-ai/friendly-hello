@@ -24,6 +24,13 @@ const SINGLETON_TOOLS = new Set([
   "set_style",
   "apply_finishing",
   "center",
+  // Etapa 9 — consultivas: uma leitura por turno é suficiente.
+  "estimate_budget",
+  "production_summary",
+  "preliminary_cut_list",
+  "review_project",
+  "check_circulation",
+  "search_material",
 ]);
 
 function signature(step: { tool: string; args: Readonly<Record<string, unknown>> }): string {
