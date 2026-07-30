@@ -23,3 +23,6 @@ export * from "./components";
 
 // Etapa 10 — Memória Inteligente do Projeto.
 export * from "./memory";
+
+// Etapa 11 — Planejamento Inteligente de Projetos.
+export * from "./planning";
