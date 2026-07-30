@@ -784,10 +784,14 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
       snapshotVersion,
       restoreVersion,
       versions,
+      syncStatus,
+      syncError,
+      retrySync,
+      refreshVersions,
       canUndo: state.past.length > 0,
       canRedo: state.future.length > 0,
     }),
-    [state, loadProject, loadProjectById, updateProject, select, selectNode, undo, redo, saveNow, snapshotVersion, restoreVersion, versions],
+    [state, loadProject, loadProjectById, updateProject, select, selectNode, undo, redo, saveNow, snapshotVersion, restoreVersion, versions, syncStatus, syncError, retrySync, refreshVersions],
   );
 
   return <EditorContext.Provider value={value}>{children}</EditorContext.Provider>;
