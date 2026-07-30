@@ -44,7 +44,18 @@ const SUBTYPE_HINTS: Array<{ subtype: CatalogSubtype; words: string[] }> = [
   { subtype: "nicho", words: ["nicho"] },
   { subtype: "cristaleira", words: ["cristaleira"] },
   { subtype: "roupeiro", words: ["roupeiro", "guarda-roupa", "guarda roupa"] },
-  { subtype: "closet", words: ["closet", "cabideiro", "sapateira", "vestidor", "porta-gravata", "porta gravata", "bijoux"] },
+  {
+    subtype: "closet",
+    words: [
+      "closet",
+      "cabideiro",
+      "sapateira",
+      "vestidor",
+      "porta-gravata",
+      "porta gravata",
+      "bijoux",
+    ],
+  },
   { subtype: "painel", words: ["painel"] },
   { subtype: "ilha", words: ["ilha"] },
   { subtype: "bancada", words: ["bancada"] },
@@ -56,8 +67,14 @@ const SUBTYPE_HINTS: Array<{ subtype: CatalogSubtype; words: string[] }> = [
 // Decor / arquitetura / eletros / iluminação — permite ao matcher reconhecer
 // pedidos como "pendente na ilha", "porcelanato no piso" ou "geladeira Brastemp".
 const DECOR_HINTS: Array<{ subtype: CatalogSubtype; words: string[] }> = [
-  { subtype: "iluminacao", words: ["pendente", "lustre", "luminaria", "spot", "fita led", "led", "arandela", "plafon"] },
-  { subtype: "piso", words: ["piso", "porcelanato", "laminado", "vinilico", "ceramica", "assoalho"] },
+  {
+    subtype: "iluminacao",
+    words: ["pendente", "lustre", "luminaria", "spot", "fita led", "led", "arandela", "plafon"],
+  },
+  {
+    subtype: "piso",
+    words: ["piso", "porcelanato", "laminado", "vinilico", "ceramica", "assoalho"],
+  },
   { subtype: "revestimento", words: ["revestimento", "azulejo", "pastilha", "cimenticio"] },
   { subtype: "geladeira", words: ["geladeira", "frigobar", "refrigerador"] },
   { subtype: "fogao", words: ["fogao"] },
@@ -114,8 +131,14 @@ function parseWidth(text: string): number | null {
   // não confundir "3 portas" com 3m ou "4 gavetas" com 4m.
   const sanitized = text
     .replace(/\b(\d+(?:[.,]\d+)?)\s*(porta|gaveta|prateleir)/g, "")
-    .replace(/\b\d+(?:[.,]\d+)?\s*(?:mm|cm|m)?\s*(?:de\s*)?(?:altura|alto|profundidade|prof|fundo)\b/g, "")
-    .replace(/\b(?:altura|alto|profundidade|prof|fundo)\s*(?:de\s*)?\d+(?:[.,]\d+)?\s*(?:mm|cm|m)?\b/g, "");
+    .replace(
+      /\b\d+(?:[.,]\d+)?\s*(?:mm|cm|m)?\s*(?:de\s*)?(?:altura|alto|profundidade|prof|fundo)\b/g,
+      "",
+    )
+    .replace(
+      /\b(?:altura|alto|profundidade|prof|fundo)\s*(?:de\s*)?\d+(?:[.,]\d+)?\s*(?:mm|cm|m)?\b/g,
+      "",
+    );
   const m = sanitized.match(/(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?\b/g);
   if (!m) return null;
   for (const raw of m) {
@@ -222,9 +245,22 @@ function detectDrawerCount(text: string): number | null {
 // quando aparecem no pedido (ex.: "sapateira" → item cujo nome contém
 // "sapateira"; "pia" → "Balcão com Cuba"; "forno" → "Torre Quente Forno").
 const NAME_HINTS: readonly string[] = [
-  "cabideiro", "sapateira", "gravata", "bijoux", "vestidor", "espelho",
-  "pia", "cuba", "gourmet", "forno", "micro-ondas", "microondas",
-  "correr", "vidro", "reeded", "canelad",
+  "cabideiro",
+  "sapateira",
+  "gravata",
+  "bijoux",
+  "vestidor",
+  "espelho",
+  "pia",
+  "cuba",
+  "gourmet",
+  "forno",
+  "micro-ondas",
+  "microondas",
+  "correr",
+  "vidro",
+  "reeded",
+  "canelad",
 ];
 
 function semanticPriority(c: CatalogItem, subtype: CatalogSubtype, text: string): number {
@@ -237,12 +273,20 @@ function semanticPriority(c: CatalogItem, subtype: CatalogSubtype, text: string)
   const wantsSink = /\bpia\b|\bcuba\b|balcao\s+(?:d[ea]\s+)?pia|sob\s+pia/.test(text);
   if (wantsSink) {
     if (subtype === "balcao" && (id === "balcao-gourmet" || haystack.includes("cuba"))) s += 1800;
-    if (subtype === "armario" && (id.startsWith("arm-sob-pia") || haystack.includes("sob pia") || tags.includes("pia"))) s += 1800;
+    if (
+      subtype === "armario" &&
+      (id.startsWith("arm-sob-pia") || haystack.includes("sob pia") || tags.includes("pia"))
+    )
+      s += 1800;
     if (!haystack.includes("pia") && !haystack.includes("cuba")) s -= 500;
   }
 
   if (/\bcooktop\b/.test(text) && haystack.includes("cooktop")) s += 1200;
-  if (/\bforno\b|micro-?ondas/.test(text) && (haystack.includes("forno") || haystack.includes("micro"))) s += 1200;
+  if (
+    /\bforno\b|micro-?ondas/.test(text) &&
+    (haystack.includes("forno") || haystack.includes("micro"))
+  )
+    s += 1200;
   if (/\bbar\b/.test(text) && haystack.includes("bar")) s += 900;
 
   return s;
@@ -285,7 +329,10 @@ function pickBestItem(
   let bestScore = score(best);
   for (const c of candidates.slice(1)) {
     const sc = score(c);
-    if (sc > bestScore) { best = c; bestScore = sc; }
+    if (sc > bestScore) {
+      best = c;
+      bestScore = sc;
+    }
   }
   return best;
 }
@@ -365,7 +412,11 @@ export function matchDescription(
     reasons.push(`${wantedDrawers} gaveta(s)`);
   }
   const itemHaystack = `${item.id} ${item.name} ${item.tags.join(" ")}`.toLowerCase();
-  if (/\bpia\b|\bcuba\b|sob\s+pia/.test(t) || itemHaystack.includes("cuba") || itemHaystack.includes("pia")) {
+  if (
+    /\bpia\b|\bcuba\b|sob\s+pia/.test(t) ||
+    itemHaystack.includes("cuba") ||
+    itemHaystack.includes("pia")
+  ) {
     params["eng:sink"] = true;
     params["eng:plumbing"] = "sink";
     reasons.push("cuba/pia integrada");

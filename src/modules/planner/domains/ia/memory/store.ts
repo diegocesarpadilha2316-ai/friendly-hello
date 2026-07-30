@@ -6,7 +6,13 @@
  * exatamente o mesmo isolamento da sessão de chat da Etapa 5. Memória
  * nunca é compartilhada entre projetos, empresas ou tenants.
  */
-import { emptyMemory, type MemoryFact, type MemoryPending, type MemoryTelemetryEntry, type ProjectMemory } from "./types";
+import {
+  emptyMemory,
+  type MemoryFact,
+  type MemoryPending,
+  type MemoryTelemetryEntry,
+  type ProjectMemory,
+} from "./types";
 
 const PREFIX = "dioris.planner.ai.memory";
 
@@ -64,11 +70,7 @@ export function readMemory(
       const raw = window.localStorage.getItem(key);
       const parsed = raw ? (JSON.parse(raw) as unknown) : null;
       // Guarda de isolamento: memória de outro tenant/projeto é descartada.
-      if (
-        isMemory(parsed) &&
-        parsed.tenantId === tenantId &&
-        parsed.projectId === projectId
-      ) {
+      if (isMemory(parsed) && parsed.tenantId === tenantId && parsed.projectId === projectId) {
         restored = parsed;
       }
     } catch {
@@ -94,7 +96,11 @@ export function writeMemory(memory: ProjectMemory): ProjectMemory {
   return memory;
 }
 
-export function clearMemory(tenantId: string, projectId: string, projectName?: string): ProjectMemory {
+export function clearMemory(
+  tenantId: string,
+  projectId: string,
+  projectName?: string,
+): ProjectMemory {
   const key = memoryKey(tenantId, projectId);
   if (typeof window !== "undefined") {
     try {

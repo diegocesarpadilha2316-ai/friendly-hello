@@ -16,11 +16,7 @@ import type { PlannerProject } from "@/modules/planner/shared";
 import { defaultRules } from "@/modules/planner/shared";
 import type { ToolContext } from "../services/tools";
 import { getToolContract } from "./registry";
-import type {
-  PlannerToolContract,
-  PlannerToolErrorCode,
-  PlannerToolResult,
-} from "./types";
+import type { PlannerToolContract, PlannerToolErrorCode, PlannerToolResult } from "./types";
 import { getActiveRoom, safeErrorMessage } from "./validation";
 
 export interface RunToolInput {
@@ -65,7 +61,11 @@ export function getCheckpoint(toolCallId: string): PlannerProject | null {
   return checkpoints.find((c) => c.toolCallId === toolCallId)?.project ?? null;
 }
 
-export function listCheckpoints(): readonly { toolCallId: string; tool: string; createdAt: number }[] {
+export function listCheckpoints(): readonly {
+  toolCallId: string;
+  tool: string;
+  createdAt: number;
+}[] {
   return checkpoints.map(({ toolCallId, tool, createdAt }) => ({ toolCallId, tool, createdAt }));
 }
 

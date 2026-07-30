@@ -280,7 +280,10 @@ export function extractMemory(input: ExtractionInput): ExtractionResult {
     pendings.push({ kind: "orcamento", label: "Orçamento pendente", updatedAt: now() });
   if (/render|imagem realista|foto/.test(text) && !executed.has("set_render_preset"))
     pendings.push({ kind: "render", label: "Render pendente", updatedAt: now() });
-  if (/producao|corte|chapa|marcenaria industrial/.test(text) && !executed.has("production_summary"))
+  if (
+    /producao|corte|chapa|marcenaria industrial/.test(text) &&
+    !executed.has("production_summary")
+  )
     pendings.push({ kind: "producao", label: "Produção pendente", updatedAt: now() });
 
   return {

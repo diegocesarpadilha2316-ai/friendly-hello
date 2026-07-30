@@ -93,10 +93,7 @@ export interface CirculationReport {
  * (footprint 2D dos módulos e dimensões do cômodo). Não inventa precisão
  * normativa: quando faltam portas/janelas modeladas, isso é declarado.
  */
-export function checkCirculation(
-  project: PlannerProject,
-  ctx: ToolContext,
-): CirculationReport {
+export function checkCirculation(project: PlannerProject, ctx: ToolContext): CirculationReport {
   const room = getActiveRoom(project, ctx);
   if (!room) {
     return {
@@ -125,7 +122,12 @@ export function checkCirculation(
   // Módulos fora dos limites do cômodo.
   for (const f of furniture) {
     const b = boxOf(f);
-    if (b.x1 < -1 || b.y1 < -1 || b.x2 > room.dimensions.width + 1 || b.y2 > room.dimensions.depth + 1) {
+    if (
+      b.x1 < -1 ||
+      b.y1 < -1 ||
+      b.x2 > room.dimensions.width + 1 ||
+      b.y2 > room.dimensions.depth + 1
+    ) {
       findings.push({
         severity: "error",
         category: "limites",
@@ -252,10 +254,7 @@ export function reviewProject(project: PlannerProject, ctx: ToolContext): Review
       const a = boxOf(structural[i]);
       const b = boxOf(structural[j]);
       const area = overlapArea(a, b);
-      const minArea = Math.min(
-        (a.x2 - a.x1) * (a.y2 - a.y1),
-        (b.x2 - b.x1) * (b.y2 - b.y1),
-      );
+      const minArea = Math.min((a.x2 - a.x1) * (a.y2 - a.y1), (b.x2 - b.x1) * (b.y2 - b.y1));
       if (area > minArea * 0.1) {
         findings.push({
           severity: "error",
@@ -299,7 +298,8 @@ export function reviewProject(project: PlannerProject, ctx: ToolContext): Review
         category: "vinculo",
         objectId: f.id,
         title: "Módulo sem vínculo de catálogo",
-        description: "Sem item de catálogo o orçamento não consegue localizar preço nem ficha técnica.",
+        description:
+          "Sem item de catálogo o orçamento não consegue localizar preço nem ficha técnica.",
         suggestedAction: "Vincule o módulo a um item da biblioteca.",
       });
     }
@@ -329,7 +329,9 @@ export function reviewProject(project: PlannerProject, ctx: ToolContext): Review
   }
 
   // Circulação (reaproveita o mesmo motor).
-  findings.push(...checkCirculation(project, ctx).findings.filter((f) => f.category === "circulacao"));
+  findings.push(
+    ...checkCirculation(project, ctx).findings.filter((f) => f.category === "circulacao"),
+  );
 
   // Prontidão para orçamento / produção / render.
   const semPreco = structural.filter((f) => {

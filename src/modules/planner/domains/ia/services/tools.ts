@@ -7,11 +7,7 @@
  * paramétrico persistido pelo `PlannerEditorProvider`. Isso preserva
  * Undo/Redo, Autosave, Histórico e a sincronização 2D/3D/Engenharia.
  */
-import type {
-  PlannerProject,
-  PlannerRoom,
-  PlannerEnvironment,
-} from "@/modules/planner/shared";
+import type { PlannerProject, PlannerRoom, PlannerEnvironment } from "@/modules/planner/shared";
 import {
   CATALOG_ITEMS,
   findCatalogItem,
@@ -27,11 +23,7 @@ import {
 } from "@/modules/planner/shared";
 import { matchDescription } from "./matcher";
 import { applyLayout, type LayoutShape, type LayoutPieceSpec } from "./layout";
-import {
-  applyFinishing,
-  FINISHING_PRESETS,
-  type FinishingScope,
-} from "./finishing";
+import { applyFinishing, FINISHING_PRESETS, type FinishingScope } from "./finishing";
 import { resolvePaint } from "./resolvePaint";
 
 export interface ToolContext {
@@ -100,8 +92,9 @@ function mutateFurniture(
   project: PlannerProject,
   ctx: ToolContext,
   targets: readonly Extract<Editor2DPrimitive, { kind: "furniture" }>[],
-  mutator: (p: Extract<Editor2DPrimitive, { kind: "furniture" }>) =>
-    Extract<Editor2DPrimitive, { kind: "furniture" }>,
+  mutator: (
+    p: Extract<Editor2DPrimitive, { kind: "furniture" }>,
+  ) => Extract<Editor2DPrimitive, { kind: "furniture" }>,
 ): PlannerProject {
   return updateRoom(project, ctx, (room) => {
     let r = room;
@@ -121,7 +114,11 @@ export function toolInsertItem(
     (args.catalogItemId && findCatalogItem(args.catalogItemId)) ||
     (args.subtype && firstItem(args.subtype));
   if (!item) {
-    return { project, summary: `Nenhum item do catálogo compatível com "${args.subtype ?? args.catalogItemId}".`, affectedIds: [] };
+    return {
+      project,
+      summary: `Nenhum item do catálogo compatível com "${args.subtype ?? args.catalogItemId}".`,
+      affectedIds: [],
+    };
   }
   const count = Math.max(1, Math.min(20, args.count ?? 1));
   const room = getRoom(project, ctx);
@@ -338,19 +335,20 @@ export function toolCreateRoomPreset(
     };
   }
   const room = getRoom(project, ctx);
-  if (!room) return { project, summary: "Selecione um cômodo antes de criar o ambiente.", affectedIds: [] };
+  if (!room)
+    return { project, summary: "Selecione um cômodo antes de criar o ambiente.", affectedIds: [] };
 
-  const piecesToPlace = args.pieces && args.pieces.length > 0
-    ? args.pieces
-    : args.noBlueprintPieces
-    ? []
-    : blueprint.pieces;
+  const piecesToPlace =
+    args.pieces && args.pieces.length > 0
+      ? args.pieces
+      : args.noBlueprintPieces
+        ? []
+        : blueprint.pieces;
   // Tolerância zero: quando o usuário fornece peças específicas, garantimos
   // shape com paredes suficientes (mínimo L) — o motor faz fallback entre
   // paredes disponíveis antes de skippar.
-  const shape = args.pieces && args.pieces.length > 3 && blueprint.shape === "linear"
-    ? "L"
-    : blueprint.shape;
+  const shape =
+    args.pieces && args.pieces.length > 3 && blueprint.shape === "linear" ? "L" : blueprint.shape;
   const res = applyLayout(project, ctx, { shape, pieces: piecesToPlace });
 
   // ── Decoração contextual ────────────────────────────────────────────────
@@ -388,8 +386,8 @@ export function toolCreateRoomPreset(
     const item = spec.catalogItemId
       ? findCatalogItem(spec.catalogItemId)
       : spec.description
-      ? matchDescription(spec.description)?.item ?? null
-      : null;
+        ? (matchDescription(spec.description)?.item ?? null)
+        : null;
     if (!item) continue;
     const at = {
       x: Math.round(room.dimensions.width * spec.xRatio),
@@ -418,7 +416,9 @@ export function toolCreateRoomPreset(
           `aumente o cômodo ou reduza módulos: ${res.reasons.slice(0, 4).join("; ")}.`,
       );
     } else {
-      auditLines.push(`✔ Auditoria: ${res.placed}/${expected} módulos com 100% de correspondência.`);
+      auditLines.push(
+        `✔ Auditoria: ${res.placed}/${expected} módulos com 100% de correspondência.`,
+      );
     }
   }
 
@@ -443,7 +443,8 @@ export function toolChangeMaterial(
   const room = getRoom(project, ctx);
   if (!room) return { project, summary: "Sem cômodo ativo.", affectedIds: [] };
   const targets = applySelection(room, ctx);
-  if (targets.length === 0) return { project, summary: "Não há móveis para alterar.", affectedIds: [] };
+  if (targets.length === 0)
+    return { project, summary: "Não há móveis para alterar.", affectedIds: [] };
   const paint = resolvePaint(args.material);
   const next = mutateFurniture(project, ctx, targets, (f) => ({
     ...f,
@@ -469,7 +470,8 @@ export function toolChangeColor(
   const room = getRoom(project, ctx);
   if (!room) return { project, summary: "Sem cômodo ativo.", affectedIds: [] };
   const targets = applySelection(room, ctx);
-  if (targets.length === 0) return { project, summary: "Não há móveis para colorir.", affectedIds: [] };
+  if (targets.length === 0)
+    return { project, summary: "Não há móveis para colorir.", affectedIds: [] };
   const paint = resolvePaint(args.color);
   const next = mutateFurniture(project, ctx, targets, (f) => ({
     ...f,
@@ -495,7 +497,8 @@ export function toolResize(
   const room = getRoom(project, ctx);
   if (!room) return { project, summary: "Sem cômodo ativo.", affectedIds: [] };
   const targets = applySelection(room, ctx);
-  if (targets.length === 0) return { project, summary: "Nenhum móvel selecionado.", affectedIds: [] };
+  if (targets.length === 0)
+    return { project, summary: "Nenhum móvel selecionado.", affectedIds: [] };
   const factor = args.factor ?? 1;
   const next = mutateFurniture(project, ctx, targets, (f) => ({
     ...f,
@@ -506,7 +509,11 @@ export function toolResize(
   const label = args.factor
     ? `redimensionamento ×${factor}`
     : `dimensões ${args.width ?? "-"}×${args.depth ?? "-"}×${args.height ?? "-"} mm`;
-  return { project: next, summary: `${targets.length} móvel(is) — ${label}.`, affectedIds: targets.map((t) => t.id) };
+  return {
+    project: next,
+    summary: `${targets.length} móvel(is) — ${label}.`,
+    affectedIds: targets.map((t) => t.id),
+  };
 }
 
 export function toolOpenAll(
@@ -525,7 +532,8 @@ export function toolOpenAll(
     if (args.target === "drawers" || args.target === "all") params[keyDraw] = args.open;
     return { ...f, params };
   });
-  const label = args.target === "doors" ? "portas" : args.target === "drawers" ? "gavetas" : "portas e gavetas";
+  const label =
+    args.target === "doors" ? "portas" : args.target === "drawers" ? "gavetas" : "portas e gavetas";
   return {
     project: next,
     summary: `${args.open ? "Abri" : "Fechei"} ${label} de ${targets.length} móvel(is).`,
@@ -582,10 +590,7 @@ export function toolChangeHardware(
   };
 }
 
-export function toolDuplicate(
-  project: PlannerProject,
-  ctx: ToolContext,
-): ToolExecutionResult {
+export function toolDuplicate(project: PlannerProject, ctx: ToolContext): ToolExecutionResult {
   const room = getRoom(project, ctx);
   if (!room) return { project, summary: "Sem cômodo ativo.", affectedIds: [] };
   const targets = applySelection(room, ctx);
@@ -626,10 +631,7 @@ export function toolRotate(
   };
 }
 
-export function toolMirror(
-  project: PlannerProject,
-  ctx: ToolContext,
-): ToolExecutionResult {
+export function toolMirror(project: PlannerProject, ctx: ToolContext): ToolExecutionResult {
   const room = getRoom(project, ctx);
   if (!room) return { project, summary: "Sem cômodo ativo.", affectedIds: [] };
   const targets = applySelection(room, ctx);
@@ -638,13 +640,14 @@ export function toolMirror(
     ...f,
     params: { ...f.params, "eng:mirrored": !(f.params["eng:mirrored"] === true) },
   }));
-  return { project: next, summary: `${targets.length} móvel(is) espelhado(s).`, affectedIds: targets.map((t) => t.id) };
+  return {
+    project: next,
+    summary: `${targets.length} móvel(is) espelhado(s).`,
+    affectedIds: targets.map((t) => t.id),
+  };
 }
 
-export function toolRemove(
-  project: PlannerProject,
-  ctx: ToolContext,
-): ToolExecutionResult {
+export function toolRemove(project: PlannerProject, ctx: ToolContext): ToolExecutionResult {
   const room = getRoom(project, ctx);
   if (!room) return { project, summary: "Sem cômodo ativo.", affectedIds: [] };
   const targets = applySelection(room, ctx);
@@ -657,10 +660,7 @@ export function toolRemove(
   };
 }
 
-export function toolCenter(
-  project: PlannerProject,
-  ctx: ToolContext,
-): ToolExecutionResult {
+export function toolCenter(project: PlannerProject, ctx: ToolContext): ToolExecutionResult {
   const room = getRoom(project, ctx);
   if (!room) return { project, summary: "Sem cômodo ativo.", affectedIds: [] };
   const targets = applySelection(room, ctx);
@@ -672,7 +672,11 @@ export function toolCenter(
     x: cx - f.width / 2,
     y: cy - f.depth / 2,
   }));
-  return { project: next, summary: `${targets.length} móvel(is) centralizado(s).`, affectedIds: [] };
+  return {
+    project: next,
+    summary: `${targets.length} móvel(is) centralizado(s).`,
+    affectedIds: [],
+  };
 }
 
 export function toolSetStyle(
@@ -690,7 +694,8 @@ export function toolSetStyle(
     moderno: { color: "Grafite", material: "MDF 18mm" },
   };
   const style = styleMap[args.style];
-  if (!style) return { project, summary: `Estilo "${args.style}" não reconhecido.`, affectedIds: [] };
+  if (!style)
+    return { project, summary: `Estilo "${args.style}" não reconhecido.`, affectedIds: [] };
   const targets = furnitureInRoom(room);
   const paint = resolvePaint(style.color);
   const next = mutateFurniture(project, ctx, targets, (f) => ({
@@ -745,7 +750,11 @@ export function toolSetFrontType(
       })
     : all;
   if (targets.length === 0) {
-    return { project, summary: `Nenhum ${args.subtype ?? "móvel"} para trocar a frente.`, affectedIds: [] };
+    return {
+      project,
+      summary: `Nenhum ${args.subtype ?? "móvel"} para trocar a frente.`,
+      affectedIds: [],
+    };
   }
   const next = mutateFurniture(project, ctx, targets, (f) => ({
     ...f,
@@ -755,10 +764,10 @@ export function toolSetFrontType(
     args.type === "vidro"
       ? "vidro"
       : args.type === "reeded"
-      ? "vidro canelado (reeded)"
-      : args.type === "aberto"
-      ? "aberto (sem porta)"
-      : "sólido";
+        ? "vidro canelado (reeded)"
+        : args.type === "aberto"
+          ? "aberto (sem porta)"
+          : "sólido";
   return {
     project: next,
     summary: `Frente alterada para ${label} em ${targets.length} móvel(is).`,
@@ -788,9 +797,10 @@ export function toolConvertTo(
   }
   const target =
     (args.catalogItemId && findCatalogItem(args.catalogItemId)) ||
-    (args.description && matchDescription(args.description, {
-      subtype: args.subtype as CatalogSubtype | undefined,
-    })?.item) ||
+    (args.description &&
+      matchDescription(args.description, {
+        subtype: args.subtype as CatalogSubtype | undefined,
+      })?.item) ||
     (args.subtype && firstItem(args.subtype));
   if (!target) {
     return {
@@ -878,10 +888,10 @@ export function toolLayoutRoom(
     args.shape === "linear"
       ? "linear"
       : args.shape === "L"
-      ? "em L"
-      : args.shape === "U"
-      ? "em U"
-      : "paralelo";
+        ? "em L"
+        : args.shape === "U"
+          ? "em U"
+          : "paralelo";
   const summary =
     res.placed === 0
       ? `Nada foi posicionado (${res.reasons.slice(0, 2).join("; ")}).`
@@ -961,26 +971,82 @@ export interface ToolDescriptor {
 }
 
 export const PLANNER_TOOL_REGISTRY: readonly ToolDescriptor[] = [
-  { name: "insert_item", label: "Inserir peça", description: "Adiciona um item da biblioteca ao cômodo ativo." },
-  { name: "insert_described", label: "Inserir por descrição", description: "Casa uma descrição livre (ex.: 'aéreo 800 vidro reeded louro freijó') com um item real do catálogo e insere já com dimensões e acabamento aplicados." },
-  { name: "layout_room", label: "Layout do cômodo", description: "Distribui uma lista de peças ao longo das paredes em configurações linear, L, U ou paralela — respeitando dimensões e folgas." },
-  { name: "create_room_preset", label: "Criar ambiente", description: "Monta um ambiente completo (cozinha, closet, etc.)." },
-  { name: "change_material", label: "Trocar material", description: "Substitui o material dos móveis." },
-  { name: "change_color", label: "Trocar acabamento", description: "Substitui a cor/acabamento dos móveis." },
+  {
+    name: "insert_item",
+    label: "Inserir peça",
+    description: "Adiciona um item da biblioteca ao cômodo ativo.",
+  },
+  {
+    name: "insert_described",
+    label: "Inserir por descrição",
+    description:
+      "Casa uma descrição livre (ex.: 'aéreo 800 vidro reeded louro freijó') com um item real do catálogo e insere já com dimensões e acabamento aplicados.",
+  },
+  {
+    name: "layout_room",
+    label: "Layout do cômodo",
+    description:
+      "Distribui uma lista de peças ao longo das paredes em configurações linear, L, U ou paralela — respeitando dimensões e folgas.",
+  },
+  {
+    name: "create_room_preset",
+    label: "Criar ambiente",
+    description: "Monta um ambiente completo (cozinha, closet, etc.).",
+  },
+  {
+    name: "change_material",
+    label: "Trocar material",
+    description: "Substitui o material dos móveis.",
+  },
+  {
+    name: "change_color",
+    label: "Trocar acabamento",
+    description: "Substitui a cor/acabamento dos móveis.",
+  },
   { name: "resize", label: "Redimensionar", description: "Altera largura/profundidade/altura." },
   { name: "open_all", label: "Abrir/fechar", description: "Abre ou fecha portas e gavetas." },
-  { name: "toggle_led", label: "Iluminação LED", description: "Liga/desliga LEDs ou adiciona fita." },
-  { name: "change_hardware", label: "Trocar ferragem", description: "Puxadores, dobradiças, corrediças, pistões." },
+  {
+    name: "toggle_led",
+    label: "Iluminação LED",
+    description: "Liga/desliga LEDs ou adiciona fita.",
+  },
+  {
+    name: "change_hardware",
+    label: "Trocar ferragem",
+    description: "Puxadores, dobradiças, corrediças, pistões.",
+  },
   { name: "duplicate", label: "Duplicar", description: "Duplica o item selecionado." },
   { name: "rotate", label: "Rotacionar", description: "Gira os móveis em graus." },
   { name: "mirror", label: "Espelhar", description: "Espelha o móvel." },
   { name: "remove", label: "Remover", description: "Remove o móvel." },
   { name: "center", label: "Centralizar", description: "Centraliza no cômodo." },
-  { name: "set_style", label: "Aplicar estilo", description: "Minimalista, clássico, industrial, luxo, moderno." },
-  { name: "panel_ripado", label: "Painel ripado", description: "Insere um painel decorativo ripado." },
-  { name: "set_front_type", label: "Trocar frente", description: "Troca a frente para vidro, reeded, sólido ou aberto." },
-  { name: "convert_to", label: "Converter em outro módulo", description: "Converte o móvel selecionado em outro tipo — ex.: 'transforme esse armário em torre quente', 'vira cristaleira'. Preserva posição." },
-  { name: "apply_finishing", label: "Acabamento automático", description: "Aplica um preset coordenado (cor, material, tampo, frente, ferragem, LED) em todos os móveis do cômodo — ou apenas nos aéreos, balcões, torre, painel ou tampos." },
+  {
+    name: "set_style",
+    label: "Aplicar estilo",
+    description: "Minimalista, clássico, industrial, luxo, moderno.",
+  },
+  {
+    name: "panel_ripado",
+    label: "Painel ripado",
+    description: "Insere um painel decorativo ripado.",
+  },
+  {
+    name: "set_front_type",
+    label: "Trocar frente",
+    description: "Troca a frente para vidro, reeded, sólido ou aberto.",
+  },
+  {
+    name: "convert_to",
+    label: "Converter em outro módulo",
+    description:
+      "Converte o móvel selecionado em outro tipo — ex.: 'transforme esse armário em torre quente', 'vira cristaleira'. Preserva posição.",
+  },
+  {
+    name: "apply_finishing",
+    label: "Acabamento automático",
+    description:
+      "Aplica um preset coordenado (cor, material, tampo, frente, ferragem, LED) em todos os móveis do cômodo — ou apenas nos aéreos, balcões, torre, painel ou tampos.",
+  },
 ];
 
 // Bindings entre nomes e funções — usados pelo executor.

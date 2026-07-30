@@ -44,26 +44,98 @@ interface ModuleToken {
 const TOKENS: ModuleToken[] = [
   { id: "armario", label: "Armário", re: /armari/, descBase: "armário", wall: "bottom" },
   { id: "aereo", label: "Aéreo", re: /aereo/, descBase: "aéreo", wall: "bottom" },
-  { id: "balcao-pia", label: "Balcão da pia", re: /balcao\s+(?:d[ea]\s+)?pia|balcao\s+pia|\bpia\b|cuba/, descBase: "balcão da pia com cuba inox", wall: "bottom" },
+  {
+    id: "balcao-pia",
+    label: "Balcão da pia",
+    re: /balcao\s+(?:d[ea]\s+)?pia|balcao\s+pia|\bpia\b|cuba/,
+    descBase: "balcão da pia com cuba inox",
+    wall: "bottom",
+  },
   { id: "balcao", label: "Balcão", re: /balcao/, descBase: "balcão", wall: "bottom" },
   { id: "gaveteiro", label: "Gaveteiro", re: /gaveteir/, descBase: "gaveteiro", wall: "bottom" },
-  { id: "porta-condimentos", label: "Porta-condimentos", re: /porta[-\s]?condiment|porta[-\s]?tempero|especiari/, descBase: "gaveteiro 300mm porta-temperos", wall: "bottom" },
+  {
+    id: "porta-condimentos",
+    label: "Porta-condimentos",
+    re: /porta[-\s]?condiment|porta[-\s]?tempero|especiari/,
+    descBase: "gaveteiro 300mm porta-temperos",
+    wall: "bottom",
+  },
   { id: "torre", label: "Torre", re: /torre/, descBase: "torre forno microondas", wall: "right" },
-  { id: "cristaleira", label: "Cristaleira", re: /cristaleir/, descBase: "cristaleira vidro", wall: "bottom" },
-  { id: "roupeiro", label: "Roupeiro", re: /roupeir|guarda[-\s]?roupa/, descBase: "roupeiro", wall: "bottom" },
-  { id: "closet-mod", label: "Módulo closet", re: /closet/, descBase: "closet cabideiro", wall: "bottom" },
+  {
+    id: "cristaleira",
+    label: "Cristaleira",
+    re: /cristaleir/,
+    descBase: "cristaleira vidro",
+    wall: "bottom",
+  },
+  {
+    id: "roupeiro",
+    label: "Roupeiro",
+    re: /roupeir|guarda[-\s]?roupa/,
+    descBase: "roupeiro",
+    wall: "bottom",
+  },
+  {
+    id: "closet-mod",
+    label: "Módulo closet",
+    re: /closet/,
+    descBase: "closet cabideiro",
+    wall: "bottom",
+  },
   { id: "nicho", label: "Nicho", re: /nicho/, descBase: "nicho", wall: "bottom" },
   { id: "painel", label: "Painel", re: /painel/, descBase: "painel ripado", wall: "bottom" },
   { id: "ilha", label: "Ilha", re: /ilha/, descBase: "ilha", wall: "top" },
-  { id: "prateleira", label: "Prateleira", re: /prateleir/, descBase: "prateleira", wall: "bottom" },
+  {
+    id: "prateleira",
+    label: "Prateleira",
+    re: /prateleir/,
+    descBase: "prateleira",
+    wall: "bottom",
+  },
   { id: "espelho", label: "Espelho", re: /espelho/, descBase: "espelho", wall: "bottom" },
-  { id: "bancada", label: "Bancada", re: /bancada|tampo/, descBase: "bancada Quartzo", wall: "bottom" },
-  { id: "cooktop", label: "Cooktop", re: /cooktop/, descBase: "cooktop 600mm inox", wall: "bottom" },
-  { id: "coifa", label: "Coifa", re: /coifa|depurador|exaustor/, descBase: "coifa 600mm inox", wall: "bottom" },
+  {
+    id: "bancada",
+    label: "Bancada",
+    re: /bancada|tampo/,
+    descBase: "bancada Quartzo",
+    wall: "bottom",
+  },
+  {
+    id: "cooktop",
+    label: "Cooktop",
+    re: /cooktop/,
+    descBase: "cooktop 600mm inox",
+    wall: "bottom",
+  },
+  {
+    id: "coifa",
+    label: "Coifa",
+    re: /coifa|depurador|exaustor/,
+    descBase: "coifa 600mm inox",
+    wall: "bottom",
+  },
   { id: "forno", label: "Forno", re: /forno/, descBase: "forno inox", wall: "right" },
-  { id: "microondas", label: "Micro-ondas", re: /microond|micro-ond/, descBase: "microondas inox", wall: "right" },
-  { id: "geladeira", label: "Geladeira", re: /geladeira|refrigerador|frigobar/, descBase: "geladeira 700mm inox", wall: "right" },
-  { id: "lava-loucas", label: "Lava-louças", re: /lava[-\s]?louc/, descBase: "lava-louças 600mm inox", wall: "bottom" },
+  {
+    id: "microondas",
+    label: "Micro-ondas",
+    re: /microond|micro-ond/,
+    descBase: "microondas inox",
+    wall: "right",
+  },
+  {
+    id: "geladeira",
+    label: "Geladeira",
+    re: /geladeira|refrigerador|frigobar/,
+    descBase: "geladeira 700mm inox",
+    wall: "right",
+  },
+  {
+    id: "lava-loucas",
+    label: "Lava-louças",
+    re: /lava[-\s]?louc/,
+    descBase: "lava-louças 600mm inox",
+    wall: "bottom",
+  },
 ];
 
 export interface DecomposedModule {
@@ -103,25 +175,112 @@ const CONNECTORS = /,|;| e | mais | \+ | com | contendo /gi;
 // Elas apenas anunciam a intenção ("quero uma cozinha", "faz um closet")
 // e o blueprint padrão do ambiente cobre o resto.
 const PREAMBLE_WORDS = new Set([
-  "quero","queria","gostaria","preciso","cria","crie","criar","faca","faco","faz",
-  "fazer","feito","monta","montar","gera","gerar","mande","mandei","pedi","projeto","ambiente","um","uma","o","a",
-  "novo","nova","modelo","design","estilo","por","favor","de","do","da",
-  "para","pra","planejad","planejada","planejado","completo","completa","simples",
-  "pequen","pequena","pequeno","moderna","moderno","classic","classica","classico",
-  "luxo","luxuoso","luxuosa","industrial","minimalista","em","com","no","na",
+  "quero",
+  "queria",
+  "gostaria",
+  "preciso",
+  "cria",
+  "crie",
+  "criar",
+  "faca",
+  "faco",
+  "faz",
+  "fazer",
+  "feito",
+  "monta",
+  "montar",
+  "gera",
+  "gerar",
+  "mande",
+  "mandei",
+  "pedi",
+  "projeto",
+  "ambiente",
+  "um",
+  "uma",
+  "o",
+  "a",
+  "novo",
+  "nova",
+  "modelo",
+  "design",
+  "estilo",
+  "por",
+  "favor",
+  "de",
+  "do",
+  "da",
+  "para",
+  "pra",
+  "planejad",
+  "planejada",
+  "planejado",
+  "completo",
+  "completa",
+  "simples",
+  "pequen",
+  "pequena",
+  "pequeno",
+  "moderna",
+  "moderno",
+  "classic",
+  "classica",
+  "classico",
+  "luxo",
+  "luxuoso",
+  "luxuosa",
+  "industrial",
+  "minimalista",
+  "em",
+  "com",
+  "no",
+  "na",
   // materiais/acabamentos: aparecem no preamble, não são módulos.
-  "freijo","louro","nogueira","carvalho","branco","branca","fosco","tx",
-  "grafite","chumbo","quartzo","cumaru","mdf","mdp","laca","laqueado",
-  "vidro","reeded","canelado","canelada","off","white",
+  "freijo",
+  "louro",
+  "nogueira",
+  "carvalho",
+  "branco",
+  "branca",
+  "fosco",
+  "tx",
+  "grafite",
+  "chumbo",
+  "quartzo",
+  "cumaru",
+  "mdf",
+  "mdp",
+  "laca",
+  "laqueado",
+  "vidro",
+  "reeded",
+  "canelado",
+  "canelada",
+  "off",
+  "white",
 ]);
 // Nomes de ambiente que também são só declaração de intenção quando aparecem sozinhos.
 const ENV_WORDS = new Set([
-  "cozinha","closet","dormitorio","quarto","sala","estar","living","escritorio",
-  "home","office","banheiro","lavabo","lavanderia",
+  "cozinha",
+  "closet",
+  "dormitorio",
+  "quarto",
+  "sala",
+  "estar",
+  "living",
+  "escritorio",
+  "home",
+  "office",
+  "banheiro",
+  "lavabo",
+  "lavanderia",
 ]);
 
 function chunkIsOnlyPreamble(chunk: string): boolean {
-  const words = chunk.replace(/[.,;:!?]/g, " ").split(/\s+/).filter(Boolean);
+  const words = chunk
+    .replace(/[.,;:!?]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
   if (words.length === 0) return true;
   return words.every((w) => PREAMBLE_WORDS.has(w) || ENV_WORDS.has(w));
 }
@@ -148,7 +307,9 @@ function parseDimensionByLabel(text: string, labels: readonly string[]): number 
 }
 
 function extractDimensions(text: string): { width?: number; height?: number; depth?: number } {
-  const seq = text.match(/(\d+(?:[.,]\d+)?)\s*(?:mm|cm|m)?\s*(?:x|×)\s*(\d+(?:[.,]\d+)?)\s*(?:mm|cm|m)?\s*(?:x|×)\s*(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?/i);
+  const seq = text.match(
+    /(\d+(?:[.,]\d+)?)\s*(?:mm|cm|m)?\s*(?:x|×)\s*(\d+(?:[.,]\d+)?)\s*(?:mm|cm|m)?\s*(?:x|×)\s*(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?/i,
+  );
   if (seq) {
     const unit = seq[4];
     const width = toMillimeters(Number(seq[1].replace(",", ".")), unit);
@@ -187,7 +348,10 @@ function chunkIsOnlyQualifier(chunk: string): boolean {
   if (chunkIsOnlyPreamble(chunk)) return true;
   const cleaned = chunk
     .replace(/\d+(?:[.,]\d+)?\s*(mm|cm|m)?/g, " ")
-    .replace(/\b(largura|larg|altura|alto|profundidade|prof|fundo|parede|esquerda|direita|frente|frontal|preto|preta|absoluto|freijo|louro|branco|branca|tx|off|white|nogueira|carvalho|grafite|chumbo|cor|na|no|da|do|de|com|coloque|coloca|encoste|encosta|encostad[ao]|ele|ela|lado)\b/g, " ")
+    .replace(
+      /\b(largura|larg|altura|alto|profundidade|prof|fundo|parede|esquerda|direita|frente|frontal|preto|preta|absoluto|freijo|louro|branco|branca|tx|off|white|nogueira|carvalho|grafite|chumbo|cor|na|no|da|do|de|com|coloque|coloca|encoste|encosta|encostad[ao]|ele|ela|lado)\b/g,
+      " ",
+    )
     .replace(/[.,;:!?]/g, " ")
     .trim();
   return cleaned.length === 0;
@@ -334,7 +498,9 @@ export function validateComposition(
   const missing: string[] = [];
   const notes: string[] = [];
   for (const m of dec.modules) {
-    const found = placedLabels.filter((l) => l.toLowerCase().includes(m.label.toLowerCase())).length;
+    const found = placedLabels.filter((l) =>
+      l.toLowerCase().includes(m.label.toLowerCase()),
+    ).length;
     if (found < m.count) missing.push(`${m.label} (${found}/${m.count})`);
     if (m.doors) notes.push(`${m.label}: ${m.doors} porta(s) solicitadas`);
     if (m.drawers) notes.push(`${m.label}: ${m.drawers} gaveta(s) solicitadas`);
