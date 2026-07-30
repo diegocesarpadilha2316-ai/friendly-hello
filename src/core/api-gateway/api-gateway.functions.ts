@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireTenant } from "@/core/middleware/require-tenant";
-import { generateApiKey, hashApiKey } from "./key-hash.server";
+import { generateApiKey } from "./key-hash.server";
 import { buildOpenApi, toYaml } from "./openapi.server";
 import type {
   ApiEndpoint,
@@ -154,7 +154,7 @@ export const apiKeyCreate = createServerFn({ method: "POST" })
   .inputValidator((raw: unknown) => createKeySchema.parse(raw))
   .handler(
     async ({ context, data }): Promise<{ key: ApiKey; secret: string }> => {
-      const { prefix, secret, full } = generateApiKey();
+      const { prefix, keyHash, full } = generateApiKey();
       const { data: row, error } = await context.supabase
         .from("api_keys")
         .insert({
@@ -162,7 +162,7 @@ export const apiKeyCreate = createServerFn({ method: "POST" })
           name: data.name,
           description: data.description ?? null,
           prefix,
-          key_hash: hashApiKey(secret),
+          key_hash: keyHash,
           scopes: data.scopes,
           allowed_ips: data.allowedIps,
           expires_at: data.expiresAt ?? null,
@@ -193,12 +193,12 @@ export const apiKeyRotate = createServerFn({ method: "POST" })
   .middleware([requireTenant])
   .inputValidator((raw: unknown) => idSchema.parse(raw))
   .handler(async ({ context, data }): Promise<{ secret: string; prefix: string }> => {
-    const { prefix, secret, full } = generateApiKey();
+    const { prefix, keyHash, full } = generateApiKey();
     const { error } = await context.supabase
       .from("api_keys")
       .update({
         prefix,
-        key_hash: hashApiKey(secret),
+        key_hash: keyHash,
         status: "active",
         updated_at: new Date().toISOString(),
       })
