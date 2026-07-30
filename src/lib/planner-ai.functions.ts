@@ -261,6 +261,8 @@ const appendMessageInput = z.object({
   latencyMs: z.number().int().min(0).optional(),
   status: z.string().max(40).optional(),
   metadata: z.record(z.unknown()).optional(),
+  /** Chave de idempotência gerada uma única vez por envio no cliente. */
+  clientMessageId: z.string().trim().min(6).max(80).optional(),
 });
 
 export const appendAiMessage = createServerFn({ method: "POST" })
@@ -274,7 +276,26 @@ export const appendAiMessage = createServerFn({ method: "POST" })
       .eq("company_id", context.tenantId)
       .eq("id", data.sessionId)
       .maybeSingle();
-    if (own.error || !own.data) throw new Response("Forbidden", { status: 403 });
+    if (own.error) throw fail("message.append", own.error);
+    if (!own.data) throw new Response("Sessão não encontrada.", { status: 404 });
+
+    // Idempotência: sem constraint no banco nesta etapa, verificamos a chave
+    // do cliente antes de inserir (protege duplo clique/retry).
+    if (data.clientMessageId) {
+      const dup = await context.supabase
+        .from("planner_ai_messages")
+        .select(MESSAGE_COLUMNS)
+        .eq("company_id", context.tenantId)
+        .eq("session_id", data.sessionId)
+        .eq("metadata->>client_message_id", data.clientMessageId)
+        .maybeSingle();
+      if (!dup.error && dup.data) return dup.data;
+    }
+
+    const metadata = {
+      ...(sanitizeJson(data.metadata ?? null) ?? {}),
+      ...(data.clientMessageId ? { client_message_id: data.clientMessageId } : {}),
+    };
 
     const { data: row, error } = await context.supabase
       .from("planner_ai_messages")
@@ -287,11 +308,11 @@ export const appendAiMessage = createServerFn({ method: "POST" })
         tokens_in: data.tokensIn ?? 0,
         tokens_out: data.tokensOut ?? 0,
         latency_ms: data.latencyMs ?? null,
-        metadata: data.metadata ?? null,
+        metadata: Object.keys(metadata).length ? metadata : null,
       })
-      .select("*")
+      .select(MESSAGE_COLUMNS)
       .single();
-    if (error) throw new Response(error.message, { status: 400 });
+    if (error) throw fail("message.append", error);
 
     // Débito automático apenas em mensagens do assistente (respostas do modelo).
     if (data.role === "assistant" && (data.status ?? "ok") === "ok") {
