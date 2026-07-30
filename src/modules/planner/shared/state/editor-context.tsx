@@ -377,11 +377,38 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
     [listVersionsFn],
   );
 
+  /** Troca de projeto: descarta fila/retry do projeto anterior. */
+  const resetSync = useCallback(() => {
+    if (retryTimerRef.current) {
+      clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
+    if (autosaveTimer.current) {
+      clearTimeout(autosaveTimer.current);
+      autosaveTimer.current = null;
+    }
+    saveSeqRef.current += 1;
+    pendingProjectRef.current = null;
+    retryAttemptRef.current = 0;
+    setSyncError(null);
+    setSyncStatus("idle");
+  }, []);
+
+  // Cleanup na desmontagem do provider.
+  useEffect(
+    () => () => {
+      if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+      if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+    },
+    [],
+  );
+
   const loadProject = useCallback((project: PlannerProject) => {
+    resetSync();
     const normalized = ensureProjectRoomShells(project);
     dispatch({ type: "load", project: normalized });
     void refreshVersions(normalized.id);
-  }, [refreshVersions]);
+  }, [refreshVersions, resetSync]);
 
   const persist = useCallback(
     async (project: PlannerProject) => {
