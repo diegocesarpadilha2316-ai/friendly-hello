@@ -927,6 +927,11 @@ export function toolInsertDescribed(
     catalogItemId?: string;
     count?: number;
     at?: { x: number; y: number };
+    /** Params extras vindos da Ficha Técnica (spec) — sobrepõem o matcher. */
+    params?: Record<string, string | number | boolean>;
+    width?: number;
+    height?: number;
+    depth?: number;
   },
 ): ToolExecutionResult {
   const match = matchDescription(args.description, {
@@ -946,15 +951,22 @@ export function toolInsertDescribed(
   const count = Math.max(1, Math.min(20, args.count ?? 1));
   const startX = args.at?.x ?? room.dimensions.width / 2;
   const startY = args.at?.y ?? room.dimensions.depth / 2;
-  const stepBase = match.overrides.width ?? match.item.parametric.defaults.width;
+  const overrides = {
+    ...match.overrides,
+    ...(args.width != null ? { width: args.width } : {}),
+    ...(args.height != null ? { height: args.height } : {}),
+    ...(args.depth != null ? { depth: args.depth } : {}),
+  };
+  const params = { ...match.params, ...(args.params ?? {}) };
+  const stepBase = overrides.width ?? match.item.parametric.defaults.width;
   const step = stepBase + 40;
 
   let next = project;
   for (let i = 0; i < count; i++) {
     next = insertItemIntoProject(next, ctx, match.item, {
       at: { x: startX + i * step, y: startY },
-      overrides: match.overrides,
-      params: match.params,
+      overrides,
+      params,
       materialId: match.materialId,
     });
   }
@@ -962,6 +974,97 @@ export function toolInsertDescribed(
     project: next,
     summary: `${count}× ${match.item.name} inserido (${match.reasons.join(", ")}).`,
     affectedIds: [],
+  };
+}
+
+// ───── Alteração cirúrgica de atributos do módulo ─────
+
+/**
+ * Altera EXCLUSIVAMENTE os atributos citados pelo usuário (portas, tipo de
+ * abertura, gavetas, prateleiras, divisões, maleiro, cabideiros, nichos,
+ * espelho, puxador). Tudo o mais no projeto — posição, dimensões, material,
+ * demais módulos — permanece intacto.
+ */
+export function toolSetModuleParams(
+  project: PlannerProject,
+  ctx: ToolContext,
+  args: {
+    doors?: number;
+    drawers?: number;
+    shelves?: number;
+    divisions?: number;
+    opening?: string;
+    maleiro?: boolean;
+    cabideiros?: number;
+    nichos?: number;
+    mirror?: boolean;
+    mirrorPosition?: string;
+    handle?: string;
+  },
+): ToolExecutionResult {
+  const room = getRoom(project, ctx);
+  if (!room) return { project, summary: "Sem cômodo ativo.", affectedIds: [] };
+  const targets = applySelection(room, ctx);
+  if (targets.length === 0)
+    return { project, summary: "Não há móveis para alterar.", affectedIds: [] };
+
+  const patch: Record<string, string | number | boolean> = {};
+  const notes: string[] = [];
+  if (args.doors != null) {
+    patch["mod:doors"] = args.doors;
+    notes.push(`${args.doors} porta(s)`);
+  }
+  if (args.drawers != null) {
+    patch["mod:drawers"] = args.drawers;
+    notes.push(`${args.drawers} gaveta(s)`);
+  }
+  if (args.shelves != null) {
+    patch["mod:shelves"] = args.shelves;
+    notes.push(`${args.shelves} prateleira(s)`);
+  }
+  if (args.divisions != null) {
+    patch["mod:divisions"] = args.divisions;
+    notes.push(`${args.divisions} divisão(ões)`);
+  }
+  if (args.opening != null) {
+    patch["mod:opening"] = args.opening;
+    if (args.opening === "sem-porta") patch["eng:front"] = "aberto";
+    notes.push(`abertura ${args.opening}`);
+  }
+  if (args.maleiro != null) {
+    patch["mod:maleiro"] = args.maleiro;
+    notes.push(args.maleiro ? "maleiro" : "sem maleiro");
+  }
+  if (args.cabideiros != null) {
+    patch["mod:cabideiros"] = args.cabideiros;
+    notes.push(`${args.cabideiros} cabideiro(s)`);
+  }
+  if (args.nichos != null) {
+    patch["mod:nichos"] = args.nichos;
+    notes.push(`${args.nichos} nicho(s)`);
+  }
+  if (args.mirror != null) {
+    patch["mod:mirror"] = args.mirror;
+    if (args.mirror && args.mirrorPosition)
+      patch["mod:mirrorPosition"] = args.mirrorPosition;
+    notes.push(args.mirror ? "espelho" : "sem espelho");
+  }
+  if (args.handle != null) {
+    patch["mod:handle"] = args.handle;
+    notes.push(`puxador ${args.handle}`);
+  }
+  if (Object.keys(patch).length === 0) {
+    return { project, summary: "Nada a alterar.", affectedIds: [] };
+  }
+
+  const next = mutateFurniture(project, ctx, targets, (f) => ({
+    ...f,
+    params: { ...f.params, ...patch },
+  }));
+  return {
+    project: next,
+    summary: `Atualizei ${notes.join(", ")} em ${targets.length} móvel(is).`,
+    affectedIds: targets.map((t) => t.id),
   };
 }
 
@@ -1043,6 +1146,7 @@ export type ToolName =
   | "set_front_type"
   | "convert_to"
   | "apply_finishing"
+  | "set_module_params"
   // ── Etapa 9 — ferramentas profissionais (consultivas/inspeção) ──
   | "search_material"
   | "estimate_budget"
@@ -1136,6 +1240,12 @@ export const PLANNER_TOOL_REGISTRY: readonly ToolDescriptor[] = [
     description:
       "Aplica um preset coordenado (cor, material, tampo, frente, ferragem, LED) em todos os móveis do cômodo — ou apenas nos aéreos, balcões, torre, painel ou tampos.",
   },
+  {
+    name: "set_module_params",
+    label: "Ajustar atributos do módulo",
+    description:
+      "Altera apenas os atributos citados (portas, tipo de abertura, gavetas, prateleiras, divisões, maleiro, cabideiros, nichos, espelho, puxador), preservando o resto do projeto.",
+  },
 ];
 
 // Bindings entre nomes e funções — usados pelo executor.
@@ -1160,6 +1270,7 @@ export const TOOL_FUNCTIONS = {
   set_front_type: toolSetFrontType,
   convert_to: toolConvertTo,
   apply_finishing: toolApplyFinishing,
+  set_module_params: toolSetModuleParams,
 } as const;
 
 // Sinal explícito de que `fromPrimitive` e `PlannerEnvironment` são reexportados

@@ -257,6 +257,7 @@ function buildContracts(): readonly PlannerToolContract[] {
           height: dimensionMm(LIMITS.moduleHeight).optional(),
           depth: dimensionMm(LIMITS.moduleDepth).optional(),
           at: pointMm.optional(),
+          params: z.record(z.union([z.string(), z.number(), z.boolean()])).optional(),
         })
         .strict(),
     }),
@@ -390,6 +391,30 @@ function buildContracts(): readonly PlannerToolContract[] {
         .object({
           preset: shortText(60),
           scope: shortText(40).optional(),
+        })
+        .strict(),
+    }),
+    contract("set_module_params", {
+      description:
+        "Altera apenas os atributos citados do módulo (portas, abertura, gavetas, prateleiras, divisões, maleiro, cabideiros, nichos, espelho, puxador).",
+      owner: "marceneiro",
+      category: "furniture",
+      mutating: true,
+      schema: z
+        .object({
+          doors: z.number().int().min(0).max(8).optional(),
+          drawers: z.number().int().min(0).max(12).optional(),
+          shelves: z.number().int().min(0).max(20).optional(),
+          divisions: z.number().int().min(0).max(12).optional(),
+          opening: z
+            .enum(["abrir", "correr", "sanfonada", "basculante", "sem-porta"])
+            .optional(),
+          maleiro: z.boolean().optional(),
+          cabideiros: z.number().int().min(0).max(8).optional(),
+          nichos: z.number().int().min(0).max(20).optional(),
+          mirror: z.boolean().optional(),
+          mirrorPosition: z.enum(["central", "todas", "lateral", "interna"]).optional(),
+          handle: shortText(40).optional(),
         })
         .strict(),
     }),

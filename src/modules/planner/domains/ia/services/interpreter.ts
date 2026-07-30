@@ -11,6 +11,48 @@
 import type { ToolName } from "./tools";
 import { buildBlueprint, blueprintToPreset, validateBlueprint } from "./blueprint";
 import { decompose } from "./decomposer";
+import { parseEdits } from "./edits";
+import {
+  assumptionsSentence,
+  buildFurnitureSpec,
+  specToDescription,
+  specToParams,
+  type FurnitureSpec,
+} from "./spec";
+
+/**
+ * Ficha Técnica → intent de inserção. O Planner Engine recebe a descrição
+ * canônica (escolha de família/variante no catálogo) mais os params exatos
+ * da ficha (portas, abertura, gavetas, maleiro, cabideiro, espelho, nichos,
+ * puxador, estilo) — nunca um modelo genérico.
+ */
+function specToIntent(spec: FurnitureSpec, count = 1): ParsedIntent {
+  return {
+    tool: "insert_described",
+    args: {
+      description: specToDescription(spec),
+      count,
+      width: spec.width,
+      height: spec.height,
+      depth: spec.depth,
+      params: specToParams(spec),
+    },
+    answerHint: assumptionsSentence(spec) ?? undefined,
+  };
+}
+
+/**
+ * Substantivos que representam um MÓVEL de verdade. Trechos como "3 portas
+ * de correr" ou "duas gavetas internas" são atributos do mesmo móvel — não
+ * módulos independentes — e por isso não contam aqui.
+ */
+const REAL_MODULE_NOUN =
+  /armari|aereo|balcao|gaveteir|torre|cristaleir|roupeir|guarda[-\s]?roupa|closet|painel|nicho|prateleir|bancada|tampo|ilha|pia|cuba|coifa|cooktop|forno|geladeira/;
+
+/** Quantos móveis distintos o pedido realmente cita. */
+function realModuleCount(modules: readonly { raw: string }[]): number {
+  return modules.filter((m) => REAL_MODULE_NOUN.test(m.raw)).length;
+}
 
 export interface ParsedIntent {
   tool: ToolName;
@@ -191,6 +233,17 @@ export function interpret(input: string): PlannerIntent {
     return { type: "question", question: { kind: "help" } };
   }
 
+  // ── Alterações cirúrgicas (antes de qualquer rota de criação) ──
+  // "troque as portas por portas de correr", "aumente a largura para 3 m",
+  // "coloque 4 gavetas internas" — mexem só no que foi citado.
+  const edits = parseEdits(raw);
+  if (edits.length > 0) {
+    return {
+      type: "command",
+      intents: edits.map((e) => ({ tool: e.tool, args: e.args, answerHint: e.change })),
+    };
+  }
+
   const intents: ParsedIntent[] = [];
 
   // ── Criação de ambiente completo ──
@@ -235,6 +288,13 @@ export function interpret(input: string): PlannerIntent {
     // que foi pedido no cômodo atual — nada de recriar a cozinha inteira.
     if (!matchedPreset && !ambientWords && wantsInsertVerb) {
       const dec = decompose(raw);
+      // Pedido de UM móvel específico → Ficha Técnica manda.
+      if (realModuleCount(dec.modules) <= 1) {
+        const spec = buildFurnitureSpec(raw);
+        if (spec.type) {
+          return { type: "command", intents: [specToIntent(spec, dec.modules[0]?.count ?? 1)] };
+        }
+      }
       if (dec.modules.length > 0) {
         const bp = buildBlueprint(raw);
         const material = bp.material;
@@ -258,6 +318,12 @@ export function interpret(input: string): PlannerIntent {
     // reconhecida deve continuar sendo inserção pontual — nunca preset genérico.
     if (!matchedPreset && !ambientWords) {
       const dec = decompose(raw);
+      if (realModuleCount(dec.modules) <= 1 && dec.modules.length > 0) {
+        const spec = buildFurnitureSpec(raw);
+        if (spec.type) {
+          return { type: "command", intents: [specToIntent(spec, dec.modules[0].count)] };
+        }
+      }
       if (dec.modules.length > 0 && dec.unresolved.length === 0) {
         const bp = buildBlueprint(raw);
         const material = bp.material;
