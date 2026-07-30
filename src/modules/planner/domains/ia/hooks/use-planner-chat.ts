@@ -38,6 +38,7 @@ import { listToolContracts } from "../tools/registry";
 import { FINISHING_PRESETS } from "../services/finishing";
 import { streamLovableReply } from "../services/ai-stream";
 import { buildAgentBriefing } from "../agents";
+import { buildMemoryPromptBlock, readMemory, updateMemoryFromTurn } from "../memory";
 import type { ParsedIntent } from "../services/interpreter";
 import type { PlannerProject, PlannerRoomType } from "@/modules/planner/shared";
 import type { ToolContext } from "../services/tools";
@@ -68,7 +69,7 @@ function safeJson(text: string): unknown {
 }
 
 /** Prompt de sistema mínimo que dá contexto do projeto/cômodo ativo ao LLM. */
-function buildPlannerSystemPrompt(p: PlannerProject, ctx: ToolContext): string {
+function buildPlannerSystemPrompt(p: PlannerProject, ctx: ToolContext, memoryBlock = ""): string {
   const env = p.environments.find((e) => e.id === ctx.environmentId);
   const room = env?.rooms.find((r) => r.id === ctx.roomId);
   const briefing = p.briefing
@@ -121,6 +122,8 @@ function buildPlannerSystemPrompt(p: PlannerProject, ctx: ToolContext): string {
       : "Nenhum cômodo selecionado.",
     selectionLine,
     briefing,
+    // Etapa 10 — memória estruturada do projeto (compacta, sem histórico bruto).
+    memoryBlock,
   ]
     .filter(Boolean)
     .join("\n");
@@ -608,6 +611,10 @@ export function usePlannerChat() {
       const sessionId = await ensureSession(project.id ?? null, trimmed);
       await persistMessage(sessionId, "user", trimmed, "ok", keys.user);
       const startedAt = Date.now();
+      // Etapa 10 — contexto estruturado do projeto injetado nos prompts.
+      const memoryBlock = project.id
+        ? buildMemoryPromptBlock(readMemory(tenantId, project.id, project.name))
+        : "";
 
       try {
         setState((s) => ({ ...s, status: "streaming" }));
@@ -656,7 +663,7 @@ export function usePlannerChat() {
                 "\n• 'sofá/poltrona/mesa/cadeira/tapete/cortina/vaso/quadro' → decoração (use insert_described com descrição completa)" +
                 "\n• 'torneira/cuba/pia/misturador' → tratar como ferragem via change_hardware ou insert_described." +
                 "\n\nRegra de ouro: sempre prefira `insert_described` para itens reais do catálogo. Passe a descrição rica com marca (Blum, Duratex, Portobello…), cor (Louro Freijó, Off White…), dimensão (800mm, 1,20m) e tipo de frente (vidro/reeded/sólida).";
-              const prompt = `Projeto: "${p.name}". Cômodo: "${p.environments.find((e) => e.id === ctx.environmentId)?.rooms.find((r) => r.id === ctx.roomId)?.name ?? "—"}".\nPedido do usuário: ${userMessage}`;
+              const prompt = `${memoryBlock ? `${memoryBlock}\n` : ""}Projeto: "${p.name}". Cômodo: "${p.environments.find((e) => e.id === ctx.environmentId)?.rooms.find((r) => r.id === ctx.roomId)?.name ?? "—"}".\nPedido do usuário: ${userMessage}`;
               const res = await runAIJson({
                 data: {
                   task: { type: "json", quality: "standard", speed: "balanced" },
@@ -689,9 +696,8 @@ export function usePlannerChat() {
           },
           llmReplyStream: async function* ({ userMessage, role, project: p, ctx, agents }) {
             const briefing = buildAgentBriefing(agents ?? []);
-            const system = briefing
-              ? `${buildPlannerSystemPrompt(p, ctx)}\n\n${briefing}`
-              : buildPlannerSystemPrompt(p, ctx);
+            const base = buildPlannerSystemPrompt(p, ctx, memoryBlock);
+            const system = briefing ? `${base}\n\n${briefing}` : base;
             const prompt = `Usuário (${role}): ${userMessage}`;
             const messages: { role: "system" | "user"; content: string }[] = [
               { role: "system", content: system },
