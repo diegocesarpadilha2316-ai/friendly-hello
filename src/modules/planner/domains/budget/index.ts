@@ -7,10 +7,15 @@
  *  - hooks/       React hooks (client) — leitura via TanStack Query
  *  - components/  UI específica do domínio (consome UI Kit do Core)
  *
- * Comunicação com outros domínios: SOMENTE via contratos publicados em
- * `@/modules/planner/shared` (PlannerRegistry + PlannerEventBus).
- * Não importe outros domínios diretamente.
+ * Etapa 12 — Orçamento Profissional: contrato canônico, motor de cálculo
+ * determinístico, persistência local por tenant/projeto, revisões e
+ * exportação (interna e comercial).
  *
- * Nenhuma funcionalidade nesta fase — apenas estrutura.
+ * O motor (`services/`) é puro e não conhece outros domínios; apenas o hook
+ * consome o relatório de produção e o catálogo como fontes de quantidade e
+ * preço, garantindo fonte única de verdade.
  */
-export {};
+export * from "./types";
+export * from "./services";
+export * from "./hooks";
+export * from "./components";
