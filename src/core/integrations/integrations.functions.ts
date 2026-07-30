@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireTenant } from "@/core/middleware/require-tenant";
 import { PROVIDER_CATALOG } from "./providers/stubs";
+import { WEBHOOK_COLUMNS } from "./registry-data.server";
 import type {
   Integration,
   IntegrationEvent,
@@ -28,7 +29,7 @@ function mapIntegration(r: Record<string, unknown>): Integration {
     version: String(r.version ?? "1.0.0"),
     capabilities: (r.capabilities as Integration["capabilities"]) ?? [],
     rateLimit: (r.rate_limit as JsonRecord) ?? {},
-    retryPolicy: (r.retry_policy as JsonRecord) as Integration["retryPolicy"],
+    retryPolicy: r.retry_policy as JsonRecord as Integration["retryPolicy"],
     config: (r.config as JsonRecord) ?? {},
     metadata: (r.metadata as JsonRecord) ?? {},
     createdAt: String(r.created_at),
@@ -177,7 +178,7 @@ export const integrationsWebhooksList = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<readonly IntegrationWebhook[]> => {
     const { data } = await context.supabase
       .from("integration_webhooks")
-      .select("*")
+      .select(WEBHOOK_COLUMNS)
       .eq("company_id", context.tenantId)
       .order("created_at", { ascending: false });
     return (data ?? []).map(mapWebhook);
@@ -227,10 +228,25 @@ export const integrationsSnapshot = createServerFn({ method: "GET" })
     const [integrations, health, webhooks, logs, syncs, events] = await Promise.all([
       supabase.from("integrations_registry").select("*").eq("company_id", tenant),
       supabase.from("integration_health").select("*").eq("company_id", tenant).limit(100),
-      supabase.from("integration_webhooks").select("*").eq("company_id", tenant),
-      supabase.from("integration_logs").select("*").eq("company_id", tenant).order("created_at", { ascending: false }).limit(100),
-      supabase.from("integration_sync").select("*").eq("company_id", tenant).order("scheduled_at", { ascending: false }).limit(50),
-      supabase.from("integration_events").select("*").eq("company_id", tenant).order("created_at", { ascending: false }).limit(50),
+      supabase.from("integration_webhooks").select(WEBHOOK_COLUMNS).eq("company_id", tenant),
+      supabase
+        .from("integration_logs")
+        .select("*")
+        .eq("company_id", tenant)
+        .order("created_at", { ascending: false })
+        .limit(100),
+      supabase
+        .from("integration_sync")
+        .select("*")
+        .eq("company_id", tenant)
+        .order("scheduled_at", { ascending: false })
+        .limit(50),
+      supabase
+        .from("integration_events")
+        .select("*")
+        .eq("company_id", tenant)
+        .order("created_at", { ascending: false })
+        .limit(50),
     ]);
     return {
       integrations: (integrations.data ?? []).map(mapIntegration),
@@ -319,7 +335,9 @@ export const integrationsExport = createServerFn({ method: "POST" })
     if (data.format === "csv") {
       const header = "id,provider,name,category,status,version,updatedAt";
       const body = list
-        .map((i) => [i.id, i.provider, i.name, i.category, i.status, i.version, i.updatedAt].join(","))
+        .map((i) =>
+          [i.id, i.provider, i.name, i.category, i.status, i.version, i.updatedAt].join(","),
+        )
         .join("\n");
       return { format: "csv", content: `${header}\n${body}` };
     }

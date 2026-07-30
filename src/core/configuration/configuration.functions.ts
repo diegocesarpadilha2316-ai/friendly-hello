@@ -138,18 +138,24 @@ export const flagDelete = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
-/* ============ INTEGRATIONS ============ */
+/* ============ INTEGRATIONS ============
+ * Fonte canônica: public.integrations_registry (+ integration_health).
+ * A tabela public.integrations não existe no banco real; estes fluxos apenas
+ * mantêm a forma do tipo legado `Integration` consumida pelas telas de
+ * Configurações, delegando 100% ao serviço central em
+ * src/core/integrations/registry.server.ts.
+ */
 export const integrationsList = createServerFn({ method: "GET" })
   .middleware([requireTenant])
   .handler(async ({ context }): Promise<readonly Integration[]> => {
-    const { data, error } = await context.supabase
-      .from("integrations")
-      .select("*")
-      .eq("company_id", context.tenantId)
-      .order("provider");
-    if (error) throw new Error(error.message);
+    const reg = await import("@/core/integrations/registry-data.server");
+    const [rows, health] = await Promise.all([
+      reg.listRegistry(context.supabase, context.tenantId),
+      reg.listHealth(context.supabase, context.tenantId),
+    ]);
+    const latest = reg.latestHealthByIntegration(health);
     const { mapIntegration } = await import("./configuration.server");
-    return (data ?? []).map(mapIntegration);
+    return rows.map((r) => mapIntegration(r, latest.get(String(r.id))));
   });
 
 export const integrationUpsert = createServerFn({ method: "POST" })
@@ -158,6 +164,7 @@ export const integrationUpsert = createServerFn({ method: "POST" })
     z
       .object({
         provider: z.string().min(1),
+        name: z.string().min(1).optional(),
         category: z.string().default("generic"),
         enabled: z.boolean().default(false),
         config: jsonRecord.optional(),
@@ -165,17 +172,15 @@ export const integrationUpsert = createServerFn({ method: "POST" })
       .parse(raw),
   )
   .handler(async ({ context, data }) => {
-    const { error } = await context.supabase.from("integrations").upsert(
-      {
-        company_id: context.tenantId,
-        provider: data.provider,
-        category: data.category,
-        enabled: data.enabled,
-        config: data.config ?? {},
-      },
-      { onConflict: "company_id,provider" },
-    );
-    if (error) throw new Error(error.message);
+    const reg = await import("@/core/integrations/registry-data.server");
+    // `enabled` da UI legada mapeia para o campo canônico `status`.
+    await reg.upsertRegistry(context.supabase, context.tenantId, {
+      provider: data.provider,
+      name: data.name,
+      category: data.category,
+      status: data.enabled ? "active" : "inactive",
+      config: data.config ?? {},
+    });
     return { ok: true as const };
   });
 
@@ -183,14 +188,14 @@ export const integrationTest = createServerFn({ method: "POST" })
   .middleware([requireTenant])
   .inputValidator((raw: unknown) => z.object({ id: z.string().uuid() }).parse(raw))
   .handler(async ({ context, data }) => {
-    const now = new Date().toISOString();
-    const { error } = await context.supabase
-      .from("integrations")
-      .update({ last_tested_at: now, status: "healthy", last_error: null })
-      .eq("id", data.id)
-      .eq("company_id", context.tenantId);
-    if (error) throw new Error(error.message);
-    return { ok: true as const, testedAt: now };
+    // "Último teste" e "último erro" vivem em integration_health no schema real.
+    const reg = await import("@/core/integrations/registry-data.server");
+    const testedAt = await reg.recordHealthCheck(context.supabase, context.tenantId, {
+      integrationId: data.id,
+      status: "online",
+      lastError: null,
+    });
+    return { ok: true as const, testedAt };
   });
 
 /* ============ BRANDING ============ */
@@ -434,6 +439,7 @@ export const configurationSnapshot = createServerFn({ method: "GET" })
   .middleware([requireTenant])
   .handler(async ({ context }): Promise<ConfigurationSnapshot> => {
     const s = context.supabase;
+    const reg = await import("@/core/integrations/registry-data.server");
     const [
       platform,
       company,
@@ -442,7 +448,8 @@ export const configurationSnapshot = createServerFn({ method: "GET" })
       security,
       backup,
       flags,
-      integrations,
+      integrationRows,
+      healthRows,
       apiKeys,
     ] = await Promise.all([
       s.from("platform_settings").select("*").maybeSingle(),
@@ -455,7 +462,8 @@ export const configurationSnapshot = createServerFn({ method: "GET" })
         .from("feature_flags")
         .select("*")
         .or(`company_id.eq.${context.tenantId},company_id.is.null`),
-      s.from("integrations").select("*").eq("company_id", context.tenantId),
+      reg.listRegistry(s, context.tenantId),
+      reg.listHealth(s, context.tenantId),
       s
         .from("api_keys")
         .select("*")
@@ -463,6 +471,7 @@ export const configurationSnapshot = createServerFn({ method: "GET" })
         .order("created_at", { ascending: false }),
     ]);
     const m = await import("./configuration.server");
+    const latestHealth = reg.latestHealthByIntegration(healthRows);
     return {
       platform: platform.data ? m.mapPlatform(platform.data) : null,
       company: company.data ? m.mapCompany(company.data) : null,
@@ -471,7 +480,7 @@ export const configurationSnapshot = createServerFn({ method: "GET" })
       security: security.data ? m.mapSecurity(security.data) : null,
       backup: backup.data ? m.mapBackup(backup.data) : null,
       flags: (flags.data ?? []).map(m.mapFlag),
-      integrations: (integrations.data ?? []).map(m.mapIntegration),
+      integrations: integrationRows.map((r) => m.mapIntegration(r, latestHealth.get(String(r.id)))),
       apiKeys: (apiKeys.data ?? []).map(m.mapApiKey),
     };
   });

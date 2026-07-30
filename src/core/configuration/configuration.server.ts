@@ -63,16 +63,33 @@ export const mapApiKey = (r: Record<string, unknown>): ApiKey => ({
   createdAt: String(r.created_at),
 });
 
-export const mapIntegration = (r: Record<string, unknown>): Integration => ({
+/**
+ * Mapeia uma linha de `integrations_registry` (fonte canônica) para o tipo
+ * legado `Integration` consumido pelas telas de Configurações.
+ *
+ * `enabled`, `lastTestedAt` e `lastError` não existem no registry: derivam,
+ * respectivamente, de `status` e da tabela irmã `integration_health`.
+ */
+const HEALTH_TO_LEGACY_STATUS: Record<string, Integration["status"]> = {
+  online: "healthy",
+  degraded: "degraded",
+  offline: "down",
+  unknown: "unknown",
+};
+
+export const mapIntegration = (
+  r: Record<string, unknown>,
+  health?: Record<string, unknown>,
+): Integration => ({
   id: String(r.id),
   companyId: String(r.company_id),
   provider: String(r.provider),
   category: String(r.category ?? "generic"),
-  enabled: Boolean(r.enabled),
-  status: (r.status as Integration["status"]) ?? "unknown",
+  enabled: String(r.status ?? "inactive") === "active",
+  status: health ? (HEALTH_TO_LEGACY_STATUS[String(health.status)] ?? "unknown") : "unknown",
   config: (r.config as JsonRecord) ?? {},
-  lastTestedAt: (r.last_tested_at as string) ?? null,
-  lastError: (r.last_error as string) ?? null,
+  lastTestedAt: (health?.last_check_at as string) ?? null,
+  lastError: (health?.last_error as string) ?? null,
   updatedAt: String(r.updated_at ?? new Date().toISOString()),
 });
 
