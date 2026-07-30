@@ -406,6 +406,21 @@ export function toolCreateRoomPreset(
   let decorPlaced = 0;
   const customPieces = !!(args.pieces && args.pieces.length > 0);
   const skipDecor = customPieces && (args.skipDecorWhenCustom ?? true);
+  // Do blueprint mantemos apenas os móveis FUNCIONAIS (cama, sofá, mesa,
+  // criado-mudo, banquetas…). A camada puramente decorativa passa a ser
+  // decidida pela Inteligência de Composição, com base em estilo, área,
+  // circulação e equilíbrio visual.
+  const FUNCTIONAL_SUBTYPES = new Set([
+    "cama",
+    "sofa",
+    "mesa",
+    "cadeira",
+    "poltrona",
+    "criado-mudo",
+    "aparador",
+    "estante",
+    "banqueta",
+  ]);
   const decorItems = skipDecor ? [] : (blueprint.decor ?? []);
   for (const spec of decorItems) {
     const item = spec.catalogItemId
@@ -414,6 +429,7 @@ export function toolCreateRoomPreset(
         ? (matchDescription(spec.description)?.item ?? null)
         : null;
     if (!item) continue;
+    if (!FUNCTIONAL_SUBTYPES.has(String(item.subtype))) continue;
     const at = {
       x: Math.round(room.dimensions.width * spec.xRatio),
       y: Math.round(room.dimensions.depth * spec.yRatio),
@@ -424,6 +440,50 @@ export function toolCreateRoomPreset(
       params: spec.rotation != null ? { rotation: spec.rotation } : undefined,
     });
     decorPlaced += 1;
+  }
+
+  // ── 3) DECORAÇÃO AUTOMÁTICA COERENTE ───────────────────────────────────
+  // Complementa o ambiente sem exagerar: âncora, iluminação, verde, arte,
+  // objetos e conforto — todos dentro do repertório do estilo escolhido.
+  let qualityLine = "";
+  if (!skipDecor) {
+    const roomAfter = getRoom(next, ctx);
+    const occupied: Rect[] = roomAfter
+      ? furnitureInRoom(roomAfter).map((f) => {
+          const rot = ((f.rotation % 180) + 180) % 180;
+          const swapped = rot > 45 && rot < 135;
+          const w = swapped ? f.depth : f.width;
+          const d = swapped ? f.width : f.depth;
+          return { x: f.x, y: f.y, w, d };
+        })
+      : [];
+
+    const sizeOf = (id: string) => {
+      const it = findCatalogItem(id);
+      if (!it) return null;
+      return { w: it.parametric.defaults.width, d: it.parametric.defaults.depth };
+    };
+
+    const proposed = composeDecor({ analysis, occupied, sizeOf });
+
+    // ── 4) CONTROLE DE QUALIDADE + REORGANIZAÇÃO AUTOMÁTICA ─────────────
+    const { decor: finalDecor, report, passes } = rebalanceComposition(
+      analysis,
+      occupied,
+      proposed,
+    );
+
+    for (const d of finalDecor) {
+      const item = findCatalogItem(d.catalogItemId);
+      if (!item) continue;
+      next = insertItemIntoProject(next, ctx, item, {
+        at: { x: d.x, y: d.y },
+        params: d.rotation != null ? { rotation: d.rotation } : undefined,
+      });
+      decorPlaced += 1;
+    }
+    qualityLine =
+      `${describeQuality(report)}` + (passes > 0 ? ` (reorganizado ${passes}×)` : "");
   }
 
   // ── Auditoria Modo Engenharia ──────────────────────────────────────────
