@@ -17,5 +17,6 @@
  */
 export * from "./types";
 export * from "./services";
+export * from "./agents";
 export * from "./hooks";
 export * from "./components";
