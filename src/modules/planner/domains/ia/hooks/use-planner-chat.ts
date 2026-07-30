@@ -545,6 +545,11 @@ export function usePlannerChat() {
     sendingRef.current = false;
   }, []);
 
+  // Etapa 11 — planejamento inteligente (mesmo editor, mesmas ferramentas).
+  const planning = usePlanExecution(tenantId);
+  const planRef = useRef(planning);
+  planRef.current = planning;
+
   const send = useCallback(
     async (text: string) => {
       const trimmed = text.trim();
