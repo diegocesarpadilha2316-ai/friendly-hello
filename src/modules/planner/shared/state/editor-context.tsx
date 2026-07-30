@@ -255,6 +255,10 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
   const retryAttemptRef = useRef(0);
   const { activeCompany } = useTenant();
   const tenantId = activeCompany?.id ?? "anonymous";
+  // Espelho do estado para listeners de janela (online/offline/beforeunload)
+  // que são registrados uma única vez.
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   // Rastreadores para o efeito de emissão do bus. Guardamos versão e
   // projectId da última emissão para diferenciar update / load / save
