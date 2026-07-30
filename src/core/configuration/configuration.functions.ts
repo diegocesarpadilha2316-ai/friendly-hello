@@ -480,9 +480,7 @@ export const configurationSnapshot = createServerFn({ method: "GET" })
       security: security.data ? m.mapSecurity(security.data) : null,
       backup: backup.data ? m.mapBackup(backup.data) : null,
       flags: (flags.data ?? []).map(m.mapFlag),
-      integrations: integrationRows.map((r) =>
-        m.mapIntegration(r, latestHealth.get(String(r.id))),
-      ),
+      integrations: integrationRows.map((r) => m.mapIntegration(r, latestHealth.get(String(r.id)))),
       apiKeys: (apiKeys.data ?? []).map(m.mapApiKey),
     };
   });
