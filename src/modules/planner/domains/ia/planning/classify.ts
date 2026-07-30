@@ -26,6 +26,9 @@ const FULL_HINT =
 const INTERMEDIATE =
   /\b(monte|montar|organize|organizar|reorganize|distribua|planeje|proponha|layout|marcenaria|conjunto|bancada com|parede)\b/;
 
+/** Pedido genérico ("crie um ambiente bonito") — falta o tipo de ambiente. */
+const VAGUE_AMBIENT = /\b(ambiente|espaco|comodo|projeto)\b/;
+
 const QUERY =
   /\b(qual|quais|quanto|quantos|como esta|esta aplicado|me diga|mostre|liste|existe|tem )\b/;
 
@@ -43,6 +46,11 @@ export interface RequestClassification {
   readonly reason: string;
 }
 
+/** Tipo de ambiente citado explicitamente na mensagem, se houver. */
+export function detectRoomType(message: string): string | null {
+  return norm(message).match(FULL_PROJECT)?.[0] ?? null;
+}
+
 export function classifyRequest(message: string): RequestClassification {
   const t = norm(message);
   if (!t) return { kind: "conversa", needsPlan: false, reason: "mensagem vazia" };
@@ -54,6 +62,15 @@ export function classifyRequest(message: string): RequestClassification {
   const mentionsRoom = FULL_PROJECT.test(t);
   if (mentionsRoom && FULL_HINT.test(t)) {
     return { kind: "projeto_completo", needsPlan: true, reason: "criação de ambiente completo" };
+  }
+
+  // "Crie um ambiente bonito": intenção clara de projetar, ambiente ausente.
+  if (!mentionsRoom && FULL_HINT.test(t) && VAGUE_AMBIENT.test(t)) {
+    return {
+      kind: "projeto_completo",
+      needsPlan: true,
+      reason: "criação de ambiente sem tipo definido",
+    };
   }
 
   if (QUERY.test(t) && !SMALL_CHANGE.test(t) && !SINGLE_OP.test(t)) {
