@@ -266,9 +266,9 @@ function PlannerProjectDetail() {
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 p-3 xl:grid-cols-[1fr,340px]">
         {/* Viewport */}
         <section className="relative flex min-h-[560px] flex-col overflow-hidden rounded-2xl border border-border/60 bg-[#0a0f1c] shadow-[inset_0_1px_0_hsl(var(--border)/0.4)]">
-          {/* Toolbar flutuante superior */}
-          <div className="pointer-events-none absolute inset-x-0 top-3 z-10 flex justify-center px-3">
-            <div className="pointer-events-auto flex max-w-full items-center gap-1 overflow-x-auto rounded-2xl border border-border/60 bg-background/75 p-1.5 shadow-xl backdrop-blur-md">
+          {/* Toolbar CAD — ancorada (não flutua sobre o canvas) */}
+          <div className="z-20 shrink-0 border-b border-border/60 bg-background/85 px-2 py-1.5 backdrop-blur">
+            <div className="flex flex-wrap items-center gap-1">
               <ToolBtn
                 active={viewportMode === "2d"}
                 onClick={() => setViewportMode("2d")}
