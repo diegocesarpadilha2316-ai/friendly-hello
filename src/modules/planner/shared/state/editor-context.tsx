@@ -244,6 +244,15 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [versions, setVersions] = useState<readonly PlannerProjectVersion[]>([]);
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [syncStatus, setSyncStatus] = useState<PlannerSyncStatus>("idle");
+  const [syncError, setSyncError] = useState<string | null>(null);
+  // Controle de concorrência: cada tentativa recebe um número de sequência
+  // monotônico. Uma resposta só pode mudar o estado se ainda for a última.
+  const saveSeqRef = useRef(0);
+  const inFlightRef = useRef(false);
+  const pendingProjectRef = useRef<PlannerProject | null>(null);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const retryAttemptRef = useRef(0);
   const { activeCompany } = useTenant();
   const tenantId = activeCompany?.id ?? "anonymous";
 
