@@ -130,6 +130,24 @@ export function furnitureOf(room: PlannerRoom): FurniturePrimitive[] {
 }
 
 /**
+ * Rótulo legível de um módulo. A primitiva 2D não carrega `label` (ele
+ * vive no nó paramétrico), então derivamos de params → catálogo → subtipo.
+ */
+export function labelOf(f: FurniturePrimitive): string {
+  const raw = f.params["label"] ?? f.params["name"];
+  if (typeof raw === "string" && raw.trim().length > 0) return raw.trim();
+  const item = f.catalogItemId ? findCatalogItem(f.catalogItemId) : null;
+  if (item?.label) return item.label;
+  return f.subtype || "módulo";
+}
+
+/** `true` quando o módulo tem identificação própria (não herdada). */
+export function hasExplicitLabel(f: FurniturePrimitive): boolean {
+  const raw = f.params["label"] ?? f.params["name"];
+  return typeof raw === "string" && raw.trim().length > 0;
+}
+
+/**
  * Alvos de uma mutação: a seleção do usuário quando existir, senão todos
  * os móveis do cômodo ativo. IDs vindos da IA que não pertencem ao cômodo
  * ativo são DESCARTADOS (isolamento por projeto/cômodo).
