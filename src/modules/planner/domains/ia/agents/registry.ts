@@ -22,6 +22,8 @@ export const PLANNER_AGENTS: readonly PlannerAgentDefinition[] = [
       "rotate",
       "mirror",
       "panel_ripado",
+      "check_circulation",
+      "review_project",
     ],
     forbiddenTools: [
       "change_material",
@@ -73,7 +75,7 @@ export const PLANNER_AGENTS: readonly PlannerAgentDefinition[] = [
     order: 30,
     advisory: false,
     responsibilities: ["MDF", "BP", "vidro", "alumínio", "cores", "acabamentos", "marcas"],
-    allowedTools: ["change_material", "change_color", "apply_finishing"],
+    allowedTools: ["search_material", "change_material", "change_color", "apply_finishing"],
     forbiddenTools: ["insert_item", "insert_described", "create_room_preset", "resize"],
     keywords: [
       "mdf", "mdp", "bp", "vidro", "aluminio", "alumínio", "cor", "cores", "acabamento",
@@ -89,7 +91,7 @@ export const PLANNER_AGENTS: readonly PlannerAgentDefinition[] = [
     order: 40,
     advisory: true,
     responsibilities: ["custo", "materiais", "ferragens", "estimativas", "composição financeira"],
-    allowedTools: [],
+    allowedTools: ["estimate_budget"],
     forbiddenTools: [
       "insert_item",
       "insert_described",
@@ -112,7 +114,7 @@ export const PLANNER_AGENTS: readonly PlannerAgentDefinition[] = [
     order: 50,
     advisory: true,
     responsibilities: ["sequência de fabricação", "montagem", "corte", "prioridades", "logística"],
-    allowedTools: [],
+    allowedTools: ["production_summary", "preliminary_cut_list"],
     forbiddenTools: [
       "insert_item",
       "insert_described",
@@ -134,7 +136,7 @@ export const PLANNER_AGENTS: readonly PlannerAgentDefinition[] = [
     order: 60,
     advisory: false,
     responsibilities: ["câmera", "iluminação", "materiais visuais", "qualidade", "presets"],
-    allowedTools: ["toggle_led"],
+    allowedTools: ["toggle_led", "set_render_preset", "set_camera"],
     forbiddenTools: ["insert_item", "create_room_preset", "resize", "change_material"],
     keywords: [
       "render", "renderizar", "camera", "câmera", "iluminacao", "iluminação", "luz",
