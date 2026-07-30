@@ -368,7 +368,7 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
 
       {/* Viewport principal */}
       <div className="relative flex min-h-0 flex-col overflow-hidden rounded-md border border-border/60 bg-[#0b0f1a]">
-        <div className="absolute inset-x-0 top-0 z-10 flex h-9 items-center justify-between gap-2 overflow-x-auto border-b border-border/40 bg-background/70 px-2 backdrop-blur [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="relative z-10 flex shrink-0 flex-wrap items-center justify-between gap-x-2 gap-y-1 border-b border-border/40 bg-background/70 px-2 py-1.5 backdrop-blur">
           <div className="flex shrink-0 items-center gap-1">
             {(Object.keys(CAM_LABEL) as Camera3DMode[]).map((m) => (
               <ToolbarButton
@@ -482,7 +482,7 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
           </div>
         </div>
 
-        <div className="absolute inset-0 pt-9">
+        <div className="relative min-h-0 flex-1">
           <Scene3D
             model={model}
             viewport={viewport}
