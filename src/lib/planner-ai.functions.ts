@@ -360,17 +360,38 @@ const recordToolCallInput = z.object({
   durationMs: z.number().int().min(0).optional(),
 });
 
+/**
+ * TELEMETRIA DE CLIENTE — as tools do Planner executam no navegador. Este
+ * registro é declarado pelo cliente e NÃO constitui auditoria autoritativa
+ * de execução server-side. Por isso: origem marcada como `client`, payloads
+ * sanitizados/limitados e nenhum débito de créditos derivado do status
+ * informado pelo navegador.
+ */
 export const recordAiToolCall = createServerFn({ method: "POST" })
   .middleware([requireTenant])
   .inputValidator((data: unknown) => recordToolCallInput.parse(data))
   .handler(async ({ data, context }) => {
     const own = await context.supabase
       .from("planner_ai_sessions")
-      .select("id")
+      .select("id,project_id")
       .eq("company_id", context.tenantId)
       .eq("id", data.sessionId)
       .maybeSingle();
-    if (own.error || !own.data) throw new Response("Forbidden", { status: 403 });
+    if (own.error) throw fail("toolcall.record", own.error);
+    if (!own.data) throw new Response("Sessão não encontrada.", { status: 404 });
+
+    // A mensagem referenciada precisa pertencer à mesma sessão e ao mesmo tenant.
+    if (data.messageId) {
+      const msg = await context.supabase
+        .from("planner_ai_messages")
+        .select("id")
+        .eq("company_id", context.tenantId)
+        .eq("session_id", data.sessionId)
+        .eq("id", data.messageId)
+        .maybeSingle();
+      if (msg.error) throw fail("toolcall.record", msg.error);
+      if (!msg.data) throw new Response("Mensagem inválida para esta sessão.", { status: 400 });
+    }
 
     const { data: row, error } = await context.supabase
       .from("planner_ai_tool_calls")
@@ -379,27 +400,22 @@ export const recordAiToolCall = createServerFn({ method: "POST" })
         message_id: data.messageId ?? null,
         company_id: context.tenantId,
         tool_name: data.toolName,
-        // Auditoria: tool calls são auto-declaradas pelo cliente. Marcamos a
-        // origem para que o histórico não seja confundido com execução server-side.
-        args: { ...(data.args ?? {}), _origin: "client", _reportedBy: context.userId },
-        result: data.result ?? null,
+        args: {
+          ...(sanitizeJson(data.args ?? null, 4000) ?? {}),
+          _origin: "client",
+          _reported_by: context.userId,
+        },
+        result: sanitizeJson(data.result ?? null, 4000),
         status: data.status,
-        summary: data.summary ?? null,
-        affected_ids: data.affectedIds ?? null,
+        summary: data.summary ? data.summary.slice(0, 2000) : null,
+        affected_ids: data.affectedIds?.slice(0, 200) ?? null,
         duration_ms: data.durationMs ?? null,
       })
-      .select("*")
+      .select(TOOL_CALL_COLUMNS)
       .single();
-    if (error) throw new Response(error.message, { status: 400 });
+    if (error) throw fail("toolcall.record", error);
 
-    if (data.status === "ok") {
-      await debitCreditsBestEffort(context.supabase, context.tenantId, context.userId, {
-        amount: CREDIT_PRICES["ai.tool_call"],
-        reason: "ai.tool_call",
-        reference: data.sessionId,
-        metadata: { toolName: data.toolName, messageId: data.messageId ?? null },
-      });
-    }
+    // Sem débito de créditos aqui: o status é auto-declarado pelo cliente.
     return row;
   });
 
