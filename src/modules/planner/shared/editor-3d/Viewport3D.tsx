@@ -357,7 +357,7 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
     : null;
 
   return (
-    <div className="grid min-h-[520px] grid-cols-1 gap-2 rounded-xl border border-border/60 bg-background/40 p-2 xl:h-[620px] xl:grid-cols-[220px_1fr_260px]">
+    <div className="grid min-h-[520px] grid-cols-1 gap-2 rounded-xl border border-border/60 bg-background/40 p-2 xl:h-[720px] xl:grid-cols-[200px_1fr_240px]">
       {/* Árvore da cena */}
       <aside className="hidden min-h-0 flex-col rounded-md border border-border/60 bg-background/60 p-2 xl:flex">
         <header className="mb-2 flex items-center gap-2 px-1 text-xs font-medium text-foreground">
