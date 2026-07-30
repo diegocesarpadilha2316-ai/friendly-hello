@@ -228,7 +228,7 @@ export class PlanRunner {
       planId: `${this.plan.planId}-retry-${Date.now().toString(36)}`,
       steps: refreshBlocked(steps),
       status: "ready",
-      currentStepIndex: null,
+      currentStepIndex: 0,
       finalReport: null,
       warnings: [],
       updatedAt: now,
