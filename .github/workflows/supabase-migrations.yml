@@ -8,6 +8,14 @@ on:
       - "supabase/migrations/**"
       - ".github/workflows/supabase-migrations.yml"
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Somente validar (não aplica migrations)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
 
 concurrency:
   group: supabase-migrations-${{ github.ref }}
@@ -17,6 +25,7 @@ jobs:
   apply:
     name: Apply migrations
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
@@ -49,14 +58,12 @@ jobs:
               [ -e "$f" ] || continue
               base="$(basename "$f" .sql)"
               # Supabase CLI expects timestamped filenames: <YYYYMMDDHHMMSS>_name.sql
-              # Map "NNN_name.sql" -> "202601010000NN_name.sql" (stable, ordered).
+              # Map "NNN_name.sql" -> "2026010100NNNN_name.sql" (stable, ordered).
               num="$(echo "$base" | grep -oE '^[0-9]+' || echo '0')"
               rest="$(echo "$base" | sed -E 's/^[0-9]+_?//')"
-              padded="$(printf '%04d' "$num")"
-              ts="20260101${padded:0:2}${padded:2:2}00"
-              # Pad to 14 digits
-              ts="$(printf '%-14s' "$ts" | tr ' ' '0')"
-              cp "$f" "supabase/migrations/${ts}_${rest}.sql"
+              # 10# forces base-10 so "008"/"009" are not parsed as octal.
+              target="$(printf '2026010100%04d_%s.sql' "$((10#$num))" "$rest")"
+              cp "$f" "supabase/migrations/${target}"
             done
           fi
           ls -la supabase/migrations || true
@@ -64,5 +71,12 @@ jobs:
       - name: Link project
         run: supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
 
+      - name: Dry run (validação apenas)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        run: |
+          supabase migration list --password "$SUPABASE_DB_PASSWORD"
+          echo "Dry run concluído — nenhuma alteração aplicada ao banco."
+
       - name: Push migrations
+        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.dry_run }}
         run: supabase db push --password "$SUPABASE_DB_PASSWORD" --include-all
