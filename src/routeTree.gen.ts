@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TmpPlanCardRouteImport } from './routes/tmp-plan-card'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -105,6 +106,11 @@ import { Route as ApiPublicV1WorkersRenderRouteImport } from './routes/api/publi
 import { Route as ApiPublicV1WorkersEmailRouteImport } from './routes/api/public/v1/workers/email'
 import { Route as ApiPublicV1WebhooksMercadopagoRouteImport } from './routes/api/public/v1/webhooks/mercadopago'
 
+const TmpPlanCardRoute = TmpPlanCardRouteImport.update({
+  id: '/tmp-plan-card',
+  path: '/tmp-plan-card',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -629,6 +635,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/tmp-plan-card': typeof TmpPlanCardRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/automacao': typeof AuthenticatedAutomacaoRoute
@@ -724,6 +731,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/tmp-plan-card': typeof TmpPlanCardRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/automacao': typeof AuthenticatedAutomacaoRoute
@@ -818,6 +826,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/tmp-plan-card': typeof TmpPlanCardRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/_authenticated/automacao': typeof AuthenticatedAutomacaoRoute
@@ -916,6 +925,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/tmp-plan-card'
     | '/admin'
     | '/api-gateway'
     | '/automacao'
@@ -1011,6 +1021,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/tmp-plan-card'
     | '/admin'
     | '/api-gateway'
     | '/automacao'
@@ -1104,6 +1115,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/tmp-plan-card'
     | '/_authenticated/admin'
     | '/_authenticated/api-gateway'
     | '/_authenticated/automacao'
@@ -1202,6 +1214,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TmpPlanCardRoute: typeof TmpPlanCardRoute
   ApiAiChatRoute: typeof ApiAiChatRoute
   ApiPublicV1OpenapiRoute: typeof ApiPublicV1OpenapiRoute
   ApiPublicV1PingRoute: typeof ApiPublicV1PingRoute
@@ -1213,6 +1226,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tmp-plan-card': {
+      id: '/tmp-plan-card'
+      path: '/tmp-plan-card'
+      fullPath: '/tmp-plan-card'
+      preLoaderRoute: typeof TmpPlanCardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -2146,6 +2166,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TmpPlanCardRoute: TmpPlanCardRoute,
   ApiAiChatRoute: ApiAiChatRoute,
   ApiPublicV1OpenapiRoute: ApiPublicV1OpenapiRoute,
   ApiPublicV1PingRoute: ApiPublicV1PingRoute,
