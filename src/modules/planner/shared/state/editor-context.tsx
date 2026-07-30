@@ -381,7 +381,31 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
 
   const persist = useCallback(
     async (project: PlannerProject) => {
-      upsertLocalProject(tenantId, project);
+      // 1) Snapshot local é sempre gravado primeiro e de forma síncrona —
+      //    nenhuma falha remota pode causar perda de alterações.
+      try {
+        upsertLocalProject(tenantId, project);
+      } catch {
+        /* localStorage cheio: seguimos para a gravação remota */
+      }
+
+      // 2) Fila serial: nunca há dois saves concorrentes. Um save em voo
+      //    apenas registra o estado mais novo como pendente.
+      if (inFlightRef.current) {
+        pendingProjectRef.current = project;
+        return false;
+      }
+
+      if (retryTimerRef.current) {
+        clearTimeout(retryTimerRef.current);
+        retryTimerRef.current = null;
+      }
+
+      const seq = ++saveSeqRef.current;
+      inFlightRef.current = true;
+      setSyncStatus("saving");
+
+      let ok = false;
       try {
         await saveSnapshotFn({
           data: {
@@ -392,14 +416,96 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
             client: project.client ?? null,
           },
         });
-        dispatch({ type: "saved", at: new Date().toISOString() });
+        ok = true;
+        retryAttemptRef.current = 0;
+        // Só confirma "salvo" se esta ainda for a última tentativa emitida
+        // e não houver estado mais novo esperando na fila.
+        if (seq === saveSeqRef.current && !pendingProjectRef.current) {
+          setSyncError(null);
+          setSyncStatus("saved");
+          dispatch({ type: "saved", at: new Date().toISOString() });
+        }
       } catch (err) {
-        // silencia; próxima edição tentará novamente
         console.error("[planner] autosave falhou", err);
+        if (seq === saveSeqRef.current) {
+          const offline = typeof navigator !== "undefined" && navigator.onLine === false;
+          setSyncStatus(offline ? "offline" : "unsynced");
+          setSyncError(
+            offline
+              ? "Sem conexão. As alterações estão salvas neste dispositivo."
+              : "Não foi possível sincronizar. As alterações estão salvas neste dispositivo.",
+          );
+          // Backoff limitado — nunca retry infinito.
+          const attempt = retryAttemptRef.current;
+          if (!offline && attempt < SYNC_RETRY_DELAYS_MS.length) {
+            retryAttemptRef.current = attempt + 1;
+            const latest = pendingProjectRef.current ?? project;
+            retryTimerRef.current = setTimeout(() => {
+              retryTimerRef.current = null;
+              void persistRef.current?.(pendingProjectRef.current ?? latest);
+            }, SYNC_RETRY_DELAYS_MS[attempt]);
+          }
+        }
+      } finally {
+        inFlightRef.current = false;
       }
+
+      // 3) Drena a fila: envia apenas o estado local MAIS RECENTE, nunca um
+      //    snapshot antigo depois de um novo.
+      const pending = pendingProjectRef.current;
+      if (pending && ok) {
+        pendingProjectRef.current = null;
+        return persistRef.current ? persistRef.current(pending) : false;
+      }
+      return ok;
     },
     [saveSnapshotFn, tenantId],
   );
+
+  // Ref estável para permitir recursão/retry sem dependência circular.
+  const persistRef = useRef<((p: PlannerProject) => Promise<boolean>) | null>(null);
+  persistRef.current = persist;
+
+  const retrySync = useCallback(() => {
+    const project = pendingProjectRef.current ?? state.project;
+    if (!project) return;
+    retryAttemptRef.current = 0;
+    pendingProjectRef.current = null;
+    void persist(project);
+  }, [persist, state.project]);
+
+  // Marca "modificado" assim que o estado fica sujo (antes do debounce).
+  useEffect(() => {
+    if (state.dirty) {
+      setSyncStatus((s) => (s === "saving" ? s : s === "unsynced" || s === "offline" || s === "error" ? s : "modified"));
+    }
+  }, [state.dirty, state.project?.version]);
+
+  // Reconexão: tenta sincronizar somente a versão local mais recente.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onOnline = () => {
+      setSyncStatus((s) => (s === "offline" ? "unsynced" : s));
+      const project = pendingProjectRef.current ?? stateRef.current.project;
+      if (project && stateRef.current.dirty) {
+        retryAttemptRef.current = 0;
+        pendingProjectRef.current = null;
+        void persistRef.current?.(project);
+      }
+    };
+    const onOffline = () => {
+      if (stateRef.current.dirty) {
+        setSyncStatus("offline");
+        setSyncError("Sem conexão. As alterações estão salvas neste dispositivo.");
+      }
+    };
+    window.addEventListener("online", onOnline);
+    window.addEventListener("offline", onOffline);
+    return () => {
+      window.removeEventListener("online", onOnline);
+      window.removeEventListener("offline", onOffline);
+    };
+  }, []);
 
   // Autosave — debounced 800ms após qualquer mudança "dirty".
   useEffect(() => {
