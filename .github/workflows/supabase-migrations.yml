@@ -1,12 +1,6 @@
 name: Supabase Migrations
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "db/migrations/**"
-      - "supabase/migrations/**"
-      - ".github/workflows/supabase-migrations.yml"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -72,11 +66,11 @@ jobs:
         run: supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
 
       - name: Dry run (validação apenas)
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        if: ${{ inputs.dry_run }}
         run: |
           supabase migration list --password "$SUPABASE_DB_PASSWORD"
           echo "Dry run concluído — nenhuma alteração aplicada ao banco."
 
       - name: Push migrations
-        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.dry_run }}
+        if: ${{ !inputs.dry_run }}
         run: supabase db push --password "$SUPABASE_DB_PASSWORD" --include-all
