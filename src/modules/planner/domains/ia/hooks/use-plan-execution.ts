@@ -100,7 +100,7 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
         project: input.project,
         memory: input.project.id ? readMemory(tenantId, input.project.id, input.project.name) : null,
         hasSelection: Boolean(input.ctx.selectionIds?.length),
-        roomHasDimensions: Boolean(room?.width && room?.depth),
+        roomHasDimensions: Boolean(room?.dimensions.width && room?.dimensions.depth),
       });
       if (!generated.steps.length) return null;
       ctxRef.current = input.ctx;
