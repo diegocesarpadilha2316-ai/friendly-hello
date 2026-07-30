@@ -36,10 +36,13 @@ export class DeepSeekProvider extends BaseAIProvider {
     super(config);
   }
 
-  private headers(): Record<string, string> {
+  /** Headers extras injetados por subclasses (ex.: auth do proxy interno). */
+  protected extraHeaders: Record<string, string> = {};
+
+  protected headers(): Record<string, string> {
     const h: Record<string, string> = { "Content-Type": "application/json" };
     if (this.config.apiKey) h.Authorization = `Bearer ${this.config.apiKey}`;
-    return h;
+    return { ...h, ...this.extraHeaders };
   }
 
   private buildBody(
