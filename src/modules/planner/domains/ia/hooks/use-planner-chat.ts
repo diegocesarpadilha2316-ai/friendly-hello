@@ -563,6 +563,42 @@ export function usePlannerChat() {
   const planRef = useRef(planning);
   planRef.current = planning;
 
+  // Ao terminar um plano, a Dani volta a falar como pessoa — sem etapas,
+  // sem barra de progresso, uma frase só e nunca repetida.
+  const announcedPlanRef = useRef<string | null>(null);
+  const planStatus = planning.plan?.status ?? null;
+  const planId = planning.plan?.id ?? null;
+  useEffect(() => {
+    if (!planId || !planStatus) return;
+    const terminal =
+      planStatus === "completed" ||
+      planStatus === "partially_completed" ||
+      planStatus === "failed";
+    if (!terminal) return;
+    const key = `${planId}:${planStatus}`;
+    if (announcedPlanRef.current === key) return;
+    announcedPlanRef.current = key;
+    const content =
+      planStatus === "failed"
+        ? "Opa, travou uma coisa aqui no meio do caminho. Me fala de novo o que você quer que eu tento por outro caminho."
+        : planStatus === "partially_completed"
+          ? "Montei a maior parte, mas um pedaço não coube do jeito que eu queria. Dá uma olhada e me diz o que ajusto."
+          : "Prontinho, tá aí no viewport. Dá uma olhada e me diz o que você quer mudar.";
+    setState((s) => ({
+      ...s,
+      messages: [
+        ...s.messages,
+        {
+          id: uid(),
+          role: "assistant",
+          content,
+          createdAt: new Date().toISOString(),
+          status: planStatus === "failed" ? "error" : "done",
+        },
+      ],
+    }));
+  }, [planId, planStatus]);
+
   const send = useCallback(
     async (text: string) => {
       const trimmed = text.trim();
