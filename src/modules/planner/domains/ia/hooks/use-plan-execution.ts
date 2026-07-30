@@ -34,6 +34,7 @@ export interface UsePlanExecutionResult {
   readonly propose: (input: ProposePlanInput) => ProjectPlan | null;
   readonly execute: () => void;
   readonly confirmAndExecute: () => void;
+  readonly answerAndExecute: (answer?: string) => void;
   readonly pause: () => void;
   readonly resume: () => void;
   readonly cancel: () => void;
@@ -85,6 +86,25 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
     },
     [commit, editor, tenantId],
   );
+
+  /**
+   * Garante um runner vivo. Após reload (ou se o plano veio do
+   * localStorage) o runner não existe e o clique em "Executar plano"
+   * ficava sem efeito — causa raiz do fluxo travado.
+   */
+  const ensureRunner = useCallback((): PlanRunner | null => {
+    if (runnerRef.current) return runnerRef.current;
+    const current = plan;
+    if (!current) return null;
+    const ctx: ToolContext =
+      ctxRef.current ?? {
+        environmentId: editor.state.selectedEnvironmentId ?? "",
+        roomId: editor.state.selectedRoomId ?? "",
+        selectionIds: editor.state.selectedNodeId ? [editor.state.selectedNodeId] : undefined,
+      };
+    ctxRef.current = ctx;
+    return buildRunner(current, ctx);
+  }, [buildRunner, editor.state, plan]);
 
   const propose = useCallback(
     (input: ProposePlanInput): ProjectPlan | null => {
