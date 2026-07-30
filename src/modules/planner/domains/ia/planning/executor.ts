@@ -159,6 +159,24 @@ export class PlanRunner {
     this.setPlan({ confirmed: true, status: "ready" });
   }
 
+  /**
+   * Registra as respostas do usuário para as informações pendentes e
+   * libera o plano. Nenhuma pergunta pode deixar o fluxo parado: depois
+   * de responder (ou de decidir seguir com as suposições), o plano volta
+   * para `ready` e pode executar automaticamente.
+   */
+  answerMissing(answer?: string): void {
+    const missingInformation = this.plan.missingInformation.map((m) =>
+      m.answer ? m : { ...m, answer: answer?.trim() || "assumir padrão" },
+    );
+    this.emit({
+      ...this.plan,
+      missingInformation,
+      status: isPlanTerminal(this.plan.status) ? this.plan.status : "ready",
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
   /** Remove uma etapa opcional antes da execução (edição do plano). */
   removeStep(stepId: string): void {
     const target = this.plan.steps.find((s) => s.stepId === stepId);
@@ -283,6 +301,22 @@ export class PlanRunner {
 
         this.emit({ ...this.plan, steps: refreshBlocked(this.plan.steps) });
       }
+    } catch (error) {
+      // Erro interno jamais pode travar a interface: a etapa corrente é
+      // marcada como falha e o plano encerra em estado repetível.
+      const message = error instanceof Error ? error.message : "Falha inesperada na execução.";
+      const running = this.plan.steps.find((s) => s.status === "running");
+      const steps = this.plan.steps.map((s) =>
+        s.stepId === running?.stepId
+          ? { ...s, status: "failed" as PlanStepStatus, warnings: [...s.warnings, message] }
+          : s,
+      );
+      this.emit({
+        ...this.plan,
+        steps,
+        warnings: [...this.plan.warnings, message],
+        updatedAt: new Date().toISOString(),
+      });
     } finally {
       this.running = false;
       this.controller = null;
