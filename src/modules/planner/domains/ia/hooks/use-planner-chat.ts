@@ -715,12 +715,17 @@ export function usePlannerChat() {
             if (chunk.toolResult) {
               // resultado — atualiza projeto e marca a tool como ok
               mutatedProject = chunk.toolResult.project;
+              // Etapa 9 — o resultado padronizado dita status e avisos.
+              const outcome = chunk.toolOutcome;
+              const warning = outcome?.warnings?.[0];
               const call: PlannerAIToolCall = {
                 id: uid(),
                 name: chunk.toolName,
                 args: chunk.toolArgs ?? {},
-                status: "ok",
-                message: chunk.toolResult.summary,
+                status: outcome && !outcome.ok ? "error" : "ok",
+                message: warning
+                  ? `${chunk.toolResult.summary} — ${warning}`
+                  : chunk.toolResult.summary,
                 executedAt: new Date().toISOString(),
                 agent: chunk.agent,
               };
