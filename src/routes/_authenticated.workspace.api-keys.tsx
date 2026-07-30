@@ -110,8 +110,8 @@ function WorkspaceKeys() {
                 id: "status",
                 header: "Status",
                 cell: (r) => (
-                  <StatusBadge tone={r.revokedAt ? "danger" : "success"}>
-                    {r.revokedAt ? "revogada" : "ativa"}
+                  <StatusBadge tone={r.status !== "active" ? "danger" : "success"}>
+                    {r.status !== "active" ? "revogada" : "ativa"}
                   </StatusBadge>
                 ),
               },
@@ -120,7 +120,7 @@ function WorkspaceKeys() {
                 header: "",
                 align: "right",
                 cell: (r) =>
-                  r.revokedAt ? null : (
+                  r.status !== "active" ? null : (
                     <Button
                       size="sm"
                       variant="ghost"

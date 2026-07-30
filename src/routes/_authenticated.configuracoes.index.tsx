@@ -560,12 +560,12 @@ function ApiKeysTab() {
     { id: "prefix", header: "Prefixo", cell: (r) => <code className="text-xs">{r.prefix}</code> },
     { id: "scopes", header: "Escopos", cell: (r) => r.scopes.join(", ") || "—" },
     { id: "createdAt", header: "Criada", cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR") },
-    { id: "status", header: "Status", cell: (r) => <StatusBadge tone={r.revokedAt ? "danger" : "success"}>{r.revokedAt ? "revogada" : "ativa"}</StatusBadge> },
+    { id: "status", header: "Status", cell: (r) => <StatusBadge tone={r.status !== "active" ? "danger" : "success"}>{r.status !== "active" ? "revogada" : "ativa"}</StatusBadge> },
     {
       id: "actions",
       header: "",
       cell: (r) =>
-        r.revokedAt ? null : (
+        r.status !== "active" ? null : (
           <button type="button" className="text-xs text-destructive hover:underline" onClick={() => revoke.mutate(r.id)}>
             revogar
           </button>

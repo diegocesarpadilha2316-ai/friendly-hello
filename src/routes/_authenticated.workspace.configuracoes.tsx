@@ -125,7 +125,7 @@ function WorkspaceConfig() {
     [integrations.data],
   );
   const activeKeys = useMemo(
-    () => (apiKeys.data ?? []).filter((k) => !k.revokedAt).length,
+    () => (apiKeys.data ?? []).filter((k) => k.status === "active").length,
     [apiKeys.data],
   );
 
@@ -447,8 +447,8 @@ function WorkspaceConfig() {
                       <div className="text-xs text-muted-foreground">Criada em {new Date(k.createdAt).toLocaleDateString("pt-BR")} · {k.scopes.join(", ") || "—"}</div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <StatusBadge tone={k.revokedAt ? "danger" : "success"}>{k.revokedAt ? "Revogada" : "Ativa"}</StatusBadge>
-                      {!k.revokedAt && (
+                      <StatusBadge tone={k.status !== "active" ? "danger" : "success"}>{k.status !== "active" ? "Revogada" : "Ativa"}</StatusBadge>
+                      {k.status === "active" && (
                         <Button size="sm" variant="outline" onClick={() => revokeApiKey.mutate(k.id, { onSuccess: () => toast.success("Chave revogada"), onError: (e) => toast.error((e as Error).message) })}>Revogar</Button>
                       )}
                     </div>
