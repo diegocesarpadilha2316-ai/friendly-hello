@@ -275,6 +275,13 @@ export function interpret(input: string): PlannerIntent {
     // que foi pedido no cômodo atual — nada de recriar a cozinha inteira.
     if (!matchedPreset && !ambientWords && wantsInsertVerb) {
       const dec = decompose(raw);
+      // Pedido de UM móvel específico → Ficha Técnica manda.
+      if (dec.modules.length === 1) {
+        const spec = buildFurnitureSpec(raw);
+        if (spec.type) {
+          return { type: "command", intents: [specToIntent(spec, dec.modules[0].count)] };
+        }
+      }
       if (dec.modules.length > 0) {
         const bp = buildBlueprint(raw);
         const material = bp.material;
@@ -298,6 +305,12 @@ export function interpret(input: string): PlannerIntent {
     // reconhecida deve continuar sendo inserção pontual — nunca preset genérico.
     if (!matchedPreset && !ambientWords) {
       const dec = decompose(raw);
+      if (dec.modules.length === 1 && dec.unresolved.length === 0) {
+        const spec = buildFurnitureSpec(raw);
+        if (spec.type) {
+          return { type: "command", intents: [specToIntent(spec, dec.modules[0].count)] };
+        }
+      }
       if (dec.modules.length > 0 && dec.unresolved.length === 0) {
         const bp = buildBlueprint(raw);
         const material = bp.material;
