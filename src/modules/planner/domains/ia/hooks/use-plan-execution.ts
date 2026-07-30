@@ -125,11 +125,26 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
       if (!generated.steps.length) return null;
       ctxRef.current = input.ctx;
       messageRef.current = input.message;
-      buildRunner(generated, input.ctx);
+      const runner = buildRunner(generated, input.ctx);
       commit(generated);
+      // Prompt completo (nenhuma pendência obrigatória e nada destrutivo)
+      // executa automaticamente: sem confirmação redundante.
+      if (generated.status === "ready") {
+        void runner
+          .run()
+          .then(finishMemory)
+          .catch((error: unknown) => {
+            const message =
+              error instanceof Error ? error.message : "Falha inesperada na execução.";
+            console.warn("[planner-plan] execução automática falhou", error);
+            setPlan((prev) =>
+              prev ? { ...prev, status: "failed", warnings: [...prev.warnings, message] } : prev,
+            );
+          });
+      }
       return generated;
     },
-    [buildRunner, commit, tenantId],
+    [buildRunner, commit, finishMemory, tenantId],
   );
 
   const finishMemory = useCallback(
