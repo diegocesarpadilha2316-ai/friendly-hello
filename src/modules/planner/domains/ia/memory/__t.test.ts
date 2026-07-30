@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { createProject, createEnvironment, createRoom } from "@/modules/planner/shared";
 import { updateMemoryFromTurn } from "./service";
 import { readMemory, clearMemory, sanitizeValue, memoryKey } from "./store";
@@ -12,25 +12,23 @@ function proj(name = "Cozinha") {
 }
 
 describe("Memória do projeto (Etapa 10)", () => {
-  beforeEach(() => localStorage.clear());
-
   it("registra materiais confirmados e substitui em conflito", () => {
     const { project, envId, roomId } = proj();
     updateMemoryFromTurn({
-      tenantId: "t1", userMessage: "Criar cozinha moderna em Freijó", project,
+      tenantId: "t1_1", userMessage: "Criar cozinha moderna em Freijó", project,
       environmentId: envId, roomId, outcome: "done",
       toolCalls: [{ name: "change_material", args: { material: "freijo", scope: "all" }, status: "ok", agent: "materiais" }],
     });
-    let m = readMemory("t1", project.id)!;
+    let m = readMemory("t1_1", project.id)!;
     expect(m.materials.map((x) => x.value)).toContain("Freijo");
     expect(m.style).toBe("moderno");
 
     updateMemoryFromTurn({
-      tenantId: "t1", userMessage: "Agora quero Carvalho", project,
+      tenantId: "t1_1", userMessage: "Agora quero Carvalho", project,
       environmentId: envId, roomId, outcome: "done",
       toolCalls: [{ name: "change_material", args: { material: "carvalho", scope: "all" }, status: "ok" }],
     });
-    m = readMemory("t1", project.id)!;
+    m = readMemory("t1_1", project.id)!;
     const corpo = m.materials.filter((x) => x.key === "material:corpo");
     expect(corpo).toHaveLength(1);
     expect(corpo[0].value).toBe("Carvalho");
@@ -38,28 +36,28 @@ describe("Memória do projeto (Etapa 10)", () => {
 
   it("ignora turnos cancelados/erro e tool calls falhas", () => {
     const { project, envId, roomId } = proj();
-    updateMemoryFromTurn({ tenantId: "t1", userMessage: "x", project, environmentId: envId, roomId, outcome: "cancelled", toolCalls: [] });
+    updateMemoryFromTurn({ tenantId: "t1_2", userMessage: "x", project, environmentId: envId, roomId, outcome: "cancelled", toolCalls: [] });
     updateMemoryFromTurn({
-      tenantId: "t1", userMessage: "y", project, environmentId: envId, roomId, outcome: "done",
+      tenantId: "t1_2", userMessage: "y", project, environmentId: envId, roomId, outcome: "done",
       toolCalls: [{ name: "change_material", args: { material: "nogueira" }, status: "error" }],
     });
-    expect(readMemory("t1", project.id)!.materials).toHaveLength(0);
+    expect(readMemory("t1_2", project.id)!.materials).toHaveLength(0);
   });
 
   it("isola memória por tenant e projeto", () => {
     const a = proj("A"); const b = proj("B");
-    updateMemoryFromTurn({ tenantId: "t1", userMessage: "prefiro freijo", project: a.project, environmentId: a.envId, roomId: a.roomId, outcome: "done", toolCalls: [] });
-    expect(readMemory("t1", a.project.id)!.preferences.length).toBe(1);
-    expect(readMemory("t1", b.project.id)!.preferences.length).toBe(0);
-    expect(readMemory("t2", a.project.id)!.preferences.length).toBe(0);
-    expect(memoryKey("t1", a.project.id)).not.toBe(memoryKey("t2", a.project.id));
+    updateMemoryFromTurn({ tenantId: "t1_3", userMessage: "prefiro freijo", project: a.project, environmentId: a.envId, roomId: a.roomId, outcome: "done", toolCalls: [] });
+    expect(readMemory("t1_3", a.project.id)!.preferences.length).toBe(1);
+    expect(readMemory("t1_3", b.project.id)!.preferences.length).toBe(0);
+    expect(readMemory("t2_3", a.project.id)!.preferences.length).toBe(0);
+    expect(memoryKey("t1_3", a.project.id)).not.toBe(memoryKey("t2_3", a.project.id));
   });
 
   it("nunca guarda segredos e mantém contexto compacto", () => {
     expect(sanitizeValue("sk-abc123 secret token")).toBeNull();
     const { project, envId, roomId } = proj();
-    updateMemoryFromTurn({ tenantId: "t1", userMessage: "prefiro duratex, evite vidro, quero orçamento", project, environmentId: envId, roomId, outcome: "done", toolCalls: [] });
-    const m = readMemory("t1", project.id)!;
+    updateMemoryFromTurn({ tenantId: "t1_4", userMessage: "prefiro duratex, evite vidro, quero orçamento", project, environmentId: envId, roomId, outcome: "done", toolCalls: [] });
+    const m = readMemory("t1_4", project.id)!;
     expect(m.constraints.some((c) => /Vidro/.test(c.value))).toBe(true);
     expect(m.pendings.some((p) => p.kind === "orcamento")).toBe(true);
     const block = buildMemoryPromptBlock(m);
@@ -69,8 +67,8 @@ describe("Memória do projeto (Etapa 10)", () => {
 
   it("limpa memória do projeto", () => {
     const { project, envId, roomId } = proj();
-    updateMemoryFromTurn({ tenantId: "t1", userMessage: "prefiro carvalho", project, environmentId: envId, roomId, outcome: "done", toolCalls: [] });
-    clearMemory("t1", project.id);
-    expect(readMemory("t1", project.id)!.preferences).toHaveLength(0);
+    updateMemoryFromTurn({ tenantId: "t1_5", userMessage: "prefiro carvalho", project, environmentId: envId, roomId, outcome: "done", toolCalls: [] });
+    clearMemory("t1_5", project.id);
+    expect(readMemory("t1_5", project.id)!.preferences).toHaveLength(0);
   });
 });
