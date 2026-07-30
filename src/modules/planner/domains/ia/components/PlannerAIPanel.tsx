@@ -13,7 +13,6 @@ import {
   Trash2,
   Wand2,
   User as UserIcon,
-  Wrench,
   Pencil,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -216,34 +215,8 @@ function MessageRow({
           </div>
         )}
 
-        {message.toolCalls && message.toolCalls.length > 0 && (
-          <ul className="space-y-1 pl-1">
-            {message.toolCalls.map((tc) => (
-              <li
-                key={tc.id}
-                className={cn(
-                  "flex items-start gap-1.5 rounded-md border px-2 py-1 text-[11px]",
-                  tc.status === "ok"
-                    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-100"
-                    : tc.status === "error"
-                      ? "border-destructive/40 bg-destructive/10 text-destructive"
-                      : "border-border/50 bg-muted/40 text-muted-foreground",
-                )}
-              >
-                <Wrench className="mt-0.5 h-3 w-3 shrink-0" />
-                <span>
-                  {tc.agent ? (
-                    <span className="mr-1 rounded bg-primary/20 px-1 py-px text-[10px] font-semibold uppercase tracking-wide text-primary">
-                      {tc.agent}
-                    </span>
-                  ) : null}
-                  <span className="font-medium">{tc.name}</span>
-                  {tc.message ? ` — ${tc.message}` : ""}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
+        {/* Passos técnicos (tools/agentes) ficam apenas no console —
+            a conversa mostra só o que a projetista diria. */}
 
         {isUser && !editing && (
           <div className="flex justify-end opacity-0 transition-opacity group-hover:opacity-100">

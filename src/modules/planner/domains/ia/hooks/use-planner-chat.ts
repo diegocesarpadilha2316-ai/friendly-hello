@@ -104,6 +104,10 @@ function buildPlannerSystemPrompt(p: PlannerProject, ctx: ToolContext, memoryBlo
     "• Nada de listas, bullets, títulos, jargão corporativo ou frases de robô como 'Processando sua solicitação' / 'Como posso ajudar?'.",
     "• Fale na primeira pessoa sobre o que você fez: 'coloquei', 'deixei', 'puxei', 'testei aqui'.",
     "• Se cometer um erro ou algo falhar, assuma de forma humana e simples ('Opa, essa não ficou boa — já ajusto').",
+    "• **Nunca repita o pedido do cliente de volta** ('Você pediu uma cozinha em L preta...'). Responda como quem já entendeu e já está fazendo.",
+    "• **Nunca descreva etapas, sequências, suposições, progresso, agentes ou ferramentas.** Nada de 'Vou seguir esta sequência', 'Acompanhe o progresso', 'Etapa 1/2/3'.",
+    "• **Nunca repita a mesma frase ou a mesma sugestão** que você já disse antes nesta conversa. Se não tiver nada novo pra dizer, seja breve.",
+    "• Quando o pedido já estiver claro, confirme em UMA frase curta e execute ('Fechou, tô montando aqui.'). Sem pedir permissão.",
     "Regras de conversa (obrigatórias):",
     "1. Faça **UMA pergunta por vez**. Nunca liste várias perguntas em bullets nem peça vários dados de uma só vez.",
     "2. **NÃO comece perguntando largura, altura ou profundidade.** Primeiro entenda o projeto: que ambiente é, para quem, o estilo/atmosfera desejada, se tem foto/inspiração. Só peça medidas depois, e apenas quando forem realmente necessárias — se o usuário não souber, use padrões de mercado e siga em frente.",
@@ -559,6 +563,42 @@ export function usePlannerChat() {
   const planRef = useRef(planning);
   planRef.current = planning;
 
+  // Ao terminar um plano, a Dani volta a falar como pessoa — sem etapas,
+  // sem barra de progresso, uma frase só e nunca repetida.
+  const announcedPlanRef = useRef<string | null>(null);
+  const planStatus = planning.plan?.status ?? null;
+  const planId = planning.plan?.planId ?? null;
+  useEffect(() => {
+    if (!planId || !planStatus) return;
+    const terminal =
+      planStatus === "completed" ||
+      planStatus === "partially_completed" ||
+      planStatus === "failed";
+    if (!terminal) return;
+    const key = `${planId}:${planStatus}`;
+    if (announcedPlanRef.current === key) return;
+    announcedPlanRef.current = key;
+    const content =
+      planStatus === "failed"
+        ? "Opa, travou uma coisa aqui no meio do caminho. Me fala de novo o que você quer que eu tento por outro caminho."
+        : planStatus === "partially_completed"
+          ? "Montei a maior parte, mas um pedaço não coube do jeito que eu queria. Dá uma olhada e me diz o que ajusto."
+          : "Prontinho, tá aí no viewport. Dá uma olhada e me diz o que você quer mudar.";
+    setState((s) => ({
+      ...s,
+      messages: [
+        ...s.messages,
+        {
+          id: uid(),
+          role: "assistant",
+          content,
+          createdAt: new Date().toISOString(),
+          status: planStatus === "failed" ? "error" : "done",
+        },
+      ],
+    }));
+  }, [planId, planStatus]);
+
   const send = useCallback(
     async (text: string) => {
       const trimmed = text.trim();
@@ -631,7 +671,7 @@ export function usePlannerChat() {
         patchMessage(assistantId, (m) => ({
           ...m,
           status: "done",
-          content: `Perfeito — anotei **${trimmed}** e já comecei. Acompanhe o progresso abaixo.`,
+          content: `Show, ${trimmed} então. Já tô montando aqui pra você.`,
         }));
         setState((s) => ({ ...s, status: "idle" }));
         sendingRef.current = false;
@@ -649,8 +689,8 @@ export function usePlannerChat() {
           ...m,
           status: "done",
           content: yes
-            ? "Confirmado — executando agora. Acompanhe o progresso abaixo."
-            : "Ok, não vou apagar nada. O que você quer fazer?",
+            ? "Beleza, tô fazendo agora."
+            : "Ok, não mexi em nada. Me diz o que você prefere.",
         }));
         setState((s) => ({ ...s, status: "idle" }));
         sendingRef.current = false;
@@ -677,30 +717,20 @@ export function usePlannerChat() {
           },
         });
         if (proposed) {
-          const lines = proposed.steps.map((s) => `${s.position + 1}. ${s.title}`).join("\n");
-          // Só perguntamos o que é indispensável; recomendações viram
-          // suposições visíveis e nunca interrompem o fluxo.
+          // Só perguntamos o que é indispensável; nada de listar etapas,
+          // suposições ou progresso — a conversa fica igual à de uma pessoa.
           const blocking = proposed.missingInformation.filter((m) => m.level === "obrigatoria");
-          const pendencies = blocking.map((m) => `• ${m.question}`).join("\n");
-          const assumptions = proposed.assumptions.map((a) => `• ${a.label}`).join("\n");
-          const closing =
+          const firstQuestion = blocking[0]?.question;
+          const content =
             proposed.status === "ready"
-              ? "\nJá comecei a executar — acompanhe o progresso abaixo."
-              : pendencies
-                ? "\nResponda aqui no chat e eu sigo automaticamente."
-                : "\nResponda **sim** para eu seguir com esta operação.";
+              ? "Perfeito, já tô montando isso pra você. Daqui a pouco aparece aí no viewport."
+              : firstQuestion
+                ? firstQuestion
+                : "Só me confirma: pode seguir com isso? (é só dizer sim)";
           patchMessage(assistantId, (m) => ({
             ...m,
             status: "done",
-            content: [
-              `Entendi: **${proposed.title}**. Vou seguir esta sequência:`,
-              lines,
-              assumptions && proposed.status === "ready" ? `\n${assumptions}` : "",
-              pendencies ? `\nSó preciso saber:\n${pendencies}` : "",
-              closing,
-            ]
-              .filter(Boolean)
-              .join("\n"),
+            content,
           }));
           setState((s) => ({ ...s, status: "idle" }));
           sendingRef.current = false;
