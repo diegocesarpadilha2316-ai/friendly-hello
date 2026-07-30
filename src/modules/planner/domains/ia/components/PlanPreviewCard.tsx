@@ -9,14 +9,9 @@ import {
   Check,
   CircleDashed,
   Loader2,
-  Pause,
-  Play,
-  RotateCcw,
-  Undo2,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/core/components/ui-kit";
 import type { PlanProgress, PlanStep, ProjectPlan } from "../planning";
 
 export interface PlanPreviewCardProps {
@@ -58,9 +53,8 @@ export function PlanPreviewCard(props: PlanPreviewCardProps) {
   const awaitingConfirm = plan.status === "awaiting_confirmation";
   const awaitingInfo = plan.status === "awaiting_information";
   const failed = plan.status === "failed" || plan.status === "partially_completed";
-  // O plano nunca depende de clique para iniciar: a execução é automática e
-  // este cartão é apenas leitura (progresso + controles úteis).
-  const waitingUser = awaitingConfirm || awaitingInfo;
+  // O plano nunca depende de clique: a execução é automática e este cartão
+  // é 100% somente leitura (progresso + resumo).
 
   return (
     <div className="relative z-10 w-full min-w-0 max-w-full overflow-hidden rounded-xl border border-border/60 bg-card/90 text-sm shadow-sm [touch-action:manipulation] [pointer-events:auto]">
@@ -160,54 +154,8 @@ export function PlanPreviewCard(props: PlanPreviewCardProps) {
       )}
       </div>
 
-      {/* Área de ações própria, sempre visível no final do card e fora do
-          scroll interno — em mobile cada botão ocupa 100% da largura. */}
-      <div className="relative z-10 grid gap-2 border-t border-border/60 bg-card/95 p-3 sm:grid-cols-2">
-        {executing && (
-          <Button
-            variant="secondary"
-            className="min-h-11 w-full [touch-action:manipulation]"
-            onClick={props.onPause}
-          >
-            <Pause className="mr-1.5 h-4 w-4" /> Pausar
-          </Button>
-        )}
-        {paused && (
-          <Button
-            className="min-h-11 w-full [touch-action:manipulation]"
-            onClick={props.onResume}
-          >
-            <Play className="mr-1.5 h-4 w-4" /> Retomar
-          </Button>
-        )}
-        {failed && (
-          <Button
-            variant="secondary"
-            className="min-h-11 w-full [touch-action:manipulation]"
-            onClick={props.onRetry}
-          >
-            <RotateCcw className="mr-1.5 h-4 w-4" /> Repetir falhas
-          </Button>
-        )}
-        {!terminal && !waitingUser && (
-          <Button
-            variant="ghost"
-            className="min-h-11 w-full [touch-action:manipulation]"
-            onClick={props.onCancel}
-          >
-            <X className="mr-1.5 h-4 w-4" /> Cancelar
-          </Button>
-        )}
-        {plan.checkpointId && (
-          <Button
-            variant="ghost"
-            className="min-h-11 w-full [touch-action:manipulation]"
-            onClick={props.onRollback}
-          >
-            <Undo2 className="mr-1.5 h-4 w-4" /> Desfazer plano
-          </Button>
-        )}
-      </div>
+      {/* Card 100% somente leitura: nenhum botão de seleção/ação.
+          Todo o controle acontece pela conversa no chat. */}
     </div>
   );
 }
