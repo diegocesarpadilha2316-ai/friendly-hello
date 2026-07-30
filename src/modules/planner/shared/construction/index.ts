@@ -11,5 +11,21 @@ export * from "./registry";
 export * from "./assembly";
 export * from "./animation";
 export { doorSwing, doorSliding, drawerFront, FRONT_COMPONENTS } from "./components/fronts";
-export { drawer, shelf, divider, hangerRod, topBox, niche, INTERIOR_COMPONENTS } from "./components/interior";
-export { plinth, top, side, back, baseBoard, panel, STRUCTURE_COMPONENTS } from "./components/structure";
+export {
+  drawer,
+  shelf,
+  divider,
+  hangerRod,
+  topBox,
+  niche,
+  INTERIOR_COMPONENTS,
+} from "./components/interior";
+export {
+  plinth,
+  top,
+  side,
+  back,
+  baseBoard,
+  panel,
+  STRUCTURE_COMPONENTS,
+} from "./components/structure";

@@ -31,10 +31,10 @@ export type ConstructionComponentId =
 
 /** Famílias funcionais — usadas por filtros, regras e futuras famílias de móveis. */
 export type ConstructionFamily =
-  | "frente"      // o que o usuário vê e toca
-  | "estrutura"   // caixa
-  | "interno"     // organização interna
-  | "acessorio";  // ferragem funcional
+  | "frente" // o que o usuário vê e toca
+  | "estrutura" // caixa
+  | "interno" // organização interna
+  | "acessorio"; // ferragem funcional
 
 /** Caixa orientada no espaço local do componente (mm). */
 export interface ConstructionBox {

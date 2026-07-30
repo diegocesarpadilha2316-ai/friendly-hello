@@ -38,7 +38,12 @@ export function resolveMotion(motion: ConstructionMotion, state: MotionState): M
     const travel = (motion.maxTravelMm ?? 0) * t * motion.direction;
     return {
       pieceId: motion.pieceId,
-      translate: motion.axis === "x" ? [travel, 0, 0] : motion.axis === "y" ? [0, travel, 0] : [0, 0, travel],
+      translate:
+        motion.axis === "x"
+          ? [travel, 0, 0]
+          : motion.axis === "y"
+            ? [0, travel, 0]
+            : [0, 0, travel],
       rotateDeg: [0, 0, 0],
       pivot,
     };
@@ -52,7 +57,8 @@ export function resolveMotion(motion: ConstructionMotion, state: MotionState): M
   return {
     pieceId: motion.pieceId,
     translate: [0, 0, 0],
-    rotateDeg: motion.axis === "x" ? [angle, 0, 0] : motion.axis === "y" ? [0, angle, 0] : [0, 0, angle],
+    rotateDeg:
+      motion.axis === "x" ? [angle, 0, 0] : motion.axis === "y" ? [0, angle, 0] : [0, 0, angle],
     pivot,
   };
 }
@@ -63,7 +69,10 @@ export function resolveMotions(
   stateByPieceId: Readonly<Record<string, MotionState>> | MotionState,
 ): readonly MotionTransform[] {
   return motions.map((m) =>
-    resolveMotion(m, typeof stateByPieceId === "number" ? stateByPieceId : stateByPieceId[m.pieceId] ?? 0),
+    resolveMotion(
+      m,
+      typeof stateByPieceId === "number" ? stateByPieceId : (stateByPieceId[m.pieceId] ?? 0),
+    ),
   );
 }
 

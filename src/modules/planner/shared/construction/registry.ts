@@ -2,7 +2,13 @@
  * Registro único dos componentes construtivos.
  * Toda família de móvel futura resolve componentes SÓ por aqui.
  */
-import type { ConstructionComponent, ConstructionComponentId, ConstructionContext, ConstructionFamily, ConstructionResult } from "./types";
+import type {
+  ConstructionComponent,
+  ConstructionComponentId,
+  ConstructionContext,
+  ConstructionFamily,
+  ConstructionResult,
+} from "./types";
 import { FRONT_COMPONENTS } from "./components/fronts";
 import { INTERIOR_COMPONENTS } from "./components/interior";
 import { STRUCTURE_COMPONENTS } from "./components/structure";
@@ -62,7 +68,9 @@ export function buildComponent(
       pieces: [],
       hardware: [],
       motions: [],
-      warnings: [{ code: "componente-inexistente", message: `Componente "${id}" não existe na biblioteca.` }],
+      warnings: [
+        { code: "componente-inexistente", message: `Componente "${id}" não existe na biblioteca.` },
+      ],
     };
   }
   const normalized = component.normalize(params, context);

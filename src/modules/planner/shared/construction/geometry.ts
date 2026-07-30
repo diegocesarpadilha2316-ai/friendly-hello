@@ -43,10 +43,16 @@ export function intIn(v: unknown, min: number, max: number, fallback: number): n
 /** Envelope que contém todas as caixas informadas. */
 export function unionBox(boxes: readonly ConstructionBox[]): ConstructionBox {
   if (boxes.length === 0) return box(0, 0, 0, 1, 1, 1);
-  let x0 = Infinity, y0 = Infinity, z0 = Infinity;
-  let x1 = -Infinity, y1 = -Infinity, z1 = -Infinity;
+  let x0 = Infinity,
+    y0 = Infinity,
+    z0 = Infinity;
+  let x1 = -Infinity,
+    y1 = -Infinity,
+    z1 = -Infinity;
   for (const b of boxes) {
-    x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); z0 = Math.min(z0, b.z);
+    x0 = Math.min(x0, b.x);
+    y0 = Math.min(y0, b.y);
+    z0 = Math.min(z0, b.z);
     x1 = Math.max(x1, b.x + b.width);
     y1 = Math.max(y1, b.y + b.height);
     z1 = Math.max(z1, b.z + b.depth);

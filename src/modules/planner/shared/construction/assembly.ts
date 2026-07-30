@@ -84,7 +84,9 @@ export function buildAssembly(def: AssemblyDefinition): AssemblyResult {
     }
     hardware.push(...result.hardware.map((h) => ({ ...h, id: `${instanceId}:${h.id}` })));
     motions.push(...result.motions);
-    warnings.push(...result.warnings.map((w) => ({ ...w, message: `[${slot.role ?? slot.id}] ${w.message}` })));
+    warnings.push(
+      ...result.warnings.map((w) => ({ ...w, message: `[${slot.role ?? slot.id}] ${w.message}` })),
+    );
   }
 
   const boardAreaM2 = pieces

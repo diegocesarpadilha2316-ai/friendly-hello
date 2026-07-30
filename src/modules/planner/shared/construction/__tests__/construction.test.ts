@@ -1,16 +1,33 @@
 import { describe, expect, it } from "vitest";
 import {
-  buildAssembly, buildComponent, getComponent, listComponents,
-  repeatAlongX, resolveMotion, stackAlongY,
+  buildAssembly,
+  buildComponent,
+  getComponent,
+  listComponents,
+  repeatAlongX,
+  resolveMotion,
+  stackAlongY,
 } from "../index";
 
 describe("Biblioteca construtiva", () => {
   it("registra os 15 componentes", () => {
     expect(listComponents()).toHaveLength(15);
     for (const id of [
-      "porta-abrir", "porta-correr", "gaveta", "frente-gaveta", "prateleira",
-      "divisoria-vertical", "cabideiro", "maleiro", "nicho", "rodape",
-      "tampo", "lateral", "fundo", "base", "painel",
+      "porta-abrir",
+      "porta-correr",
+      "gaveta",
+      "frente-gaveta",
+      "prateleira",
+      "divisoria-vertical",
+      "cabideiro",
+      "maleiro",
+      "nicho",
+      "rodape",
+      "tampo",
+      "lateral",
+      "fundo",
+      "base",
+      "painel",
     ] as const) {
       expect(getComponent(id), id).toBeDefined();
     }
@@ -30,7 +47,12 @@ describe("Biblioteca construtiva", () => {
   });
 
   it("gera folhas sobrepostas na porta de correr", () => {
-    const r = buildComponent("porta-correr", { widthMm: 2700, leaves: 3, tracks: 3, overlapMm: 30 });
+    const r = buildComponent("porta-correr", {
+      widthMm: 2700,
+      leaves: 3,
+      tracks: 3,
+      overlapMm: 30,
+    });
     expect(r.pieces).toHaveLength(3);
     expect(r.motions.every((m) => m.kind === "slide")).toBe(true);
   });
@@ -55,8 +77,17 @@ describe("Biblioteca construtiva", () => {
         { id: "lat-e", component: "lateral", at: [0, 0, 0], params: { heightMm: 2400 } },
         { id: "lat-d", component: "lateral", at: [1200, 0, 0], params: { heightMm: 2400 } },
         { id: "fundo", component: "fundo", params: { widthMm: 1200, heightMm: 2400 } },
-        ...repeatAlongX({ component: "porta-abrir", params: { widthMm: 600, heightMm: 2000 }, role: "porta" }, 2, 600),
-        ...stackAlongY({ component: "gaveta", params: { widthMm: 560 }, role: "gaveta" }, 3, 220, 100),
+        ...repeatAlongX(
+          { component: "porta-abrir", params: { widthMm: 600, heightMm: 2000 }, role: "porta" },
+          2,
+          600,
+        ),
+        ...stackAlongY(
+          { component: "gaveta", params: { widthMm: 560 }, role: "gaveta" },
+          3,
+          220,
+          100,
+        ),
       ],
     });
     expect(asm.totals.slotCount).toBe(8);

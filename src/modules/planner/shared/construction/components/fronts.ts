@@ -11,8 +11,24 @@ import type {
   ConstructionResult,
   ConstructionWarning,
 } from "../types";
-import type { DoorSlidingParams, DoorSwingParams, DrawerFrontParams, FrontSubstrate } from "../params";
-import { box, clamp, divideSpan, grainOf, intIn, positive, recommendedHinges, round, unionBox, warn } from "../geometry";
+import type {
+  DoorSlidingParams,
+  DoorSwingParams,
+  DrawerFrontParams,
+  FrontSubstrate,
+} from "../params";
+import {
+  box,
+  clamp,
+  divideSpan,
+  grainOf,
+  intIn,
+  positive,
+  recommendedHinges,
+  round,
+  unionBox,
+  warn,
+} from "../geometry";
 
 function substrateOf(s: FrontSubstrate): ConstructionPiece["substrate"] {
   if (s === "vidro" || s === "aluminio-vidro") return "vidro";
@@ -21,9 +37,22 @@ function substrateOf(s: FrontSubstrate): ConstructionPiece["substrate"] {
 }
 
 function handleHardware(handle: DoorSwingParams["handle"], qty: number): ConstructionHardwareRef[] {
-  if (handle === "push") return [{ id: "push", kind: "amortecedor", qty, itemId: "alugold-perfil-tipone", notes: "push-to-open" }];
-  if (handle === "cava") return [{ id: "cava", kind: "puxador", qty, itemId: "dioris-cava-128", notes: "usinagem na frente" }];
-  if (handle === "perfil-gola") return [{ id: "gola", kind: "puxador", qty, itemId: "dioris-perfil-gola" }];
+  if (handle === "push")
+    return [
+      {
+        id: "push",
+        kind: "amortecedor",
+        qty,
+        itemId: "alugold-perfil-tipone",
+        notes: "push-to-open",
+      },
+    ];
+  if (handle === "cava")
+    return [
+      { id: "cava", kind: "puxador", qty, itemId: "dioris-cava-128", notes: "usinagem na frente" },
+    ];
+  if (handle === "perfil-gola")
+    return [{ id: "gola", kind: "puxador", qty, itemId: "dioris-perfil-gola" }];
   return [{ id: handle, kind: "puxador", qty }];
 }
 
@@ -36,11 +65,23 @@ export const doorSwing: ConstructionComponent<DoorSwingParams> = {
   description: "Folha com dobradiças, abertura lateral ou basculante.",
   motionKind: "hinge",
   defaults: {
-    widthMm: 450, heightMm: 700, thicknessMm: 18,
-    swing: "esquerda", hinge: "caneco-35", hingeCount: 0,
-    handle: "perfil-gola", opening: "softclose", substrate: "mdf",
-    gapTopMm: 2, gapBottomMm: 2, gapSideMm: 2, maxAngleDeg: 110,
-    materialId: "mdf-18", finishId: "branco-tx", edge: "pvc-1-0", grain: "vertical",
+    widthMm: 450,
+    heightMm: 700,
+    thicknessMm: 18,
+    swing: "esquerda",
+    hinge: "caneco-35",
+    hingeCount: 0,
+    handle: "perfil-gola",
+    opening: "softclose",
+    substrate: "mdf",
+    gapTopMm: 2,
+    gapBottomMm: 2,
+    gapSideMm: 2,
+    maxAngleDeg: 110,
+    materialId: "mdf-18",
+    finishId: "branco-tx",
+    edge: "pvc-1-0",
+    grain: "vertical",
   },
   normalize(p, ctx) {
     const d = doorSwing.defaults;
@@ -71,9 +112,17 @@ export const doorSwing: ConstructionComponent<DoorSwingParams> = {
     const hinges = p.hingeCount > 0 ? p.hingeCount : recommendedHinges(h, p.thicknessMm);
 
     if (w > 600 && p.swing !== "superior") {
-      warnings.push(warn("porta-larga", "Folha acima de 600 mm — considere duas folhas ou dobradiça reforçada."));
+      warnings.push(
+        warn(
+          "porta-larga",
+          "Folha acima de 600 mm — considere duas folhas ou dobradiça reforçada.",
+        ),
+      );
     }
-    if (h > 2400) warnings.push(warn("porta-alta", "Folha acima de 2400 mm — avaliar empenamento e nº de dobradiças."));
+    if (h > 2400)
+      warnings.push(
+        warn("porta-alta", "Folha acima de 2400 mm — avaliar empenamento e nº de dobradiças."),
+      );
 
     const pieceId = `${ctx.instanceId}:folha`;
     const piece: ConstructionPiece = {
@@ -88,22 +137,36 @@ export const doorSwing: ConstructionComponent<DoorSwingParams> = {
     };
 
     const hardware: ConstructionHardwareRef[] = [
-      { id: "dobradica", kind: "dobradica", qty: hinges, itemId: p.hinge === "caneco-35" ? "blum-clip-top" : undefined, notes: p.hinge },
+      {
+        id: "dobradica",
+        kind: "dobradica",
+        qty: hinges,
+        itemId: p.hinge === "caneco-35" ? "blum-clip-top" : undefined,
+        notes: p.hinge,
+      },
       ...handleHardware(p.handle, 1),
     ];
-    if (p.opening === "softclose") hardware.push({ id: "softclose", kind: "amortecedor", qty: hinges, itemId: "blum-blumotion" });
-    if (p.swing === "superior") hardware.push({ id: "pistao", kind: "pistao", qty: 2, itemId: "blum-aventos-hf" });
+    if (p.opening === "softclose")
+      hardware.push({
+        id: "softclose",
+        kind: "amortecedor",
+        qty: hinges,
+        itemId: "blum-blumotion",
+      });
+    if (p.swing === "superior")
+      hardware.push({ id: "pistao", kind: "pistao", qty: 2, itemId: "blum-aventos-hf" });
 
     const vertical = p.swing === "esquerda" || p.swing === "direita";
     const motion: ConstructionMotion = {
       pieceId,
       kind: p.swing === "superior" ? "lift" : "hinge",
       axis: vertical ? "y" : "x",
-      pivot: p.swing === "direita"
-        ? [p.gapSideMm + w, 0, 0]
-        : p.swing === "superior"
-          ? [0, p.gapBottomMm + h, 0]
-          : [p.gapSideMm, 0, 0],
+      pivot:
+        p.swing === "direita"
+          ? [p.gapSideMm + w, 0, 0]
+          : p.swing === "superior"
+            ? [0, p.gapBottomMm + h, 0]
+            : [p.gapSideMm, 0, 0],
       maxAngleDeg: p.maxAngleDeg,
       direction: p.swing === "direita" || p.swing === "inferior" ? -1 : 1,
       durationMs: p.opening === "softclose" ? 900 : 550,
@@ -131,10 +194,22 @@ export const doorSliding: ConstructionComponent<DoorSlidingParams> = {
   description: "Conjunto de folhas em trilho, com sobreposição entre folhas.",
   motionKind: "slide",
   defaults: {
-    widthMm: 2700, heightMm: 2400, thicknessMm: 18,
-    leaves: 3, tracks: 3, system: "embutido", handle: "perfil-gola",
-    substrate: "mdf", overlapMm: 30, softClose: true, gapTopMm: 3, gapBottomMm: 6,
-    materialId: "mdf-18", finishId: "branco-tx", edge: "pvc-1-0", grain: "vertical",
+    widthMm: 2700,
+    heightMm: 2400,
+    thicknessMm: 18,
+    leaves: 3,
+    tracks: 3,
+    system: "embutido",
+    handle: "perfil-gola",
+    substrate: "mdf",
+    overlapMm: 30,
+    softClose: true,
+    gapTopMm: 3,
+    gapBottomMm: 6,
+    materialId: "mdf-18",
+    finishId: "branco-tx",
+    edge: "pvc-1-0",
+    grain: "vertical",
   },
   normalize(p, ctx) {
     const d = doorSliding.defaults;
@@ -163,9 +238,20 @@ export const doorSliding: ConstructionComponent<DoorSlidingParams> = {
     const h = p.heightMm - p.gapTopMm - p.gapBottomMm;
     // Folhas se sobrepõem: largura da folha = (vão + sobreposições) / nº folhas.
     const leafW = round((p.widthMm + p.overlapMm * (p.leaves - 1)) / p.leaves);
-    if (leafW > 1200) warnings.push(warn("folha-larga", "Folha acima de 1200 mm — usar perfil de alumínio e roldana reforçada."));
+    if (leafW > 1200)
+      warnings.push(
+        warn(
+          "folha-larga",
+          "Folha acima de 1200 mm — usar perfil de alumínio e roldana reforçada.",
+        ),
+      );
     if (p.tracks < p.leaves && p.overlapMm < 20) {
-      warnings.push(warn("sobreposicao-baixa", "Sobreposição menor que 20 mm pode deixar vão aparente entre folhas."));
+      warnings.push(
+        warn(
+          "sobreposicao-baixa",
+          "Sobreposição menor que 20 mm pode deixar vão aparente entre folhas.",
+        ),
+      );
     }
 
     const pieces: ConstructionPiece[] = [];
@@ -199,12 +285,24 @@ export const doorSliding: ConstructionComponent<DoorSlidingParams> = {
     }
 
     const hardware: ConstructionHardwareRef[] = [
-      { id: "trilho", kind: "trilho", qty: p.tracks, itemId: p.system === "embutido" ? "fgv-trilho-embutido" : "hafele-trilho-slid" },
+      {
+        id: "trilho",
+        kind: "trilho",
+        qty: p.tracks,
+        itemId: p.system === "embutido" ? "fgv-trilho-embutido" : "hafele-trilho-slid",
+      },
       { id: "roldana", kind: "corredica", qty: p.leaves * 2, notes: "roldanas superior/inferior" },
       ...handleHardware(p.handle, p.leaves),
     ];
-    if (p.softClose) hardware.push({ id: "softclose", kind: "amortecedor", qty: p.leaves, itemId: "hettich-silent-system" });
-    if (p.substrate === "aluminio-vidro") hardware.push({ id: "perfil", kind: "perfil", qty: p.leaves, itemId: "alugold-perfil-h" });
+    if (p.softClose)
+      hardware.push({
+        id: "softclose",
+        kind: "amortecedor",
+        qty: p.leaves,
+        itemId: "hettich-silent-system",
+      });
+    if (p.substrate === "aluminio-vidro")
+      hardware.push({ id: "perfil", kind: "perfil", qty: p.leaves, itemId: "alugold-perfil-h" });
 
     return {
       componentId: "porta-correr",
@@ -227,10 +325,18 @@ export const drawerFront: ConstructionComponent<DrawerFrontParams> = {
   description: "Frente independente, sobreposta ou embutida, com pega própria.",
   motionKind: "slide",
   defaults: {
-    widthMm: 600, heightMm: 200, thicknessMm: 18,
-    handle: "perfil-gola", substrate: "mdf",
-    gapSideMm: 2, gapTopMm: 2, mounting: "sobreposta",
-    materialId: "mdf-18", finishId: "branco-tx", edge: "pvc-1-0", grain: "horizontal",
+    widthMm: 600,
+    heightMm: 200,
+    thicknessMm: 18,
+    handle: "perfil-gola",
+    substrate: "mdf",
+    gapSideMm: 2,
+    gapTopMm: 2,
+    mounting: "sobreposta",
+    materialId: "mdf-18",
+    finishId: "branco-tx",
+    edge: "pvc-1-0",
+    grain: "horizontal",
   },
   normalize(p, ctx) {
     const d = drawerFront.defaults;
@@ -254,27 +360,39 @@ export const drawerFront: ConstructionComponent<DrawerFrontParams> = {
     const h = p.heightMm - p.gapTopMm * 2;
     const id = `${ctx.instanceId}:frente`;
     const warnings: ConstructionWarning[] = [];
-    if (h > 400) warnings.push(warn("gavetao", "Frente acima de 400 mm — gavetão: usar corrediça de maior capacidade."));
+    if (h > 400)
+      warnings.push(
+        warn("gavetao", "Frente acima de 400 mm — gavetão: usar corrediça de maior capacidade."),
+      );
     return {
       componentId: "frente-gaveta",
       instanceId: ctx.instanceId,
       envelope: box(0, 0, 0, p.widthMm, p.heightMm, p.thicknessMm),
-      pieces: [{
-        id,
-        partKind: "gaveta-frente",
-        label: "Frente de gaveta",
-        box: box(p.gapSideMm, p.gapTopMm, 0, w, h, p.thicknessMm),
-        thicknessMm: p.thicknessMm,
-        grain: p.grain,
-        finishId: p.finishId,
-        substrate: substrateOf(p.substrate),
-        notes: p.mounting,
-      }],
+      pieces: [
+        {
+          id,
+          partKind: "gaveta-frente",
+          label: "Frente de gaveta",
+          box: box(p.gapSideMm, p.gapTopMm, 0, w, h, p.thicknessMm),
+          thicknessMm: p.thicknessMm,
+          grain: p.grain,
+          finishId: p.finishId,
+          substrate: substrateOf(p.substrate),
+          notes: p.mounting,
+        },
+      ],
       hardware: handleHardware(p.handle, 1),
-      motions: [{
-        pieceId: id, kind: "slide", axis: "z",
-        maxTravelMm: 500, direction: 1, durationMs: 900, easing: "soft-close",
-      }],
+      motions: [
+        {
+          pieceId: id,
+          kind: "slide",
+          axis: "z",
+          maxTravelMm: 500,
+          direction: 1,
+          durationMs: 900,
+          easing: "soft-close",
+        },
+      ],
       warnings,
     };
   },

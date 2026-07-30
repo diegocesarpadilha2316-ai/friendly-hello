@@ -2,7 +2,14 @@
  * Componentes ESTRUTURAIS: rodapé, tampo, lateral, fundo, base e painel.
  */
 import type { ConstructionComponent, ConstructionPiece, ConstructionWarning } from "../types";
-import type { BackParams, BaseParams, PanelParams, PlinthParams, SideParams, TopParams } from "../params";
+import type {
+  BackParams,
+  BaseParams,
+  PanelParams,
+  PlinthParams,
+  SideParams,
+  TopParams,
+} from "../params";
 import { box, clamp, grainOf, intIn, positive, round, unionBox, warn } from "../geometry";
 
 /* ────────────────────────────────  RODAPÉ  ──────────────────────────────── */
@@ -14,8 +21,15 @@ export const plinth: ConstructionComponent<PlinthParams> = {
   description: "Sapata frontal recuada, removível ou fixa.",
   motionKind: "static",
   defaults: {
-    widthMm: 1200, heightMm: 100, thicknessMm: 18, recessMm: 50, removable: true,
-    materialId: "mdf-18", finishId: "preto-tx", edge: "pvc-0-45", grain: "horizontal",
+    widthMm: 1200,
+    heightMm: 100,
+    thicknessMm: 18,
+    recessMm: 50,
+    removable: true,
+    materialId: "mdf-18",
+    finishId: "preto-tx",
+    edge: "pvc-0-45",
+    grain: "horizontal",
   },
   normalize(p, ctx) {
     const d = plinth.defaults;
@@ -36,13 +50,29 @@ export const plinth: ConstructionComponent<PlinthParams> = {
       componentId: "rodape",
       instanceId: ctx.instanceId,
       envelope: box(0, 0, 0, p.widthMm, p.heightMm, p.thicknessMm),
-      pieces: [{
-        id: `${ctx.instanceId}:rodape`, partKind: "rodape", label: "Rodapé",
-        box: box(0, 0, p.recessMm, p.widthMm, p.heightMm, p.thicknessMm),
-        thicknessMm: p.thicknessMm, grain: p.grain, finishId: p.finishId, substrate: "chapa",
-        notes: p.removable ? "removível (clipe)" : "fixo",
-      }],
-      hardware: p.removable ? [{ id: "clipe", kind: "perfil", qty: Math.max(2, Math.round(p.widthMm / 500)), notes: "clipe de rodapé" }] : [],
+      pieces: [
+        {
+          id: `${ctx.instanceId}:rodape`,
+          partKind: "rodape",
+          label: "Rodapé",
+          box: box(0, 0, p.recessMm, p.widthMm, p.heightMm, p.thicknessMm),
+          thicknessMm: p.thicknessMm,
+          grain: p.grain,
+          finishId: p.finishId,
+          substrate: "chapa",
+          notes: p.removable ? "removível (clipe)" : "fixo",
+        },
+      ],
+      hardware: p.removable
+        ? [
+            {
+              id: "clipe",
+              kind: "perfil",
+              qty: Math.max(2, Math.round(p.widthMm / 500)),
+              notes: "clipe de rodapé",
+            },
+          ]
+        : [],
       motions: [],
       warnings: [],
     };
@@ -58,9 +88,17 @@ export const top: ConstructionComponent<TopParams> = {
   description: "Chapa horizontal superior, com saliência frontal/lateral opcional.",
   motionKind: "static",
   defaults: {
-    widthMm: 1200, heightMm: 25, depthMm: 600, thicknessMm: 25,
-    overhangFrontMm: 20, overhangSideMm: 0, postformado: false,
-    materialId: "mdf-25", finishId: "carvalho-natural", edge: "pvc-1-0", grain: "horizontal",
+    widthMm: 1200,
+    heightMm: 25,
+    depthMm: 600,
+    thicknessMm: 25,
+    overhangFrontMm: 20,
+    overhangSideMm: 0,
+    postformado: false,
+    materialId: "mdf-25",
+    finishId: "carvalho-natural",
+    edge: "pvc-1-0",
+    grain: "horizontal",
   },
   normalize(p, ctx) {
     const d = top.defaults;
@@ -86,14 +124,22 @@ export const top: ConstructionComponent<TopParams> = {
       componentId: "tampo",
       instanceId: ctx.instanceId,
       envelope: box(-p.overhangSideMm, 0, 0, w, p.thicknessMm, dpt),
-      pieces: [{
-        id: `${ctx.instanceId}:tampo`, partKind: "tampo", label: p.postformado ? "Tampo postformado" : "Tampo",
-        box: box(-p.overhangSideMm, 0, 0, w, p.thicknessMm, dpt),
-        thicknessMm: p.thicknessMm, grain: p.grain, finishId: p.finishId, substrate: "chapa",
-      }],
+      pieces: [
+        {
+          id: `${ctx.instanceId}:tampo`,
+          partKind: "tampo",
+          label: p.postformado ? "Tampo postformado" : "Tampo",
+          box: box(-p.overhangSideMm, 0, 0, w, p.thicknessMm, dpt),
+          thicknessMm: p.thicknessMm,
+          grain: p.grain,
+          finishId: p.finishId,
+          substrate: "chapa",
+        },
+      ],
       hardware: [],
       motions: [],
-      warnings: w > 3000 ? [warn("tampo-emenda", "Tampo acima de 3000 mm — prever emenda de chapa.")] : [],
+      warnings:
+        w > 3000 ? [warn("tampo-emenda", "Tampo acima de 3000 mm — prever emenda de chapa.")] : [],
     };
   },
 };
@@ -107,9 +153,17 @@ export const side: ConstructionComponent<SideParams> = {
   description: "Chapa vertical estrutural, com furação de sistema opcional.",
   motionKind: "static",
   defaults: {
-    widthMm: 18, heightMm: 700, depthMm: 560, thicknessMm: 18,
-    side: "esquerda", furada: true, rowPitchMm: 32,
-    materialId: "mdf-18", finishId: "branco-tx", edge: "pvc-0-45", grain: "vertical",
+    widthMm: 18,
+    heightMm: 700,
+    depthMm: 560,
+    thicknessMm: 18,
+    side: "esquerda",
+    furada: true,
+    rowPitchMm: 32,
+    materialId: "mdf-18",
+    finishId: "branco-tx",
+    edge: "pvc-0-45",
+    grain: "vertical",
   },
   normalize(p, ctx) {
     const d = side.defaults;
@@ -134,12 +188,19 @@ export const side: ConstructionComponent<SideParams> = {
       componentId: "lateral",
       instanceId: ctx.instanceId,
       envelope: box(0, 0, 0, p.thicknessMm, p.heightMm, p.depthMm),
-      pieces: [{
-        id: `${ctx.instanceId}:lateral`, partKind: "lateral", label: `Lateral ${p.side}`,
-        box: box(0, 0, 0, p.thicknessMm, p.heightMm, p.depthMm),
-        thicknessMm: p.thicknessMm, grain: p.grain, finishId: p.finishId, substrate: "chapa",
-        notes: p.furada ? `sistema ${p.rowPitchMm} mm • ${holes} furos` : undefined,
-      }],
+      pieces: [
+        {
+          id: `${ctx.instanceId}:lateral`,
+          partKind: "lateral",
+          label: `Lateral ${p.side}`,
+          box: box(0, 0, 0, p.thicknessMm, p.heightMm, p.depthMm),
+          thicknessMm: p.thicknessMm,
+          grain: p.grain,
+          finishId: p.finishId,
+          substrate: "chapa",
+          notes: p.furada ? `sistema ${p.rowPitchMm} mm • ${holes} furos` : undefined,
+        },
+      ],
       hardware: [],
       motions: [],
       warnings: [],
@@ -156,8 +217,15 @@ export const back: ConstructionComponent<BackParams> = {
   description: "Chapa traseira — pregada, encaixada, em canal ou rebaixada.",
   motionKind: "static",
   defaults: {
-    widthMm: 1200, heightMm: 700, depthMm: 6, thicknessMm: 6, mounting: "encaixado",
-    materialId: "mdf-6", finishId: "branco-tx", edge: "sem-fita", grain: "livre",
+    widthMm: 1200,
+    heightMm: 700,
+    depthMm: 6,
+    thicknessMm: 6,
+    mounting: "encaixado",
+    materialId: "mdf-6",
+    finishId: "branco-tx",
+    edge: "sem-fita",
+    grain: "livre",
   },
   normalize(p, ctx) {
     const d = back.defaults;
@@ -180,17 +248,25 @@ export const back: ConstructionComponent<BackParams> = {
       componentId: "fundo",
       instanceId: ctx.instanceId,
       envelope: box(0, 0, 0, p.widthMm, p.heightMm, p.thicknessMm),
-      pieces: [{
-        id: `${ctx.instanceId}:fundo`, partKind: "fundo", label: "Fundo",
-        box: box(inset, inset, 0, p.widthMm - inset * 2, p.heightMm - inset * 2, p.thicknessMm),
-        thicknessMm: p.thicknessMm, grain: p.grain, finishId: p.finishId, substrate: "chapa",
-        notes: p.mounting,
-      }],
+      pieces: [
+        {
+          id: `${ctx.instanceId}:fundo`,
+          partKind: "fundo",
+          label: "Fundo",
+          box: box(inset, inset, 0, p.widthMm - inset * 2, p.heightMm - inset * 2, p.thicknessMm),
+          thicknessMm: p.thicknessMm,
+          grain: p.grain,
+          finishId: p.finishId,
+          substrate: "chapa",
+          notes: p.mounting,
+        },
+      ],
       hardware: [],
       motions: [],
-      warnings: p.widthMm > 1800 && p.thicknessMm <= 6
-        ? [warn("fundo-fino", "Fundo largo com 6 mm — prever travessa de reforço.")]
-        : [],
+      warnings:
+        p.widthMm > 1800 && p.thicknessMm <= 6
+          ? [warn("fundo-fino", "Fundo largo com 6 mm — prever travessa de reforço.")]
+          : [],
     };
   },
 };
@@ -204,8 +280,15 @@ export const baseBoard: ConstructionComponent<BaseParams> = {
   description: "Chapa horizontal inferior do módulo, com tipo de apoio.",
   motionKind: "static",
   defaults: {
-    widthMm: 1200, heightMm: 18, depthMm: 560, thicknessMm: 18, support: "pe-regulavel",
-    materialId: "mdf-18", finishId: "branco-tx", edge: "pvc-0-45", grain: "livre",
+    widthMm: 1200,
+    heightMm: 18,
+    depthMm: 560,
+    thicknessMm: 18,
+    support: "pe-regulavel",
+    materialId: "mdf-18",
+    finishId: "branco-tx",
+    edge: "pvc-0-45",
+    grain: "livre",
   },
   normalize(p, ctx) {
     const d = baseBoard.defaults;
@@ -228,12 +311,19 @@ export const baseBoard: ConstructionComponent<BaseParams> = {
       componentId: "base",
       instanceId: ctx.instanceId,
       envelope: box(0, 0, 0, p.widthMm, p.thicknessMm, p.depthMm),
-      pieces: [{
-        id: `${ctx.instanceId}:base`, partKind: "base", label: "Base",
-        box: box(0, 0, 0, p.widthMm, p.thicknessMm, p.depthMm),
-        thicknessMm: p.thicknessMm, grain: p.grain, finishId: p.finishId, substrate: "chapa",
-        notes: p.support,
-      }],
+      pieces: [
+        {
+          id: `${ctx.instanceId}:base`,
+          partKind: "base",
+          label: "Base",
+          box: box(0, 0, 0, p.widthMm, p.thicknessMm, p.depthMm),
+          thicknessMm: p.thicknessMm,
+          grain: p.grain,
+          finishId: p.finishId,
+          substrate: "chapa",
+          notes: p.support,
+        },
+      ],
       hardware: feet > 0 ? [{ id: "pe", kind: "perfil", qty: feet, notes: "pé regulável" }] : [],
       motions: [],
       warnings: [],
@@ -250,9 +340,18 @@ export const panel: ConstructionComponent<PanelParams> = {
   description: "Chapa livre (TV, cabeceira, revestimento) lisa, ripada ou canelada.",
   motionKind: "static",
   defaults: {
-    widthMm: 2000, heightMm: 2400, depthMm: 18, thicknessMm: 18,
-    treatment: "ripado", slats: 0, slatDepthMm: 18, orientation: "vertical",
-    materialId: "mdf-18", finishId: "freijo", edge: "pvc-0-45", grain: "vertical",
+    widthMm: 2000,
+    heightMm: 2400,
+    depthMm: 18,
+    thicknessMm: 18,
+    treatment: "ripado",
+    slats: 0,
+    slatDepthMm: 18,
+    orientation: "vertical",
+    materialId: "mdf-18",
+    finishId: "freijo",
+    edge: "pvc-0-45",
+    grain: "vertical",
   },
   normalize(p, ctx) {
     const d = panel.defaults;
@@ -273,11 +372,18 @@ export const panel: ConstructionComponent<PanelParams> = {
     };
   },
   build(p, ctx) {
-    const pieces: ConstructionPiece[] = [{
-      id: `${ctx.instanceId}:painel`, partKind: "porta", label: "Painel de fundo",
-      box: box(0, 0, 0, p.widthMm, p.heightMm, p.thicknessMm),
-      thicknessMm: p.thicknessMm, grain: p.grain, finishId: p.finishId, substrate: "chapa",
-    }];
+    const pieces: ConstructionPiece[] = [
+      {
+        id: `${ctx.instanceId}:painel`,
+        partKind: "porta",
+        label: "Painel de fundo",
+        box: box(0, 0, 0, p.widthMm, p.heightMm, p.thicknessMm),
+        thicknessMm: p.thicknessMm,
+        grain: p.grain,
+        finishId: p.finishId,
+        substrate: "chapa",
+      },
+    ];
 
     if (p.treatment === "ripado" || p.treatment === "canelado") {
       const pitch = p.treatment === "canelado" ? 30 : 60;
@@ -287,12 +393,17 @@ export const panel: ConstructionComponent<PanelParams> = {
       for (let i = 0; i < count; i++) {
         const at = round(i * (span / count) + (span / count - slatW) / 2);
         pieces.push({
-          id: `${ctx.instanceId}:ripa-${i + 1}`, partKind: "travessa", label: `Ripa ${i + 1}`,
-          box: p.orientation === "vertical"
-            ? box(at, 0, p.thicknessMm, slatW, p.heightMm, p.slatDepthMm)
-            : box(0, at, p.thicknessMm, p.widthMm, slatW, p.slatDepthMm),
-          thicknessMm: p.slatDepthMm, grain: p.orientation === "vertical" ? "vertical" : "horizontal",
-          finishId: p.finishId, substrate: "chapa",
+          id: `${ctx.instanceId}:ripa-${i + 1}`,
+          partKind: "travessa",
+          label: `Ripa ${i + 1}`,
+          box:
+            p.orientation === "vertical"
+              ? box(at, 0, p.thicknessMm, slatW, p.heightMm, p.slatDepthMm)
+              : box(0, at, p.thicknessMm, p.widthMm, slatW, p.slatDepthMm),
+          thicknessMm: p.slatDepthMm,
+          grain: p.orientation === "vertical" ? "vertical" : "horizontal",
+          finishId: p.finishId,
+          substrate: "chapa",
         });
       }
     }
@@ -302,7 +413,14 @@ export const panel: ConstructionComponent<PanelParams> = {
       instanceId: ctx.instanceId,
       envelope: unionBox(pieces.map((x) => x.box)),
       pieces,
-      hardware: [{ id: "fixacao", kind: "perfil", qty: Math.max(2, Math.round(p.widthMm / 800)), notes: "fixação em parede" }],
+      hardware: [
+        {
+          id: "fixacao",
+          kind: "perfil",
+          qty: Math.max(2, Math.round(p.widthMm / 800)),
+          notes: "fixação em parede",
+        },
+      ],
       motions: [],
       warnings: [],
     };
