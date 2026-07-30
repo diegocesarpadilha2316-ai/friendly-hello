@@ -16,12 +16,7 @@ import type { PlannerProject } from "@/modules/planner/shared";
 import type { CompanyManufacturingRules } from "@/modules/planner/shared";
 import { interpret, type ParsedIntent } from "./interpreter";
 import { answerQuestion } from "./questions";
-import {
-  TOOL_FUNCTIONS,
-  type ToolContext,
-  type ToolExecutionResult,
-  type ToolName,
-} from "./tools";
+import { TOOL_FUNCTIONS, type ToolContext, type ToolExecutionResult, type ToolName } from "./tools";
 
 export interface AgentInput {
   message: string;
@@ -78,7 +73,11 @@ function executeIntent(
   ctx: ToolContext,
 ): ToolExecutionResult {
   const fn = TOOL_FUNCTIONS[intent.tool] as
-    | ((p: PlannerProject, c: ToolContext, a: Readonly<Record<string, unknown>>) => ToolExecutionResult)
+    | ((
+        p: PlannerProject,
+        c: ToolContext,
+        a: Readonly<Record<string, unknown>>,
+      ) => ToolExecutionResult)
     | undefined;
   if (!fn) {
     return {
@@ -115,8 +114,7 @@ export async function* runAgent(input: AgentInput): AsyncGenerator<AgentChunk, v
       yield { kind: "done" };
       return;
     }
-    const reply =
-      (await tryLLM(input, parsed.type, input.message)) ?? parsed.reply;
+    const reply = (await tryLLM(input, parsed.type, input.message)) ?? parsed.reply;
     yield* streamText(reply, input.signal);
     yield { kind: "done" };
     return;

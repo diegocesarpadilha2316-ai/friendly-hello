@@ -207,7 +207,8 @@ export const Route = createFileRoute("/api/ai/chat")({
           messages,
           stream,
         };
-        if (parsed.data.temperature !== undefined) upstreamBody.temperature = parsed.data.temperature;
+        if (parsed.data.temperature !== undefined)
+          upstreamBody.temperature = parsed.data.temperature;
         if (parsed.data.max_tokens != null) upstreamBody.max_tokens = parsed.data.max_tokens;
         if (parsed.data.tools?.length) upstreamBody.tools = parsed.data.tools;
 
