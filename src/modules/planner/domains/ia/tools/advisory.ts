@@ -113,10 +113,16 @@ export interface BudgetEstimate {
   readonly disclaimer: string;
 }
 
-function countHardware(parts: readonly FurniturePart[]): number {
-  return parts
-    .filter((p) => p.kind === "porta" || p.kind === "gaveta" || p.kind === "frente")
+/**
+ * Conjuntos de ferragem: frentes de gaveta (corrediças) somadas às portas
+ * declaradas nos parâmetros de engenharia do módulo (dobradiças).
+ */
+function countHardware(row: DecomposedRow): number {
+  const drawers = row.parts
+    .filter((p) => p.kind === "gaveta-frente")
     .reduce((acc, p) => acc + p.qty, 0);
+  const doors = Number(row.furniture.params["eng:doors"] ?? 0);
+  return drawers + (Number.isFinite(doors) ? Math.max(0, Math.round(doors)) : 0);
 }
 
 /**
@@ -131,7 +137,7 @@ export function estimateBudget(
   const rows = decomposeRoom(project, ctx, rules);
   const boardArea = rows.reduce((a, r) => a + r.boardAreaM2, 0);
   const edge = rows.reduce((a, r) => a + r.edgeMeters, 0);
-  const hardware = rows.reduce((a, r) => a + countHardware(r.parts), 0);
+  const hardware = rows.reduce((a, r) => a + countHardware(r), 0);
   const withPrice = rows.filter((r) => r.priceBRL !== null);
   const modulesTotal = withPrice.reduce((a, r) => a + (r.priceBRL ?? 0), 0);
 
