@@ -1240,6 +1240,12 @@ export const PLANNER_TOOL_REGISTRY: readonly ToolDescriptor[] = [
     description:
       "Aplica um preset coordenado (cor, material, tampo, frente, ferragem, LED) em todos os móveis do cômodo — ou apenas nos aéreos, balcões, torre, painel ou tampos.",
   },
+  {
+    name: "set_module_params",
+    label: "Ajustar atributos do módulo",
+    description:
+      "Altera apenas os atributos citados (portas, tipo de abertura, gavetas, prateleiras, divisões, maleiro, cabideiros, nichos, espelho, puxador), preservando o resto do projeto.",
+  },
 ];
 
 // Bindings entre nomes e funções — usados pelo executor.
@@ -1264,6 +1270,7 @@ export const TOOL_FUNCTIONS = {
   set_front_type: toolSetFrontType,
   convert_to: toolConvertTo,
   apply_finishing: toolApplyFinishing,
+  set_module_params: toolSetModuleParams,
 } as const;
 
 // Sinal explícito de que `fromPrimitive` e `PlannerEnvironment` são reexportados
