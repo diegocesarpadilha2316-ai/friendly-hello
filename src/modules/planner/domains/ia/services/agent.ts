@@ -251,17 +251,22 @@ async function tryLLM(
   input: AgentInput,
   role: "smalltalk" | "unknown" | "question",
   userMessage: string,
+  agents?: readonly PlannerAgentId[],
 ): Promise<string | null> {
   if (!input.llmReply) return null;
+  const handle = startAgentRun(agents?.[0] ?? "designer");
   try {
     const text = await input.llmReply({
       userMessage,
       role,
       project: input.project,
       ctx: input.ctx,
+      agents,
     });
+    handle.finish(true, []);
     return text && text.trim().length > 0 ? text : null;
-  } catch {
+  } catch (e) {
+    handle.finish(false, [], e instanceof Error ? e.message : "falha no LLM");
     return null;
   }
 }
@@ -271,8 +276,10 @@ async function* tryLLMStream(
   role: "smalltalk" | "unknown" | "question",
   userMessage: string,
   prefix?: string,
+  agents?: readonly PlannerAgentId[],
 ): AsyncGenerator<AgentChunk> {
   if (!input.llmReplyStream) return;
+  const handle = startAgentRun(agents?.[0] ?? "designer");
   try {
     if (prefix) {
       yield { kind: "text", text: prefix };
@@ -283,11 +290,14 @@ async function* tryLLMStream(
       role,
       project: input.project,
       ctx: input.ctx,
+      agents,
     })) {
       if (input.signal?.aborted) return;
       if (delta) yield { kind: "text", text: delta };
     }
-  } catch {
+    handle.finish(true, []);
+  } catch (e) {
+    handle.finish(false, [], e instanceof Error ? e.message : "falha no streaming");
     // Falha silenciosa no streaming: o hook já marca erro no estado.
   }
 }
