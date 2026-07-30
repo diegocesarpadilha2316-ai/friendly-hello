@@ -48,7 +48,8 @@ const GROUPS: readonly Group[] = [
     label: "Engenharia & Produção",
     items: [
       { to: "/planner/engenharia", label: "Engenharia", icon: Wrench },
-      { to: "/planner/orcamentos", label: "Orçamento", icon: Calculator },
+      { to: "/planner/orcamento-projeto", label: "Orçamento do projeto", icon: Calculator },
+      { to: "/planner/orcamentos", label: "Orçamentos comerciais", icon: Calculator },
       { to: "/planner/producao", label: "Produção", icon: Factory },
       { to: "/planner/marketplace", label: "Marketplace", icon: Store },
     ],
