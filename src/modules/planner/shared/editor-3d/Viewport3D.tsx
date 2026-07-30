@@ -393,7 +393,7 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
               </ToolbarButton>
             ))}
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex shrink-0 items-center gap-1">
             <ToolbarButton
               active={viewport.showGrid}
               onClick={() => setViewport((v) => ({ ...v, showGrid: !v.showGrid }))}
