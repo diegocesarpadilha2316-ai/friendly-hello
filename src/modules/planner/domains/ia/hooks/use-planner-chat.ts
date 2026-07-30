@@ -39,6 +39,8 @@ import { FINISHING_PRESETS } from "../services/finishing";
 import { streamLovableReply } from "../services/ai-stream";
 import { buildAgentBriefing } from "../agents";
 import { buildMemoryPromptBlock, readMemory, updateMemoryFromTurn } from "../memory";
+import { classifyRequest } from "../planning";
+import { usePlanExecution } from "./use-plan-execution";
 import type { ParsedIntent } from "../services/interpreter";
 import type { PlannerProject, PlannerRoomType } from "@/modules/planner/shared";
 import type { ToolContext } from "../services/tools";
@@ -543,6 +545,11 @@ export function usePlannerChat() {
     sendingRef.current = false;
   }, []);
 
+  // Etapa 11 — planejamento inteligente (mesmo editor, mesmas ferramentas).
+  const planning = usePlanExecution(tenantId);
+  const planRef = useRef(planning);
+  planRef.current = planning;
+
   const send = useCallback(
     async (text: string) => {
       const trimmed = text.trim();
@@ -602,6 +609,52 @@ export function usePlannerChat() {
       // na árvore, todas as tools passam a mirar naquele item.
       const selectedNodeId = editor.state.selectedNodeId;
       const selectionIds = selectedNodeId ? [selectedNodeId] : undefined;
+
+      // Etapa 11 — pedidos amplos/destrutivos viram plano revisável antes de
+      // qualquer mutação. Nada é executado até o usuário mandar executar.
+      const classification = classifyRequest(trimmed);
+      const activePlan = planRef.current.plan;
+      const planBusy =
+        activePlan &&
+        activePlan.status !== "completed" &&
+        activePlan.status !== "cancelled" &&
+        activePlan.status !== "failed" &&
+        activePlan.status !== "partially_completed";
+      if (classification.needsPlan && !planBusy) {
+        const proposed = planRef.current.propose({
+          message: trimmed,
+          clientMessageId: keys.user,
+          sessionId: sessionRef.current?.id ?? null,
+          project,
+          ctx: {
+            environmentId: activeEnvironmentId,
+            roomId: activeRoomId,
+            selectionIds,
+          },
+        });
+        if (proposed) {
+          const lines = proposed.steps.map((s) => `${s.position + 1}. ${s.title}`).join("\n");
+          const pendencies = proposed.missingInformation
+            .map((m) => `• ${m.question}`)
+            .join("\n");
+          patchMessage(assistantId, (m) => ({
+            ...m,
+            status: "done",
+            content: [
+              `Montei um plano para **${proposed.title}**:`,
+              lines,
+              pendencies ? `\nPreciso confirmar antes de começar:\n${pendencies}` : "",
+              "\nRevise as etapas no cartão abaixo e clique em **Executar plano** quando quiser que eu comece.",
+            ]
+              .filter(Boolean)
+              .join("\n"),
+          }));
+          setState((s) => ({ ...s, status: "idle" }));
+          sendingRef.current = false;
+          pendingKeyRef.current = null;
+          return;
+        }
+      }
 
       const controller = new AbortController();
       abortRef.current = controller;
@@ -981,6 +1034,7 @@ export function usePlannerChat() {
       canLoadMore: history.hasMore,
       loadingHistory: history.loading,
       quickActions: PLANNER_QUICK_ACTIONS,
+      planning,
     }),
     [
       state.messages,
@@ -992,6 +1046,7 @@ export function usePlannerChat() {
       loadMore,
       history.hasMore,
       history.loading,
+      planning,
     ],
   );
 }
