@@ -36,6 +36,12 @@ import {
   type LibraryMaterial,
 } from "../../domains/catalog/services/library-supabase";
 import { getPbrMaterial, getPbrRoughnessBias, isPbrId } from "../materials/pbr-catalog";
+import {
+  getProceduralSurface,
+  inferSurfaceKind,
+  surfaceTileMeters,
+  type SurfaceKind,
+} from "./procedural-textures";
 import { GlassFront } from "./GlassFront";
 import { DecorMesh, isDecorSubtype } from "./DecorMesh";
 import { CabinetMesh, isCabinetSubtype } from "./CabinetMesh";
@@ -109,6 +115,7 @@ function useTexturedMaterialProps(
   meshSizeM: readonly [number, number],
   fallbackColor: string,
   overrides: { roughness?: number; metalness?: number; wireframe?: boolean; transparent?: boolean; opacity?: number } = {},
+  role: "wall" | "floor" | "ceiling" | "furniture" = "furniture",
 ) {
   const lib = useLibraryMaterial(materialId);
   return useMemo(() => {
@@ -124,6 +131,7 @@ function useTexturedMaterialProps(
       metalnessMap?: THREE.Texture;
       roughness: number;
       metalness: number;
+      envMapIntensity: number;
       wireframe: boolean;
       transparent: boolean;
       opacity: number;
@@ -131,6 +139,7 @@ function useTexturedMaterialProps(
       color: lib?.colorHex || fallbackColor,
       roughness: Math.min(1, Math.max(0, (overrides.roughness ?? 0.75) + roughBias)),
       metalness: overrides.metalness ?? 0.05,
+      envMapIntensity: 1,
       wireframe: overrides.wireframe ?? false,
       transparent: overrides.transparent ?? false,
       opacity: overrides.opacity ?? 1,
@@ -180,8 +189,53 @@ function useTexturedMaterialProps(
         props.metalnessMap = arm;
       }
     }
+
+    // ---------------------------------------------------------------
+    // Realismo: nenhuma superfície fica "cor chapada". Sem textura da
+    // biblioteca, aplicamos a superfície procedural correspondente
+    // (madeira, laca, reboco, piso ou pedra) com tiling em metros reais.
+    // ---------------------------------------------------------------
+    if (!props.map && !props.wireframe) {
+      const kind: SurfaceKind = inferSurfaceKind(
+        role,
+        materialId ?? lib?.id,
+        props.color,
+      );
+      const surf = getProceduralSurface(kind);
+      if (surf) {
+        const tile = surfaceTileMeters(kind);
+        const [sizeX, sizeY] = meshSizeM;
+        const repX = Math.max(0.25, Math.abs(sizeX) / tile);
+        const repY = Math.max(0.25, Math.abs(sizeY) / tile);
+        const withTiling = (t: THREE.Texture) => {
+          const c = t.clone();
+          c.wrapS = THREE.RepeatWrapping;
+          c.wrapT = THREE.RepeatWrapping;
+          c.repeat.set(repX, repY);
+          c.needsUpdate = true;
+          return c;
+        };
+        props.map = withTiling(surf.map);
+        props.normalMap = withTiling(surf.normalMap);
+        props.normalScale = new THREE.Vector2(surf.normalScale, surf.normalScale);
+        props.roughnessMap = withTiling(surf.roughnessMap);
+        if (kind === "paint") {
+          props.roughness = Math.min(props.roughness, 0.42);
+          props.envMapIntensity = 1.25;
+        } else if (kind === "stone") {
+          props.roughness = Math.min(props.roughness, 0.3);
+          props.metalness = Math.max(props.metalness, 0.08);
+          props.envMapIntensity = 1.4;
+        } else if (kind === "floor") {
+          props.roughness = Math.min(props.roughness, 0.55);
+          props.envMapIntensity = 1.15;
+        } else if (kind === "wall") {
+          props.envMapIntensity = 0.85;
+        }
+      }
+    }
     return props;
-  }, [materialId, lib?.id, lib?.colorHex, lib?.textureUrl, lib?.widthMm, lib?.lengthMm, lib?.grain, meshSizeM[0], meshSizeM[1], fallbackColor, overrides.roughness, overrides.metalness, overrides.wireframe, overrides.transparent, overrides.opacity]);
+  }, [materialId, role, lib?.id, lib?.colorHex, lib?.textureUrl, lib?.widthMm, lib?.lengthMm, lib?.grain, meshSizeM[0], meshSizeM[1], fallbackColor, overrides.roughness, overrides.metalness, overrides.wireframe, overrides.transparent, overrides.opacity]);
 }
 
 function centerOffset(model: Scene3DModel) {
