@@ -13,7 +13,9 @@ import {
 import type { QuestionIntent } from "./interpreter";
 
 function currentRoom(project: PlannerProject, envId: string, roomId: string): PlannerRoom | null {
-  return project.environments.find((e) => e.id === envId)?.rooms.find((r) => r.id === roomId) ?? null;
+  return (
+    project.environments.find((e) => e.id === envId)?.rooms.find((r) => r.id === roomId) ?? null
+  );
 }
 
 function furniture(room: PlannerRoom): Extract<Editor2DPrimitive, { kind: "furniture" }>[] {
@@ -55,13 +57,19 @@ export function answerQuestion(
 
     case "door_count": {
       let doors = 0;
-      for (const f of items) doors += decomposeFurniture(f, rules).parts.filter((p) => p.kind === "porta").reduce((a, p) => a + p.qty, 0);
+      for (const f of items)
+        doors += decomposeFurniture(f, rules)
+          .parts.filter((p) => p.kind === "porta")
+          .reduce((a, p) => a + p.qty, 0);
       return `Total de portas no cômodo: **${doors}**.`;
     }
 
     case "drawer_count": {
       let dr = 0;
-      for (const f of items) dr += decomposeFurniture(f, rules).parts.filter((p) => p.kind === "gaveta-frente").reduce((a, p) => a + p.qty, 0);
+      for (const f of items)
+        dr += decomposeFurniture(f, rules)
+          .parts.filter((p) => p.kind === "gaveta-frente")
+          .reduce((a, p) => a + p.qty, 0);
       return `Total de gavetas no cômodo: **${dr}**.`;
     }
 
@@ -81,7 +89,10 @@ export function answerQuestion(
     case "budget": {
       let m2 = 0;
       for (const f of items) m2 += decomposeFurniture(f, rules).totals.boardAreaM2;
-      const catalogTotal = items.reduce((acc, f) => acc + (findCatalogItem(f.catalogItemId)?.priceBRL ?? 0), 0);
+      const catalogTotal = items.reduce(
+        (acc, f) => acc + (findCatalogItem(f.catalogItemId)?.priceBRL ?? 0),
+        0,
+      );
       const est = catalogTotal || m2 * 850;
       return `Estimativa preliminar: **R$ ${est.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}** — cálculo executivo virá do módulo Orçamento.`;
     }

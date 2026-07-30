@@ -30,12 +30,7 @@ const norm = (s: string) =>
     .trim();
 
 /** Estilo declarado no pedido (usuário leigo pode omitir). */
-export type BlueprintStyle =
-  | "moderno"
-  | "minimalista"
-  | "classico"
-  | "industrial"
-  | "luxo";
+export type BlueprintStyle = "moderno" | "minimalista" | "classico" | "industrial" | "luxo";
 
 /** Módulo tipado no Blueprint (o Engine é quem escolhe o item real do catálogo). */
 export interface BlueprintModule {
@@ -121,7 +116,10 @@ function detectMaterial(t: string): string | undefined {
  * Nunca inventa módulos: o que não casar vai para `unresolved` para a IA
  * perguntar antes de executar.
  */
-export function buildBlueprint(input: string, override?: { environment?: string }): PlannerBlueprint {
+export function buildBlueprint(
+  input: string,
+  override?: { environment?: string },
+): PlannerBlueprint {
   const t = norm(input);
   const dec: Decomposition = decompose(input);
   // Prioridade: override explícito > preset detectado pelo decompositor >
@@ -192,7 +190,8 @@ const VALID_ENVS = new Set(["cozinha", "closet", "dormitorio", "sala", "escritor
 export function validateBlueprint(bp: PlannerBlueprint): BlueprintValidation {
   const errors: string[] = [];
   if (!bp.environment) errors.push("Ambiente ausente.");
-  else if (!VALID_ENVS.has(bp.environment)) errors.push(`Ambiente desconhecido: ${bp.environment}.`);
+  else if (!VALID_ENVS.has(bp.environment))
+    errors.push(`Ambiente desconhecido: ${bp.environment}.`);
 
   // Módulos vazios são aceitáveis (usuário disse "quero uma cozinha" —
   // o Engine aplica o blueprint padrão do ambiente). Só bloqueamos quando
@@ -204,19 +203,24 @@ export function validateBlueprint(bp: PlannerBlueprint): BlueprintValidation {
   // Sanidade de contagens.
   for (const m of bp.modules) {
     if (m.count < 1 || m.count > 20) errors.push(`${m.label}: quantidade inválida (${m.count}).`);
-    if (m.doors != null && (m.doors < 1 || m.doors > 8)) errors.push(`${m.label}: portas inválidas (${m.doors}).`);
-    if (m.drawers != null && (m.drawers < 1 || m.drawers > 8)) errors.push(`${m.label}: gavetas inválidas (${m.drawers}).`);
-    if (m.width != null && (m.width < 150 || m.width > 5000)) errors.push(`${m.label}: largura inválida (${m.width}mm).`);
-    if (m.height != null && (m.height < 100 || m.height > 3200)) errors.push(`${m.label}: altura inválida (${m.height}mm).`);
-    if (m.depth != null && (m.depth < 30 || m.depth > 1400)) errors.push(`${m.label}: profundidade inválida (${m.depth}mm).`);
+    if (m.doors != null && (m.doors < 1 || m.doors > 8))
+      errors.push(`${m.label}: portas inválidas (${m.doors}).`);
+    if (m.drawers != null && (m.drawers < 1 || m.drawers > 8))
+      errors.push(`${m.label}: gavetas inválidas (${m.drawers}).`);
+    if (m.width != null && (m.width < 150 || m.width > 5000))
+      errors.push(`${m.label}: largura inválida (${m.width}mm).`);
+    if (m.height != null && (m.height < 100 || m.height > 3200))
+      errors.push(`${m.label}: altura inválida (${m.height}mm).`);
+    if (m.depth != null && (m.depth < 30 || m.depth > 1400))
+      errors.push(`${m.label}: profundidade inválida (${m.depth}mm).`);
   }
 
   const ok = errors.length === 0;
   const ask = ok
     ? undefined
     : bp.unresolved.length > 0
-    ? `Não entendi "${bp.unresolved[0]}". Pode me dizer o tipo (aéreo, balcão, gaveteiro, torre, prateleira…) e a quantidade?`
-    : undefined;
+      ? `Não entendi "${bp.unresolved[0]}". Pode me dizer o tipo (aéreo, balcão, gaveteiro, torre, prateleira…) e a quantidade?`
+      : undefined;
 
   return { ok, errors, ask };
 }
@@ -229,7 +233,14 @@ export interface RoomPresetArgs {
   preset: string;
   style?: string;
   material?: string;
-  pieces?: { description: string; count?: number; wall?: LayoutWall; width?: number; height?: number; depth?: number }[];
+  pieces?: {
+    description: string;
+    count?: number;
+    wall?: LayoutWall;
+    width?: number;
+    height?: number;
+    depth?: number;
+  }[];
   noBlueprintPieces?: boolean;
 }
 
@@ -246,11 +257,12 @@ export function blueprintToPreset(bp: PlannerBlueprint): RoomPresetArgs {
   // Absoluto" e não como armário genérico louro freijó.
   const material = bp.material;
   const hasFinish = (d: string) =>
-    /(freijo|nogueira|carvalho|branco|preto|grafite|chumbo|off\s*white|quartzo|cumaru|louro)/i.test(d);
+    /(freijo|nogueira|carvalho|branco|preto|grafite|chumbo|off\s*white|quartzo|cumaru|louro)/i.test(
+      d,
+    );
   const pieces = bp.modules.map((m) => ({
-    description: material && !hasFinish(m.description)
-      ? `${m.description} ${material}`
-      : m.description,
+    description:
+      material && !hasFinish(m.description) ? `${m.description} ${material}` : m.description,
     count: m.count,
     wall: m.wall,
     width: m.width,

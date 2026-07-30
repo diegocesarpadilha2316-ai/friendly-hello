@@ -50,17 +50,61 @@ function has(text: string, ...words: string[]): boolean {
 }
 
 const CREATE_VERBS = [
-  "cria", "crie", "criar", "faca", "faco", "faz", "fazer", "feito",
-  "monta", "montar", "quero", "queria", "gostaria", "preciso",
-  "projeto", "ambiente", "gera", "gerar", "mande", "mandei", "pedi",
+  "cria",
+  "crie",
+  "criar",
+  "faca",
+  "faco",
+  "faz",
+  "fazer",
+  "feito",
+  "monta",
+  "montar",
+  "quero",
+  "queria",
+  "gostaria",
+  "preciso",
+  "projeto",
+  "ambiente",
+  "gera",
+  "gerar",
+  "mande",
+  "mandei",
+  "pedi",
 ];
 
 const INSERT_VERBS = [
-  "insira", "inserir", "insere", "adicione", "adicionar", "adiciona",
-  "coloque", "coloca", "poe", "poem", "bota", "bote", "cria", "crie",
-  "criar", "faca", "faco", "faz", "fazer", "feito", "monta", "montar",
-  "quero", "queria", "preciso", "gostaria", "gera", "gerar", "mande",
-  "mandei", "pedi",
+  "insira",
+  "inserir",
+  "insere",
+  "adicione",
+  "adicionar",
+  "adiciona",
+  "coloque",
+  "coloca",
+  "poe",
+  "poem",
+  "bota",
+  "bote",
+  "cria",
+  "crie",
+  "criar",
+  "faca",
+  "faco",
+  "faz",
+  "fazer",
+  "feito",
+  "monta",
+  "montar",
+  "quero",
+  "queria",
+  "preciso",
+  "gostaria",
+  "gera",
+  "gerar",
+  "mande",
+  "mandei",
+  "pedi",
 ];
 
 function parseNumber(text: string, fallback?: number): number | undefined {
@@ -120,17 +164,27 @@ export function interpret(input: string): PlannerIntent {
   const t = norm(raw);
 
   // ── Perguntas ──
-  if (t.startsWith("qual") || t.startsWith("quanto") || t.startsWith("quantas") || t.startsWith("quantos") || t.endsWith("?")) {
-    if (has(t, "mede", "metragem", "tamanho", "dimensao", "medida")) return { type: "question", question: { kind: "measurements" } };
+  if (
+    t.startsWith("qual") ||
+    t.startsWith("quanto") ||
+    t.startsWith("quantas") ||
+    t.startsWith("quantos") ||
+    t.endsWith("?")
+  ) {
+    if (has(t, "mede", "metragem", "tamanho", "dimensao", "medida"))
+      return { type: "question", question: { kind: "measurements" } };
     if (has(t, "mdf", "material", "chapa")) {
-      if (has(t, "quanto de chapa", "quanto de mdf")) return { type: "question", question: { kind: "board_area" } };
+      if (has(t, "quanto de chapa", "quanto de mdf"))
+        return { type: "question", question: { kind: "board_area" } };
       return { type: "question", question: { kind: "materials" } };
     }
     if (has(t, "porta")) return { type: "question", question: { kind: "door_count" } };
     if (has(t, "gaveta")) return { type: "question", question: { kind: "drawer_count" } };
-    if (has(t, "ferragem", "puxador", "dobradica", "corredica")) return { type: "question", question: { kind: "hardware" } };
+    if (has(t, "ferragem", "puxador", "dobradica", "corredica"))
+      return { type: "question", question: { kind: "hardware" } };
     if (has(t, "peca", "pecas")) return { type: "question", question: { kind: "part_count" } };
-    if (has(t, "valor", "preco", "custo", "orcamento")) return { type: "question", question: { kind: "budget" } };
+    if (has(t, "valor", "preco", "custo", "orcamento"))
+      return { type: "question", question: { kind: "budget" } };
   }
 
   if (has(t, "ajuda", "help", "o que voce faz", "o que vc faz")) {
@@ -146,15 +200,33 @@ export function interpret(input: string): PlannerIntent {
   const wantsInsertVerb = has(t, ...INSERT_VERBS);
   const ambientWords = has(
     t,
-    "projeto", "ambiente", "cozinha", "closet", "dormitorio", "quarto",
-    "sala", "estar", "living", "escritorio", "home office", "banheiro",
-    "lavabo", "lavanderia", "completo", "completa", "inteir", "todo",
+    "projeto",
+    "ambiente",
+    "cozinha",
+    "closet",
+    "dormitorio",
+    "quarto",
+    "sala",
+    "estar",
+    "living",
+    "escritorio",
+    "home office",
+    "banheiro",
+    "lavabo",
+    "lavanderia",
+    "completo",
+    "completa",
+    "inteir",
+    "todo",
     "toda",
   );
   {
     let matchedPreset: string | null = null;
     for (const { preset, words } of PRESET_KEYWORDS) {
-      if (words.some((w) => t.includes(w))) { matchedPreset = preset; break; }
+      if (words.some((w) => t.includes(w))) {
+        matchedPreset = preset;
+        break;
+      }
     }
     // ── ROTA A: Módulo específico sem ambiente ──
     // Se o usuário pediu peça(s) específica(s) ("faz um balcão de pia",
@@ -208,39 +280,43 @@ export function interpret(input: string): PlannerIntent {
     // genericamente ("quero um projeto"), cria mesmo assim.
     if (matchedPreset || wantsCreate) {
       const preset = matchedPreset ?? "cozinha";
-        const styleMatch = STYLES.find((s) => t.includes(norm(s)));
-        // ── Nova arquitetura: IA constrói um Blueprint (spec técnica)
-        // e o Planner Engine é o único responsável por gerar o projeto.
-        // A IA nunca envia geometria — apenas a especificação validada.
-        const bp = buildBlueprint(raw, { environment: preset });
-        const validation = validateBlueprint(bp);
-        if (!validation.ok && validation.ask) {
-          // Blueprint incompleto — a IA PERGUNTA antes de executar.
-          return { type: "unknown", reply: validation.ask };
-        }
-        const presetArgs = blueprintToPreset(bp) as unknown as Record<string, unknown>;
+      const styleMatch = STYLES.find((s) => t.includes(norm(s)));
+      // ── Nova arquitetura: IA constrói um Blueprint (spec técnica)
+      // e o Planner Engine é o único responsável por gerar o projeto.
+      // A IA nunca envia geometria — apenas a especificação validada.
+      const bp = buildBlueprint(raw, { environment: preset });
+      const validation = validateBlueprint(bp);
+      if (!validation.ok && validation.ask) {
+        // Blueprint incompleto — a IA PERGUNTA antes de executar.
+        return { type: "unknown", reply: validation.ask };
+      }
+      const presetArgs = blueprintToPreset(bp) as unknown as Record<string, unknown>;
+      intents.push({
+        tool: "create_room_preset",
+        args: styleMatch ? { ...presetArgs, style: styleMatch } : presetArgs,
+      });
+      if (styleMatch)
         intents.push({
-          tool: "create_room_preset",
-          args: styleMatch ? { ...presetArgs, style: styleMatch } : presetArgs,
+          tool: "set_style",
+          args: { style: styleMatch === "clássico" ? "classico" : styleMatch },
         });
-        if (styleMatch) intents.push({ tool: "set_style", args: { style: styleMatch === "clássico" ? "classico" : styleMatch } });
-        // Qualificadores na MESMA frase: material/cor e tipo de frente.
-        for (const { key, words: mw } of MATERIALS) {
-          if (mw.some((w) => t.includes(w))) {
-            intents.push({ tool: "change_material", args: { material: key } });
-            const color = key.replace(/^MDF\s+/, "");
-            intents.push({ tool: "change_color", args: { color } });
-            break;
-          }
+      // Qualificadores na MESMA frase: material/cor e tipo de frente.
+      for (const { key, words: mw } of MATERIALS) {
+        if (mw.some((w) => t.includes(w))) {
+          intents.push({ tool: "change_material", args: { material: key } });
+          const color = key.replace(/^MDF\s+/, "");
+          intents.push({ tool: "change_color", args: { color } });
+          break;
         }
-        if (has(t, "porta de vidro", "portas de vidro", "com vidro", "frente de vidro")) {
-          const reeded = has(t, "reeded", "canelado", "canelada");
-          intents.push({
-            tool: "set_front_type",
-            args: { type: reeded ? "reeded" : "vidro", subtype: "aereo" },
-          });
-        }
-        return { type: "command", intents };
+      }
+      if (has(t, "porta de vidro", "portas de vidro", "com vidro", "frente de vidro")) {
+        const reeded = has(t, "reeded", "canelado", "canelada");
+        intents.push({
+          tool: "set_front_type",
+          args: { type: reeded ? "reeded" : "vidro", subtype: "aereo" },
+        });
+      }
+      return { type: "command", intents };
     }
   }
 
@@ -256,7 +332,12 @@ export function interpret(input: string): PlannerIntent {
   if (has(t, "troque", "trocar", "muda", "mude", "mudar")) {
     for (const { key, words } of MATERIALS) {
       if (words.some((w) => t.includes(w))) {
-        if (key.includes("MDF") || key.includes("MDP") || key === "Quartzo" || key === "Madeira maciça") {
+        if (
+          key.includes("MDF") ||
+          key.includes("MDP") ||
+          key === "Quartzo" ||
+          key === "Madeira maciça"
+        ) {
           intents.push({ tool: "change_material", args: { material: key } });
           // freijó/nogueira/carvalho/branco também são cores/acabamentos → aplicar cor
           if (["Freijó", "Nogueira", "Carvalho", "Branco TX"].some((c) => key.includes(c))) {
@@ -270,16 +351,25 @@ export function interpret(input: string): PlannerIntent {
 
   // ── Estilo ──
   for (const style of STYLES) {
-    if (has(t, `deixe ${style}`, `deixa ${style}`, `estilo ${style}`, `faca ${style}`, `faz ${style}`)) {
-      intents.push({ tool: "set_style", args: { style: style === "clássico" ? "classico" : style } });
+    if (
+      has(t, `deixe ${style}`, `deixa ${style}`, `estilo ${style}`, `faca ${style}`, `faz ${style}`)
+    ) {
+      intents.push({
+        tool: "set_style",
+        args: { style: style === "clássico" ? "classico" : style },
+      });
     }
   }
 
   // ── Abrir/fechar portas e gavetas ──
-  if (has(t, "abra todas as portas", "abrir portas", "abre as portas")) intents.push({ tool: "open_all", args: { target: "doors", open: true } });
-  if (has(t, "feche todas as portas", "fechar portas")) intents.push({ tool: "open_all", args: { target: "doors", open: false } });
-  if (has(t, "abra todas as gavetas", "abrir gavetas", "abre as gavetas")) intents.push({ tool: "open_all", args: { target: "drawers", open: true } });
-  if (has(t, "feche todas as gavetas", "fechar gavetas")) intents.push({ tool: "open_all", args: { target: "drawers", open: false } });
+  if (has(t, "abra todas as portas", "abrir portas", "abre as portas"))
+    intents.push({ tool: "open_all", args: { target: "doors", open: true } });
+  if (has(t, "feche todas as portas", "fechar portas"))
+    intents.push({ tool: "open_all", args: { target: "doors", open: false } });
+  if (has(t, "abra todas as gavetas", "abrir gavetas", "abre as gavetas"))
+    intents.push({ tool: "open_all", args: { target: "drawers", open: true } });
+  if (has(t, "feche todas as gavetas", "fechar gavetas"))
+    intents.push({ tool: "open_all", args: { target: "drawers", open: false } });
 
   // ── LED ──
   if (has(t, "adicione led", "adicionar led", "liga led", "ligue led", "ligar led")) {
@@ -290,8 +380,13 @@ export function interpret(input: string): PlannerIntent {
   }
 
   // ── Ferragens ──
-  if (has(t, "troque puxadores", "trocar puxador", "muda puxador")) intents.push({ tool: "change_hardware", args: { kind: "puxador", value: "dioris-perfil-linha" } });
-  if (has(t, "troque ferragem", "troque ferragens", "trocar ferragem")) intents.push({ tool: "change_hardware", args: { kind: "dobradica", value: "blum-clip-top" } });
+  if (has(t, "troque puxadores", "trocar puxador", "muda puxador"))
+    intents.push({
+      tool: "change_hardware",
+      args: { kind: "puxador", value: "dioris-perfil-linha" },
+    });
+  if (has(t, "troque ferragem", "troque ferragens", "trocar ferragem"))
+    intents.push({ tool: "change_hardware", args: { kind: "dobradica", value: "blum-clip-top" } });
 
   // ── Aumentar / diminuir / dimensionar ──
   if (has(t, "aumente", "aumentar", "cresca", "maior")) {
@@ -312,7 +407,8 @@ export function interpret(input: string): PlannerIntent {
     const deg = parseNumber(t, 90) ?? 90;
     intents.push({ tool: "rotate", args: { degrees: deg } });
   }
-  if (has(t, "remova", "remover", "delete", "excluir", "apague")) intents.push({ tool: "remove", args: {} });
+  if (has(t, "remova", "remover", "delete", "excluir", "apague"))
+    intents.push({ tool: "remove", args: {} });
   if (has(t, "centralize", "centralizar", "centraliza")) intents.push({ tool: "center", args: {} });
 
   // ── Bancada / tampo ──
@@ -322,20 +418,41 @@ export function interpret(input: string): PlannerIntent {
 
   // ── Acabamento automático (preset coordenado) ──
   const FINISHING_MATCHERS: Array<{ id: string; words: string[] }> = [
-    { id: "louro-freijo-reeded", words: ["louro freijo", "louro-freijo", "freijo reeded", "freijo canelado"] },
+    {
+      id: "louro-freijo-reeded",
+      words: ["louro freijo", "louro-freijo", "freijo reeded", "freijo canelado"],
+    },
     { id: "off-white-minimalista", words: ["off white", "off-white", "branco minimalista"] },
-    { id: "carvalho-grafite-industrial", words: ["carvalho grafite", "grafite industrial", "industrial grafite"] },
+    {
+      id: "carvalho-grafite-industrial",
+      words: ["carvalho grafite", "grafite industrial", "industrial grafite"],
+    },
     { id: "nogueira-luxo", words: ["nogueira luxo", "nogueira premium", "luxo nogueira"] },
     { id: "freijo-cumaru", words: ["freijo cumaru", "cumaru freijo"] },
   ];
-  if (has(t, "acabamento", "aplique acabamento", "aplicar acabamento", "aplique o acabamento", "acabamento automatico", "harmonize", "harmonizar")) {
-    const scope =
-      has(t, "aereo", "aereos") ? "aereos"
-      : has(t, "balcao", "balcoes") ? "balcoes"
-      : has(t, "torre") ? "torre"
-      : has(t, "painel") ? "painel"
-      : has(t, "tampo", "bancada") ? "tampos"
-      : "all";
+  if (
+    has(
+      t,
+      "acabamento",
+      "aplique acabamento",
+      "aplicar acabamento",
+      "aplique o acabamento",
+      "acabamento automatico",
+      "harmonize",
+      "harmonizar",
+    )
+  ) {
+    const scope = has(t, "aereo", "aereos")
+      ? "aereos"
+      : has(t, "balcao", "balcoes")
+        ? "balcoes"
+        : has(t, "torre")
+          ? "torre"
+          : has(t, "painel")
+            ? "painel"
+            : has(t, "tampo", "bancada")
+              ? "tampos"
+              : "all";
     const match = FINISHING_MATCHERS.find((f) => f.words.some((w) => t.includes(w)));
     if (match) {
       intents.push({ tool: "apply_finishing", args: { preset: match.id, scope } });
@@ -349,7 +466,10 @@ export function interpret(input: string): PlannerIntent {
   }
 
   // ── Inserção genérica pelo subtipo mencionado ──
-  if (intents.length === 0 && has(t, "adicione", "adicionar", "insira", "inserir", "coloque", "coloca", "adiciona")) {
+  if (
+    intents.length === 0 &&
+    has(t, "adicione", "adicionar", "insira", "inserir", "coloque", "coloca", "adiciona")
+  ) {
     for (const { subtype, words } of SUBTYPE_KEYWORDS) {
       if (words.some((w) => t.includes(w))) {
         const count = parseNumber(t.replace(/^\d+\s*[x×]?\s*/, "")) ?? 1;

@@ -11,7 +11,12 @@
  *   rotação em graus (0 = frente virada para +y, 90 = frente para +x, etc.)
  */
 import type { PlannerProject } from "@/modules/planner/shared";
-import { insertItemIntoProject, REAL_DEPTH_BY_SUBTYPE, WALL_OFFSET_MM, type CatalogItem } from "@/modules/planner/shared";
+import {
+  insertItemIntoProject,
+  REAL_DEPTH_BY_SUBTYPE,
+  WALL_OFFSET_MM,
+  type CatalogItem,
+} from "@/modules/planner/shared";
 import { matchDescription } from "./matcher";
 
 export type LayoutShape = "linear" | "L" | "U" | "paralela";
@@ -106,9 +111,9 @@ const CORNER_RESERVE_MM = 620;
 
 const ADJ: Record<LayoutWall, { start: LayoutWall; end: LayoutWall }> = {
   bottom: { start: "left", end: "right" },
-  top:    { start: "left", end: "right" },
-  left:   { start: "bottom", end: "top" },
-  right:  { start: "bottom", end: "top" },
+  top: { start: "left", end: "right" },
+  left: { start: "bottom", end: "top" },
+  right: { start: "bottom", end: "top" },
 };
 
 function cornerReserve(wall: LayoutWall, walls: LayoutWall[]): { start: number; end: number } {
@@ -178,10 +183,10 @@ export function applyLayout(
     }
     const width = spec.width ?? match.overrides.width ?? match.item.parametric.defaults.width;
     const depth =
-      spec.depth
-      ?? match.overrides.depth
-      ?? REAL_DEPTH_BY_SUBTYPE[String(match.item.subtype)]
-      ?? match.item.parametric.defaults.depth;
+      spec.depth ??
+      match.overrides.depth ??
+      REAL_DEPTH_BY_SUBTYPE[String(match.item.subtype)] ??
+      match.item.parametric.defaults.depth;
     const height = spec.height ?? match.overrides.height ?? match.item.parametric.defaults.height;
 
     for (let i = 0; i < count; i++) {
@@ -198,7 +203,10 @@ export function applyLayout(
       for (const w of tryOrder) {
         const c = cursors[w];
         const len = wallLength(w, roomW, roomD) - reserves[w].end;
-        if (c.offset + width + MARGIN_MM <= len) { wall = w; break; }
+        if (c.offset + width + MARGIN_MM <= len) {
+          wall = w;
+          break;
+        }
       }
       if (!wall) {
         skipped++;

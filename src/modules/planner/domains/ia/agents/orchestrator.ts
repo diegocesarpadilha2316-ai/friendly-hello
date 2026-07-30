@@ -84,9 +84,7 @@ export function buildAgentPlan(
     staged.push({ agent, tool: tool as PlannerAgentStep["tool"], args });
   }
 
-  const order = new Map(
-    Object.values(PLANNER_AGENT_BY_ID).map((a) => [a.id, a.order] as const),
-  );
+  const order = new Map(Object.values(PLANNER_AGENT_BY_ID).map((a) => [a.id, a.order] as const));
   const steps = staged
     .map((s, i) => ({ s, i }))
     .sort((a, b) => {
@@ -96,7 +94,13 @@ export function buildAgentPlan(
     .map(({ s }) => s);
 
   const executors = steps.map((s) => s.agent);
-  const agents = sortAgents([...executors, ...chooseAgents(message, steps.map((s) => s.tool))]);
+  const agents = sortAgents([
+    ...executors,
+    ...chooseAgents(
+      message,
+      steps.map((s) => s.tool),
+    ),
+  ]);
 
   return { steps, agents, skipped };
 }

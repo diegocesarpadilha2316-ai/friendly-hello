@@ -149,9 +149,11 @@ export function applyFinishing(
     return {
       ...env,
       rooms: env.rooms.map((room) =>
-        room.id !== target.roomId ? room : applyToRoom(room, preset, scope, (n) => {
-          applied += n;
-        }),
+        room.id !== target.roomId
+          ? room
+          : applyToRoom(room, preset, scope, (n) => {
+              applied += n;
+            }),
       ),
       updatedAt: new Date().toISOString(),
     };
@@ -198,9 +200,7 @@ function applyToRoom(
     }
     // Amarra o material PBR real (Parte 6) — resolve por rótulo humano.
     const pbr = findPbrMaterialByLabel(color);
-    const next: FurniturePrim = pbr
-      ? { ...f, params, materialId: pbr.id }
-      : { ...f, params };
+    const next: FurniturePrim = pbr ? { ...f, params, materialId: pbr.id } : { ...f, params };
     out = upsertPrimitive(out, next);
   }
   count(targets.length);
