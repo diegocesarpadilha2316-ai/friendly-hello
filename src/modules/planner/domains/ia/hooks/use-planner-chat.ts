@@ -517,6 +517,11 @@ export function usePlannerChat() {
       abortRef.current = controller;
       const rules = loadRules(tenantId);
 
+      // Sessão persistida (best-effort) + mensagem do usuário.
+      const sessionId = await ensureSession(project.id ?? null, trimmed);
+      await persistMessage(sessionId, "user", trimmed, "ok");
+      const startedAt = Date.now();
+
       try {
         setState((s) => ({ ...s, status: "streaming" }));
         let buffer = "";
@@ -701,6 +706,33 @@ export function usePlannerChat() {
 
         setState((s) => ({ ...s, status: "idle" }));
         abortRef.current = null;
+
+        // Persistência da resposta + auditoria das tools executadas no cliente.
+        if (sessionId) {
+          const assistantMessageId = await persistMessage(
+            sessionId,
+            "assistant",
+            buffer || "(sem conteúdo)",
+            "ok",
+          );
+          for (const call of toolCalls) {
+            try {
+              await recordToolCallOnServer({
+                data: {
+                  sessionId,
+                  messageId: assistantMessageId,
+                  toolName: call.name,
+                  args: (call.args ?? {}) as Record<string, unknown>,
+                  status: call.status === "ok" ? "ok" : call.status === "error" ? "error" : "pending",
+                  summary: call.message ?? null,
+                  durationMs: Date.now() - startedAt,
+                },
+              });
+            } catch (e) {
+              console.warn("[planner-chat] tool call não persistida", e);
+            }
+          }
+        }
       } catch (err) {
         patchMessage(assistantId, (m) => ({
           ...m,
@@ -710,6 +742,12 @@ export function usePlannerChat() {
             `\n\n> Erro ao processar: ${(err as Error).message ?? String(err)}`,
         }));
         setState((s) => ({ ...s, status: "error" }));
+        await persistMessage(
+          sessionId,
+          "assistant",
+          `Erro ao processar: ${(err as Error).message ?? String(err)}`,
+          "error",
+        );
       }
     },
     [
@@ -725,6 +763,9 @@ export function usePlannerChat() {
       createProjectOnServer,
       saveSnapshotOnServer,
       navigate,
+      ensureSession,
+      persistMessage,
+      recordToolCallOnServer,
     ],
   );
 
