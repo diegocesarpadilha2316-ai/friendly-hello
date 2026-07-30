@@ -9,6 +9,7 @@
  */
 import type { PlannerProject } from "@/modules/planner/shared";
 import type { ProjectMemory } from "../memory/types";
+import { detectRoomType } from "./classify";
 import type { PlanRequestKind, PlanAssumption, PlanMissingInfo } from "./types";
 
 const norm = (s: string) =>
@@ -135,25 +136,37 @@ export function analyzeRequirements(input: {
   const assumptions: PlanAssumption[] = [];
 
   if (kind === "projeto_completo") {
-    if (!facts.widthMm && !facts.depthMm && !roomHasDimensions) {
+    // Único dado realmente indispensável: qual ambiente projetar.
+    if (!detectRoomType(message)) {
       missing.push({
-        key: "dimensoes",
-        question: "Quais são as medidas do ambiente (largura x profundidade, em metros)?",
+        key: "ambiente",
+        question: "Qual ambiente você deseja criar: cozinha, quarto, sala ou closet?",
         level: "obrigatoria",
       });
     }
+    // Medidas, estilo e material nunca travam: viram suposições visíveis.
+    if (!facts.widthMm && !facts.depthMm && !roomHasDimensions) {
+      assumptions.push({
+        key: "dimensoes",
+        label: "Como você não informou as medidas, usei 3,50 m x 3,00 m como base.",
+        value: "3500x3000",
+        editable: true,
+      });
+    }
     if (!facts.style) {
-      missing.push({
+      assumptions.push({
         key: "estilo",
-        question: "Qual estilo você prefere — moderno, clássico, industrial ou minimalista?",
-        level: "recomendada",
+        label: "Como você não informou o estilo, usei contemporâneo neutro.",
+        value: "moderno",
+        editable: true,
       });
     }
     if (!facts.material) {
-      missing.push({
+      assumptions.push({
         key: "material",
-        question: "Tem um acabamento em mente (por exemplo Freijó, Carvalho ou Off White)?",
-        level: "recomendada",
+        label: "Acabamento padrão inteligente aplicado (madeira clara com off white).",
+        value: "off white",
+        editable: true,
       });
     }
   }
