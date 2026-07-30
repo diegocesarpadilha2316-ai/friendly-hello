@@ -55,18 +55,36 @@ create table if not exists public.feature_flags (
 create index if not exists idx_flags_company on public.feature_flags(company_id);
 
 -- ================= API KEYS =================
+-- DEFINIÇÃO CANÔNICA ÚNICA de `api_keys` (confere com o banco de produção).
+--
+-- Compatibilidade histórica: a versão original desta migration criava as
+-- colunas `hashed_key` e `revoked_at` e NÃO tinha `status`, `allowed_ips`,
+-- `description`, `updated_at` nem `UNIQUE (prefix)`. A migration 010
+-- (API Gateway) criava a MESMA tabela com o formato abaixo — como ambas usavam
+-- `create table if not exists`, um banco novo ficava com o formato de 006 e o
+-- banco de produção ficou com o formato de 010, gerando drift.
+--
+-- Resolução: 006 passa a ser a ÚNICA criação da tabela e adota o formato real
+-- de produção (`key_hash` + `status`); a 010 virou apenas ALTER ... ADD COLUMN
+-- IF NOT EXISTS, idempotente em banco novo e em banco já existente.
+-- Coluna canônica do hash: `key_hash`. `hashed_key` não existe e não deve ser
+-- reintroduzida. Nenhuma linha existente é alterada por esta migration.
 create table if not exists public.api_keys (
   id uuid primary key default gen_random_uuid(),
   company_id uuid not null references public.companies(id) on delete cascade,
   name text not null,
+  description text,
   prefix text not null,
-  hashed_key text not null,
+  key_hash text not null,
   scopes text[] not null default '{}',
-  last_used_at timestamptz,
+  allowed_ips text[] not null default '{}',
+  status text not null default 'active',   -- 'active' | 'revoked' | 'expired'
   expires_at timestamptz,
-  revoked_at timestamptz,
-  created_by uuid references auth.users(id) on delete set null,
-  created_at timestamptz not null default now()
+  last_used_at timestamptz,
+  created_by uuid,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (prefix)
 );
 create index if not exists idx_api_keys_company on public.api_keys(company_id, created_at desc);
 
