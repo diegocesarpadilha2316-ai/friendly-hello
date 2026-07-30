@@ -442,14 +442,14 @@ export const listAiMemory = createServerFn({ method: "GET" })
   .handler(async ({ data, context }) => {
     let q = context.supabase
       .from("planner_ai_memory")
-      .select("id,scope,project_id,user_id,key,value,importance,updated_at")
+      .select(MEMORY_COLUMNS)
       .eq("company_id", context.tenantId)
       .order("importance", { ascending: false })
       .order("updated_at", { ascending: false });
     if (data.scope) q = q.eq("scope", data.scope);
     if (data.projectId) q = q.eq("project_id", data.projectId);
     const { data: rows, error } = await q;
-    if (error) throw new Response(error.message, { status: 400 });
+    if (error) throw fail("memory.read", error);
     return rows ?? [];
   });
 
@@ -471,9 +471,9 @@ export const upsertAiMemory = createServerFn({ method: "POST" })
       .upsert(payload, {
         onConflict: "company_id,scope,project_id,user_id,key",
       })
-      .select("*")
+      .select(MEMORY_COLUMNS)
       .single();
-    if (error) throw new Response(error.message, { status: 400 });
+    if (error) throw fail("memory.write", error);
     return row;
   });
 
@@ -488,7 +488,7 @@ export const deleteAiMemory = createServerFn({ method: "POST" })
       .delete()
       .eq("company_id", context.tenantId)
       .eq("id", data.id);
-    if (error) throw new Response(error.message, { status: 400 });
+    if (error) throw fail("memory.write", error);
     return { ok: true as const };
   });
 
@@ -512,7 +512,7 @@ export const aiUsageStats = createServerFn({ method: "GET" })
       .eq("company_id", context.tenantId)
       .gte("day", from)
       .order("day", { ascending: true });
-    if (error) throw new Response(error.message, { status: 400 });
+    if (error) throw fail("usage.read", error);
     const list = rows ?? [];
     return {
       series: list,
@@ -537,6 +537,6 @@ export const listAiModels = createServerFn({ method: "GET" })
       .eq("is_active", true)
       .order("provider", { ascending: true })
       .order("display_name", { ascending: true });
-    if (error) throw new Response(error.message, { status: 400 });
+    if (error) throw fail("models.read", error);
     return data ?? [];
   });
