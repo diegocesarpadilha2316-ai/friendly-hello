@@ -45,6 +45,9 @@ import type {
 
 const uid = () => `m_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const isUuid = (value: string | null | undefined): boolean => !!value && UUID_RE.test(value);
+
 function safeJson(text: string): unknown {
   try {
     return JSON.parse(text);
