@@ -84,8 +84,11 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
         getProject: () => projectRef.current,
         applyProject: (project) => {
           projectRef.current = project;
-          if (editor.state.project) editor.updateProject(() => project);
-          else editor.loadProject(project);
+          // `propose` só é chamado depois de o contexto operacional ter sido
+          // carregado no provider. Use sempre o canal oficial de mutação;
+          // consultar `editor.state.project` aqui lia o valor do render antigo
+          // e transformava cada etapa em um novo load, perdendo Undo/Redo.
+          editor.updateProject(() => project);
         },
         onUpdate: commit,
       });
