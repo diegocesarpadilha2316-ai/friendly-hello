@@ -80,6 +80,7 @@ import { Route as AuthenticatedPlannerRenderRouteImport } from './routes/_authen
 import { Route as AuthenticatedPlannerProjetosRouteImport } from './routes/_authenticated.planner.projetos'
 import { Route as AuthenticatedPlannerProducaoRouteImport } from './routes/_authenticated.planner.producao'
 import { Route as AuthenticatedPlannerOrcamentosRouteImport } from './routes/_authenticated.planner.orcamentos'
+import { Route as AuthenticatedPlannerOrcamentoProjetoRouteImport } from './routes/_authenticated.planner.orcamento-projeto'
 import { Route as AuthenticatedPlannerMateriaisRouteImport } from './routes/_authenticated.planner.materiais'
 import { Route as AuthenticatedPlannerMarketplaceRouteImport } from './routes/_authenticated.planner.marketplace'
 import { Route as AuthenticatedPlannerIaStudioRouteImport } from './routes/_authenticated.planner.ia-studio'
@@ -484,6 +485,12 @@ const AuthenticatedPlannerOrcamentosRoute =
     path: '/orcamentos',
     getParentRoute: () => AuthenticatedPlannerRoute,
   } as any)
+const AuthenticatedPlannerOrcamentoProjetoRoute =
+  AuthenticatedPlannerOrcamentoProjetoRouteImport.update({
+    id: '/orcamento-projeto',
+    path: '/orcamento-projeto',
+    getParentRoute: () => AuthenticatedPlannerRoute,
+  } as any)
 const AuthenticatedPlannerMateriaisRoute =
   AuthenticatedPlannerMateriaisRouteImport.update({
     id: '/materiais',
@@ -673,6 +680,7 @@ export interface FileRoutesByFullPath {
   '/planner/ia-studio': typeof AuthenticatedPlannerIaStudioRoute
   '/planner/marketplace': typeof AuthenticatedPlannerMarketplaceRoute
   '/planner/materiais': typeof AuthenticatedPlannerMateriaisRoute
+  '/planner/orcamento-projeto': typeof AuthenticatedPlannerOrcamentoProjetoRoute
   '/planner/orcamentos': typeof AuthenticatedPlannerOrcamentosRoute
   '/planner/producao': typeof AuthenticatedPlannerProducaoRoute
   '/planner/projetos': typeof AuthenticatedPlannerProjetosRouteWithChildren
@@ -765,6 +773,7 @@ export interface FileRoutesByTo {
   '/planner/ia-studio': typeof AuthenticatedPlannerIaStudioRoute
   '/planner/marketplace': typeof AuthenticatedPlannerMarketplaceRoute
   '/planner/materiais': typeof AuthenticatedPlannerMateriaisRoute
+  '/planner/orcamento-projeto': typeof AuthenticatedPlannerOrcamentoProjetoRoute
   '/planner/orcamentos': typeof AuthenticatedPlannerOrcamentosRoute
   '/planner/producao': typeof AuthenticatedPlannerProducaoRoute
   '/planner/render': typeof AuthenticatedPlannerRenderRoute
@@ -861,6 +870,7 @@ export interface FileRoutesById {
   '/_authenticated/planner/ia-studio': typeof AuthenticatedPlannerIaStudioRoute
   '/_authenticated/planner/marketplace': typeof AuthenticatedPlannerMarketplaceRoute
   '/_authenticated/planner/materiais': typeof AuthenticatedPlannerMateriaisRoute
+  '/_authenticated/planner/orcamento-projeto': typeof AuthenticatedPlannerOrcamentoProjetoRoute
   '/_authenticated/planner/orcamentos': typeof AuthenticatedPlannerOrcamentosRoute
   '/_authenticated/planner/producao': typeof AuthenticatedPlannerProducaoRoute
   '/_authenticated/planner/projetos': typeof AuthenticatedPlannerProjetosRouteWithChildren
@@ -957,6 +967,7 @@ export interface FileRouteTypes {
     | '/planner/ia-studio'
     | '/planner/marketplace'
     | '/planner/materiais'
+    | '/planner/orcamento-projeto'
     | '/planner/orcamentos'
     | '/planner/producao'
     | '/planner/projetos'
@@ -1049,6 +1060,7 @@ export interface FileRouteTypes {
     | '/planner/ia-studio'
     | '/planner/marketplace'
     | '/planner/materiais'
+    | '/planner/orcamento-projeto'
     | '/planner/orcamentos'
     | '/planner/producao'
     | '/planner/render'
@@ -1144,6 +1156,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planner/ia-studio'
     | '/_authenticated/planner/marketplace'
     | '/_authenticated/planner/materiais'
+    | '/_authenticated/planner/orcamento-projeto'
     | '/_authenticated/planner/orcamentos'
     | '/_authenticated/planner/producao'
     | '/_authenticated/planner/projetos'
@@ -1697,6 +1710,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlannerOrcamentosRouteImport
       parentRoute: typeof AuthenticatedPlannerRoute
     }
+    '/_authenticated/planner/orcamento-projeto': {
+      id: '/_authenticated/planner/orcamento-projeto'
+      path: '/orcamento-projeto'
+      fullPath: '/planner/orcamento-projeto'
+      preLoaderRoute: typeof AuthenticatedPlannerOrcamentoProjetoRouteImport
+      parentRoute: typeof AuthenticatedPlannerRoute
+    }
     '/_authenticated/planner/materiais': {
       id: '/_authenticated/planner/materiais'
       path: '/materiais'
@@ -1910,6 +1930,7 @@ interface AuthenticatedPlannerRouteChildren {
   AuthenticatedPlannerIaStudioRoute: typeof AuthenticatedPlannerIaStudioRoute
   AuthenticatedPlannerMarketplaceRoute: typeof AuthenticatedPlannerMarketplaceRoute
   AuthenticatedPlannerMateriaisRoute: typeof AuthenticatedPlannerMateriaisRoute
+  AuthenticatedPlannerOrcamentoProjetoRoute: typeof AuthenticatedPlannerOrcamentoProjetoRoute
   AuthenticatedPlannerOrcamentosRoute: typeof AuthenticatedPlannerOrcamentosRoute
   AuthenticatedPlannerProducaoRoute: typeof AuthenticatedPlannerProducaoRoute
   AuthenticatedPlannerProjetosRoute: typeof AuthenticatedPlannerProjetosRouteWithChildren
@@ -1929,6 +1950,8 @@ const AuthenticatedPlannerRouteChildren: AuthenticatedPlannerRouteChildren = {
   AuthenticatedPlannerIaStudioRoute: AuthenticatedPlannerIaStudioRoute,
   AuthenticatedPlannerMarketplaceRoute: AuthenticatedPlannerMarketplaceRoute,
   AuthenticatedPlannerMateriaisRoute: AuthenticatedPlannerMateriaisRoute,
+  AuthenticatedPlannerOrcamentoProjetoRoute:
+    AuthenticatedPlannerOrcamentoProjetoRoute,
   AuthenticatedPlannerOrcamentosRoute: AuthenticatedPlannerOrcamentosRoute,
   AuthenticatedPlannerProducaoRoute: AuthenticatedPlannerProducaoRoute,
   AuthenticatedPlannerProjetosRoute:
