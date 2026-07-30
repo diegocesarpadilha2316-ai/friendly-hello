@@ -36,6 +36,12 @@ import {
   type LibraryMaterial,
 } from "../../domains/catalog/services/library-supabase";
 import { getPbrMaterial, getPbrRoughnessBias, isPbrId } from "../materials/pbr-catalog";
+import {
+  getProceduralSurface,
+  inferSurfaceKind,
+  surfaceTileMeters,
+  type SurfaceKind,
+} from "./procedural-textures";
 import { GlassFront } from "./GlassFront";
 import { DecorMesh, isDecorSubtype } from "./DecorMesh";
 import { CabinetMesh, isCabinetSubtype } from "./CabinetMesh";
@@ -109,6 +115,7 @@ function useTexturedMaterialProps(
   meshSizeM: readonly [number, number],
   fallbackColor: string,
   overrides: { roughness?: number; metalness?: number; wireframe?: boolean; transparent?: boolean; opacity?: number } = {},
+  role: "wall" | "floor" | "ceiling" | "furniture" = "furniture",
 ) {
   const lib = useLibraryMaterial(materialId);
   return useMemo(() => {
@@ -124,6 +131,7 @@ function useTexturedMaterialProps(
       metalnessMap?: THREE.Texture;
       roughness: number;
       metalness: number;
+      envMapIntensity: number;
       wireframe: boolean;
       transparent: boolean;
       opacity: number;
@@ -131,6 +139,7 @@ function useTexturedMaterialProps(
       color: lib?.colorHex || fallbackColor,
       roughness: Math.min(1, Math.max(0, (overrides.roughness ?? 0.75) + roughBias)),
       metalness: overrides.metalness ?? 0.05,
+      envMapIntensity: 1,
       wireframe: overrides.wireframe ?? false,
       transparent: overrides.transparent ?? false,
       opacity: overrides.opacity ?? 1,
@@ -180,8 +189,53 @@ function useTexturedMaterialProps(
         props.metalnessMap = arm;
       }
     }
+
+    // ---------------------------------------------------------------
+    // Realismo: nenhuma superfície fica "cor chapada". Sem textura da
+    // biblioteca, aplicamos a superfície procedural correspondente
+    // (madeira, laca, reboco, piso ou pedra) com tiling em metros reais.
+    // ---------------------------------------------------------------
+    if (!props.map && !props.wireframe) {
+      const kind: SurfaceKind = inferSurfaceKind(
+        role,
+        materialId ?? lib?.id,
+        props.color,
+      );
+      const surf = getProceduralSurface(kind);
+      if (surf) {
+        const tile = surfaceTileMeters(kind);
+        const [sizeX, sizeY] = meshSizeM;
+        const repX = Math.max(0.25, Math.abs(sizeX) / tile);
+        const repY = Math.max(0.25, Math.abs(sizeY) / tile);
+        const withTiling = (t: THREE.Texture) => {
+          const c = t.clone();
+          c.wrapS = THREE.RepeatWrapping;
+          c.wrapT = THREE.RepeatWrapping;
+          c.repeat.set(repX, repY);
+          c.needsUpdate = true;
+          return c;
+        };
+        props.map = withTiling(surf.map);
+        props.normalMap = withTiling(surf.normalMap);
+        props.normalScale = new THREE.Vector2(surf.normalScale, surf.normalScale);
+        props.roughnessMap = withTiling(surf.roughnessMap);
+        if (kind === "paint") {
+          props.roughness = Math.min(props.roughness, 0.42);
+          props.envMapIntensity = 1.25;
+        } else if (kind === "stone") {
+          props.roughness = Math.min(props.roughness, 0.3);
+          props.metalness = Math.max(props.metalness, 0.08);
+          props.envMapIntensity = 1.4;
+        } else if (kind === "floor") {
+          props.roughness = Math.min(props.roughness, 0.55);
+          props.envMapIntensity = 1.15;
+        } else if (kind === "wall") {
+          props.envMapIntensity = 0.85;
+        }
+      }
+    }
     return props;
-  }, [materialId, lib?.id, lib?.colorHex, lib?.textureUrl, lib?.widthMm, lib?.lengthMm, lib?.grain, meshSizeM[0], meshSizeM[1], fallbackColor, overrides.roughness, overrides.metalness, overrides.wireframe, overrides.transparent, overrides.opacity]);
+  }, [materialId, role, lib?.id, lib?.colorHex, lib?.textureUrl, lib?.widthMm, lib?.lengthMm, lib?.grain, meshSizeM[0], meshSizeM[1], fallbackColor, overrides.roughness, overrides.metalness, overrides.wireframe, overrides.transparent, overrides.opacity]);
 }
 
 function centerOffset(model: Scene3DModel) {
@@ -223,6 +277,7 @@ function Wall({
     [w.length, w.height],
     selected ? COLORS.wallSel : (w.overrideColor ?? COLORS.wall),
     { wireframe, transparent: true, opacity, roughness: 0.85, metalness: 0.05 },
+    "wall",
   );
   // Auto-fade: se a parede está ENTRE a câmera e o centro do ambiente,
   // deixamos ela quase invisível para o usuário sempre enxergar os móveis
@@ -253,20 +308,36 @@ function Wall({
     matRef.current.depthWrite = matRef.current.opacity > 0.6;
   });
   return (
-    <mesh
-      ref={meshRef}
-      position={[pos.x, pos.y, pos.z]}
-      rotation={[0, w.rotationY, 0]}
-      castShadow
-      receiveShadow
-      onClick={(e: ThreeEvent<MouseEvent>) => {
-        e.stopPropagation();
-        onSelect(w.id);
-      }}
-    >
-      <boxGeometry args={[w.length, w.height, w.thickness]} />
-      <meshStandardMaterial ref={matRef} {...props} />
-    </mesh>
+    <group position={[pos.x, pos.y, pos.z]} rotation={[0, w.rotationY, 0]}>
+      <mesh
+        ref={meshRef}
+        castShadow
+        receiveShadow
+        onClick={(e: ThreeEvent<MouseEvent>) => {
+          e.stopPropagation();
+          onSelect(w.id);
+        }}
+      >
+        <boxGeometry args={[w.length, w.height, w.thickness]} />
+        <meshStandardMaterial ref={matRef} {...props} />
+      </mesh>
+      {/* Rodapé real (100 mm, saliente 12 mm) — só em modo material e com
+          a parede visível. Detalhe barato que ancora o ambiente e elimina
+          a junta "flutuante" entre parede e piso. */}
+      {viewport.render === "material" && opacity > 0.5 ? (
+        [-1, 1].map((side) => (
+          <mesh
+            key={`skirt-${side}`}
+            position={[0, -w.height / 2 + 0.05, side * (w.thickness / 2 + 0.006)]}
+            castShadow
+            receiveShadow
+          >
+            <boxGeometry args={[w.length, 0.1, 0.012]} />
+            <meshStandardMaterial color="#f2f3f5" roughness={0.45} metalness={0.02} envMapIntensity={1.1} />
+          </mesh>
+        ))
+      ) : null}
+    </group>
   );
 }
 
@@ -294,6 +365,7 @@ function Slab({
     [s.width, s.depth],
     fallback,
     { wireframe: viewport.render === "wireframe", roughness: 0.9, metalness: 0.02 },
+    kind,
   );
   return (
     <mesh
@@ -377,6 +449,7 @@ function Furniture({
     [f.width, f.height],
     fallback,
     { wireframe: viewport.render === "wireframe", roughness: 0.6, metalness: 0.05 },
+    "furniture",
   );
   // Decoração procedural: sofá, cama, planta, luminária, etc. — renderiza
   // silhueta reconhecível em vez do box padrão. Wireframe volta ao box.
@@ -880,7 +953,7 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
   return (
     <Canvas
       shadows
-      dpr={[1, 1.5]}
+      dpr={[1, viewport.cinematic ? 2 : 1.5]}
       camera={{ position: [cx + camDist * 0.7, camHeight, cz + camDist * 0.7], fov: 38, near: 0.05, far: 500 }}
       gl={{ antialias: true, powerPreference: "high-performance" }}
       onCreated={({ gl }) => {
@@ -944,6 +1017,37 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
       {/* HDRI IBL sempre ativo em modo material — sem alterar cor de fundo */}
       {viewport.render === "material" ? (
         <Environment preset={dayPreset.envPreset} background={false} environmentIntensity={dayPreset.envIntensity} />
+      ) : null}
+      {/* Iluminação interna real: spots de teto em grade + bounce quente do
+          piso. É o que separa "maquete cinza" de "ambiente fotografado" —
+          sem eles o interior fica apenas com a luz do sol externa. */}
+      {viewport.render === "material" && viewport.showLights ? (
+        <group>
+          {[-1, 1].map((sx) =>
+            [-1, 1].map((sz) => (
+              <pointLight
+                key={`spot-${sx}-${sz}`}
+                position={[
+                  cx + sx * Math.max(0.8, diag * 0.22),
+                  Math.max(1.8, viewport.wallHeight / 1000 - 0.15),
+                  cz + sz * Math.max(0.8, diag * 0.22),
+                ]}
+                intensity={daytime === "night" ? 9 : 4.5}
+                distance={Math.max(6, diag * 1.6)}
+                decay={2}
+                color={daytime === "night" ? "#ffd9a8" : "#fff3e2"}
+              />
+            )),
+          )}
+          {/* Bounce do piso — clareia a barriga dos móveis, sem sombra. */}
+          <pointLight
+            position={[cx, 0.35, cz]}
+            intensity={daytime === "night" ? 1.2 : 2.2}
+            distance={Math.max(5, diag * 1.2)}
+            decay={2}
+            color="#f6ece0"
+          />
+        </group>
       ) : null}
       <ApplyViewPreset view={viewport.view} center={center} diag={diag} />
       {/* Contact shadow suave no chão — enraíza os móveis mesmo em modo wireframe */}
