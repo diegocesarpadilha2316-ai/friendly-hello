@@ -943,7 +943,16 @@ export type ToolName =
   | "panel_ripado"
   | "set_front_type"
   | "convert_to"
-  | "apply_finishing";
+  | "apply_finishing"
+  // ── Etapa 9 — ferramentas profissionais (consultivas/inspeção) ──
+  | "search_material"
+  | "estimate_budget"
+  | "production_summary"
+  | "preliminary_cut_list"
+  | "set_render_preset"
+  | "set_camera"
+  | "check_circulation"
+  | "review_project";
 
 export interface ToolDescriptor {
   name: ToolName;
