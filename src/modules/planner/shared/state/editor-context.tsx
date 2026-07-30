@@ -212,9 +212,16 @@ interface EditorContextValue {
   undo: () => void;
   redo: () => void;
   saveNow: () => void;
-  snapshotVersion: (label: string) => void;
-  restoreVersion: (versionId: string) => Promise<void>;
+  snapshotVersion: (label: string) => Promise<boolean>;
+  restoreVersion: (versionId: string) => Promise<boolean>;
   versions: readonly PlannerProjectVersion[];
+  /** Estado visível de sincronização remota do snapshot. */
+  syncStatus: PlannerSyncStatus;
+  /** Mensagem amigável do último erro de sincronização (nunca do banco). */
+  syncError: string | null;
+  /** Reenvia manualmente a versão local mais recente. */
+  retrySync: () => void;
+  refreshVersions: (projectId: string) => Promise<void>;
   canUndo: boolean;
   canRedo: boolean;
 }
