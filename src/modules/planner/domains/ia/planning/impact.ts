@@ -39,8 +39,11 @@ export function analyzeImpact(steps: readonly PlanStep[]): ImpactAnalysis {
     reasons.push("Todas as etapas são consultivas.");
   }
 
-  const requiresConfirmation = impact === "alto" || impact === "destrutivo";
-  const needsCheckpoint = requiresConfirmation;
+  // Confirmação manual existe apenas para operações destrutivas: um pedido
+  // completo (impacto alto) já traz a intenção do usuário e deve executar
+  // automaticamente. O checkpoint continua sendo criado nos dois casos.
+  const requiresConfirmation = impact === "destrutivo";
+  const needsCheckpoint = impact === "alto" || impact === "destrutivo";
 
   const previewLines = steps.map((s) => {
     const tag = s.destructive ? "remover" : s.mutating ? "alterar" : "consultar";
