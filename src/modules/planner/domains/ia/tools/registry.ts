@@ -38,7 +38,7 @@ import {
   wallEnum,
 } from "./validation";
 
-const empty = z.object({}).strict();
+const empty = () => z.object({}).strict();
 
 /** Adapta um executor legado ao contrato padronizado. */
 function legacy(
@@ -97,20 +97,20 @@ function contract(name: ToolName, meta: Meta): PlannerToolContract {
 
 /* ----------------------------- schemas ----------------------------- */
 
-const layoutPieceSchema = z
-  .object({
+const layoutPieceSchema = () =>
+  z.object({
     description: shortText(200),
     count: positiveInt(LIMITS.count).optional(),
     wall: wallEnum.optional(),
     width: dimensionMm(LIMITS.moduleWidth).optional(),
     height: dimensionMm(LIMITS.moduleHeight).optional(),
     depth: dimensionMm(LIMITS.moduleDepth).optional(),
-  })
-  .strict();
+  }).strict();
 
 /* ---------------------------- contratos ---------------------------- */
 
-const CONTRACTS: readonly PlannerToolContract[] = [
+function buildContracts(): readonly PlannerToolContract[] {
+  return [
   // ───────────────── Designer ─────────────────
   contract("create_room_preset", {
     description: "Monta um ambiente completo (cozinha, closet, sala) com casca, módulos e decoração.",
@@ -126,7 +126,7 @@ const CONTRACTS: readonly PlannerToolContract[] = [
         preset: shortText(60),
         style: shortText(40).optional(),
         material: shortText(80).optional(),
-        pieces: z.array(layoutPieceSchema).max(40).optional(),
+        pieces: z.array(layoutPieceSchema()).max(40).optional(),
       })
       .strict(),
   }),
@@ -141,7 +141,7 @@ const CONTRACTS: readonly PlannerToolContract[] = [
     schema: z
       .object({
         shape: shapeEnum,
-        pieces: z.array(layoutPieceSchema).min(1).max(40),
+        pieces: z.array(layoutPieceSchema()).min(1).max(40),
       })
       .strict(),
   }),
@@ -157,7 +157,7 @@ const CONTRACTS: readonly PlannerToolContract[] = [
     owner: "designer",
     category: "layout",
     mutating: true,
-    schema: empty,
+    schema: empty(),
   }),
   contract("rotate", {
     description: "Gira os módulos selecionados em graus.",
@@ -178,7 +178,7 @@ const CONTRACTS: readonly PlannerToolContract[] = [
     owner: "designer",
     category: "layout",
     mutating: true,
-    schema: empty,
+    schema: empty(),
   }),
   contract("panel_ripado", {
     description: "Insere um painel ripado decorativo.",
@@ -196,7 +196,7 @@ const CONTRACTS: readonly PlannerToolContract[] = [
     description: "Verifica passagens, área livre e módulos fora dos limites do ambiente. Consultiva.",
     owner: "designer",
     category: "inspection",
-    schema: empty,
+    schema: empty(),
     execute: (_args, run) => {
       const report = checkCirculation(run.project, run.ctx);
       return {
@@ -214,7 +214,7 @@ const CONTRACTS: readonly PlannerToolContract[] = [
     owner: "designer",
     category: "inspection",
     timeout: 12_000,
-    schema: empty,
+    schema: empty(),
     execute: (_args, run) => {
       const report = reviewProject(run.project, run.ctx);
       return {
@@ -323,7 +323,7 @@ const CONTRACTS: readonly PlannerToolContract[] = [
     owner: "marceneiro",
     category: "furniture",
     mutating: true,
-    schema: empty,
+    schema: empty(),
   }),
   contract("remove", {
     description: "Remove os módulos selecionados. Destrutiva — exige confirmação.",
@@ -332,7 +332,7 @@ const CONTRACTS: readonly PlannerToolContract[] = [
     mutating: true,
     destructive: true,
     supportsPreview: true,
-    schema: empty,
+    schema: empty(),
   }),
   contract("open_all", {
     description: "Abre ou fecha portas e gavetas (visualização).",
@@ -402,7 +402,7 @@ const CONTRACTS: readonly PlannerToolContract[] = [
     owner: "orcamentista",
     category: "budget",
     timeout: 12_000,
-    schema: empty,
+    schema: empty(),
     execute: (_args, run) => {
       const est = estimateBudget(run.project, run.ctx, run.rules);
       return {
@@ -421,7 +421,7 @@ const CONTRACTS: readonly PlannerToolContract[] = [
     owner: "producao",
     category: "production",
     timeout: 12_000,
-    schema: empty,
+    schema: empty(),
     execute: (_args, run) => {
       const s = productionSummary(run.project, run.ctx, run.rules);
       return {
@@ -437,7 +437,7 @@ const CONTRACTS: readonly PlannerToolContract[] = [
     owner: "producao",
     category: "production",
     timeout: 15_000,
-    schema: empty,
+    schema: empty(),
     execute: (_args, run) => {
       const list = preliminaryCutList(run.project, run.ctx, run.rules);
       return {
@@ -510,19 +510,22 @@ const CONTRACTS: readonly PlannerToolContract[] = [
       };
     },
   }),
-];
+  ];
+}
 
-export const PLANNER_TOOL_CONTRACTS: Readonly<Partial<Record<ToolName, PlannerToolContract>>> =
-  Object.fromEntries(CONTRACTS.map((c) => [c.name, c])) as Readonly<
-    Partial<Record<ToolName, PlannerToolContract>>
-  >;
+/** Construção preguiçosa — evita ciclos de import na inicialização. */
+let cache: readonly PlannerToolContract[] | null = null;
+function contracts(): readonly PlannerToolContract[] {
+  if (!cache) cache = buildContracts();
+  return cache;
+}
 
 export function getToolContract(name: string): PlannerToolContract | null {
-  return PLANNER_TOOL_CONTRACTS[name as ToolName] ?? null;
+  return contracts().find((c) => c.name === name) ?? null;
 }
 
 export function listToolContracts(): readonly PlannerToolContract[] {
-  return CONTRACTS;
+  return contracts();
 }
 
 /** Ownership derivado do contrato — fonte única para o roteador. */
