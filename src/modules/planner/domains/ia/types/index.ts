@@ -18,6 +18,8 @@ export interface PlannerAIToolCall {
   readonly status: "pending" | "ok" | "error";
   readonly message?: string;
   readonly executedAt: string;
+  /** Agente especialista responsável pela execução (Etapa 8). */
+  readonly agent?: string;
 }
 
 export interface PlannerAIMessage {

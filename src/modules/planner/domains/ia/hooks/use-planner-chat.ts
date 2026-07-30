@@ -37,6 +37,7 @@ import { runAgent } from "../services/agent";
 import { PLANNER_TOOL_REGISTRY } from "../services/tools";
 import { FINISHING_PRESETS } from "../services/finishing";
 import { streamLovableReply } from "../services/ai-stream";
+import { buildAgentBriefing } from "../agents";
 import type { ParsedIntent } from "../services/interpreter";
 import type { PlannerProject, PlannerRoomType } from "@/modules/planner/shared";
 import type { ToolContext } from "../services/tools";
@@ -676,8 +677,11 @@ export function usePlannerChat() {
               return null;
             }
           },
-          llmReplyStream: async function* ({ userMessage, role, project: p, ctx }) {
-            const system = buildPlannerSystemPrompt(p, ctx);
+          llmReplyStream: async function* ({ userMessage, role, project: p, ctx, agents }) {
+            const briefing = buildAgentBriefing(agents ?? []);
+            const system = briefing
+              ? `${buildPlannerSystemPrompt(p, ctx)}\n\n${briefing}`
+              : buildPlannerSystemPrompt(p, ctx);
             const prompt = `Usuário (${role}): ${userMessage}`;
             const messages: { role: "system" | "user"; content: string }[] = [
               { role: "system", content: system },
@@ -711,6 +715,7 @@ export function usePlannerChat() {
                 status: "ok",
                 message: chunk.toolResult.summary,
                 executedAt: new Date().toISOString(),
+                agent: chunk.agent,
               };
               if (existing) {
                 const idx = toolCalls.indexOf(existing);
@@ -725,6 +730,7 @@ export function usePlannerChat() {
                 args: chunk.toolArgs ?? {},
                 status: "pending",
                 executedAt: new Date().toISOString(),
+                agent: chunk.agent,
               });
             }
             patchMessage(assistantId, (m) => ({ ...m, toolCalls: [...toolCalls] }));
@@ -824,7 +830,10 @@ export function usePlannerChat() {
                   sessionId,
                   messageId: assistantMessageId,
                   toolName: call.name,
-                  args: (call.args ?? {}) as Record<string, unknown>,
+                  args: {
+                    ...((call.args ?? {}) as Record<string, unknown>),
+                    ...(call.agent ? { __agent: call.agent } : {}),
+                  },
                   status:
                     call.status === "ok" ? "ok" : call.status === "error" ? "error" : "pending",
                   summary: call.message ?? null,

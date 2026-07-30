@@ -17,6 +17,13 @@ import type { CompanyManufacturingRules } from "@/modules/planner/shared";
 import { interpret, type ParsedIntent } from "./interpreter";
 import { answerQuestion } from "./questions";
 import { TOOL_FUNCTIONS, type ToolContext, type ToolExecutionResult, type ToolName } from "./tools";
+import {
+  buildAgentPlan,
+  describeAgents,
+  selectConversationalAgents,
+  startAgentRun,
+  type PlannerAgentId,
+} from "../agents";
 
 export interface AgentInput {
   message: string;
@@ -34,6 +41,7 @@ export interface AgentInput {
     role: "smalltalk" | "unknown" | "question";
     project: PlannerProject;
     ctx: ToolContext;
+    agents?: readonly PlannerAgentId[];
   }) => Promise<string | null>;
   /**
    * Callback de streaming opcional — quando fornecido, respostas
@@ -45,6 +53,7 @@ export interface AgentInput {
     role: "smalltalk" | "unknown" | "question";
     project: PlannerProject;
     ctx: ToolContext;
+    agents?: readonly PlannerAgentId[];
   }) => AsyncGenerator<string>;
   /**
    * Callback opcional — quando fornecido, o agent tenta obter do LLM uma
@@ -65,6 +74,10 @@ export interface AgentChunk {
   toolName?: string;
   toolArgs?: Readonly<Record<string, unknown>>;
   toolResult?: ToolExecutionResult;
+  /** Agente especialista responsável pela ação (Etapa 8). */
+  agent?: PlannerAgentId;
+  /** Agentes que participaram do turno — presente no chunk `done`. */
+  agents?: readonly PlannerAgentId[];
 }
 
 function executeIntent(
@@ -98,6 +111,7 @@ function executeIntent(
  */
 export async function* runAgent(input: AgentInput): AsyncGenerator<AgentChunk, void, void> {
   const parsed = interpret(input.message);
+  const convAgents = selectConversationalAgents(input.message);
 
   if (parsed.type === "smalltalk" || parsed.type === "unknown") {
     // Antes de responder só com texto, tenta obter um plano estruturado
@@ -110,27 +124,27 @@ export async function* runAgent(input: AgentInput): AsyncGenerator<AgentChunk, v
       }
     }
     if (input.llmReplyStream) {
-      yield* tryLLMStream(input, parsed.type, input.message);
-      yield { kind: "done" };
+      yield* tryLLMStream(input, parsed.type, input.message, undefined, convAgents);
+      yield { kind: "done", agents: convAgents };
       return;
     }
-    const reply = (await tryLLM(input, parsed.type, input.message)) ?? parsed.reply;
+    const reply = (await tryLLM(input, parsed.type, input.message, convAgents)) ?? parsed.reply;
     yield* streamText(reply, input.signal);
-    yield { kind: "done" };
+    yield { kind: "done", agents: convAgents };
     return;
   }
 
   if (parsed.type === "question") {
     const local = answerQuestion(parsed.question, input.project, input.ctx, input.rules);
     if (input.llmReplyStream) {
-      yield* tryLLMStream(input, "question", input.message, local);
-      yield { kind: "done" };
+      yield* tryLLMStream(input, "question", input.message, local, convAgents);
+      yield { kind: "done", agents: convAgents };
       return;
     }
-    const remote = await tryLLM(input, "question", input.message);
+    const remote = await tryLLM(input, "question", input.message, convAgents);
     const answer = remote ? `${local}\n\n${remote}` : local;
     yield* streamText(answer, input.signal);
-    yield { kind: "done" };
+    yield { kind: "done", agents: convAgents };
     return;
   }
 
@@ -146,22 +160,65 @@ async function* runCommand(
 ): AsyncGenerator<AgentChunk, void, void> {
   let project = input.project;
   const summaries: string[] = [];
-  for (const intent of intents) {
+  // Orquestração multiagente: escolhe agentes, ordena o pipeline e remove
+  // execuções duplicadas antes de tocar no projeto.
+  const plan = buildAgentPlan(input.message, intents);
+  const participated: PlannerAgentId[] = [];
+  let currentAgent: PlannerAgentId | null = null;
+  let handle: ReturnType<typeof startAgentRun> | null = null;
+  const agentTools: ToolName[] = [];
+
+  const closeRun = (success: boolean, error?: string) => {
+    if (handle) handle.finish(success, [...agentTools], error);
+    handle = null;
+    agentTools.length = 0;
+  };
+
+  for (const step of plan.steps) {
+    const intent: ParsedIntent = { tool: step.tool, args: step.args };
     if (input.signal?.aborted) {
+      closeRun(false, "cancelado");
       yield { kind: "error", text: "Geração cancelada." };
       return;
     }
-    yield { kind: "tool", toolName: intent.tool, toolArgs: intent.args };
-    const result = executeIntent(intent, project, input.ctx);
+    if (step.agent !== currentAgent) {
+      closeRun(true);
+      currentAgent = step.agent;
+      participated.push(step.agent);
+      handle = startAgentRun(step.agent);
+    }
+    yield { kind: "tool", toolName: step.tool, toolArgs: step.args, agent: step.agent };
+    let result: ToolExecutionResult;
+    try {
+      result = executeIntent(intent, project, input.ctx);
+    } catch (e) {
+      closeRun(false, e instanceof Error ? e.message : "falha na ferramenta");
+      yield { kind: "error", text: `Falha ao executar ${step.tool}.` };
+      return;
+    }
+    agentTools.push(step.tool);
     project = result.project;
     summaries.push(`• ${result.summary}`);
-    yield { kind: "tool", toolName: intent.tool, toolArgs: intent.args, toolResult: result };
+    yield {
+      kind: "tool",
+      toolName: step.tool,
+      toolArgs: step.args,
+      toolResult: result,
+      agent: step.agent,
+    };
     await sleep(60, input.signal);
   }
+  closeRun(true);
+
   const header = summaries.length > 1 ? "Pronto — executei os passos:\n" : "Pronto — ";
-  const finalText = `${header}${summaries.join("\n")}`;
+  const team = participated.length > 0 ? describeAgents(participated) : "";
+  const finalText = `${header}${summaries.join("\n")}${team ? `\n\n_Equipe: ${team}._` : ""}`;
   yield* streamText(finalText, input.signal);
-  yield { kind: "done", toolResult: { project, summary: finalText, affectedIds: [] } };
+  yield {
+    kind: "done",
+    toolResult: { project, summary: finalText, affectedIds: [] },
+    agents: plan.agents,
+  };
 }
 
 async function tryLLMPlan(input: AgentInput): Promise<readonly ParsedIntent[] | null> {
@@ -194,17 +251,22 @@ async function tryLLM(
   input: AgentInput,
   role: "smalltalk" | "unknown" | "question",
   userMessage: string,
+  agents?: readonly PlannerAgentId[],
 ): Promise<string | null> {
   if (!input.llmReply) return null;
+  const handle = startAgentRun(agents?.[0] ?? "designer");
   try {
     const text = await input.llmReply({
       userMessage,
       role,
       project: input.project,
       ctx: input.ctx,
+      agents,
     });
+    handle.finish(true, []);
     return text && text.trim().length > 0 ? text : null;
-  } catch {
+  } catch (e) {
+    handle.finish(false, [], e instanceof Error ? e.message : "falha no LLM");
     return null;
   }
 }
@@ -214,8 +276,10 @@ async function* tryLLMStream(
   role: "smalltalk" | "unknown" | "question",
   userMessage: string,
   prefix?: string,
+  agents?: readonly PlannerAgentId[],
 ): AsyncGenerator<AgentChunk> {
   if (!input.llmReplyStream) return;
+  const handle = startAgentRun(agents?.[0] ?? "designer");
   try {
     if (prefix) {
       yield { kind: "text", text: prefix };
@@ -226,11 +290,14 @@ async function* tryLLMStream(
       role,
       project: input.project,
       ctx: input.ctx,
+      agents,
     })) {
       if (input.signal?.aborted) return;
       if (delta) yield { kind: "text", text: delta };
     }
-  } catch {
+    handle.finish(true, []);
+  } catch (e) {
+    handle.finish(false, [], e instanceof Error ? e.message : "falha no streaming");
     // Falha silenciosa no streaming: o hook já marca erro no estado.
   }
 }

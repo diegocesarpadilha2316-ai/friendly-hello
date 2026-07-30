@@ -224,6 +224,11 @@ function MessageRow({
               >
                 <Wrench className="mt-0.5 h-3 w-3 shrink-0" />
                 <span>
+                  {tc.agent ? (
+                    <span className="mr-1 rounded bg-primary/20 px-1 py-px text-[10px] font-semibold uppercase tracking-wide text-primary">
+                      {tc.agent}
+                    </span>
+                  ) : null}
                   <span className="font-medium">{tc.name}</span>
                   {tc.message ? ` — ${tc.message}` : ""}
                 </span>
