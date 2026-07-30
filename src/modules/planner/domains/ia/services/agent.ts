@@ -16,7 +16,8 @@ import type { PlannerProject } from "@/modules/planner/shared";
 import type { CompanyManufacturingRules } from "@/modules/planner/shared";
 import { interpret, type ParsedIntent } from "./interpreter";
 import { answerQuestion } from "./questions";
-import { TOOL_FUNCTIONS, type ToolContext, type ToolExecutionResult, type ToolName } from "./tools";
+import { type ToolContext, type ToolExecutionResult, type ToolName } from "./tools";
+import { getToolContract } from "../tools/registry";
 import { runPlannerTool } from "../tools/runner";
 import type { PlannerToolResult } from "../tools/types";
 import {
@@ -263,7 +264,7 @@ async function tryLLMPlan(input: AgentInput): Promise<readonly ParsedIntent[] | 
         !!i &&
         typeof i === "object" &&
         typeof (i as ParsedIntent).tool === "string" &&
-        (i as ParsedIntent).tool in TOOL_FUNCTIONS,
+        getToolContract((i as ParsedIntent).tool) !== null,
     );
     return valid.length > 0 ? (valid as readonly ParsedIntent[]) : null;
   } catch {
