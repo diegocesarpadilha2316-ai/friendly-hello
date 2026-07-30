@@ -205,7 +205,7 @@ export const getAiSession = createServerFn({ method: "GET" })
       messages,
       toolCalls: toolRes.data ?? [],
       hasMore,
-      nextCursor: hasMore ? messages[0]?.created_at ?? null : null,
+      nextCursor: hasMore ? (messages[0]?.created_at ?? null) : null,
     };
   });
 
@@ -237,9 +237,7 @@ export const updateAiSession = createServerFn({ method: "POST" })
 
 export const deleteAiSession = createServerFn({ method: "POST" })
   .middleware([requireTenant])
-  .inputValidator((data: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("planner_ai_sessions")
@@ -479,9 +477,7 @@ export const upsertAiMemory = createServerFn({ method: "POST" })
 
 export const deleteAiMemory = createServerFn({ method: "POST" })
   .middleware([requireTenant])
-  .inputValidator((data: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("planner_ai_memory")
@@ -497,15 +493,11 @@ export const deleteAiMemory = createServerFn({ method: "POST" })
 export const aiUsageStats = createServerFn({ method: "GET" })
   .middleware([requireTenant])
   .inputValidator((data: unknown) =>
-    z
-      .object({ days: z.number().int().min(1).max(90).optional() })
-      .parse(data ?? {}),
+    z.object({ days: z.number().int().min(1).max(90).optional() }).parse(data ?? {}),
   )
   .handler(async ({ data, context }) => {
     const days = data.days ?? 30;
-    const from = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .slice(0, 10);
+    const from = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
     const { data: rows, error } = await context.supabase
       .from("ai_usage_daily")
       .select("day,provider,model_key,tokens_in,tokens_out,credits_spent,calls_ok,calls_error")

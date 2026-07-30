@@ -84,9 +84,8 @@ async function callLovableProxy(
     };
     if (opts.maxTokens) body.max_tokens = opts.maxTokens;
     if (opts.json) body.response_format = { type: "json_object" };
-    const { AI_PROXY_ENDPOINT, buildAiProxyHeaders } = await import(
-      "@/modules/planner/domains/ai/proxy"
-    );
+    const { AI_PROXY_ENDPOINT, buildAiProxyHeaders } =
+      await import("@/modules/planner/domains/ai/proxy");
     const res = await fetch(AI_PROXY_ENDPOINT, {
       method: "POST",
       headers: await buildAiProxyHeaders(),
@@ -108,10 +107,7 @@ async function callLovableProxy(
 }
 
 /** Prompt de sistema mínimo que dá contexto do projeto/cômodo ativo ao LLM. */
-function buildPlannerSystemPrompt(
-  p: PlannerProject,
-  ctx: ToolContext,
-): string {
+function buildPlannerSystemPrompt(p: PlannerProject, ctx: ToolContext): string {
   const env = p.environments.find((e) => e.id === ctx.environmentId);
   const room = env?.rooms.find((r) => r.id === ctx.roomId);
   const briefing = p.briefing
@@ -159,7 +155,9 @@ function buildPlannerSystemPrompt(
     "Regra: sempre que possível, use `insert_described` com uma descrição rica (subtype + largura + cor + frente) para casar com um item real do catálogo.",
     `Projeto ativo: "${p.name}" (v${p.version}).`,
     env ? `Ambiente ativo: "${env.name}".` : "Nenhum ambiente selecionado.",
-    room ? `Cômodo ativo: "${room.name}" (${room.dimensions.width}×${room.dimensions.depth}×${room.dimensions.height} mm).` : "Nenhum cômodo selecionado.",
+    room
+      ? `Cômodo ativo: "${room.name}" (${room.dimensions.width}×${room.dimensions.depth}×${room.dimensions.height} mm).`
+      : "Nenhum cômodo selecionado.",
     selectionLine,
     briefing,
   ]
@@ -257,9 +255,10 @@ function ensureOperablePlannerContext(
   const selectedEnv = selectedEnvironmentId
     ? fallbackProject.environments.find((env) => env.id === selectedEnvironmentId)
     : null;
-  const selectedRoom = selectedEnv && selectedRoomId
-    ? selectedEnv.rooms.find((room) => room.id === selectedRoomId)
-    : null;
+  const selectedRoom =
+    selectedEnv && selectedRoomId
+      ? selectedEnv.rooms.find((room) => room.id === selectedRoomId)
+      : null;
 
   if (selectedEnv && selectedRoom) {
     return {
@@ -270,14 +269,20 @@ function ensureOperablePlannerContext(
     };
   }
 
-  const env = selectedEnv ?? fallbackProject.environments[0] ?? createEnvironment({ name: "Ambiente principal" });
-  const room = selectedRoom ?? env.rooms[0] ?? createRoom({
-    name: labelForRoomType(roomType),
-    type: roomType,
-    width: roomType === "cozinha" ? 4200 : 3600,
-    depth: roomType === "cozinha" ? 3200 : 3000,
-    height: 2700,
-  });
+  const env =
+    selectedEnv ??
+    fallbackProject.environments[0] ??
+    createEnvironment({ name: "Ambiente principal" });
+  const room =
+    selectedRoom ??
+    env.rooms[0] ??
+    createRoom({
+      name: labelForRoomType(roomType),
+      type: roomType,
+      width: roomType === "cozinha" ? 4200 : 3600,
+      depth: roomType === "cozinha" ? 3200 : 3000,
+      height: 2700,
+    });
 
   const envWithRoom = env.rooms.some((r) => r.id === room.id)
     ? env
@@ -286,7 +291,9 @@ function ensureOperablePlannerContext(
   const project = {
     ...fallbackProject,
     environments: hasEnv
-      ? fallbackProject.environments.map((item) => item.id === envWithRoom.id ? envWithRoom : item)
+      ? fallbackProject.environments.map((item) =>
+          item.id === envWithRoom.id ? envWithRoom : item,
+        )
       : [...fallbackProject.environments, envWithRoom],
   };
 
@@ -299,7 +306,11 @@ function ensureOperablePlannerContext(
 }
 
 export const PLANNER_QUICK_ACTIONS: readonly PlannerAIQuickAction[] = [
-  { id: "kitchen", label: "Crie uma cozinha moderna", prompt: "Crie uma cozinha moderna com ilha e LED." },
+  {
+    id: "kitchen",
+    label: "Crie uma cozinha moderna",
+    prompt: "Crie uma cozinha moderna com ilha e LED.",
+  },
   { id: "closet", label: "Crie um closet", prompt: "Crie um closet completo minimalista." },
   { id: "freijo", label: "Troque para Freijó", prompt: "Troque o MDF para Freijó." },
   { id: "open-doors", label: "Abra todas as portas", prompt: "Abra todas as portas." },
@@ -353,7 +364,11 @@ export function usePlannerChat() {
   const sendingRef = useRef(false);
   /** Chave de idempotência do envio atual (reutilizada em retries). */
   const pendingKeyRef = useRef<{ user: string; assistant: string } | null>(null);
-  const [history, setHistory] = useState<{ hasMore: boolean; cursor: string | null; loading: boolean }>({
+  const [history, setHistory] = useState<{
+    hasMore: boolean;
+    cursor: string | null;
+    loading: boolean;
+  }>({
     hasMore: false,
     cursor: null,
     loading: false,
@@ -361,7 +376,8 @@ export function usePlannerChat() {
 
   /** sessionId sobrevive ao reload: guardado por tenant+projeto. */
   const sessionStorageKey = useCallback(
-    (projectId: string | null) => `dioris.planner.ai.session.${tenantId}.${projectId ?? "sem-projeto"}`,
+    (projectId: string | null) =>
+      `dioris.planner.ai.session.${tenantId}.${projectId ?? "sem-projeto"}`,
     [tenantId],
   );
 
@@ -498,7 +514,11 @@ export function usePlannerChat() {
           }));
         sessionRef.current = { id: latest.id, projectId };
         storeSession(projectId, latest.id);
-        setHistory({ hasMore: !!detail.hasMore, cursor: detail.nextCursor ?? null, loading: false });
+        setHistory({
+          hasMore: !!detail.hasMore,
+          cursor: detail.nextCursor ?? null,
+          loading: false,
+        });
         if (restored.length > 0) {
           setState((s) => ({ ...s, messages: restored }));
         }
@@ -520,7 +540,13 @@ export function usePlannerChat() {
       const detail = (await getSessionOnServer({
         data: { id: session.id, limit: 50, before: history.cursor },
       })) as {
-        messages: { id: string; role: string; content: string; status: string | null; created_at: string }[];
+        messages: {
+          id: string;
+          role: string;
+          content: string;
+          status: string | null;
+          created_at: string;
+        }[];
         hasMore: boolean;
         nextCursor: string | null;
       };
@@ -541,9 +567,12 @@ export function usePlannerChat() {
     }
   }, [getSessionOnServer, history.cursor, history.hasMore, history.loading]);
 
-  const patchMessage = useCallback((id: string, patch: (m: PlannerAIMessage) => PlannerAIMessage) => {
-    setState((s) => ({ ...s, messages: s.messages.map((m) => (m.id === id ? patch(m) : m)) }));
-  }, []);
+  const patchMessage = useCallback(
+    (id: string, patch: (m: PlannerAIMessage) => PlannerAIMessage) => {
+      setState((s) => ({ ...s, messages: s.messages.map((m) => (m.id === id ? patch(m) : m)) }));
+    },
+    [],
+  );
 
   const cancel = useCallback(() => {
     abortRef.current?.abort();
@@ -642,7 +671,7 @@ export function usePlannerChat() {
                 (t) => `- ${t.name}: ${t.description}`,
               ).join("\n");
               const system =
-                "Você é o planejador do Dioris Planner. Traduza o pedido do usuário em uma sequência de chamadas de ferramentas (tool-calling). Responda SOMENTE com JSON válido no formato { \"intents\": [{ \"tool\": string, \"args\": object }] }. Não inclua explicações. Use apenas ferramentas da lista.\n\nFerramentas disponíveis:\n" +
+                'Você é o planejador do Dioris Planner. Traduza o pedido do usuário em uma sequência de chamadas de ferramentas (tool-calling). Responda SOMENTE com JSON válido no formato { "intents": [{ "tool": string, "args": object }] }. Não inclua explicações. Use apenas ferramentas da lista.\n\nFerramentas disponíveis:\n' +
                 catalog +
                 "\n\nSubtypes válidos para insert_item/set_front_type: aereo, balcao, gaveteiro, torre, tampo, ilha, painel, roupeiro, closet, nicho, prateleira, cristaleira, bancada, espelho, porta, gaveta, iluminacao.\nPresets válidos para create_room_preset: cozinha, closet, dormitorio, sala, escritorio, banheiro.\nEstilos válidos para set_style: minimalista, classico, industrial, luxo, moderno.\nTipos válidos para set_front_type: vidro, reeded, solid, aberto.\nPresets de apply_finishing (arg 'preset'): " +
                 FINISHING_PRESETS.map((p) => `"${p.id}" (${p.label})`).join(", ") +
@@ -673,7 +702,11 @@ export function usePlannerChat() {
                 raw = res?.output;
               } catch (e) {
                 console.warn("[planner-chat] gateway com tenant falhou, usando proxy Lovable", e);
-                raw = await callLovableProxy(system, prompt, { json: true, maxTokens: 800, temperature: 0.2 });
+                raw = await callLovableProxy(system, prompt, {
+                  json: true,
+                  maxTokens: 800,
+                  temperature: 0.2,
+                });
               }
               const parsed = typeof raw === "string" ? safeJson(raw) : raw;
               const intents = (parsed as { intents?: unknown } | null)?.intents;
@@ -723,7 +756,9 @@ export function usePlannerChat() {
             buffer += chunk.text;
             patchMessage(assistantId, (m) => ({ ...m, content: buffer, status: "streaming" }));
           } else if (chunk.kind === "tool" && chunk.toolName) {
-            const existing = toolCalls.find((t) => t.status === "pending" && t.name === chunk.toolName);
+            const existing = toolCalls.find(
+              (t) => t.status === "pending" && t.name === chunk.toolName,
+            );
             if (chunk.toolResult) {
               // resultado — atualiza projeto e marca a tool como ok
               mutatedProject = chunk.toolResult.project;
@@ -755,7 +790,11 @@ export function usePlannerChat() {
             if (chunk.toolResult) mutatedProject = chunk.toolResult.project;
             patchMessage(assistantId, (m) => ({ ...m, status: "done" }));
           } else if (chunk.kind === "error") {
-            patchMessage(assistantId, (m) => ({ ...m, status: "error", content: chunk.text ?? m.content }));
+            patchMessage(assistantId, (m) => ({
+              ...m,
+              status: "error",
+              content: chunk.text ?? m.content,
+            }));
           }
         }
 
@@ -793,7 +832,10 @@ export function usePlannerChat() {
                 });
               }
             } catch (e) {
-              console.warn("[planner-chat] snapshot IA não persistiu no servidor; usando cache local", e);
+              console.warn(
+                "[planner-chat] snapshot IA não persistiu no servidor; usando cache local",
+                e,
+              );
             }
             void navigate({
               to: "/planner/projetos/$projectId",
@@ -829,7 +871,8 @@ export function usePlannerChat() {
           if (!assistantMessageId) {
             patchMessage(assistantId, (m) => ({
               ...m,
-              content: (m.content || "") + "\n\n> Esta resposta não foi sincronizada com o servidor.",
+              content:
+                (m.content || "") + "\n\n> Esta resposta não foi sincronizada com o servidor.",
             }));
           }
           for (const call of toolCalls) {
@@ -840,7 +883,8 @@ export function usePlannerChat() {
                   messageId: assistantMessageId,
                   toolName: call.name,
                   args: (call.args ?? {}) as Record<string, unknown>,
-                  status: call.status === "ok" ? "ok" : call.status === "error" ? "error" : "pending",
+                  status:
+                    call.status === "ok" ? "ok" : call.status === "error" ? "error" : "pending",
                   summary: call.message ?? null,
                   durationMs: Date.now() - startedAt,
                 },
@@ -945,6 +989,16 @@ export function usePlannerChat() {
       loadingHistory: history.loading,
       quickActions: PLANNER_QUICK_ACTIONS,
     }),
-    [state.messages, state.status, send, cancel, clear, editMessage, loadMore, history.hasMore, history.loading],
+    [
+      state.messages,
+      state.status,
+      send,
+      cancel,
+      clear,
+      editMessage,
+      loadMore,
+      history.hasMore,
+      history.loading,
+    ],
   );
 }
