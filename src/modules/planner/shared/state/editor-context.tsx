@@ -674,8 +674,9 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
   const snapshotVersion = useCallback(
     async (label: string) => {
       const project = state.project;
-      if (!project) return;
+      if (!project) return false;
       try {
+        // Captura o snapshot mais recente já sincronizado antes do checkpoint.
         await persist(project);
         await createVersionFn({
           data: {
@@ -687,8 +688,10 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
           },
         });
         await refreshVersions(project.id);
+        return true;
       } catch (err) {
         console.error("[planner] snapshot version falhou", err);
+        return false;
       }
     },
     [state.project, persist, createVersionFn, refreshVersions],
@@ -697,10 +700,28 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
   const restoreVersion = useCallback(
     async (versionId: string) => {
       const current = state.project;
-      if (!current) return;
+      if (!current) return false;
       try {
-        const row = await loadVersionFn({ data: { id: versionId } });
-        if (!row?.snapshot) return;
+        // O servidor valida tenant + projeto: uma versão de outro projeto
+        // ou de outro tenant simplesmente não é encontrada.
+        const row = await loadVersionFn({ data: { id: versionId, projectId: current.id } });
+        if (!row?.snapshot) return false;
+
+        // Checkpoint automático do estado atual ANTES de restaurar — único
+        // ponto de criação automática de versão (nada por edição).
+        await createVersionFn({
+          data: {
+            id: `${current.id}-pre-restore-${Date.now()}`,
+            projectId: current.id,
+            version: current.version,
+            label: `Antes de restaurar “${row.label}”`,
+            snapshot: current as unknown as JsonObject,
+          },
+        }).catch((err) => {
+          console.error("[planner] checkpoint pré-restauração falhou", err);
+          throw err;
+        });
+
         const restored: PlannerProject = {
           ...(row.snapshot as unknown as PlannerProject),
           id: current.id,
@@ -709,12 +730,17 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
           updatedAt: new Date().toISOString(),
         };
         dispatch({ type: "update", project: restored });
-        await persist(restored);
+        const persisted = await persist(restored);
+        await refreshVersions(current.id);
+        // Se a persistência falhou, o status já está "unsynced" e o snapshot
+        // local foi preservado — a UI não pode afirmar sucesso.
+        return persisted;
       } catch (err) {
         console.error("[planner] restore version falhou", err);
+        return false;
       }
     },
-    [state.project, loadVersionFn, persist],
+    [state.project, loadVersionFn, createVersionFn, persist, refreshVersions],
   );
 
   // Atalhos de teclado — Ctrl/Cmd+Z / Shift+Z / Ctrl+S.
