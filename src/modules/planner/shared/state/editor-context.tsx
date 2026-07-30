@@ -587,6 +587,7 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
 
   const loadProjectById = useCallback(
     async (projectId: string) => {
+      resetSync();
       try {
         const result = await loadSnapshotFn({ data: { id: projectId } });
         if (!result || !result.meta) {
