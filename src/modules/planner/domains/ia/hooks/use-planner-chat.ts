@@ -6,13 +6,20 @@
  * passam por `updateProject`, herdando Undo/Redo, Autosave, Histórico e
  * a sincronização 2D/3D/Engenharia.
  */
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { aiGenerateText, aiGenerateJson } from "@/core/ai";
 import { useTenant } from "@/core/providers/TenantProvider";
 import { useAuth } from "@/core/providers/AuthProvider";
 import { createProjectRow } from "@/lib/planner-projects.functions";
+import {
+  appendAiMessage,
+  createAiSession,
+  getAiSession,
+  listAiSessions,
+  recordAiToolCall,
+} from "@/lib/planner-ai.functions";
 import { saveProjectSnapshot, type JsonObject } from "@/lib/planner-snapshots.functions";
 import {
   createEnvironment,
@@ -37,6 +44,9 @@ import type {
 } from "../types";
 
 const uid = () => `m_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const isUuid = (value: string | null | undefined): boolean => !!value && UUID_RE.test(value);
 
 function safeJson(text: string): unknown {
   try {
@@ -316,6 +326,11 @@ export function usePlannerChat() {
   const runAIJson = useServerFn(aiGenerateJson);
   const createProjectOnServer = useServerFn(createProjectRow);
   const saveSnapshotOnServer = useServerFn(saveProjectSnapshot);
+  const createSessionOnServer = useServerFn(createAiSession);
+  const appendMessageOnServer = useServerFn(appendAiMessage);
+  const recordToolCallOnServer = useServerFn(recordAiToolCall);
+  const listSessionsOnServer = useServerFn(listAiSessions);
+  const getSessionOnServer = useServerFn(getAiSession);
 
   const [state, setState] = useState<ChatState>({
     messages: [
@@ -332,6 +347,111 @@ export function usePlannerChat() {
   });
 
   const abortRef = useRef<AbortController | null>(null);
+  const sessionRef = useRef<{ id: string; projectId: string | null } | null>(null);
+  const hydratedForRef = useRef<string | null>(null);
+
+  /**
+   * Garante uma sessão persistida no banco para o projeto ativo.
+   * Best-effort: se falhar (sem tenant, projeto ainda não persistido, RLS),
+   * o chat continua funcionando apenas em memória.
+   */
+  const ensureSession = useCallback(
+    async (projectId: string | null, title: string): Promise<string | null> => {
+      if (!activeCompany?.id) return null;
+      const current = sessionRef.current;
+      if (current && current.projectId === projectId) return current.id;
+      const validProject = projectId && isUuid(projectId) ? projectId : null;
+      const create = async (pid: string | null) => {
+        const row = (await createSessionOnServer({
+          data: {
+            projectId: pid,
+            title: title.slice(0, 120) || "Nova conversa",
+            modelId: "google/gemini-3.6-flash",
+          },
+        })) as { id: string };
+        sessionRef.current = { id: row.id, projectId };
+        return row.id;
+      };
+      try {
+        return await create(validProject);
+      } catch {
+        try {
+          return await create(null);
+        } catch (e) {
+          console.warn("[planner-chat] sessão de IA não persistida", e);
+          return null;
+        }
+      }
+    },
+    [activeCompany?.id, createSessionOnServer],
+  );
+
+  const persistMessage = useCallback(
+    async (
+      sessionId: string | null,
+      role: "user" | "assistant",
+      content: string,
+      status: string,
+    ): Promise<string | null> => {
+      if (!sessionId || !content.trim()) return null;
+      try {
+        const row = (await appendMessageOnServer({
+          data: { sessionId, role, content: content.slice(0, 200_000), status },
+        })) as { id: string };
+        return row.id;
+      } catch (e) {
+        console.warn("[planner-chat] mensagem não persistida", e);
+        return null;
+      }
+    },
+    [appendMessageOnServer],
+  );
+
+  // Hidrata o histórico persistido da última sessão do projeto ativo.
+  const projectId = editor.state.project?.id ?? null;
+  useEffect(() => {
+    if (!activeCompany?.id || !projectId || !isUuid(projectId)) return;
+    if (hydratedForRef.current === projectId) return;
+    hydratedForRef.current = projectId;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const sessions = (await listSessionsOnServer({
+          data: { projectId, archived: false, limit: 1 },
+        })) as { id: string }[];
+        const latest = sessions?.[0];
+        if (!latest || cancelled) return;
+        const detail = (await getSessionOnServer({ data: { id: latest.id } })) as {
+          messages: {
+            id: string;
+            role: string;
+            content: string;
+            status: string | null;
+            created_at: string;
+          }[];
+        };
+        if (cancelled) return;
+        const restored = (detail.messages ?? [])
+          .filter((m) => m.role === "user" || m.role === "assistant")
+          .map<PlannerAIMessage>((m) => ({
+            id: m.id,
+            role: m.role as "user" | "assistant",
+            content: m.content,
+            createdAt: m.created_at,
+            status: "done",
+          }));
+        sessionRef.current = { id: latest.id, projectId };
+        if (restored.length > 0) {
+          setState((s) => ({ ...s, messages: restored }));
+        }
+      } catch (e) {
+        console.warn("[planner-chat] histórico de IA não carregado", e);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeCompany?.id, projectId, listSessionsOnServer, getSessionOnServer]);
 
   const patchMessage = useCallback((id: string, patch: (m: PlannerAIMessage) => PlannerAIMessage) => {
     setState((s) => ({ ...s, messages: s.messages.map((m) => (m.id === id ? patch(m) : m)) }));
@@ -396,6 +516,11 @@ export function usePlannerChat() {
       const controller = new AbortController();
       abortRef.current = controller;
       const rules = loadRules(tenantId);
+
+      // Sessão persistida (best-effort) + mensagem do usuário.
+      const sessionId = await ensureSession(project.id ?? null, trimmed);
+      await persistMessage(sessionId, "user", trimmed, "ok");
+      const startedAt = Date.now();
 
       try {
         setState((s) => ({ ...s, status: "streaming" }));
@@ -581,6 +706,33 @@ export function usePlannerChat() {
 
         setState((s) => ({ ...s, status: "idle" }));
         abortRef.current = null;
+
+        // Persistência da resposta + auditoria das tools executadas no cliente.
+        if (sessionId) {
+          const assistantMessageId = await persistMessage(
+            sessionId,
+            "assistant",
+            buffer || "(sem conteúdo)",
+            "ok",
+          );
+          for (const call of toolCalls) {
+            try {
+              await recordToolCallOnServer({
+                data: {
+                  sessionId,
+                  messageId: assistantMessageId,
+                  toolName: call.name,
+                  args: (call.args ?? {}) as Record<string, unknown>,
+                  status: call.status === "ok" ? "ok" : call.status === "error" ? "error" : "pending",
+                  summary: call.message ?? null,
+                  durationMs: Date.now() - startedAt,
+                },
+              });
+            } catch (e) {
+              console.warn("[planner-chat] tool call não persistida", e);
+            }
+          }
+        }
       } catch (err) {
         patchMessage(assistantId, (m) => ({
           ...m,
@@ -590,6 +742,12 @@ export function usePlannerChat() {
             `\n\n> Erro ao processar: ${(err as Error).message ?? String(err)}`,
         }));
         setState((s) => ({ ...s, status: "error" }));
+        await persistMessage(
+          sessionId,
+          "assistant",
+          `Erro ao processar: ${(err as Error).message ?? String(err)}`,
+          "error",
+        );
       }
     },
     [
@@ -605,6 +763,9 @@ export function usePlannerChat() {
       createProjectOnServer,
       saveSnapshotOnServer,
       navigate,
+      ensureSession,
+      persistMessage,
+      recordToolCallOnServer,
     ],
   );
 
@@ -623,6 +784,8 @@ export function usePlannerChat() {
   );
 
   const clear = useCallback(() => {
+    sessionRef.current = null;
+    hydratedForRef.current = null;
     setState({
       messages: [
         {
