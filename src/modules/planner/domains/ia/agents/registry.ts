@@ -101,7 +101,7 @@ export const PLANNER_AGENTS: readonly PlannerAgentDefinition[] = [
     ],
     keywords: [
       "orcamento", "orçamento", "custo", "custos", "preco", "preço", "valor", "quanto custa",
-      "estimativa", "投", "investimento", "parcelamento", "margem", "financeiro",
+      "estimativa", "investimento", "parcelamento", "margem", "financeiro",
     ],
     persona:
       "Orçamentista: estima custo de chapas, ferragens, serviços e margem. Nunca altera o projeto — apenas calcula e explica a composição financeira.",
