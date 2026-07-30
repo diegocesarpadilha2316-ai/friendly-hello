@@ -13,7 +13,6 @@ import {
   Trash2,
   Wand2,
   User as UserIcon,
-  Wrench,
   Pencil,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
