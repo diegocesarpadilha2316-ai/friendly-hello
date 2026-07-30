@@ -349,6 +349,47 @@ export function usePlannerChat() {
   const abortRef = useRef<AbortController | null>(null);
   const sessionRef = useRef<{ id: string; projectId: string | null } | null>(null);
   const hydratedForRef = useRef<string | null>(null);
+  /** Trava de concorrência: impede duplo clique/reentrância no mesmo envio. */
+  const sendingRef = useRef(false);
+  /** Chave de idempotência do envio atual (reutilizada em retries). */
+  const pendingKeyRef = useRef<{ user: string; assistant: string } | null>(null);
+  const [history, setHistory] = useState<{ hasMore: boolean; cursor: string | null; loading: boolean }>({
+    hasMore: false,
+    cursor: null,
+    loading: false,
+  });
+
+  /** sessionId sobrevive ao reload: guardado por tenant+projeto. */
+  const sessionStorageKey = useCallback(
+    (projectId: string | null) => `dioris.planner.ai.session.${tenantId}.${projectId ?? "sem-projeto"}`,
+    [tenantId],
+  );
+
+  const readStoredSession = useCallback(
+    (projectId: string | null): string | null => {
+      if (typeof window === "undefined") return null;
+      try {
+        return window.localStorage.getItem(sessionStorageKey(projectId));
+      } catch {
+        return null;
+      }
+    },
+    [sessionStorageKey],
+  );
+
+  const storeSession = useCallback(
+    (projectId: string | null, sessionId: string | null) => {
+      if (typeof window === "undefined") return;
+      try {
+        const key = sessionStorageKey(projectId);
+        if (sessionId) window.localStorage.setItem(key, sessionId);
+        else window.localStorage.removeItem(key);
+      } catch {
+        /* noop */
+      }
+    },
+    [sessionStorageKey],
+  );
 
   /**
    * Garante uma sessão persistida no banco para o projeto ativo.
@@ -360,6 +401,11 @@ export function usePlannerChat() {
       if (!activeCompany?.id) return null;
       const current = sessionRef.current;
       if (current && current.projectId === projectId) return current.id;
+      const stored = readStoredSession(projectId);
+      if (stored) {
+        sessionRef.current = { id: stored, projectId };
+        return stored;
+      }
       const validProject = projectId && isUuid(projectId) ? projectId : null;
       const create = async (pid: string | null) => {
         const row = (await createSessionOnServer({
@@ -370,6 +416,7 @@ export function usePlannerChat() {
           },
         })) as { id: string };
         sessionRef.current = { id: row.id, projectId };
+        storeSession(projectId, row.id);
         return row.id;
       };
       try {
@@ -378,12 +425,12 @@ export function usePlannerChat() {
         try {
           return await create(null);
         } catch (e) {
-          console.warn("[planner-chat] sessão de IA não persistida", e);
+          console.warn("[planner-chat] não foi possível criar a sessão", e);
           return null;
         }
       }
     },
-    [activeCompany?.id, createSessionOnServer],
+    [activeCompany?.id, createSessionOnServer, readStoredSession, storeSession],
   );
 
   const persistMessage = useCallback(
@@ -392,15 +439,22 @@ export function usePlannerChat() {
       role: "user" | "assistant",
       content: string,
       status: string,
+      clientMessageId?: string,
     ): Promise<string | null> => {
       if (!sessionId || !content.trim()) return null;
       try {
         const row = (await appendMessageOnServer({
-          data: { sessionId, role, content: content.slice(0, 200_000), status },
+          data: {
+            sessionId,
+            role,
+            content: content.slice(0, 200_000),
+            status,
+            ...(clientMessageId ? { clientMessageId } : {}),
+          },
         })) as { id: string };
         return row.id;
       } catch (e) {
-        console.warn("[planner-chat] mensagem não persistida", e);
+        console.warn("[planner-chat] não foi possível salvar a mensagem", e);
         return null;
       }
     },
@@ -421,7 +475,7 @@ export function usePlannerChat() {
         })) as { id: string }[];
         const latest = sessions?.[0];
         if (!latest || cancelled) return;
-        const detail = (await getSessionOnServer({ data: { id: latest.id } })) as {
+        const detail = (await getSessionOnServer({ data: { id: latest.id, limit: 50 } })) as {
           messages: {
             id: string;
             role: string;
@@ -429,6 +483,8 @@ export function usePlannerChat() {
             status: string | null;
             created_at: string;
           }[];
+          hasMore: boolean;
+          nextCursor: string | null;
         };
         if (cancelled) return;
         const restored = (detail.messages ?? [])
@@ -438,20 +494,52 @@ export function usePlannerChat() {
             role: m.role as "user" | "assistant",
             content: m.content,
             createdAt: m.created_at,
-            status: "done",
+            status: m.status === "error" ? "error" : "done",
           }));
         sessionRef.current = { id: latest.id, projectId };
+        storeSession(projectId, latest.id);
+        setHistory({ hasMore: !!detail.hasMore, cursor: detail.nextCursor ?? null, loading: false });
         if (restored.length > 0) {
           setState((s) => ({ ...s, messages: restored }));
         }
       } catch (e) {
-        console.warn("[planner-chat] histórico de IA não carregado", e);
+        console.warn("[planner-chat] não foi possível carregar o histórico", e);
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [activeCompany?.id, projectId, listSessionsOnServer, getSessionOnServer]);
+  }, [activeCompany?.id, projectId, listSessionsOnServer, getSessionOnServer, storeSession]);
+
+  /** Paginação: carrega mensagens anteriores da mesma sessão. */
+  const loadMore = useCallback(async () => {
+    const session = sessionRef.current;
+    if (!session || !history.hasMore || !history.cursor || history.loading) return;
+    setHistory((h) => ({ ...h, loading: true }));
+    try {
+      const detail = (await getSessionOnServer({
+        data: { id: session.id, limit: 50, before: history.cursor },
+      })) as {
+        messages: { id: string; role: string; content: string; status: string | null; created_at: string }[];
+        hasMore: boolean;
+        nextCursor: string | null;
+      };
+      const older = (detail.messages ?? [])
+        .filter((m) => m.role === "user" || m.role === "assistant")
+        .map<PlannerAIMessage>((m) => ({
+          id: m.id,
+          role: m.role as "user" | "assistant",
+          content: m.content,
+          createdAt: m.created_at,
+          status: m.status === "error" ? "error" : "done",
+        }));
+      setState((s) => ({ ...s, messages: [...older, ...s.messages] }));
+      setHistory({ hasMore: !!detail.hasMore, cursor: detail.nextCursor ?? null, loading: false });
+    } catch (e) {
+      console.warn("[planner-chat] não foi possível carregar o histórico", e);
+      setHistory((h) => ({ ...h, loading: false }));
+    }
+  }, [getSessionOnServer, history.cursor, history.hasMore, history.loading]);
 
   const patchMessage = useCallback((id: string, patch: (m: PlannerAIMessage) => PlannerAIMessage) => {
     setState((s) => ({ ...s, messages: s.messages.map((m) => (m.id === id ? patch(m) : m)) }));
