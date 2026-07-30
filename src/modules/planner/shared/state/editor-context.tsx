@@ -536,6 +536,17 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
         /* localStorage cheio: ignora */
       }
     };
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      flushLocal();
+      const pending =
+        stateRef.current.dirty ||
+        inFlightRef.current ||
+        pendingProjectRef.current !== null;
+      if (!pending) return;
+      // Não prometemos salvar: apenas avisamos que pode não ter sincronizado.
+      e.preventDefault();
+      e.returnValue = "";
+    };
     const onHidden = () => {
       if (document.visibilityState === "hidden") flushLocal();
     };
