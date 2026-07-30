@@ -55,6 +55,16 @@ export const createAiSession = createServerFn({ method: "POST" })
   .middleware([requireTenant])
   .inputValidator((data: unknown) => createSessionInput.parse(data ?? {}))
   .handler(async ({ data, context }) => {
+    // Segurança: o projeto informado precisa pertencer ao tenant ativo.
+    if (data.projectId) {
+      const owns = await context.supabase
+        .from("planner_projects")
+        .select("id")
+        .eq("company_id", context.tenantId)
+        .eq("id", data.projectId)
+        .maybeSingle();
+      if (owns.error || !owns.data) throw new Response("Forbidden", { status: 403 });
+    }
     const { data: row, error } = await context.supabase
       .from("planner_ai_sessions")
       .insert({
