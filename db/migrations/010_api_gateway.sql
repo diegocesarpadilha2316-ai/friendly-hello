@@ -148,9 +148,9 @@ BEGIN
     EXECUTE format($p$
       CREATE POLICY %I ON public.%I FOR ALL TO authenticated
       USING (EXISTS (SELECT 1 FROM public.company_members m
-        WHERE m.company_id = %I.company_id AND m.user_id = auth.uid() AND m.status = 'active'))
+        WHERE m.company_id = %I.company_id AND m.user_id = auth.uid() AND m.active = true))
       WITH CHECK (EXISTS (SELECT 1 FROM public.company_members m
-        WHERE m.company_id = %I.company_id AND m.user_id = auth.uid() AND m.status = 'active'));
+        WHERE m.company_id = %I.company_id AND m.user_id = auth.uid() AND m.active = true));
     $p$, t || '_tenant', t, t, t);
   END LOOP;
 END $$;
@@ -161,19 +161,19 @@ CREATE POLICY api_endpoints_read ON public.api_endpoints FOR SELECT TO authentic
   USING (
     company_id IS NULL OR EXISTS (
       SELECT 1 FROM public.company_members m
-      WHERE m.company_id = api_endpoints.company_id AND m.user_id = auth.uid() AND m.status = 'active'
+      WHERE m.company_id = api_endpoints.company_id AND m.user_id = auth.uid() AND m.active = true
     )
   );
 CREATE POLICY api_endpoints_write ON public.api_endpoints FOR ALL TO authenticated
   USING (
     company_id IS NOT NULL AND EXISTS (
       SELECT 1 FROM public.company_members m
-      WHERE m.company_id = api_endpoints.company_id AND m.user_id = auth.uid() AND m.status = 'active'
+      WHERE m.company_id = api_endpoints.company_id AND m.user_id = auth.uid() AND m.active = true
     )
   )
   WITH CHECK (
     company_id IS NOT NULL AND EXISTS (
       SELECT 1 FROM public.company_members m
-      WHERE m.company_id = api_endpoints.company_id AND m.user_id = auth.uid() AND m.status = 'active'
+      WHERE m.company_id = api_endpoints.company_id AND m.user_id = auth.uid() AND m.active = true
     )
   );
