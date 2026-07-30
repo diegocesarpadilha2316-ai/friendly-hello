@@ -28,11 +28,11 @@ const norm = (s: string) =>
     .trim();
 
 const EDIT_VERB =
-  /\b(troqu|troca|trocar|mud[ae]|mudar|altere|alterar|altera|aumente|aumenta|aumentar|diminu|reduz|coloqu|coloca|adicione|adiciona|adicionar|poe|ponha|tire|tirar|remova|remover|deixe|deixa|passe|passa|ajuste|ajusta|defina|define|converta|transforme)\b/;
+  /\b(?:troqu\w*|troca\w*|mud\w*|alter\w*|aument\w*|diminu\w*|reduz\w*|coloc\w*|adicion\w*|poe|ponha|tir[ae]\w*|remov\w*|deix\w*|pass[ae]\w*|ajust\w*|defin\w*|convert\w*|transform\w*)\b/;
 
 /** Criação explícita de um móvel novo — não é edição. */
 const CREATE_VERB =
-  /\b(cri[ae]|criar|faz|faca|fazer|monte|montar|gere|gerar|quero um|quero uma|projete|projetar)\b/;
+  /\b(?:cri[ae]|criar|faz|faca|fazer|monte|montar|gere|gerar|projete|projetar)\b|\bquero (?:um|uma)\b/;
 
 function toMm(value: number, unit?: string): number {
   if (unit === "mm") return Math.round(value);
