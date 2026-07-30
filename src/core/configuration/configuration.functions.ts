@@ -391,16 +391,10 @@ export const apiKeyCreate = createServerFn({ method: "POST" })
       .parse(raw),
   )
   .handler(async ({ context, data }) => {
-    // Simple opaque token — hashed server-side; plain value is returned once.
-    const buf = new Uint8Array(24);
-    globalThis.crypto.getRandomValues(buf);
-    const secret = Array.from(buf, (b) => b.toString(16).padStart(2, "0")).join("");
-    const prefix = `dk_${secret.slice(0, 6)}`;
-    const encoder = new TextEncoder();
-    const hash = await globalThis.crypto.subtle.digest("SHA-256", encoder.encode(secret));
-    const hashed = Array.from(new Uint8Array(hash), (b) => b.toString(16).padStart(2, "0")).join(
-      "",
-    );
+    // Implementação canônica única — ver src/core/api-gateway/key-hash.server.ts.
+    // O token completo é gerado server-side e devolvido uma única vez.
+    const { generateApiKey } = await import("@/core/api-gateway/key-hash.server");
+    const { prefix, keyHash, full } = generateApiKey();
     const { data: saved, error } = await context.supabase
       .from("api_keys")
       .insert({
@@ -409,7 +403,7 @@ export const apiKeyCreate = createServerFn({ method: "POST" })
         prefix,
         // Coluna canônica única do hash. `hashed_key` não existe no banco real
         // e não deve ser gravada — sem fallback, sem escrita dupla.
-        key_hash: hashed,
+        key_hash: keyHash,
         scopes: data.scopes,
         status: "active",
         expires_at: data.expiresAt ?? null,
@@ -419,7 +413,7 @@ export const apiKeyCreate = createServerFn({ method: "POST" })
       .single();
     if (error) throw new Error(error.message);
     const { mapApiKey } = await import("./configuration.server");
-    return { key: mapApiKey(saved), plainToken: `${prefix}.${secret}` as string };
+    return { key: mapApiKey(saved), plainToken: full };
   });
 
 export const apiKeyRevoke = createServerFn({ method: "POST" })
