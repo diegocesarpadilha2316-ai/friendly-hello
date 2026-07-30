@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createRoomShell } from "@/modules/planner/shared";
+import { createRoom, ensureRoomShell } from "@/modules/planner/shared";
 import { analyzeRoom } from "./analyze";
 import { composeLayout } from "./compose";
 import { composeDecor } from "./decor";
@@ -7,13 +7,7 @@ import { rebalanceComposition } from "./quality";
 
 describe("composicao", () => {
   it("analisa e compoe uma cozinha", () => {
-    const nodes = createRoomShell("r1", 4200, 3200, 100);
-    const room = {
-      id: "r1", name: "Cozinha",
-      dimensions: { width: 4200, depth: 3200, height: 2700 },
-      nodes: Object.fromEntries(nodes.map((n) => [n.id, n])),
-      nodeOrder: nodes.map((n) => n.id),
-    } as never;
+    const room = ensureRoomShell(createRoom({ name: "Cozinha", type: "cozinha", width: 4200, depth: 3200, height: 2700 }));
     const a = analyzeRoom(room, { environment: "cozinha", style: "minimalista" });
     expect(a.areaM2).toBeCloseTo(13.44, 1);
     expect(a.walls.top.hasWindow).toBe(true);
