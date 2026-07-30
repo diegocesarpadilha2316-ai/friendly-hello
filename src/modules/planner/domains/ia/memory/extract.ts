@@ -129,7 +129,11 @@ export function extractMemory(input: ExtractionInput): ExtractionResult {
   const styleFromTool = input.toolCalls.find((t) => t.name === "set_style")?.args?.style;
   if (typeof styleFromTool === "string") style = norm(styleFromTool);
   else {
-    const found = STYLES.find((s) => text.includes(s));
+    // Aceita flexão de gênero/número: "moderna", "clássicas", "industriais".
+    const found = STYLES.find((s) => {
+      const root = s.replace(/[oa]$/, "");
+      return new RegExp(`\\b${root}(o|a|os|as|es|is)?\\b`).test(text);
+    });
     if (found) style = found;
   }
 
