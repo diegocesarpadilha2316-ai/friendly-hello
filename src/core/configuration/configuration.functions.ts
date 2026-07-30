@@ -447,7 +447,8 @@ export const configurationSnapshot = createServerFn({ method: "GET" })
       security,
       backup,
       flags,
-      integrations,
+      integrationRows,
+      healthRows,
       apiKeys,
     ] = await Promise.all([
       s.from("platform_settings").select("*").maybeSingle(),
@@ -460,7 +461,8 @@ export const configurationSnapshot = createServerFn({ method: "GET" })
         .from("feature_flags")
         .select("*")
         .or(`company_id.eq.${context.tenantId},company_id.is.null`),
-      s.from("integrations").select("*").eq("company_id", context.tenantId),
+      reg.listRegistry(s, context.tenantId),
+      reg.listHealth(s, context.tenantId),
       s
         .from("api_keys")
         .select("*")
@@ -468,6 +470,7 @@ export const configurationSnapshot = createServerFn({ method: "GET" })
         .order("created_at", { ascending: false }),
     ]);
     const m = await import("./configuration.server");
+    const latestHealth = reg.latestHealthByIntegration(healthRows);
     return {
       platform: platform.data ? m.mapPlatform(platform.data) : null,
       company: company.data ? m.mapCompany(company.data) : null,
@@ -476,7 +479,9 @@ export const configurationSnapshot = createServerFn({ method: "GET" })
       security: security.data ? m.mapSecurity(security.data) : null,
       backup: backup.data ? m.mapBackup(backup.data) : null,
       flags: (flags.data ?? []).map(m.mapFlag),
-      integrations: (integrations.data ?? []).map(m.mapIntegration),
+      integrations: integrationRows.map((r) =>
+        m.mapIntegration(r, latestHealth.get(String(r.id))),
+      ),
       apiKeys: (apiKeys.data ?? []).map(m.mapApiKey),
     };
   });
