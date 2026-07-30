@@ -1018,6 +1018,37 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
       {viewport.render === "material" ? (
         <Environment preset={dayPreset.envPreset} background={false} environmentIntensity={dayPreset.envIntensity} />
       ) : null}
+      {/* Iluminação interna real: spots de teto em grade + bounce quente do
+          piso. É o que separa "maquete cinza" de "ambiente fotografado" —
+          sem eles o interior fica apenas com a luz do sol externa. */}
+      {viewport.render === "material" && viewport.showLights ? (
+        <group>
+          {[-1, 1].map((sx) =>
+            [-1, 1].map((sz) => (
+              <pointLight
+                key={`spot-${sx}-${sz}`}
+                position={[
+                  cx + sx * Math.max(0.8, diag * 0.22),
+                  Math.max(1.8, viewport.wallHeight / 1000 - 0.15),
+                  cz + sz * Math.max(0.8, diag * 0.22),
+                ]}
+                intensity={daytime === "night" ? 9 : 4.5}
+                distance={Math.max(6, diag * 1.6)}
+                decay={2}
+                color={daytime === "night" ? "#ffd9a8" : "#fff3e2"}
+              />
+            )),
+          )}
+          {/* Bounce do piso — clareia a barriga dos móveis, sem sombra. */}
+          <pointLight
+            position={[cx, 0.35, cz]}
+            intensity={daytime === "night" ? 1.2 : 2.2}
+            distance={Math.max(5, diag * 1.2)}
+            decay={2}
+            color="#f6ece0"
+          />
+        </group>
+      ) : null}
       <ApplyViewPreset view={viewport.view} center={center} diag={diag} />
       {/* Contact shadow suave no chão — enraíza os móveis mesmo em modo wireframe */}
       {viewport.showLights ? (
