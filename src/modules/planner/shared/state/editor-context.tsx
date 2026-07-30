@@ -25,10 +25,7 @@ import {
 } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useTenant } from "@/core/providers/TenantProvider";
-import type {
-  PlannerProject,
-  PlannerProjectVersion,
-} from "../types/project";
+import type { PlannerProject, PlannerProjectVersion } from "../types/project";
 import type { PlannerProjectId } from "../types";
 import { createProject, ensureProjectRoomShells } from "../factories/project";
 import {
@@ -51,6 +48,18 @@ const HISTORY_LIMIT = 50;
 // nó dentro deste intervalo mesclam com o último estado do past — evita
 // entulhar Undo com micro-passos de arrastar/redimensionar.
 const HISTORY_COALESCE_MS = 250;
+
+/** Estados visíveis de sincronização do projeto (Etapa 6). */
+export type PlannerSyncStatus =
+  | "idle"
+  | "modified"
+  | "saving"
+  | "saved"
+  | "unsynced"
+  | "error"
+  | "offline";
+
+const SYNC_RETRY_DELAYS_MS = [2000, 5000, 15000] as const;
 
 interface EditorState {
   project: PlannerProject | null;
@@ -124,8 +133,7 @@ function reducer(state: EditorState, action: EditorAction): EditorState {
         ...state,
         selectedEnvironmentId:
           action.environmentId !== undefined ? action.environmentId : state.selectedEnvironmentId,
-        selectedRoomId:
-          action.roomId !== undefined ? action.roomId : state.selectedRoomId,
+        selectedRoomId: action.roomId !== undefined ? action.roomId : state.selectedRoomId,
         // Trocar de cômodo/ambiente limpa a seleção fina.
         selectedNodeId:
           action.environmentId !== undefined || action.roomId !== undefined
@@ -200,9 +208,16 @@ interface EditorContextValue {
   undo: () => void;
   redo: () => void;
   saveNow: () => void;
-  snapshotVersion: (label: string) => void;
-  restoreVersion: (versionId: string) => Promise<void>;
+  snapshotVersion: (label: string) => Promise<boolean>;
+  restoreVersion: (versionId: string) => Promise<boolean>;
   versions: readonly PlannerProjectVersion[];
+  /** Estado visível de sincronização remota do snapshot. */
+  syncStatus: PlannerSyncStatus;
+  /** Mensagem amigável do último erro de sincronização (nunca do banco). */
+  syncError: string | null;
+  /** Reenvia manualmente a versão local mais recente. */
+  retrySync: () => void;
+  refreshVersions: (projectId: string) => Promise<void>;
   canUndo: boolean;
   canRedo: boolean;
 }
@@ -225,8 +240,21 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [versions, setVersions] = useState<readonly PlannerProjectVersion[]>([]);
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [syncStatus, setSyncStatus] = useState<PlannerSyncStatus>("idle");
+  const [syncError, setSyncError] = useState<string | null>(null);
+  // Controle de concorrência: cada tentativa recebe um número de sequência
+  // monotônico. Uma resposta só pode mudar o estado se ainda for a última.
+  const saveSeqRef = useRef(0);
+  const inFlightRef = useRef(false);
+  const pendingProjectRef = useRef<PlannerProject | null>(null);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const retryAttemptRef = useRef(0);
   const { activeCompany } = useTenant();
   const tenantId = activeCompany?.id ?? "anonymous";
+  // Espelho do estado para listeners de janela (online/offline/beforeunload)
+  // que são registrados uma única vez.
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   // Rastreadores para o efeito de emissão do bus. Guardamos versão e
   // projectId da última emissão para diferenciar update / load / save
@@ -292,8 +320,14 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
         bus.emit("project:redone", payload);
         bridgeToWindow("project:redone", payload);
       }
-      bus.emit("project:updated", { ...payload, reason: undone ? "undo" : redone ? "redo" : "edit" });
-      bridgeToWindow("project:updated", { ...payload, reason: undone ? "undo" : redone ? "redo" : "edit" });
+      bus.emit("project:updated", {
+        ...payload,
+        reason: undone ? "undo" : redone ? "redo" : "edit",
+      });
+      bridgeToWindow("project:updated", {
+        ...payload,
+        reason: undone ? "undo" : redone ? "redo" : "edit",
+      });
     }
 
     if (state.lastSavedAt && state.lastSavedAt !== last.lastSavedAt) {
@@ -345,15 +379,69 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
     [listVersionsFn],
   );
 
-  const loadProject = useCallback((project: PlannerProject) => {
-    const normalized = ensureProjectRoomShells(project);
-    dispatch({ type: "load", project: normalized });
-    void refreshVersions(normalized.id);
-  }, [refreshVersions]);
+  /** Troca de projeto: descarta fila/retry do projeto anterior. */
+  const resetSync = useCallback(() => {
+    if (retryTimerRef.current) {
+      clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
+    if (autosaveTimer.current) {
+      clearTimeout(autosaveTimer.current);
+      autosaveTimer.current = null;
+    }
+    saveSeqRef.current += 1;
+    pendingProjectRef.current = null;
+    retryAttemptRef.current = 0;
+    setSyncError(null);
+    setSyncStatus("idle");
+  }, []);
+
+  // Cleanup na desmontagem do provider.
+  useEffect(
+    () => () => {
+      if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+      if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+    },
+    [],
+  );
+
+  const loadProject = useCallback(
+    (project: PlannerProject) => {
+      resetSync();
+      const normalized = ensureProjectRoomShells(project);
+      dispatch({ type: "load", project: normalized });
+      void refreshVersions(normalized.id);
+    },
+    [refreshVersions, resetSync],
+  );
 
   const persist = useCallback(
     async (project: PlannerProject) => {
-      upsertLocalProject(tenantId, project);
+      // 1) Snapshot local é sempre gravado primeiro e de forma síncrona —
+      //    nenhuma falha remota pode causar perda de alterações.
+      try {
+        upsertLocalProject(tenantId, project);
+      } catch {
+        /* localStorage cheio: seguimos para a gravação remota */
+      }
+
+      // 2) Fila serial: nunca há dois saves concorrentes. Um save em voo
+      //    apenas registra o estado mais novo como pendente.
+      if (inFlightRef.current) {
+        pendingProjectRef.current = project;
+        return false;
+      }
+
+      if (retryTimerRef.current) {
+        clearTimeout(retryTimerRef.current);
+        retryTimerRef.current = null;
+      }
+
+      const seq = ++saveSeqRef.current;
+      inFlightRef.current = true;
+      setSyncStatus("saving");
+
+      let ok = false;
       try {
         await saveSnapshotFn({
           data: {
@@ -364,14 +452,98 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
             client: project.client ?? null,
           },
         });
-        dispatch({ type: "saved", at: new Date().toISOString() });
+        ok = true;
+        retryAttemptRef.current = 0;
+        // Só confirma "salvo" se esta ainda for a última tentativa emitida
+        // e não houver estado mais novo esperando na fila.
+        if (seq === saveSeqRef.current && !pendingProjectRef.current) {
+          setSyncError(null);
+          setSyncStatus("saved");
+          dispatch({ type: "saved", at: new Date().toISOString() });
+        }
       } catch (err) {
-        // silencia; próxima edição tentará novamente
         console.error("[planner] autosave falhou", err);
+        if (seq === saveSeqRef.current) {
+          const offline = typeof navigator !== "undefined" && navigator.onLine === false;
+          setSyncStatus(offline ? "offline" : "unsynced");
+          setSyncError(
+            offline
+              ? "Sem conexão. As alterações estão salvas neste dispositivo."
+              : "Não foi possível sincronizar. As alterações estão salvas neste dispositivo.",
+          );
+          // Backoff limitado — nunca retry infinito.
+          const attempt = retryAttemptRef.current;
+          if (!offline && attempt < SYNC_RETRY_DELAYS_MS.length) {
+            retryAttemptRef.current = attempt + 1;
+            const latest = pendingProjectRef.current ?? project;
+            retryTimerRef.current = setTimeout(() => {
+              retryTimerRef.current = null;
+              void persistRef.current?.(pendingProjectRef.current ?? latest);
+            }, SYNC_RETRY_DELAYS_MS[attempt]);
+          }
+        }
+      } finally {
+        inFlightRef.current = false;
       }
+
+      // 3) Drena a fila: envia apenas o estado local MAIS RECENTE, nunca um
+      //    snapshot antigo depois de um novo.
+      const pending = pendingProjectRef.current;
+      if (pending && ok) {
+        pendingProjectRef.current = null;
+        return persistRef.current ? persistRef.current(pending) : false;
+      }
+      return ok;
     },
     [saveSnapshotFn, tenantId],
   );
+
+  // Ref estável para permitir recursão/retry sem dependência circular.
+  const persistRef = useRef<((p: PlannerProject) => Promise<boolean>) | null>(null);
+  persistRef.current = persist;
+
+  const retrySync = useCallback(() => {
+    const project = pendingProjectRef.current ?? state.project;
+    if (!project) return;
+    retryAttemptRef.current = 0;
+    pendingProjectRef.current = null;
+    void persist(project);
+  }, [persist, state.project]);
+
+  // Marca "modificado" assim que o estado fica sujo (antes do debounce).
+  useEffect(() => {
+    if (state.dirty) {
+      setSyncStatus((s) =>
+        s === "saving" ? s : s === "unsynced" || s === "offline" || s === "error" ? s : "modified",
+      );
+    }
+  }, [state.dirty, state.project?.version]);
+
+  // Reconexão: tenta sincronizar somente a versão local mais recente.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onOnline = () => {
+      setSyncStatus((s) => (s === "offline" ? "unsynced" : s));
+      const project = pendingProjectRef.current ?? stateRef.current.project;
+      if (project && stateRef.current.dirty) {
+        retryAttemptRef.current = 0;
+        pendingProjectRef.current = null;
+        void persistRef.current?.(project);
+      }
+    };
+    const onOffline = () => {
+      if (stateRef.current.dirty) {
+        setSyncStatus("offline");
+        setSyncError("Sem conexão. As alterações estão salvas neste dispositivo.");
+      }
+    };
+    window.addEventListener("online", onOnline);
+    window.addEventListener("offline", onOffline);
+    return () => {
+      window.removeEventListener("online", onOnline);
+      window.removeEventListener("offline", onOffline);
+    };
+  }, []);
 
   // Autosave — debounced 800ms após qualquer mudança "dirty".
   useEffect(() => {
@@ -398,19 +570,29 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
         /* localStorage cheio: ignora */
       }
     };
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      flushLocal();
+      const pending =
+        stateRef.current.dirty || inFlightRef.current || pendingProjectRef.current !== null;
+      if (!pending) return;
+      // Não prometemos salvar: apenas avisamos que pode não ter sincronizado.
+      e.preventDefault();
+      e.returnValue = "";
+    };
     const onHidden = () => {
       if (document.visibilityState === "hidden") flushLocal();
     };
-    window.addEventListener("beforeunload", flushLocal);
+    window.addEventListener("beforeunload", onBeforeUnload);
     document.addEventListener("visibilitychange", onHidden);
     return () => {
-      window.removeEventListener("beforeunload", flushLocal);
+      window.removeEventListener("beforeunload", onBeforeUnload);
       document.removeEventListener("visibilitychange", onHidden);
     };
   }, [state.dirty, state.project, tenantId]);
 
   const loadProjectById = useCallback(
     async (projectId: string) => {
+      resetSync();
       try {
         const result = await loadSnapshotFn({ data: { id: projectId } });
         if (!result || !result.meta) {
@@ -499,7 +681,7 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
         setVersions([]);
       }
     },
-    [loadSnapshotFn, refreshVersions, tenantId],
+    [loadSnapshotFn, refreshVersions, tenantId, resetSync],
   );
 
   const updateProject = useCallback(
@@ -510,12 +692,9 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
     [state.project],
   );
 
-  const select = useCallback(
-    (patch: { environmentId?: string | null; roomId?: string | null }) => {
-      dispatch({ type: "select", ...patch });
-    },
-    [],
-  );
+  const select = useCallback((patch: { environmentId?: string | null; roomId?: string | null }) => {
+    dispatch({ type: "select", ...patch });
+  }, []);
 
   const selectNode = useCallback((nodeId: string | null) => {
     dispatch({ type: "select-node", nodeId });
@@ -536,8 +715,9 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
   const snapshotVersion = useCallback(
     async (label: string) => {
       const project = state.project;
-      if (!project) return;
+      if (!project) return false;
       try {
+        // Captura o snapshot mais recente já sincronizado antes do checkpoint.
         await persist(project);
         await createVersionFn({
           data: {
@@ -549,8 +729,10 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
           },
         });
         await refreshVersions(project.id);
+        return true;
       } catch (err) {
         console.error("[planner] snapshot version falhou", err);
+        return false;
       }
     },
     [state.project, persist, createVersionFn, refreshVersions],
@@ -559,10 +741,28 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
   const restoreVersion = useCallback(
     async (versionId: string) => {
       const current = state.project;
-      if (!current) return;
+      if (!current) return false;
       try {
-        const row = await loadVersionFn({ data: { id: versionId } });
-        if (!row?.snapshot) return;
+        // O servidor valida tenant + projeto: uma versão de outro projeto
+        // ou de outro tenant simplesmente não é encontrada.
+        const row = await loadVersionFn({ data: { id: versionId, projectId: current.id } });
+        if (!row?.snapshot) return false;
+
+        // Checkpoint automático do estado atual ANTES de restaurar — único
+        // ponto de criação automática de versão (nada por edição).
+        await createVersionFn({
+          data: {
+            id: `${current.id}-pre-restore-${Date.now()}`,
+            projectId: current.id,
+            version: current.version,
+            label: `Antes de restaurar “${row.label}”`,
+            snapshot: current as unknown as JsonObject,
+          },
+        }).catch((err) => {
+          console.error("[planner] checkpoint pré-restauração falhou", err);
+          throw err;
+        });
+
         const restored: PlannerProject = {
           ...(row.snapshot as unknown as PlannerProject),
           id: current.id,
@@ -571,12 +771,17 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
           updatedAt: new Date().toISOString(),
         };
         dispatch({ type: "update", project: restored });
-        await persist(restored);
+        const persisted = await persist(restored);
+        await refreshVersions(current.id);
+        // Se a persistência falhou, o status já está "unsynced" e o snapshot
+        // local foi preservado — a UI não pode afirmar sucesso.
+        return persisted;
       } catch (err) {
         console.error("[planner] restore version falhou", err);
+        return false;
       }
     },
-    [state.project, loadVersionFn, persist],
+    [state.project, loadVersionFn, createVersionFn, persist, refreshVersions],
   );
 
   // Atalhos de teclado — Ctrl/Cmd+Z / Shift+Z / Ctrl+S.
@@ -620,10 +825,31 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
       snapshotVersion,
       restoreVersion,
       versions,
+      syncStatus,
+      syncError,
+      retrySync,
+      refreshVersions,
       canUndo: state.past.length > 0,
       canRedo: state.future.length > 0,
     }),
-    [state, loadProject, loadProjectById, updateProject, select, selectNode, undo, redo, saveNow, snapshotVersion, restoreVersion, versions],
+    [
+      state,
+      loadProject,
+      loadProjectById,
+      updateProject,
+      select,
+      selectNode,
+      undo,
+      redo,
+      saveNow,
+      snapshotVersion,
+      restoreVersion,
+      versions,
+      syncStatus,
+      syncError,
+      retrySync,
+      refreshVersions,
+    ],
   );
 
   return <EditorContext.Provider value={value}>{children}</EditorContext.Provider>;
