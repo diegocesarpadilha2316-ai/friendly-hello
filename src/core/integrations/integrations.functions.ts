@@ -177,7 +177,7 @@ export const integrationsWebhooksList = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<readonly IntegrationWebhook[]> => {
     const { data } = await context.supabase
       .from("integration_webhooks")
-      .select("*")
+      .select(WEBHOOK_COLUMNS)
       .eq("company_id", context.tenantId)
       .order("created_at", { ascending: false });
     return (data ?? []).map(mapWebhook);
@@ -227,7 +227,7 @@ export const integrationsSnapshot = createServerFn({ method: "GET" })
     const [integrations, health, webhooks, logs, syncs, events] = await Promise.all([
       supabase.from("integrations_registry").select("*").eq("company_id", tenant),
       supabase.from("integration_health").select("*").eq("company_id", tenant).limit(100),
-      supabase.from("integration_webhooks").select("*").eq("company_id", tenant),
+      supabase.from("integration_webhooks").select(WEBHOOK_COLUMNS).eq("company_id", tenant),
       supabase.from("integration_logs").select("*").eq("company_id", tenant).order("created_at", { ascending: false }).limit(100),
       supabase.from("integration_sync").select("*").eq("company_id", tenant).order("scheduled_at", { ascending: false }).limit(50),
       supabase.from("integration_events").select("*").eq("company_id", tenant).order("created_at", { ascending: false }).limit(50),
