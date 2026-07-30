@@ -50,6 +50,7 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
   const runnerRef = useRef<PlanRunner | null>(null);
   const ctxRef = useRef<ToolContext | null>(null);
   const messageRef = useRef<string>("");
+  const finishRef = useRef<(plan: ProjectPlan) => void>(() => {});
 
   const projectId = editor.state.project?.id ?? null;
 
