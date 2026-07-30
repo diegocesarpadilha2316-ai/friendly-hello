@@ -6,13 +6,20 @@
  * passam por `updateProject`, herdando Undo/Redo, Autosave, Histórico e
  * a sincronização 2D/3D/Engenharia.
  */
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { aiGenerateText, aiGenerateJson } from "@/core/ai";
 import { useTenant } from "@/core/providers/TenantProvider";
 import { useAuth } from "@/core/providers/AuthProvider";
 import { createProjectRow } from "@/lib/planner-projects.functions";
+import {
+  appendAiMessage,
+  createAiSession,
+  getAiSession,
+  listAiSessions,
+  recordAiToolCall,
+} from "@/lib/planner-ai.functions";
 import { saveProjectSnapshot, type JsonObject } from "@/lib/planner-snapshots.functions";
 import {
   createEnvironment,
