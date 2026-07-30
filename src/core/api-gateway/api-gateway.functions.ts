@@ -111,25 +111,39 @@ export const apiGatewaySnapshot = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<ApiGatewaySnapshot> => {
     const s = context.supabase;
     const t = context.tenantId;
-    const [keys, endpoints, requests, rateLimits, quotas, webhooks, deliveries] = await Promise.all([
-      s.from("api_keys").select("*").eq("company_id", t).order("created_at", { ascending: false }),
-      s.from("api_endpoints").select("*").or(`company_id.is.null,company_id.eq.${t}`).order("version"),
-      s
-        .from("api_requests")
-        .select("*")
-        .eq("company_id", t)
-        .order("created_at", { ascending: false })
-        .limit(200),
-      s.from("api_rate_limits").select("*").eq("company_id", t),
-      s.from("api_quotas").select("*").eq("company_id", t),
-      s.from("api_webhook_endpoints").select("*").eq("company_id", t).order("created_at", { ascending: false }),
-      s
-        .from("api_webhook_deliveries")
-        .select("*")
-        .eq("company_id", t)
-        .order("created_at", { ascending: false })
-        .limit(100),
-    ]);
+    const [keys, endpoints, requests, rateLimits, quotas, webhooks, deliveries] = await Promise.all(
+      [
+        s
+          .from("api_keys")
+          .select("*")
+          .eq("company_id", t)
+          .order("created_at", { ascending: false }),
+        s
+          .from("api_endpoints")
+          .select("*")
+          .or(`company_id.is.null,company_id.eq.${t}`)
+          .order("version"),
+        s
+          .from("api_requests")
+          .select("*")
+          .eq("company_id", t)
+          .order("created_at", { ascending: false })
+          .limit(200),
+        s.from("api_rate_limits").select("*").eq("company_id", t),
+        s.from("api_quotas").select("*").eq("company_id", t),
+        s
+          .from("api_webhook_endpoints")
+          .select("*")
+          .eq("company_id", t)
+          .order("created_at", { ascending: false }),
+        s
+          .from("api_webhook_deliveries")
+          .select("*")
+          .eq("company_id", t)
+          .order("created_at", { ascending: false })
+          .limit(100),
+      ],
+    );
     return {
       keys: (keys.data ?? []).map(mapKey),
       endpoints: (endpoints.data ?? []).map(mapEndpoint),
@@ -152,28 +166,26 @@ const createKeySchema = z.object({
 export const apiKeyCreate = createServerFn({ method: "POST" })
   .middleware([requireTenant])
   .inputValidator((raw: unknown) => createKeySchema.parse(raw))
-  .handler(
-    async ({ context, data }): Promise<{ key: ApiKey; secret: string }> => {
-      const { prefix, keyHash, full } = generateApiKey();
-      const { data: row, error } = await context.supabase
-        .from("api_keys")
-        .insert({
-          company_id: context.tenantId,
-          name: data.name,
-          description: data.description ?? null,
-          prefix,
-          key_hash: keyHash,
-          scopes: data.scopes,
-          allowed_ips: data.allowedIps,
-          expires_at: data.expiresAt ?? null,
-          created_by: context.userId,
-        })
-        .select("*")
-        .single();
-      if (error) throw new Error(error.message);
-      return { key: mapKey(row), secret: full };
-    },
-  );
+  .handler(async ({ context, data }): Promise<{ key: ApiKey; secret: string }> => {
+    const { prefix, keyHash, full } = generateApiKey();
+    const { data: row, error } = await context.supabase
+      .from("api_keys")
+      .insert({
+        company_id: context.tenantId,
+        name: data.name,
+        description: data.description ?? null,
+        prefix,
+        key_hash: keyHash,
+        scopes: data.scopes,
+        allowed_ips: data.allowedIps,
+        expires_at: data.expiresAt ?? null,
+        created_by: context.userId,
+      })
+      .select("*")
+      .single();
+    if (error) throw new Error(error.message);
+    return { key: mapKey(row), secret: full };
+  });
 
 const idSchema = z.object({ id: z.string().uuid() });
 
