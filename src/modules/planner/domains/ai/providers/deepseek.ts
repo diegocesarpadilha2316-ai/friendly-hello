@@ -45,6 +45,14 @@ export class DeepSeekProvider extends BaseAIProvider {
     return { ...h, ...this.extraHeaders };
   }
 
+  /**
+   * URL final de chat completions. Subclasses que falam com um proxy
+   * interno (rota canônica própria) sobrescrevem este método.
+   */
+  protected chatEndpoint(): string {
+    return `${this.config.baseUrl}/v1/chat/completions`;
+  }
+
   private buildBody(
     messages: readonly AIMessage[],
     options: AIChatOptions | undefined,
@@ -79,7 +87,7 @@ export class DeepSeekProvider extends BaseAIProvider {
 
   async chat(messages: readonly AIMessage[], options?: AIChatOptions): Promise<AIChatResponse> {
     const signal = withTimeout(options?.signal, options?.timeoutMs ?? 60_000);
-    const res = await fetch(`${this.config.baseUrl}/v1/chat/completions`, {
+    const res = await fetch(this.chatEndpoint(), {
       method: "POST",
       headers: this.headers(),
       body: this.buildBody(messages, options, false),
@@ -125,7 +133,7 @@ export class DeepSeekProvider extends BaseAIProvider {
     options?: AIChatOptions,
   ): Promise<AIChatResponse> {
     const signal = withTimeout(options?.signal, options?.timeoutMs ?? 120_000);
-    const res = await fetch(`${this.config.baseUrl}/v1/chat/completions`, {
+    const res = await fetch(this.chatEndpoint(), {
       method: "POST",
       headers: this.headers(),
       body: this.buildBody(messages, options, true),

@@ -27,6 +27,34 @@ export interface DebitResult {
   charged: number;
 }
 
+/**
+ * Estorno de um débito já registrado (linha `refund` positiva no ledger).
+ * Usado quando cobramos ANTES da chamada ao provedor e o provedor falha.
+ * É best-effort por design: nunca deve mascarar o erro original.
+ */
+export async function refundCreditsBestEffort(
+  tenantId: string,
+  userId: string | null,
+  input: DebitInput,
+): Promise<boolean> {
+  const amount = Math.max(1, Math.ceil(input.amount));
+  try {
+    const admin = getSupabaseAdmin();
+    const { error } = await admin.from("credit_ledger").insert({
+      company_id: tenantId,
+      kind: "refund",
+      amount,
+      reason: input.reason,
+      reference: input.reference ?? null,
+      actor_id: userId,
+      metadata: input.metadata ?? {},
+    });
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
 export async function debitCreditsOrThrow(
   supabase: SupabaseClient,
   tenantId: string,
@@ -42,10 +70,10 @@ export async function debitCreditsOrThrow(
   const balance = typeof balanceData === "number" ? balanceData : 0;
 
   if (balance < amount) {
-    throw new Response(
-      JSON.stringify({ code: "insufficient_credits", balance, need: amount }),
-      { status: 402, headers: { "content-type": "application/json" } },
-    );
+    throw new Response(JSON.stringify({ code: "insufficient_credits", balance, need: amount }), {
+      status: 402,
+      headers: { "content-type": "application/json" },
+    });
   }
 
   // Ledger is append-only via service_role — user client has no INSERT policy.
@@ -68,9 +96,7 @@ export async function debitCreditsOrThrow(
   if (balance >= LOW_THRESHOLD && newBalance < LOW_THRESHOLD) {
     void (async () => {
       try {
-        const { notifyLowCredits } = await import(
-          "@/core/notifications/notify.server"
-        );
+        const { notifyLowCredits } = await import("@/core/notifications/notify.server");
         await notifyLowCredits({
           companyId: tenantId,
           userId,
