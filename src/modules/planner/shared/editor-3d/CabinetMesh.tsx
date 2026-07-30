@@ -9,6 +9,7 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { resolveCabinetStyle, type CabinetStyleSpec } from "./furniture-style";
 
 export type CabinetSubtype =
   | "closet" | "roupeiro" | "armario" | "guarda-roupa"
@@ -77,6 +78,12 @@ interface CabinetMeshProps {
   shelvesCount?: number;
   led?: boolean;
   hasSink?: boolean;
+  /** Estilo do projeto (moderno, clássico, luxo...). */
+  style?: string | null;
+  /** Overrides explícitos de linha de marcenaria. */
+  handleStyle?: string | null;
+  hardwareFinish?: string | null;
+  frontStyle?: string | null;
 }
 
 interface CabinetComposition {
@@ -111,16 +118,30 @@ export function CabinetMesh(props: CabinetMeshProps) {
   const { width, height, depth, bodyProps, frontProps, selected, openDoors, openDrawers, led } = props;
   const comp = useMemo(() => inferComposition(props), [props]);
 
+  // Ficha técnica de estilo (design spec) — define frente, puxador,
+  // ferragem, junta-sombra, rodapé e cornija deste módulo.
+  const spec: CabinetStyleSpec = useMemo(
+    () =>
+      resolveCabinetStyle({
+        subtype: props.subtype,
+        width: props.width,
+        height: props.height,
+        style: props.style,
+        handle: props.handleStyle,
+        hardware: props.hardwareFinish,
+        front: props.frontStyle,
+      }),
+    [props.subtype, props.width, props.height, props.style, props.handleStyle, props.hardwareFinish, props.frontStyle],
+  );
+
   // A cena 3D trabalha em metros; todos os valores abaixo são medidas reais de marcenaria.
   const T = 0.018; // chapa 18mm
-  const GAP = 0.003;
-  const FRONT_T = 0.018;
+  const GAP = spec.reveal;
+  const FRONT_T = spec.frontThickness;
   const INSET = 0.006;
-  // Rodapé/sapata: 100mm em balcões/torres, 80mm em closets, ausente em aéreos.
-  const isUpper = props.subtype === "aereo" || props.subtype === "prateleira" || props.subtype === "nicho";
-  const TOE_KICK_H = isUpper ? 0 : (props.subtype === "closet" || props.subtype === "roupeiro" ? 0.08 : 0.1);
-  const HAS_CORNICE = isUpper || props.subtype === "torre";
-  const CORNICE_H = 0.04;
+  const TOE_KICK_H = spec.plinth;
+  const HAS_CORNICE = spec.cornice > 0;
+  const CORNICE_H = spec.cornice;
 
   // Caixa (corpo) — meshes internos: fundo, laterais, tampo, base
   const halfW = width / 2;
@@ -131,13 +152,17 @@ export function CabinetMesh(props: CabinetMeshProps) {
   const frontMatProps = frontProps ?? bodyProps;
   // Cor levemente escurecida para as reentrâncias/shaker panel (sombreado real de marcenaria).
   const frontColor = (frontMatProps as { color?: string }).color ?? bodyColor;
-  const HANDLE_COLOR = "#d4d7dc";
+  const hardwareProps = {
+    color: spec.hardwareColor,
+    metalness: spec.hardwareMetalness,
+    roughness: spec.hardwareRoughness,
+  };
 
   return (
     <group>
       {/* Rodapé/sapata técnica */}
       {TOE_KICK_H > 0 && height > 0.5 ? (
-        <mesh position={[0, -halfH + TOE_KICK_H / 2, halfD - depth * 0.08]} castShadow receiveShadow>
+        <mesh position={[0, -halfH + TOE_KICK_H / 2, halfD - spec.plinthRecess]} castShadow receiveShadow>
           <boxGeometry args={[Math.max(0.05, width - T * 2), TOE_KICK_H, Math.max(0.04, depth * 0.12)]} />
           <meshStandardMaterial {...bodyProps} color={bodyColor} roughness={0.8} />
         </mesh>
@@ -239,7 +264,7 @@ export function CabinetMesh(props: CabinetMeshProps) {
                 </mesh>
                 <mesh position={[x, halfH - 0.62, halfD - 0.12]} castShadow>
                   <cylinderGeometry args={[0.012, 0.012, Math.max(0.08, bayW - 0.08), 16]} />
-                  <meshStandardMaterial color="#c9cdd4" metalness={0.85} roughness={0.2} />
+                  <meshStandardMaterial {...hardwareProps} />
                 </mesh>
                 {hasDrawers ? Array.from({ length: 3 }).map((_, d) => (
                   <group key={`closet-dr-${i}-${d}`} position={[x, drawerStackY + d * 0.18, halfD - INSET]}>
@@ -249,7 +274,7 @@ export function CabinetMesh(props: CabinetMeshProps) {
                     </mesh>
                     <mesh position={[0, 0, FRONT_T / 2 + 0.008]} castShadow>
                       <boxGeometry args={[Math.min(0.26, bayW * 0.55), 0.01, 0.008]} />
-                      <meshStandardMaterial color="#c9cdd4" metalness={0.9} roughness={0.25} />
+                      <meshStandardMaterial {...hardwareProps} />
                     </mesh>
                   </group>
                 )) : null}
@@ -276,16 +301,13 @@ export function CabinetMesh(props: CabinetMeshProps) {
         })()
       )}
 
-      {/* Frentes: portas — shaker real com moldura de 4 réguas protruída (~4mm) */}
+      {/* Frentes: portas — tratamento definido pela ficha de estilo */}
       {comp.doors > 0 && Array.from({ length: comp.doors }).map((_, i) => {
         const doorW = (width - (comp.doors + 1) * GAP) / comp.doors;
         const doorH = height - 2 * GAP;
         const cx = -halfW + GAP + doorW / 2 + i * (doorW + GAP);
         const openAngle = openDoors ? (i % 2 === 0 ? -1.35 : 1.35) : 0;
         const hingeSide = i % 2 === 0 ? -1 : 1;
-        const RAIL = Math.min(0.075, Math.min(doorW, doorH) * 0.14); // largura da régua
-        const PROT = 0.004; // 4mm de protrusão do frame
-        const railZ = FRONT_T + PROT / 2;
         return (
           <AnimatedOpen
             key={`door-${i}`}
@@ -293,55 +315,24 @@ export function CabinetMesh(props: CabinetMeshProps) {
             targetRotY={openAngle}
             lambda={7}
           >
-            {/* Painel base da porta (recessed panel) — levemente mais escuro */}
-            <mesh position={[(-hingeSide * doorW) / 2, 0, FRONT_T / 2]} castShadow receiveShadow>
-              <boxGeometry args={[doorW, doorH, FRONT_T]} />
-              <meshStandardMaterial
-                {...frontMatProps}
+            <group position={[(-hingeSide * doorW) / 2, 0, 0]}>
+              <FrontSurface
+                spec={spec}
+                width={doorW}
+                height={doorH}
+                thickness={FRONT_T}
+                matProps={frontMatProps}
                 color={frontColor}
-                roughness={Math.min(1, ((frontMatProps as { roughness?: number }).roughness ?? 0.55) + 0.08)}
               />
-            </mesh>
-            {/* Régua superior */}
-            <mesh position={[(-hingeSide * doorW) / 2, doorH / 2 - RAIL / 2, railZ]} castShadow receiveShadow>
-              <boxGeometry args={[doorW, RAIL, PROT]} />
-              <meshStandardMaterial {...frontMatProps} />
-            </mesh>
-            {/* Régua inferior */}
-            <mesh position={[(-hingeSide * doorW) / 2, -doorH / 2 + RAIL / 2, railZ]} castShadow receiveShadow>
-              <boxGeometry args={[doorW, RAIL, PROT]} />
-              <meshStandardMaterial {...frontMatProps} />
-            </mesh>
-            {/* Régua esquerda */}
-            <mesh position={[(-hingeSide * doorW) / 2 - doorW / 2 + RAIL / 2, 0, railZ]} castShadow receiveShadow>
-              <boxGeometry args={[RAIL, Math.max(0.02, doorH - RAIL * 2), PROT]} />
-              <meshStandardMaterial {...frontMatProps} />
-            </mesh>
-            {/* Régua direita */}
-            <mesh position={[(-hingeSide * doorW) / 2 + doorW / 2 - RAIL / 2, 0, railZ]} castShadow receiveShadow>
-              <boxGeometry args={[RAIL, Math.max(0.02, doorH - RAIL * 2), PROT]} />
-              <meshStandardMaterial {...frontMatProps} />
-            </mesh>
-            {/* Puxador tubular vertical (barra) */}
-            <mesh
-              position={[(-hingeSide * doorW) + hingeSide * 0.032, 0, FRONT_T + PROT + 0.012]}
-              castShadow
-            >
-              <cylinderGeometry args={[0.006, 0.006, Math.min(0.34, doorH * 0.55), 24]} />
-              <meshStandardMaterial color={HANDLE_COLOR} metalness={0.95} roughness={0.18} />
-            </mesh>
-            {/* Bases do puxador (afastadores cromados) */}
-            {[-1, 1].map((s) => (
-              <mesh
-                key={`hbase-${s}`}
-                position={[(-hingeSide * doorW) + hingeSide * 0.032, s * Math.min(0.15, doorH * 0.25), FRONT_T + PROT / 2 + 0.006]}
-                rotation={[Math.PI / 2, 0, 0]}
-                castShadow
-              >
-                <cylinderGeometry args={[0.009, 0.009, 0.014, 20]} />
-                <meshStandardMaterial color={HANDLE_COLOR} metalness={0.9} roughness={0.25} />
-              </mesh>
-            ))}
+              <Handle
+                spec={spec}
+                orientation="vertical"
+                frontW={doorW}
+                frontH={doorH}
+                frontT={FRONT_T}
+                edge={hingeSide === -1 ? "right" : "left"}
+              />
+            </group>
             {/* Dobradiças caneco (2 por porta) — visíveis quando a porta abre */}
             {[-1, 1].map((s) => (
               <mesh
@@ -358,16 +349,13 @@ export function CabinetMesh(props: CabinetMeshProps) {
         );
       })}
 
-      {/* Frentes: gavetas — shaker real com moldura protruída */}
+      {/* Frentes: gavetas — tratamento definido pela ficha de estilo */}
       {comp.drawers > 0 && Array.from({ length: comp.drawers }).map((_, i) => {
         const drH = (height - (comp.drawers + 1) * GAP) / comp.drawers;
         const drW = width - 2 * GAP;
         const cy = halfH - GAP - drH / 2 - i * (drH + GAP);
         const outset = openDrawers ? 0.16 : 0;
-        const RAIL = Math.min(0.06, Math.min(drW, drH) * 0.16);
-        const PROT = 0.004;
-        const railZ = FRONT_T + PROT / 2;
-        const baseZ = halfD - INSET + FRONT_T / 2;
+        const baseZ = halfD - INSET;
         return (
           <AnimatedOpen
             key={`dr-${i}`}
@@ -376,49 +364,22 @@ export function CabinetMesh(props: CabinetMeshProps) {
             targetOffsetZ={outset}
             lambda={9}
           >
-            {/* Painel base (recessed) */}
-            <mesh castShadow receiveShadow>
-              <boxGeometry args={[drW, drH, FRONT_T]} />
-              <meshStandardMaterial
-                {...frontMatProps}
-                color={frontColor}
-                roughness={Math.min(1, ((frontMatProps as { roughness?: number }).roughness ?? 0.55) + 0.08)}
-              />
-            </mesh>
-            {/* 4 réguas do frame */}
-            <mesh position={[0, drH / 2 - RAIL / 2, railZ]} castShadow receiveShadow>
-              <boxGeometry args={[drW, RAIL, PROT]} />
-              <meshStandardMaterial {...frontMatProps} />
-            </mesh>
-            <mesh position={[0, -drH / 2 + RAIL / 2, railZ]} castShadow receiveShadow>
-              <boxGeometry args={[drW, RAIL, PROT]} />
-              <meshStandardMaterial {...frontMatProps} />
-            </mesh>
-            <mesh position={[-drW / 2 + RAIL / 2, 0, railZ]} castShadow receiveShadow>
-              <boxGeometry args={[RAIL, Math.max(0.02, drH - RAIL * 2), PROT]} />
-              <meshStandardMaterial {...frontMatProps} />
-            </mesh>
-            <mesh position={[drW / 2 - RAIL / 2, 0, railZ]} castShadow receiveShadow>
-              <boxGeometry args={[RAIL, Math.max(0.02, drH - RAIL * 2), PROT]} />
-              <meshStandardMaterial {...frontMatProps} />
-            </mesh>
-            {/* Puxador horizontal centralizado */}
-            <mesh position={[0, 0, FRONT_T + PROT + 0.012]} rotation={[0, 0, Math.PI / 2]} castShadow>
-              <cylinderGeometry args={[0.006, 0.006, Math.min(0.30, drW * 0.45), 24]} />
-              <meshStandardMaterial color={HANDLE_COLOR} metalness={0.95} roughness={0.18} />
-            </mesh>
-            {/* Bases do puxador */}
-            {[-1, 1].map((s) => (
-              <mesh
-                key={`dhb-${s}`}
-                position={[s * Math.min(0.14, drW * 0.22), 0, FRONT_T + PROT / 2 + 0.006]}
-                rotation={[Math.PI / 2, 0, 0]}
-                castShadow
-              >
-                <cylinderGeometry args={[0.009, 0.009, 0.014, 20]} />
-                <meshStandardMaterial color={HANDLE_COLOR} metalness={0.9} roughness={0.25} />
-              </mesh>
-            ))}
+            <FrontSurface
+              spec={spec}
+              width={drW}
+              height={drH}
+              thickness={FRONT_T}
+              matProps={frontMatProps}
+              color={frontColor}
+            />
+            <Handle
+              spec={spec}
+              orientation="horizontal"
+              frontW={drW}
+              frontH={drH}
+              frontT={FRONT_T}
+              edge="top"
+            />
             {/* Laterais internas visíveis quando gaveta aberta */}
             {openDrawers ? (
               <>
@@ -454,6 +415,179 @@ export function CabinetMesh(props: CabinetMeshProps) {
       {/* Contorno de seleção */}
       {selected ? <SelectionHalo width={width} height={height} depth={depth} /> : null}
     </group>
+  );
+}
+
+type MatProps = React.ComponentProps<"meshStandardMaterial">;
+
+/**
+ * Superfície da frente — desenha o tratamento definido pela ficha:
+ * liso (1 mesh), shaker (moldura de 4 réguas), ripado/canelado (ripas).
+ */
+function FrontSurface({
+  spec,
+  width,
+  height,
+  thickness,
+  matProps,
+  color,
+}: {
+  spec: CabinetStyleSpec;
+  width: number;
+  height: number;
+  thickness: number;
+  matProps: MatProps;
+  color?: string;
+}) {
+  const baseRough = Math.min(1, ((matProps as { roughness?: number }).roughness ?? 0.55) + 0.08);
+  const panel = (
+    <mesh position={[0, 0, thickness / 2]} castShadow receiveShadow>
+      <boxGeometry args={[width, height, thickness]} />
+      <meshStandardMaterial {...matProps} color={color} roughness={baseRough} />
+    </mesh>
+  );
+
+  if (spec.front === "liso") return panel;
+
+  if (spec.front === "shaker") {
+    const RAIL = Math.min(0.075, Math.min(width, height) * 0.14);
+    const PROT = 0.004;
+    const z = thickness + PROT / 2;
+    return (
+      <>
+        {panel}
+        <mesh position={[0, height / 2 - RAIL / 2, z]} castShadow receiveShadow>
+          <boxGeometry args={[width, RAIL, PROT]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        <mesh position={[0, -height / 2 + RAIL / 2, z]} castShadow receiveShadow>
+          <boxGeometry args={[width, RAIL, PROT]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        <mesh position={[-width / 2 + RAIL / 2, 0, z]} castShadow receiveShadow>
+          <boxGeometry args={[RAIL, Math.max(0.02, height - RAIL * 2), PROT]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        <mesh position={[width / 2 - RAIL / 2, 0, z]} castShadow receiveShadow>
+          <boxGeometry args={[RAIL, Math.max(0.02, height - RAIL * 2), PROT]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+      </>
+    );
+  }
+
+  // Ripado / canelado — ripas verticais com relevo real (sombra própria).
+  const n = Math.max(3, Math.min(spec.slats, Math.floor(width / 0.014)));
+  const pitch = width / n;
+  const slatW = pitch * (spec.front === "canelado" ? 0.72 : 0.66);
+  const relief = spec.front === "canelado" ? 0.005 : 0.008;
+  return (
+    <>
+      {panel}
+      {Array.from({ length: n }).map((_, i) => (
+        <mesh
+          key={`slat-${i}`}
+          position={[-width / 2 + pitch * (i + 0.5), 0, thickness + relief / 2]}
+          castShadow
+          receiveShadow
+        >
+          <boxGeometry args={[slatW, Math.max(0.02, height - 0.01), relief]} />
+          <meshStandardMaterial {...matProps} color={color} roughness={baseRough} />
+        </mesh>
+      ))}
+    </>
+  );
+}
+
+/**
+ * Pega da frente — perfil gola, cava usinada, barra tubular, botão
+ * ou nada (push-to-open). Cada tipo muda a leitura do móvel.
+ */
+function Handle({
+  spec,
+  orientation,
+  frontW,
+  frontH,
+  frontT,
+  edge,
+}: {
+  spec: CabinetStyleSpec;
+  orientation: "vertical" | "horizontal";
+  frontW: number;
+  frontH: number;
+  frontT: number;
+  edge: "left" | "right" | "top";
+}) {
+  if (spec.handle === "none") return null;
+  const mat = (
+    <meshStandardMaterial
+      color={spec.hardwareColor}
+      metalness={spec.hardwareMetalness}
+      roughness={spec.hardwareRoughness}
+    />
+  );
+  const zFace = frontT + 0.001;
+
+  if (spec.handle === "perfil-gola" || spec.handle === "cava") {
+    // Perfil embutido: régua fina rente à frente (gola) ou rebaixo (cava).
+    const inset = spec.handle === "cava" ? -0.006 : 0.002;
+    if (orientation === "horizontal") {
+      return (
+        <mesh position={[0, frontH / 2 - 0.018, zFace + inset]} castShadow>
+          <boxGeometry args={[Math.max(0.05, frontW - 0.02), 0.02, 0.008]} />
+          {mat}
+        </mesh>
+      );
+    }
+    const sx = edge === "left" ? -1 : 1;
+    return (
+      <mesh position={[sx * (frontW / 2 - 0.018), 0, zFace + inset]} castShadow>
+        <boxGeometry args={[0.02, Math.max(0.05, frontH - 0.02), 0.008]} />
+        {mat}
+      </mesh>
+    );
+  }
+
+  if (spec.handle === "botao") {
+    const px = orientation === "horizontal" ? 0 : (edge === "left" ? -1 : 1) * (frontW / 2 - 0.05);
+    const py = orientation === "horizontal" ? 0 : 0;
+    return (
+      <mesh position={[px, py, zFace + 0.012]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+        <cylinderGeometry args={[0.014, 0.011, 0.026, 20]} />
+        {mat}
+      </mesh>
+    );
+  }
+
+  // Tubular: barra + afastadores.
+  const len =
+    orientation === "horizontal"
+      ? Math.min(0.3, frontW * 0.45)
+      : Math.min(0.34, frontH * 0.55);
+  const bx = orientation === "horizontal" ? 0 : (edge === "left" ? -1 : 1) * (frontW / 2 - 0.032);
+  const rot: [number, number, number] = orientation === "horizontal" ? [0, 0, Math.PI / 2] : [0, 0, 0];
+  return (
+    <>
+      <mesh position={[bx, 0, zFace + 0.016]} rotation={rot} castShadow>
+        <cylinderGeometry args={[0.006, 0.006, len, 20]} />
+        {mat}
+      </mesh>
+      {[-1, 1].map((s) => (
+        <mesh
+          key={`hb-${s}`}
+          position={[
+            orientation === "horizontal" ? s * (len / 2 - 0.01) : bx,
+            orientation === "horizontal" ? 0 : s * (len / 2 - 0.01),
+            zFace + 0.008,
+          ]}
+          rotation={[Math.PI / 2, 0, 0]}
+          castShadow
+        >
+          <cylinderGeometry args={[0.009, 0.009, 0.014, 16]} />
+          {mat}
+        </mesh>
+      ))}
+    </>
   );
 }
 
