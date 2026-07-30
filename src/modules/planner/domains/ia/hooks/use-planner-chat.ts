@@ -323,6 +323,11 @@ export function usePlannerChat() {
   const runAIJson = useServerFn(aiGenerateJson);
   const createProjectOnServer = useServerFn(createProjectRow);
   const saveSnapshotOnServer = useServerFn(saveProjectSnapshot);
+  const createSessionOnServer = useServerFn(createAiSession);
+  const appendMessageOnServer = useServerFn(appendAiMessage);
+  const recordToolCallOnServer = useServerFn(recordAiToolCall);
+  const listSessionsOnServer = useServerFn(listAiSessions);
+  const getSessionOnServer = useServerFn(getAiSession);
 
   const [state, setState] = useState<ChatState>({
     messages: [
@@ -339,6 +344,111 @@ export function usePlannerChat() {
   });
 
   const abortRef = useRef<AbortController | null>(null);
+  const sessionRef = useRef<{ id: string; projectId: string | null } | null>(null);
+  const hydratedForRef = useRef<string | null>(null);
+
+  /**
+   * Garante uma sessão persistida no banco para o projeto ativo.
+   * Best-effort: se falhar (sem tenant, projeto ainda não persistido, RLS),
+   * o chat continua funcionando apenas em memória.
+   */
+  const ensureSession = useCallback(
+    async (projectId: string | null, title: string): Promise<string | null> => {
+      if (!activeCompany?.id) return null;
+      const current = sessionRef.current;
+      if (current && current.projectId === projectId) return current.id;
+      const validProject = projectId && isUuid(projectId) ? projectId : null;
+      const create = async (pid: string | null) => {
+        const row = (await createSessionOnServer({
+          data: {
+            projectId: pid,
+            title: title.slice(0, 120) || "Nova conversa",
+            modelId: "google/gemini-3.6-flash",
+          },
+        })) as { id: string };
+        sessionRef.current = { id: row.id, projectId };
+        return row.id;
+      };
+      try {
+        return await create(validProject);
+      } catch {
+        try {
+          return await create(null);
+        } catch (e) {
+          console.warn("[planner-chat] sessão de IA não persistida", e);
+          return null;
+        }
+      }
+    },
+    [activeCompany?.id, createSessionOnServer],
+  );
+
+  const persistMessage = useCallback(
+    async (
+      sessionId: string | null,
+      role: "user" | "assistant",
+      content: string,
+      status: string,
+    ): Promise<string | null> => {
+      if (!sessionId || !content.trim()) return null;
+      try {
+        const row = (await appendMessageOnServer({
+          data: { sessionId, role, content: content.slice(0, 200_000), status },
+        })) as { id: string };
+        return row.id;
+      } catch (e) {
+        console.warn("[planner-chat] mensagem não persistida", e);
+        return null;
+      }
+    },
+    [appendMessageOnServer],
+  );
+
+  // Hidrata o histórico persistido da última sessão do projeto ativo.
+  const projectId = editor.state.project?.id ?? null;
+  useEffect(() => {
+    if (!activeCompany?.id || !projectId || !isUuid(projectId)) return;
+    if (hydratedForRef.current === projectId) return;
+    hydratedForRef.current = projectId;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const sessions = (await listSessionsOnServer({
+          data: { projectId, archived: false, limit: 1 },
+        })) as { id: string }[];
+        const latest = sessions?.[0];
+        if (!latest || cancelled) return;
+        const detail = (await getSessionOnServer({ data: { id: latest.id } })) as {
+          messages: {
+            id: string;
+            role: string;
+            content: string;
+            status: string | null;
+            created_at: string;
+          }[];
+        };
+        if (cancelled) return;
+        const restored = (detail.messages ?? [])
+          .filter((m) => m.role === "user" || m.role === "assistant")
+          .map<PlannerAIMessage>((m) => ({
+            id: m.id,
+            role: m.role as "user" | "assistant",
+            content: m.content,
+            createdAt: m.created_at,
+            status: "done",
+          }));
+        sessionRef.current = { id: latest.id, projectId };
+        if (restored.length > 0) {
+          setState((s) => ({ ...s, messages: restored }));
+        }
+      } catch (e) {
+        console.warn("[planner-chat] histórico de IA não carregado", e);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeCompany?.id, projectId, listSessionsOnServer, getSessionOnServer]);
 
   const patchMessage = useCallback((id: string, patch: (m: PlannerAIMessage) => PlannerAIMessage) => {
     setState((s) => ({ ...s, messages: s.messages.map((m) => (m.id === id ? patch(m) : m)) }));
