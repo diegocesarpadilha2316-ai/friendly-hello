@@ -148,7 +148,7 @@ export const flagDelete = createServerFn({ method: "POST" })
 export const integrationsList = createServerFn({ method: "GET" })
   .middleware([requireTenant])
   .handler(async ({ context }): Promise<readonly Integration[]> => {
-    const reg = await import("@/core/integrations/registry.server");
+    const reg = await import("@/core/integrations/registry-data.server");
     const [rows, health] = await Promise.all([
       reg.listRegistry(context.supabase, context.tenantId),
       reg.listHealth(context.supabase, context.tenantId),
@@ -172,7 +172,7 @@ export const integrationUpsert = createServerFn({ method: "POST" })
       .parse(raw),
   )
   .handler(async ({ context, data }) => {
-    const reg = await import("@/core/integrations/registry.server");
+    const reg = await import("@/core/integrations/registry-data.server");
     // `enabled` da UI legada mapeia para o campo canônico `status`.
     await reg.upsertRegistry(context.supabase, context.tenantId, {
       provider: data.provider,
@@ -189,7 +189,7 @@ export const integrationTest = createServerFn({ method: "POST" })
   .inputValidator((raw: unknown) => z.object({ id: z.string().uuid() }).parse(raw))
   .handler(async ({ context, data }) => {
     // "Último teste" e "último erro" vivem em integration_health no schema real.
-    const reg = await import("@/core/integrations/registry.server");
+    const reg = await import("@/core/integrations/registry-data.server");
     const testedAt = await reg.recordHealthCheck(context.supabase, context.tenantId, {
       integrationId: data.id,
       status: "online",
