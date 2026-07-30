@@ -197,7 +197,10 @@ export async function runPlannerTool(input: RunToolInput): Promise<RunToolOutput
       errorCode: outcome.errorCode,
     };
 
-    remember(input.toolCallId, result);
+    // Só resultados concluídos entram no memo. Memorizar uma falha tornava
+    // "Repetir falhas" inoperante: a nova tentativa recebia imediatamente o
+    // mesmo erro antigo, sem executar novamente a ferramenta.
+    if (result.ok) remember(input.toolCallId, result);
     if (checkpoint && nextProject !== input.project) {
       pushCheckpoint({
         toolCallId: input.toolCallId,

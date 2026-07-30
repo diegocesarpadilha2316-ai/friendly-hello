@@ -207,6 +207,39 @@ export class PlanRunner {
     return this.run();
   }
 
+  /**
+   * Reinicia um plano terminal usando as mesmas etapas, mas com uma nova
+   * identidade de execução. Isso evita colisão com a idempotência da
+   * tentativa anterior e faz o botão "Reiniciar plano" executar de verdade.
+   */
+  async restart(): Promise<ProjectPlan> {
+    const now = new Date().toISOString();
+    const steps = this.plan.steps.map((step) => ({
+      ...step,
+      status: "pending" as PlanStepStatus,
+      attempts: 0,
+      result: undefined,
+      warnings: [],
+      startedAt: undefined,
+      finishedAt: undefined,
+    }));
+    this.plan = {
+      ...this.plan,
+      planId: `${this.plan.planId}-retry-${Date.now().toString(36)}`,
+      steps: refreshBlocked(steps),
+      status: "ready",
+      currentStepIndex: 0,
+      finalReport: null,
+      warnings: [],
+      updatedAt: now,
+    };
+    this.paused = false;
+    this.cancelled = false;
+    this.checkpointProject = null;
+    this.emit(this.plan);
+    return this.run();
+  }
+
   async run(): Promise<ProjectPlan> {
     if (this.running) return this.plan;
     if (isPlanTerminal(this.plan.status)) return this.plan;
