@@ -137,7 +137,7 @@ export function labelOf(f: FurniturePrimitive): string {
   const raw = f.params["label"] ?? f.params["name"];
   if (typeof raw === "string" && raw.trim().length > 0) return raw.trim();
   const item = f.catalogItemId ? findCatalogItem(f.catalogItemId) : null;
-  if (item?.label) return item.label;
+  if (item?.name) return item.name;
   return f.subtype || "módulo";
 }
 
