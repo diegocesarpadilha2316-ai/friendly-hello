@@ -4,7 +4,6 @@
  * Um único componente cobre preview, confirmação, progresso e resumo
  * final: o usuário vê sempre o mesmo bloco evoluindo, sem tela nova.
  */
-import { useEffect, useState } from "react";
 import {
   AlertTriangle,
   Check,
@@ -23,15 +22,11 @@ import type { PlanProgress, PlanStep, ProjectPlan } from "../planning";
 export interface PlanPreviewCardProps {
   readonly plan: ProjectPlan;
   readonly progress: PlanProgress | null;
-  readonly onExecute: () => void;
-  readonly onConfirm: () => void;
-  readonly onAnswer: () => void;
   readonly onPause: () => void;
   readonly onResume: () => void;
   readonly onCancel: () => void;
   readonly onRetry: () => void;
   readonly onRollback: () => void;
-  readonly onRemoveStep: (stepId: string) => void;
   readonly onDismiss: () => void;
 }
 
@@ -62,29 +57,10 @@ export function PlanPreviewCard(props: PlanPreviewCardProps) {
     plan.status === "failed";
   const awaitingConfirm = plan.status === "awaiting_confirmation";
   const awaitingInfo = plan.status === "awaiting_information";
-  // Regra dura: fora de execução/estado terminal SEMPRE existe um botão
-  // habilitado que inicia o plano — nunca um estado sem saída.
-  const canStart = !executing && !terminal && !paused;
-
-  // Feedback imediato de toque: o usuário vê que a ação foi recebida
-  // mesmo antes do primeiro passo mudar de status.
-  const [starting, setStarting] = useState(false);
-  useEffect(() => {
-    if (executing || terminal || paused) setStarting(false);
-  }, [executing, terminal, paused]);
-
-  function start(action: () => void) {
-    setStarting(true);
-    action();
-  }
-
   const failed = plan.status === "failed" || plan.status === "partially_completed";
-  const primaryLabel = awaitingConfirm ? "Confirmar e executar" : "Executar plano";
-  const primaryAction = awaitingConfirm
-    ? props.onConfirm
-    : awaitingInfo
-      ? props.onAnswer
-      : props.onExecute;
+  // O plano nunca depende de clique para iniciar: a execução é automática e
+  // este cartão é apenas leitura (progresso + controles úteis).
+  const waitingUser = awaitingConfirm || awaitingInfo;
 
   return (
     <div className="relative z-10 w-full min-w-0 max-w-full overflow-hidden rounded-xl border border-border/60 bg-card/90 text-sm shadow-sm [touch-action:manipulation] [pointer-events:auto]">
@@ -129,6 +105,12 @@ export function PlanPreviewCard(props: PlanPreviewCardProps) {
         </ul>
       )}
 
+      {awaitingConfirm && (
+        <p className="mt-3 text-xs text-amber-500">
+          Responda “sim” no chat para eu seguir com esta operação.
+        </p>
+      )}
+
       {plan.assumptions.length > 0 && !terminal && (
         <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
           {plan.assumptions.map((a) => (
@@ -157,15 +139,6 @@ export function PlanPreviewCard(props: PlanPreviewCardProps) {
                 <span className="block text-destructive">{step.result.summary}</span>
               )}
             </span>
-            {step.optional && step.status === "pending" && !executing && (
-              <button
-                type="button"
-                onClick={() => props.onRemoveStep(step.stepId)}
-                className="-my-2 shrink-0 px-2 py-2 text-[10px] text-muted-foreground [touch-action:manipulation] hover:text-destructive"
-              >
-                remover
-              </button>
-            )}
           </li>
         ))}
       </ol>
@@ -190,21 +163,6 @@ export function PlanPreviewCard(props: PlanPreviewCardProps) {
       {/* Área de ações própria, sempre visível no final do card e fora do
           scroll interno — em mobile cada botão ocupa 100% da largura. */}
       <div className="relative z-10 grid gap-2 border-t border-border/60 bg-card/95 p-3 sm:grid-cols-2">
-        {canStart && (
-          <Button
-            className="col-span-full min-h-11 w-full [touch-action:manipulation]"
-            onClick={() => start(primaryAction)}
-            disabled={starting}
-            aria-label={primaryLabel}
-          >
-            {starting ? (
-              <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
-            ) : (
-              <Play className="mr-1.5 h-4 w-4" />
-            )}
-            {starting ? "Iniciando…" : primaryLabel}
-          </Button>
-        )}
         {executing && (
           <Button
             variant="secondary"
@@ -217,30 +175,21 @@ export function PlanPreviewCard(props: PlanPreviewCardProps) {
         {paused && (
           <Button
             className="min-h-11 w-full [touch-action:manipulation]"
-            onClick={() => start(props.onResume)}
+            onClick={props.onResume}
           >
             <Play className="mr-1.5 h-4 w-4" /> Retomar
           </Button>
         )}
         {failed && (
-          <>
-            <Button
-              variant="secondary"
-              className="min-h-11 w-full [touch-action:manipulation]"
-              onClick={() => start(props.onRetry)}
-            >
-              <RotateCcw className="mr-1.5 h-4 w-4" /> Repetir falhas
-            </Button>
-            <Button
-              variant="outline"
-              className="min-h-11 w-full [touch-action:manipulation]"
-              onClick={() => start(props.onExecute)}
-            >
-              <Play className="mr-1.5 h-4 w-4" /> Reiniciar plano
-            </Button>
-          </>
+          <Button
+            variant="secondary"
+            className="min-h-11 w-full [touch-action:manipulation]"
+            onClick={props.onRetry}
+          >
+            <RotateCcw className="mr-1.5 h-4 w-4" /> Repetir falhas
+          </Button>
         )}
-        {!terminal && (
+        {!terminal && !waitingUser && (
           <Button
             variant="ghost"
             className="min-h-11 w-full [touch-action:manipulation]"
