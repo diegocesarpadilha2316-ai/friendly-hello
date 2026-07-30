@@ -953,7 +953,7 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
   return (
     <Canvas
       shadows
-      dpr={[1, 1.5]}
+      dpr={[1, viewport.cinematic ? 2 : 1.5]}
       camera={{ position: [cx + camDist * 0.7, camHeight, cz + camDist * 0.7], fov: 38, near: 0.05, far: 500 }}
       gl={{ antialias: true, powerPreference: "high-performance" }}
       onCreated={({ gl }) => {
