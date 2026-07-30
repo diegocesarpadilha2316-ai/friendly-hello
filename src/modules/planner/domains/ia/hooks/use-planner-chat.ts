@@ -677,8 +677,11 @@ export function usePlannerChat() {
               return null;
             }
           },
-          llmReplyStream: async function* ({ userMessage, role, project: p, ctx }) {
-            const system = buildPlannerSystemPrompt(p, ctx);
+          llmReplyStream: async function* ({ userMessage, role, project: p, ctx, agents }) {
+            const briefing = buildAgentBriefing(agents ?? []);
+            const system = briefing
+              ? `${buildPlannerSystemPrompt(p, ctx)}\n\n${briefing}`
+              : buildPlannerSystemPrompt(p, ctx);
             const prompt = `Usuário (${role}): ${userMessage}`;
             const messages: { role: "system" | "user"; content: string }[] = [
               { role: "system", content: system },
@@ -712,6 +715,7 @@ export function usePlannerChat() {
                 status: "ok",
                 message: chunk.toolResult.summary,
                 executedAt: new Date().toISOString(),
+                agent: chunk.agent,
               };
               if (existing) {
                 const idx = toolCalls.indexOf(existing);
@@ -726,6 +730,7 @@ export function usePlannerChat() {
                 args: chunk.toolArgs ?? {},
                 status: "pending",
                 executedAt: new Date().toISOString(),
+                agent: chunk.agent,
               });
             }
             patchMessage(assistantId, (m) => ({ ...m, toolCalls: [...toolCalls] }));
