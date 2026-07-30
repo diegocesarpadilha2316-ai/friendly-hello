@@ -85,10 +85,15 @@ export function VersionHistoryPanel() {
       ) : (
         <ol className="space-y-2">
           {versions.map((v) => (
-            <li key={v.id} className="flex items-start justify-between rounded-lg border border-border/40 bg-background/60 px-3 py-2 text-sm">
+            <li
+              key={v.id}
+              className="flex items-start justify-between rounded-lg border border-border/40 bg-background/60 px-3 py-2 text-sm"
+            >
               <div className="min-w-0">
                 <p className="font-medium">{v.label}</p>
-                <p className="text-xs text-muted-foreground">v{v.version} · {new Date(v.createdAt).toLocaleString("pt-BR")}</p>
+                <p className="text-xs text-muted-foreground">
+                  v{v.version} · {new Date(v.createdAt).toLocaleString("pt-BR")}
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <StatusBadge tone="neutral">v{v.version}</StatusBadge>

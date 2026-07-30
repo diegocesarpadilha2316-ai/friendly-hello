@@ -47,7 +47,8 @@ function StatusIcon({ status }: { status: PlannerSyncStatus }) {
 
 export function SyncStatusIndicator({ className }: { className?: string }) {
   const { syncStatus, syncError, retrySync } = usePlannerEditor();
-  const needsRetry = syncStatus === "unsynced" || syncStatus === "error" || syncStatus === "offline";
+  const needsRetry =
+    syncStatus === "unsynced" || syncStatus === "error" || syncStatus === "offline";
 
   return (
     <span className={cn("flex items-center gap-1.5", className)}>

@@ -25,10 +25,7 @@ import {
 } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useTenant } from "@/core/providers/TenantProvider";
-import type {
-  PlannerProject,
-  PlannerProjectVersion,
-} from "../types/project";
+import type { PlannerProject, PlannerProjectVersion } from "../types/project";
 import type { PlannerProjectId } from "../types";
 import { createProject, ensureProjectRoomShells } from "../factories/project";
 import {
@@ -136,8 +133,7 @@ function reducer(state: EditorState, action: EditorAction): EditorState {
         ...state,
         selectedEnvironmentId:
           action.environmentId !== undefined ? action.environmentId : state.selectedEnvironmentId,
-        selectedRoomId:
-          action.roomId !== undefined ? action.roomId : state.selectedRoomId,
+        selectedRoomId: action.roomId !== undefined ? action.roomId : state.selectedRoomId,
         // Trocar de cômodo/ambiente limpa a seleção fina.
         selectedNodeId:
           action.environmentId !== undefined || action.roomId !== undefined
@@ -324,8 +320,14 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
         bus.emit("project:redone", payload);
         bridgeToWindow("project:redone", payload);
       }
-      bus.emit("project:updated", { ...payload, reason: undone ? "undo" : redone ? "redo" : "edit" });
-      bridgeToWindow("project:updated", { ...payload, reason: undone ? "undo" : redone ? "redo" : "edit" });
+      bus.emit("project:updated", {
+        ...payload,
+        reason: undone ? "undo" : redone ? "redo" : "edit",
+      });
+      bridgeToWindow("project:updated", {
+        ...payload,
+        reason: undone ? "undo" : redone ? "redo" : "edit",
+      });
     }
 
     if (state.lastSavedAt && state.lastSavedAt !== last.lastSavedAt) {
@@ -403,12 +405,15 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
     [],
   );
 
-  const loadProject = useCallback((project: PlannerProject) => {
-    resetSync();
-    const normalized = ensureProjectRoomShells(project);
-    dispatch({ type: "load", project: normalized });
-    void refreshVersions(normalized.id);
-  }, [refreshVersions, resetSync]);
+  const loadProject = useCallback(
+    (project: PlannerProject) => {
+      resetSync();
+      const normalized = ensureProjectRoomShells(project);
+      dispatch({ type: "load", project: normalized });
+      void refreshVersions(normalized.id);
+    },
+    [refreshVersions, resetSync],
+  );
 
   const persist = useCallback(
     async (project: PlannerProject) => {
@@ -508,7 +513,9 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
   // Marca "modificado" assim que o estado fica sujo (antes do debounce).
   useEffect(() => {
     if (state.dirty) {
-      setSyncStatus((s) => (s === "saving" ? s : s === "unsynced" || s === "offline" || s === "error" ? s : "modified"));
+      setSyncStatus((s) =>
+        s === "saving" ? s : s === "unsynced" || s === "offline" || s === "error" ? s : "modified",
+      );
     }
   }, [state.dirty, state.project?.version]);
 
@@ -566,9 +573,7 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
     const onBeforeUnload = (e: BeforeUnloadEvent) => {
       flushLocal();
       const pending =
-        stateRef.current.dirty ||
-        inFlightRef.current ||
-        pendingProjectRef.current !== null;
+        stateRef.current.dirty || inFlightRef.current || pendingProjectRef.current !== null;
       if (!pending) return;
       // Não prometemos salvar: apenas avisamos que pode não ter sincronizado.
       e.preventDefault();
@@ -687,12 +692,9 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
     [state.project],
   );
 
-  const select = useCallback(
-    (patch: { environmentId?: string | null; roomId?: string | null }) => {
-      dispatch({ type: "select", ...patch });
-    },
-    [],
-  );
+  const select = useCallback((patch: { environmentId?: string | null; roomId?: string | null }) => {
+    dispatch({ type: "select", ...patch });
+  }, []);
 
   const selectNode = useCallback((nodeId: string | null) => {
     dispatch({ type: "select-node", nodeId });
@@ -830,7 +832,24 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
       canUndo: state.past.length > 0,
       canRedo: state.future.length > 0,
     }),
-    [state, loadProject, loadProjectById, updateProject, select, selectNode, undo, redo, saveNow, snapshotVersion, restoreVersion, versions, syncStatus, syncError, retrySync, refreshVersions],
+    [
+      state,
+      loadProject,
+      loadProjectById,
+      updateProject,
+      select,
+      selectNode,
+      undo,
+      redo,
+      saveNow,
+      snapshotVersion,
+      restoreVersion,
+      versions,
+      syncStatus,
+      syncError,
+      retrySync,
+      refreshVersions,
+    ],
   );
 
   return <EditorContext.Provider value={value}>{children}</EditorContext.Provider>;
