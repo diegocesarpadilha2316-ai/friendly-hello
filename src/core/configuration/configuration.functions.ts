@@ -20,10 +20,7 @@ const jsonRecord = z.record(z.string(), z.unknown());
 export const platformGet = createServerFn({ method: "GET" })
   .middleware([requireTenant])
   .handler(async ({ context }): Promise<PlatformSettings | null> => {
-    const { data } = await context.supabase
-      .from("platform_settings")
-      .select("*")
-      .maybeSingle();
+    const { data } = await context.supabase.from("platform_settings").select("*").maybeSingle();
     if (!data) return null;
     const { mapPlatform } = await import("./configuration.server");
     return mapPlatform(data);
@@ -112,20 +109,18 @@ export const flagUpsert = createServerFn({ method: "POST" })
       .parse(raw),
   )
   .handler(async ({ context, data }) => {
-    const { error } = await context.supabase
-      .from("feature_flags")
-      .upsert(
-        {
-          company_id: context.tenantId,
-          key: data.key,
-          enabled: data.enabled,
-          module: data.module ?? null,
-          description: data.description ?? null,
-          scope: data.scope,
-          rules: data.rules ?? {},
-        },
-        { onConflict: "company_id,key" },
-      );
+    const { error } = await context.supabase.from("feature_flags").upsert(
+      {
+        company_id: context.tenantId,
+        key: data.key,
+        enabled: data.enabled,
+        module: data.module ?? null,
+        description: data.description ?? null,
+        scope: data.scope,
+        rules: data.rules ?? {},
+      },
+      { onConflict: "company_id,key" },
+    );
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });
@@ -170,18 +165,16 @@ export const integrationUpsert = createServerFn({ method: "POST" })
       .parse(raw),
   )
   .handler(async ({ context, data }) => {
-    const { error } = await context.supabase
-      .from("integrations")
-      .upsert(
-        {
-          company_id: context.tenantId,
-          provider: data.provider,
-          category: data.category,
-          enabled: data.enabled,
-          config: data.config ?? {},
-        },
-        { onConflict: "company_id,provider" },
-      );
+    const { error } = await context.supabase.from("integrations").upsert(
+      {
+        company_id: context.tenantId,
+        provider: data.provider,
+        category: data.category,
+        enabled: data.enabled,
+        config: data.config ?? {},
+      },
+      { onConflict: "company_id,provider" },
+    );
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });
@@ -228,19 +221,17 @@ export const brandingUpsert = createServerFn({ method: "POST" })
       .parse(raw),
   )
   .handler(async ({ context, data }) => {
-    const { error } = await context.supabase
-      .from("branding")
-      .upsert(
-        {
-          company_id: context.tenantId,
-          logo_url: data.logoUrl ?? null,
-          icon_url: data.iconUrl ?? null,
-          palette: data.palette ?? {},
-          typography: data.typography ?? {},
-          css_variables: data.cssVariables ?? {},
-        },
-        { onConflict: "company_id" },
-      );
+    const { error } = await context.supabase.from("branding").upsert(
+      {
+        company_id: context.tenantId,
+        logo_url: data.logoUrl ?? null,
+        icon_url: data.iconUrl ?? null,
+        palette: data.palette ?? {},
+        typography: data.typography ?? {},
+        css_variables: data.cssVariables ?? {},
+      },
+      { onConflict: "company_id" },
+    );
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });
@@ -271,17 +262,15 @@ export const localizationUpsert = createServerFn({ method: "POST" })
       .parse(raw),
   )
   .handler(async ({ context, data }) => {
-    const { error } = await context.supabase
-      .from("localization")
-      .upsert(
-        {
-          company_id: context.tenantId,
-          default_locale: data.defaultLocale,
-          supported_locales: data.supportedLocales,
-          translations: data.translations ?? {},
-        },
-        { onConflict: "company_id" },
-      );
+    const { error } = await context.supabase.from("localization").upsert(
+      {
+        company_id: context.tenantId,
+        default_locale: data.defaultLocale,
+        supported_locales: data.supportedLocales,
+        translations: data.translations ?? {},
+      },
+      { onConflict: "company_id" },
+    );
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });
@@ -317,22 +306,20 @@ export const securityUpsert = createServerFn({ method: "POST" })
       .parse(raw),
   )
   .handler(async ({ context, data }) => {
-    const { error } = await context.supabase
-      .from("security_settings")
-      .upsert(
-        {
-          company_id: context.tenantId,
-          require_2fa: data.require2fa,
-          session_ttl_seconds: data.sessionTtlSeconds,
-          jwt_ttl_seconds: data.jwtTtlSeconds,
-          password_min_length: data.passwordMinLength,
-          password_require_symbol: data.passwordRequireSymbol,
-          rate_limit_per_min: data.rateLimitPerMin,
-          allowed_origins: data.allowedOrigins,
-          ip_allowlist: data.ipAllowlist,
-        },
-        { onConflict: "company_id" },
-      );
+    const { error } = await context.supabase.from("security_settings").upsert(
+      {
+        company_id: context.tenantId,
+        require_2fa: data.require2fa,
+        session_ttl_seconds: data.sessionTtlSeconds,
+        jwt_ttl_seconds: data.jwtTtlSeconds,
+        password_min_length: data.passwordMinLength,
+        password_require_symbol: data.passwordRequireSymbol,
+        rate_limit_per_min: data.rateLimitPerMin,
+        allowed_origins: data.allowedOrigins,
+        ip_allowlist: data.ipAllowlist,
+      },
+      { onConflict: "company_id" },
+    );
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });
@@ -364,18 +351,16 @@ export const backupUpsert = createServerFn({ method: "POST" })
       .parse(raw),
   )
   .handler(async ({ context, data }) => {
-    const { error } = await context.supabase
-      .from("backup_settings")
-      .upsert(
-        {
-          company_id: context.tenantId,
-          enabled: data.enabled,
-          frequency: data.frequency,
-          retention_days: data.retentionDays,
-          storage_provider: data.storageProvider,
-        },
-        { onConflict: "company_id" },
-      );
+    const { error } = await context.supabase.from("backup_settings").upsert(
+      {
+        company_id: context.tenantId,
+        enabled: data.enabled,
+        frequency: data.frequency,
+        retention_days: data.retentionDays,
+        storage_provider: data.storageProvider,
+      },
+      { onConflict: "company_id" },
+    );
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });
@@ -413,7 +398,9 @@ export const apiKeyCreate = createServerFn({ method: "POST" })
     const prefix = `dk_${secret.slice(0, 6)}`;
     const encoder = new TextEncoder();
     const hash = await globalThis.crypto.subtle.digest("SHA-256", encoder.encode(secret));
-    const hashed = Array.from(new Uint8Array(hash), (b) => b.toString(16).padStart(2, "0")).join("");
+    const hashed = Array.from(new Uint8Array(hash), (b) => b.toString(16).padStart(2, "0")).join(
+      "",
+    );
     const { data: saved, error } = await context.supabase
       .from("api_keys")
       .insert({
@@ -453,18 +440,34 @@ export const configurationSnapshot = createServerFn({ method: "GET" })
   .middleware([requireTenant])
   .handler(async ({ context }): Promise<ConfigurationSnapshot> => {
     const s = context.supabase;
-    const [platform, company, branding, localization, security, backup, flags, integrations, apiKeys] =
-      await Promise.all([
-        s.from("platform_settings").select("*").maybeSingle(),
-        s.from("company_settings").select("*").eq("company_id", context.tenantId).maybeSingle(),
-        s.from("branding").select("*").eq("company_id", context.tenantId).maybeSingle(),
-        s.from("localization").select("*").eq("company_id", context.tenantId).maybeSingle(),
-        s.from("security_settings").select("*").eq("company_id", context.tenantId).maybeSingle(),
-        s.from("backup_settings").select("*").eq("company_id", context.tenantId).maybeSingle(),
-        s.from("feature_flags").select("*").or(`company_id.eq.${context.tenantId},company_id.is.null`),
-        s.from("integrations").select("*").eq("company_id", context.tenantId),
-        s.from("api_keys").select("*").eq("company_id", context.tenantId).order("created_at", { ascending: false }),
-      ]);
+    const [
+      platform,
+      company,
+      branding,
+      localization,
+      security,
+      backup,
+      flags,
+      integrations,
+      apiKeys,
+    ] = await Promise.all([
+      s.from("platform_settings").select("*").maybeSingle(),
+      s.from("company_settings").select("*").eq("company_id", context.tenantId).maybeSingle(),
+      s.from("branding").select("*").eq("company_id", context.tenantId).maybeSingle(),
+      s.from("localization").select("*").eq("company_id", context.tenantId).maybeSingle(),
+      s.from("security_settings").select("*").eq("company_id", context.tenantId).maybeSingle(),
+      s.from("backup_settings").select("*").eq("company_id", context.tenantId).maybeSingle(),
+      s
+        .from("feature_flags")
+        .select("*")
+        .or(`company_id.eq.${context.tenantId},company_id.is.null`),
+      s.from("integrations").select("*").eq("company_id", context.tenantId),
+      s
+        .from("api_keys")
+        .select("*")
+        .eq("company_id", context.tenantId)
+        .order("created_at", { ascending: false }),
+    ]);
     const m = await import("./configuration.server");
     return {
       platform: platform.data ? m.mapPlatform(platform.data) : null,
@@ -497,9 +500,7 @@ export const configurationExport = createServerFn({ method: "POST" })
     const csv = [
       headers.join(","),
       ...rows.map((r) =>
-        [r.key, String(r.enabled), r.scope, r.module ?? "", r.description ?? ""]
-          .map(esc)
-          .join(","),
+        [r.key, String(r.enabled), r.scope, r.module ?? "", r.description ?? ""].map(esc).join(","),
       ),
     ].join("\n");
     void context;
