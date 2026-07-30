@@ -610,6 +610,52 @@ export function usePlannerChat() {
       const selectedNodeId = editor.state.selectedNodeId;
       const selectionIds = selectedNodeId ? [selectedNodeId] : undefined;
 
+      // Etapa 11 — pedidos amplos/destrutivos viram plano revisável antes de
+      // qualquer mutação. Nada é executado até o usuário mandar executar.
+      const classification = classifyRequest(trimmed);
+      const activePlan = planRef.current.plan;
+      const planBusy =
+        activePlan &&
+        activePlan.status !== "completed" &&
+        activePlan.status !== "cancelled" &&
+        activePlan.status !== "failed" &&
+        activePlan.status !== "partially_completed";
+      if (classification.needsPlan && !planBusy) {
+        const proposed = planRef.current.propose({
+          message: trimmed,
+          clientMessageId: keys.user,
+          sessionId: sessionRef.current?.id ?? null,
+          project,
+          ctx: {
+            environmentId: activeEnvironmentId,
+            roomId: activeRoomId,
+            selectionIds,
+          },
+        });
+        if (proposed) {
+          const lines = proposed.steps.map((s) => `${s.position + 1}. ${s.title}`).join("\n");
+          const pendencies = proposed.missingInformation
+            .map((m) => `• ${m.question}`)
+            .join("\n");
+          patchMessage(assistantId, (m) => ({
+            ...m,
+            status: "done",
+            content: [
+              `Montei um plano para **${proposed.title}**:`,
+              lines,
+              pendencies ? `\nPreciso confirmar antes de começar:\n${pendencies}` : "",
+              "\nRevise as etapas no cartão abaixo e clique em **Executar plano** quando quiser que eu comece.",
+            ]
+              .filter(Boolean)
+              .join("\n"),
+          }));
+          setState((s) => ({ ...s, status: "idle" }));
+          sendingRef.current = false;
+          pendingKeyRef.current = null;
+          return;
+        }
+      }
+
       const controller = new AbortController();
       abortRef.current = controller;
       const rules = loadRules(tenantId);
