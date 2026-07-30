@@ -159,22 +159,65 @@ async function* runCommand(
 ): AsyncGenerator<AgentChunk, void, void> {
   let project = input.project;
   const summaries: string[] = [];
-  for (const intent of intents) {
+  // Orquestração multiagente: escolhe agentes, ordena o pipeline e remove
+  // execuções duplicadas antes de tocar no projeto.
+  const plan = buildAgentPlan(input.message, intents);
+  const participated: PlannerAgentId[] = [];
+  let currentAgent: PlannerAgentId | null = null;
+  let handle: ReturnType<typeof startAgentRun> | null = null;
+  const agentTools: ToolName[] = [];
+
+  const closeRun = (success: boolean, error?: string) => {
+    if (handle) handle.finish(success, [...agentTools], error);
+    handle = null;
+    agentTools.length = 0;
+  };
+
+  for (const step of plan.steps) {
+    const intent: ParsedIntent = { tool: step.tool, args: step.args };
     if (input.signal?.aborted) {
+      closeRun(false, "cancelado");
       yield { kind: "error", text: "Geração cancelada." };
       return;
     }
-    yield { kind: "tool", toolName: intent.tool, toolArgs: intent.args };
-    const result = executeIntent(intent, project, input.ctx);
+    if (step.agent !== currentAgent) {
+      closeRun(true);
+      currentAgent = step.agent;
+      participated.push(step.agent);
+      handle = startAgentRun(step.agent);
+    }
+    yield { kind: "tool", toolName: step.tool, toolArgs: step.args, agent: step.agent };
+    let result: ToolExecutionResult;
+    try {
+      result = executeIntent(intent, project, input.ctx);
+    } catch (e) {
+      closeRun(false, e instanceof Error ? e.message : "falha na ferramenta");
+      yield { kind: "error", text: `Falha ao executar ${step.tool}.` };
+      return;
+    }
+    agentTools.push(step.tool);
     project = result.project;
     summaries.push(`• ${result.summary}`);
-    yield { kind: "tool", toolName: intent.tool, toolArgs: intent.args, toolResult: result };
+    yield {
+      kind: "tool",
+      toolName: step.tool,
+      toolArgs: step.args,
+      toolResult: result,
+      agent: step.agent,
+    };
     await sleep(60, input.signal);
   }
+  closeRun(true);
+
   const header = summaries.length > 1 ? "Pronto — executei os passos:\n" : "Pronto — ";
-  const finalText = `${header}${summaries.join("\n")}`;
+  const team = participated.length > 0 ? describeAgents(participated) : "";
+  const finalText = `${header}${summaries.join("\n")}${team ? `\n\n_Equipe: ${team}._` : ""}`;
   yield* streamText(finalText, input.signal);
-  yield { kind: "done", toolResult: { project, summary: finalText, affectedIds: [] } };
+  yield {
+    kind: "done",
+    toolResult: { project, summary: finalText, affectedIds: [] },
+    agents: plan.agents,
+  };
 }
 
 async function tryLLMPlan(input: AgentInput): Promise<readonly ParsedIntent[] | null> {
