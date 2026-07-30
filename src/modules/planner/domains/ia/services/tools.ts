@@ -353,12 +353,28 @@ export function toolCreateRoomPreset(
       : args.noBlueprintPieces
         ? []
         : blueprint.pieces;
-  // Tolerância zero: quando o usuário fornece peças específicas, garantimos
-  // shape com paredes suficientes (mínimo L) — o motor faz fallback entre
-  // paredes disponíveis antes de skippar.
-  const shape =
-    args.pieces && args.pieces.length > 3 && blueprint.shape === "linear" ? "L" : blueprint.shape;
-  const res = applyLayout(project, ctx, { shape, pieces: piecesToPlace });
+
+  // ── 1) ANÁLISE PRÉ-GERAÇÃO ─────────────────────────────────────────────
+  // Lê o cômodo real (área, proporção, paredes, portas, janelas, luz
+  // natural, circulação exigida) ANTES de posicionar qualquer volume.
+  const analysis = analyzeRoom(room, {
+    environment: args.preset,
+    style: args.style ?? blueprint.style ?? null,
+  });
+
+  // ── 2) COMPOSIÇÃO DOS VOLUMES ──────────────────────────────────────────
+  // Distribui os módulos por equilíbrio, proporção, alinhamento,
+  // continuidade, ergonomia e funcionalidade (não por espaço vazio).
+  const composition = composeLayout(analysis, piecesToPlace);
+  // Tolerância zero: mantém o fallback de forma quando o pedido é grande.
+  const shape: LayoutShape =
+    args.pieces && args.pieces.length > 3 && composition.shape === "linear"
+      ? "L"
+      : composition.shape;
+  const res = applyLayout(project, ctx, {
+    shape,
+    pieces: composition.pieces.length > 0 ? composition.pieces : piecesToPlace,
+  });
 
   // ── Decoração contextual ────────────────────────────────────────────────
   // Além dos módulos de marcenaria, o ambiente ganha itens decorativos
