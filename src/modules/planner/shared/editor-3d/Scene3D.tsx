@@ -308,20 +308,36 @@ function Wall({
     matRef.current.depthWrite = matRef.current.opacity > 0.6;
   });
   return (
-    <mesh
-      ref={meshRef}
-      position={[pos.x, pos.y, pos.z]}
-      rotation={[0, w.rotationY, 0]}
-      castShadow
-      receiveShadow
-      onClick={(e: ThreeEvent<MouseEvent>) => {
-        e.stopPropagation();
-        onSelect(w.id);
-      }}
-    >
-      <boxGeometry args={[w.length, w.height, w.thickness]} />
-      <meshStandardMaterial ref={matRef} {...props} />
-    </mesh>
+    <group position={[pos.x, pos.y, pos.z]} rotation={[0, w.rotationY, 0]}>
+      <mesh
+        ref={meshRef}
+        castShadow
+        receiveShadow
+        onClick={(e: ThreeEvent<MouseEvent>) => {
+          e.stopPropagation();
+          onSelect(w.id);
+        }}
+      >
+        <boxGeometry args={[w.length, w.height, w.thickness]} />
+        <meshStandardMaterial ref={matRef} {...props} />
+      </mesh>
+      {/* Rodapé real (100 mm, saliente 12 mm) — só em modo material e com
+          a parede visível. Detalhe barato que ancora o ambiente e elimina
+          a junta "flutuante" entre parede e piso. */}
+      {viewport.render === "material" && opacity > 0.5 ? (
+        [-1, 1].map((side) => (
+          <mesh
+            key={`skirt-${side}`}
+            position={[0, -w.height / 2 + 0.05, side * (w.thickness / 2 + 0.006)]}
+            castShadow
+            receiveShadow
+          >
+            <boxGeometry args={[w.length, 0.1, 0.012]} />
+            <meshStandardMaterial color="#f2f3f5" roughness={0.45} metalness={0.02} envMapIntensity={1.1} />
+          </mesh>
+        ))
+      ) : null}
+    </group>
   );
 }
 
