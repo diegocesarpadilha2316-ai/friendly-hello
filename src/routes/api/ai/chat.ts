@@ -62,8 +62,7 @@ export const Route = createFileRoute("/api/ai/chat")({
     handlers: {
       POST: async ({ request }) => {
         /* ------------------------- 1. Autenticação ------------------------- */
-        const auth =
-          request.headers.get("authorization") ?? request.headers.get("Authorization");
+        const auth = request.headers.get("authorization") ?? request.headers.get("Authorization");
         if (!auth?.startsWith("Bearer ")) {
           return json({ error: "unauthorized" }, 401);
         }
@@ -81,9 +80,7 @@ export const Route = createFileRoute("/api/ai/chat")({
 
         /* ---------------------------- 2. Tenant ---------------------------- */
         const rawTenant =
-          request.headers.get("x-dioris-tenant") ??
-          request.headers.get("X-Dioris-Tenant") ??
-          "";
+          request.headers.get("x-dioris-tenant") ?? request.headers.get("X-Dioris-Tenant") ?? "";
         const tenantParsed = z.string().uuid().safeParse(rawTenant);
 
         let tenantId: string | null = tenantParsed.success ? tenantParsed.data : null;
@@ -137,10 +134,9 @@ export const Route = createFileRoute("/api/ai/chat")({
         const estimatedTokensIn = Math.ceil(totalChars / 4);
         const cost = priceAiAssistantMessage({ tokensIn: estimatedTokensIn });
 
-        const { data: balanceData, error: balanceErr } = await supabase.rpc(
-          "credit_balance",
-          { _company_id: tenantId },
-        );
+        const { data: balanceData, error: balanceErr } = await supabase.rpc("credit_balance", {
+          _company_id: tenantId,
+        });
         if (balanceErr) return json({ error: "billing_unavailable" }, 500);
         const balance = typeof balanceData === "number" ? balanceData : 0;
         if (balance < cost) {

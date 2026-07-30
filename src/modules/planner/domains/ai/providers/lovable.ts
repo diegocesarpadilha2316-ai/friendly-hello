@@ -1,4 +1,10 @@
-import type { AIChatChunk, AIChatOptions, AIChatResponse, AIMessage, AIProviderConfig } from "../types";
+import type {
+  AIChatChunk,
+  AIChatOptions,
+  AIChatResponse,
+  AIMessage,
+  AIProviderConfig,
+} from "../types";
 import { DeepSeekProvider } from "./deepseek";
 
 /**
@@ -34,9 +40,7 @@ export class LovableProvider extends DeepSeekProvider {
       /* sessão indisponível — servidor responderá 401 */
     }
     try {
-      const { getActiveTenantIdFromStorage } = await import(
-        "@/core/providers/TenantProvider"
-      );
+      const { getActiveTenantIdFromStorage } = await import("@/core/providers/TenantProvider");
       const tenantId = getActiveTenantIdFromStorage();
       if (tenantId) next["x-dioris-tenant"] = tenantId;
     } catch {
