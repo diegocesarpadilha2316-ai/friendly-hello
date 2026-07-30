@@ -494,7 +494,7 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
         </div>
 
         {/* Barra de gizmos — flutuante, canto superior direito. */}
-        <div className="pointer-events-auto absolute right-2 top-11 z-20 flex items-center gap-1 rounded-md border border-border/50 bg-background/60 p-1 backdrop-blur">
+        <div className="pointer-events-auto absolute bottom-9 right-2 z-20 flex items-center gap-1 rounded-md border border-border/50 bg-background/80 p-1 backdrop-blur">
           <ToolbarButton
             active={gizmoMode === "translate"}
             onClick={() => setGizmoMode("translate")}
