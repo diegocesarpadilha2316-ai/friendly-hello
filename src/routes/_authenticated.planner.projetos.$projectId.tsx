@@ -401,13 +401,19 @@ function PlannerProjectDetail() {
                 }
               }}
             />
+            <div className="mt-4">
+              <VersionHistoryPanel />
+            </div>
           </div>
           <div className="border-t border-border/60 bg-background/40 px-4 py-2 text-[11px] text-muted-foreground">
-            {state.dirty ? (
-              <button onClick={saveNow} className="text-primary hover:underline">Salvar alterações</button>
-            ) : (
-              <span>Tudo salvo</span>
-            )}
+            <div className="flex items-center justify-between gap-2">
+              <SyncStatusIndicator />
+              {state.dirty ? (
+                <button onClick={saveNow} className="text-primary hover:underline">
+                  Salvar agora
+                </button>
+              ) : null}
+            </div>
           </div>
         </aside>
       </div>
