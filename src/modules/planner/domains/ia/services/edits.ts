@@ -28,7 +28,7 @@ const norm = (s: string) =>
     .trim();
 
 const EDIT_VERB =
-  /\b(?:troqu\w*|troca\w*|mud\w*|alter\w*|aument\w*|diminu\w*|reduz\w*|coloc\w*|adicion\w*|poe|ponha|tir[ae]\w*|remov\w*|deix\w*|pass[ae]\w*|ajust\w*|defin\w*|convert\w*|transform\w*)\b/;
+  /\b(?:troqu\w*|troca\w*|mud\w*|alter\w*|aument\w*|diminu\w*|reduz\w*|colo[cq]\w*|adicion\w*|poe|ponha|tir[ae]\w*|remov\w*|deix\w*|pass[ae]\w*|ajust\w*|defin\w*|convert\w*|transform\w*)\b/;
 
 /** Criação explícita de um móvel novo — não é edição. */
 const CREATE_VERB =
