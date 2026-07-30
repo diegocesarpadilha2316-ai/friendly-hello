@@ -17,6 +17,13 @@ import type { CompanyManufacturingRules } from "@/modules/planner/shared";
 import { interpret, type ParsedIntent } from "./interpreter";
 import { answerQuestion } from "./questions";
 import { TOOL_FUNCTIONS, type ToolContext, type ToolExecutionResult, type ToolName } from "./tools";
+import {
+  buildAgentPlan,
+  describeAgents,
+  selectConversationalAgents,
+  startAgentRun,
+  type PlannerAgentId,
+} from "../agents";
 
 export interface AgentInput {
   message: string;
@@ -34,6 +41,7 @@ export interface AgentInput {
     role: "smalltalk" | "unknown" | "question";
     project: PlannerProject;
     ctx: ToolContext;
+    agents?: readonly PlannerAgentId[];
   }) => Promise<string | null>;
   /**
    * Callback de streaming opcional — quando fornecido, respostas
@@ -45,6 +53,7 @@ export interface AgentInput {
     role: "smalltalk" | "unknown" | "question";
     project: PlannerProject;
     ctx: ToolContext;
+    agents?: readonly PlannerAgentId[];
   }) => AsyncGenerator<string>;
   /**
    * Callback opcional — quando fornecido, o agent tenta obter do LLM uma
@@ -65,6 +74,10 @@ export interface AgentChunk {
   toolName?: string;
   toolArgs?: Readonly<Record<string, unknown>>;
   toolResult?: ToolExecutionResult;
+  /** Agente especialista responsável pela ação (Etapa 8). */
+  agent?: PlannerAgentId;
+  /** Agentes que participaram do turno — presente no chunk `done`. */
+  agents?: readonly PlannerAgentId[];
 }
 
 function executeIntent(
