@@ -166,13 +166,21 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
 
   const runNow = useCallback(
     (mode: "run" | "resume" | "retry") => {
-      const runner = runnerRef.current;
+      const runner = ensureRunner();
       if (!runner) return;
       const exec =
         mode === "resume" ? runner.resume() : mode === "retry" ? runner.retryFailed() : runner.run();
-      void exec.then(finishMemory);
+      void exec.then(finishMemory).catch((error: unknown) => {
+        // Nunca deixar a UI presa: erro inesperado encerra o estado
+        // pendente com motivo visível e permite tentar de novo.
+        const message = error instanceof Error ? error.message : "Falha inesperada na execução.";
+        console.warn("[planner-plan] execução falhou", error);
+        setPlan((prev) =>
+          prev ? { ...prev, status: "failed", warnings: [...prev.warnings, message] } : prev,
+        );
+      });
     },
-    [finishMemory],
+    [ensureRunner, finishMemory],
   );
 
   const execute = useCallback(() => runNow("run"), [runNow]);
@@ -180,9 +188,20 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
   const retryFailed = useCallback(() => runNow("retry"), [runNow]);
 
   const confirmAndExecute = useCallback(() => {
-    runnerRef.current?.confirm();
+    ensureRunner()?.confirm();
     runNow("run");
-  }, [runNow]);
+  }, [ensureRunner, runNow]);
+
+  /** Resposta do usuário à pendência → plano liberado e execução imediata. */
+  const answerAndExecute = useCallback(
+    (answer?: string) => {
+      const runner = ensureRunner();
+      if (!runner) return;
+      runner.answerMissing(answer);
+      runNow("run");
+    },
+    [ensureRunner, runNow],
+  );
 
   const pause = useCallback(() => runnerRef.current?.pause(), []);
   const cancel = useCallback(() => runnerRef.current?.cancel(), []);
@@ -204,6 +223,7 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
     propose,
     execute,
     confirmAndExecute,
+    answerAndExecute,
     pause,
     resume,
     cancel,
