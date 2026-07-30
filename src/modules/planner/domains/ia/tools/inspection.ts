@@ -5,7 +5,13 @@
  */
 import { findCatalogItem, type PlannerProject } from "@/modules/planner/shared";
 import type { ToolContext } from "../services/tools";
-import { furnitureOf, getActiveRoom, type FurniturePrimitive } from "./validation";
+import {
+  furnitureOf,
+  getActiveRoom,
+  hasExplicitLabel,
+  labelOf,
+  type FurniturePrimitive,
+} from "./validation";
 
 export type ReviewSeverity = "info" | "warning" | "error";
 
@@ -48,7 +54,7 @@ interface Box {
 function boxOf(f: FurniturePrimitive): Box {
   return {
     id: f.id,
-    label: f.label ?? "módulo",
+    label: labelOf(f),
     x1: f.x,
     y1: f.y,
     x2: f.x + f.width,
@@ -225,7 +231,7 @@ export function reviewProject(project: PlannerProject, ctx: ToolContext): Review
         category: "dimensoes",
         objectId: f.id,
         title: "Dimensão inválida",
-        description: `"${f.label ?? "módulo"}" tem medidas ${f.width}×${f.depth}×${f.height} mm.`,
+        description: `"${labelOf(f)}" tem medidas ${f.width}×${f.depth}×${f.height} mm.`,
         suggestedAction: "Corrija a largura, profundidade e altura do módulo.",
       });
     } else if (f.width > 6000 || f.height > 3000 || f.depth > 1500) {
@@ -234,7 +240,7 @@ export function reviewProject(project: PlannerProject, ctx: ToolContext): Review
         category: "dimensoes",
         objectId: f.id,
         title: "Dimensão fora do usual de fabricação",
-        description: `"${f.label ?? "módulo"}" mede ${f.width}×${f.depth}×${f.height} mm — acima do módulo único produzível.`,
+        description: `"${labelOf(f)}" mede ${f.width}×${f.depth}×${f.height} mm — acima do módulo único produzível.`,
         suggestedAction: "Divida o módulo em unidades menores.",
       });
     }
@@ -273,11 +279,11 @@ export function reviewProject(project: PlannerProject, ctx: ToolContext): Review
         category: "materiais",
         objectId: f.id,
         title: "Módulo sem material definido",
-        description: `"${f.label ?? "módulo"}" não tem chapa/acabamento atribuído.`,
+        description: `"${labelOf(f)}" não tem chapa/acabamento atribuído.`,
         suggestedAction: "Aplique um material do catálogo antes de orçar ou produzir.",
       });
     }
-    if (!f.label || f.label.trim().length === 0) {
+    if (!hasExplicitLabel(f)) {
       findings.push({
         severity: "warning",
         category: "identificacao",
@@ -315,7 +321,7 @@ export function reviewProject(project: PlannerProject, ctx: ToolContext): Review
           category: "aberturas",
           objectId: f.id,
           title: "Abertura possivelmente obstruída",
-          description: `"${f.label ?? "módulo"}" tem porta com menos de 300 mm livres à frente.`,
+          description: `"${labelOf(f)}" tem porta com menos de 300 mm livres à frente.`,
           suggestedAction: "Aumente o afastamento frontal ou troque para porta de correr.",
         });
       }
