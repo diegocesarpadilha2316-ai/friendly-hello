@@ -240,7 +240,14 @@ async function* runCommand(
 
   const header = summaries.length > 1 ? "Pronto — executei os passos:\n" : "Pronto — ";
   const team = participated.length > 0 ? describeAgents(participated) : "";
-  const finalText = `${header}${summaries.join("\n")}${team ? `\n\n_Equipe: ${team}._` : ""}`;
+  // Suposições da Ficha Técnica / resumo das alterações pontuais: o usuário
+  // precisa saber o que foi assumido sem que a IA pergunte à toa.
+  const hints = intents
+    .map((i) => i.answerHint)
+    .filter((h): h is string => typeof h === "string" && h.trim().length > 0);
+  const hintLine =
+    hints.length > 0 ? `\n\n${[...new Set(hints)].join(" ")} Se quiser, é só ajustar.` : "";
+  const finalText = `${header}${summaries.join("\n")}${hintLine}${team ? `\n\n_Equipe: ${team}._` : ""}`;
   yield* streamText(finalText, input.signal);
   yield {
     kind: "done",
