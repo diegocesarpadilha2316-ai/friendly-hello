@@ -5,11 +5,14 @@
  * mantém em memória a conversa daquela sessão. Mudanças no projeto
  * passam por `updateProject`, herdando Undo/Redo, Autosave, Histórico e
  * a sincronização 2D/3D/Engenharia.
+ *
+ * Streaming real: respostas conversacionais fluem pelo proxy `/api/ai/chat`
+ * autenticado; tool-planning continua server-side via `aiGenerateJson`.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
-import { aiGenerateText, aiGenerateJson } from "@/core/ai";
+import { aiGenerateJson } from "@/core/ai";
 import { useTenant } from "@/core/providers/TenantProvider";
 import { useAuth } from "@/core/providers/AuthProvider";
 import { createProjectRow } from "@/lib/planner-projects.functions";
@@ -33,6 +36,7 @@ import {
 import { runAgent } from "../services/agent";
 import { PLANNER_TOOL_REGISTRY } from "../services/tools";
 import { FINISHING_PRESETS } from "../services/finishing";
+import { streamLovableReply } from "../services/ai-stream";
 import type { ParsedIntent } from "../services/interpreter";
 import type { PlannerProject, PlannerRoomType } from "@/modules/planner/shared";
 import type { ToolContext } from "../services/tools";
@@ -59,50 +63,6 @@ function safeJson(text: string): unknown {
     } catch {
       return null;
     }
-  }
-}
-
-/**
- * Fallback direto para o proxy público `/api/ai/chat` (Lovable AI).
- * Usado quando a chamada via `aiGenerateText`/`aiGenerateJson` falha
- * (ex.: tenant não selecionado, créditos, RLS). Garante que a IA de
- * teste sempre responda.
- */
-async function callLovableProxy(
-  system: string,
-  prompt: string,
-  opts: { json?: boolean; maxTokens?: number; temperature?: number; signal?: AbortSignal } = {},
-): Promise<string | null> {
-  try {
-    const body: Record<string, unknown> = {
-      model: "google/gemini-3.6-flash",
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: prompt },
-      ],
-      temperature: opts.temperature ?? 0.4,
-    };
-    if (opts.maxTokens) body.max_tokens = opts.maxTokens;
-    if (opts.json) body.response_format = { type: "json_object" };
-    const { AI_PROXY_ENDPOINT, buildAiProxyHeaders } =
-      await import("@/modules/planner/domains/ai/proxy");
-    const res = await fetch(AI_PROXY_ENDPOINT, {
-      method: "POST",
-      headers: await buildAiProxyHeaders(),
-      body: JSON.stringify(body),
-      signal: opts.signal,
-    });
-    if (!res.ok) {
-      console.warn("[planner-chat] proxy /api/ai/chat falhou", res.status, await res.text());
-      return null;
-    }
-    const json = (await res.json()) as {
-      choices?: { message?: { content?: string } }[];
-    };
-    return json.choices?.[0]?.message?.content ?? null;
-  } catch (e) {
-    console.warn("[planner-chat] proxy /api/ai/chat erro", e);
-    return null;
   }
 }
 
@@ -333,7 +293,6 @@ export function usePlannerChat() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const tenantId = activeCompany?.id ?? "anonymous";
   const ownerId = user?.id ?? "anonymous";
-  const runAI = useServerFn(aiGenerateText);
   const runAIJson = useServerFn(aiGenerateJson);
   const createProjectOnServer = useServerFn(createProjectRow);
   const saveSnapshotOnServer = useServerFn(saveProjectSnapshot);
@@ -687,27 +646,17 @@ export function usePlannerChat() {
                 "\n• 'torneira/cuba/pia/misturador' → tratar como ferragem via change_hardware ou insert_described." +
                 "\n\nRegra de ouro: sempre prefira `insert_described` para itens reais do catálogo. Passe a descrição rica com marca (Blum, Duratex, Portobello…), cor (Louro Freijó, Off White…), dimensão (800mm, 1,20m) e tipo de frente (vidro/reeded/sólida).";
               const prompt = `Projeto: "${p.name}". Cômodo: "${p.environments.find((e) => e.id === ctx.environmentId)?.rooms.find((r) => r.id === ctx.roomId)?.name ?? "—"}".\nPedido do usuário: ${userMessage}`;
-              let raw: unknown = null;
-              try {
-                const res = await runAIJson({
-                  data: {
-                    task: { type: "json", quality: "standard", speed: "balanced" },
-                    system,
-                    prompt,
-                    temperature: 0.2,
-                    maxTokens: 800,
-                    reason: "planner:tool-plan",
-                  },
-                });
-                raw = res?.output;
-              } catch (e) {
-                console.warn("[planner-chat] gateway com tenant falhou, usando proxy Lovable", e);
-                raw = await callLovableProxy(system, prompt, {
-                  json: true,
-                  maxTokens: 800,
+              const res = await runAIJson({
+                data: {
+                  task: { type: "json", quality: "standard", speed: "balanced" },
+                  system,
+                  prompt,
                   temperature: 0.2,
-                });
-              }
+                  maxTokens: 800,
+                  reason: "planner:tool-plan",
+                },
+              });
+              const raw = res?.output;
               const parsed = typeof raw === "string" ? safeJson(raw) : raw;
               const intents = (parsed as { intents?: unknown } | null)?.intents;
               if (!Array.isArray(intents)) return null;
@@ -727,28 +676,21 @@ export function usePlannerChat() {
               return null;
             }
           },
-          llmReply: async ({ userMessage, role, project: p, ctx }) => {
-            // 1) tenta o AI Gateway com tenant (créditos + auditoria)
-            // 2) fallback direto no proxy público Lovable (garante resposta em modo teste)
+          llmReplyStream: async function* ({ userMessage, role, project: p, ctx }) {
             const system = buildPlannerSystemPrompt(p, ctx);
             const prompt = `Usuário (${role}): ${userMessage}`;
-            try {
-              const res = await runAI({
-                data: {
-                  task: { type: "text", quality: "standard", speed: "balanced" },
-                  system,
-                  prompt,
-                  temperature: 0.4,
-                  maxTokens: 500,
-                },
-              });
-              if (typeof res?.output === "string" && res.output.trim().length > 0) {
-                return res.output;
-              }
-            } catch (e) {
-              console.warn("[planner-chat] gateway com tenant falhou, usando proxy Lovable", e);
-            }
-            return await callLovableProxy(system, prompt, { maxTokens: 500, temperature: 0.4 });
+            const messages: { role: "system" | "user"; content: string }[] = [
+              { role: "system", content: system },
+              { role: "user", content: prompt },
+            ];
+            yield* streamLovableReply({
+              messages,
+              model: "google/gemini-3.6-flash",
+              temperature: 0.4,
+              maxTokens: 800,
+              clientMessageId: pendingKeyRef.current?.assistant,
+              signal: controller.signal,
+            });
           },
         })) {
           if (controller.signal.aborted) break;
@@ -927,7 +869,6 @@ export function usePlannerChat() {
       pathname,
       activeCompany?.id,
       patchMessage,
-      runAI,
       runAIJson,
       createProjectOnServer,
       saveSnapshotOnServer,

@@ -41,6 +41,17 @@ export interface AgentInput {
     ctx: ToolContext;
   }) => Promise<string | null>;
   /**
+   * Callback de streaming opcional — quando fornecido, respostas
+   * conversacionais são geradas em tempo real pelo LLM. O texto final
+   * completo é retornado ao final do generator.
+   */
+  llmReplyStream?: (prompt: {
+    userMessage: string;
+    role: "smalltalk" | "unknown" | "question";
+    project: PlannerProject;
+    ctx: ToolContext;
+  }) => AsyncGenerator<string>;
+  /**
    * Callback opcional — quando fornecido, o agent tenta obter do LLM uma
    * lista estruturada de `ParsedIntent`s (tool-calling real) antes de
    * cair no fallback heurístico. Retornar `null` ou `[]` mantém o
@@ -99,6 +110,11 @@ export async function* runAgent(input: AgentInput): AsyncGenerator<AgentChunk, v
         return;
       }
     }
+    if (input.llmReplyStream) {
+      yield* tryLLMStream(input, parsed.type, input.message);
+      yield { kind: "done" };
+      return;
+    }
     const reply =
       (await tryLLM(input, parsed.type, input.message)) ?? parsed.reply;
     yield* streamText(reply, input.signal);
@@ -108,6 +124,11 @@ export async function* runAgent(input: AgentInput): AsyncGenerator<AgentChunk, v
 
   if (parsed.type === "question") {
     const local = answerQuestion(parsed.question, input.project, input.ctx, input.rules);
+    if (input.llmReplyStream) {
+      yield* tryLLMStream(input, "question", input.message, local);
+      yield { kind: "done" };
+      return;
+    }
     const remote = await tryLLM(input, "question", input.message);
     const answer = remote ? `${local}\n\n${remote}` : local;
     yield* streamText(answer, input.signal);
@@ -187,6 +208,32 @@ async function tryLLM(
     return text && text.trim().length > 0 ? text : null;
   } catch {
     return null;
+  }
+}
+
+async function* tryLLMStream(
+  input: AgentInput,
+  role: "smalltalk" | "unknown" | "question",
+  userMessage: string,
+  prefix?: string,
+): AsyncGenerator<AgentChunk> {
+  if (!input.llmReplyStream) return;
+  try {
+    if (prefix) {
+      yield { kind: "text", text: prefix };
+      yield { kind: "text", text: "\n\n" };
+    }
+    for await (const delta of input.llmReplyStream({
+      userMessage,
+      role,
+      project: input.project,
+      ctx: input.ctx,
+    })) {
+      if (input.signal?.aborted) return;
+      if (delta) yield { kind: "text", text: delta };
+    }
+  } catch {
+    // Falha silenciosa no streaming: o hook já marca erro no estado.
   }
 }
 
