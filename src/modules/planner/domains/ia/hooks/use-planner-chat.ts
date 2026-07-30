@@ -802,17 +802,36 @@ export function usePlannerChat() {
           }
         }
 
+        const wasCancelled = controller.signal.aborted;
         setState((s) => ({ ...s, status: "idle" }));
         abortRef.current = null;
 
-        // Persistência da resposta + auditoria das tools executadas no cliente.
+        if (wasCancelled) {
+          // Cancelamento nunca vira resposta concluída.
+          patchMessage(assistantId, (m) => ({
+            ...m,
+            status: "error",
+            content: (m.content || "") + "\n\n> Resposta cancelada.",
+          }));
+          sendingRef.current = false;
+          return;
+        }
+
+        // Persistência da resposta + telemetria das tools executadas no cliente.
         if (sessionId) {
           const assistantMessageId = await persistMessage(
             sessionId,
             "assistant",
             buffer || "(sem conteúdo)",
             "ok",
+            keys.assistant,
           );
+          if (!assistantMessageId) {
+            patchMessage(assistantId, (m) => ({
+              ...m,
+              content: (m.content || "") + "\n\n> Esta resposta não foi sincronizada com o servidor.",
+            }));
+          }
           for (const call of toolCalls) {
             try {
               await recordToolCallOnServer({
@@ -827,25 +846,33 @@ export function usePlannerChat() {
                 },
               });
             } catch (e) {
-              console.warn("[planner-chat] tool call não persistida", e);
+              console.warn("[planner-chat] não foi possível registrar a ferramenta", e);
             }
           }
         }
+        // Envio concluído: libera a trava e descarta a chave de idempotência.
+        pendingKeyRef.current = null;
+        sendingRef.current = false;
       } catch (err) {
+        console.warn("[planner-chat] falha ao processar envio", err);
         patchMessage(assistantId, (m) => ({
           ...m,
           status: "error",
           content:
             (m.content || "") +
-            `\n\n> Erro ao processar: ${(err as Error).message ?? String(err)}`,
+            "\n\n> Não foi possível concluir a resposta. Você pode tentar novamente.",
         }));
         setState((s) => ({ ...s, status: "error" }));
+        // A mensagem do usuário permanece salva; a resposta é registrada como erro
+        // (nunca como concluída) e a chave é mantida para o retry ser idempotente.
         await persistMessage(
           sessionId,
           "assistant",
-          `Erro ao processar: ${(err as Error).message ?? String(err)}`,
+          "Resposta não concluída (falha no provedor).",
           "error",
+          keys.assistant,
         );
+        sendingRef.current = false;
       }
     },
     [
@@ -882,8 +909,13 @@ export function usePlannerChat() {
   );
 
   const clear = useCallback(() => {
+    const currentProjectId = sessionRef.current?.projectId ?? null;
+    storeSession(currentProjectId, null);
     sessionRef.current = null;
     hydratedForRef.current = null;
+    pendingKeyRef.current = null;
+    sendingRef.current = false;
+    setHistory({ hasMore: false, cursor: null, loading: false });
     setState({
       messages: [
         {
@@ -897,7 +929,7 @@ export function usePlannerChat() {
       ],
       status: "idle",
     });
-  }, []);
+  }, [storeSession]);
 
   return useMemo(
     () => ({
@@ -908,8 +940,11 @@ export function usePlannerChat() {
       cancel,
       clear,
       editMessage,
+      loadMore,
+      canLoadMore: history.hasMore,
+      loadingHistory: history.loading,
       quickActions: PLANNER_QUICK_ACTIONS,
     }),
-    [state.messages, state.status, send, cancel, clear, editMessage],
+    [state.messages, state.status, send, cancel, clear, editMessage, loadMore, history.hasMore, history.loading],
   );
 }
