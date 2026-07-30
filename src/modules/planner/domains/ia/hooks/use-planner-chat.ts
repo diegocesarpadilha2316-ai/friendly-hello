@@ -622,7 +622,26 @@ export function usePlannerChat() {
         patchMessage(assistantId, (m) => ({
           ...m,
           status: "done",
-          content: `Perfeito — anotei **${trimmed}** e já comecei a executar o plano **${activePlan.title}**. Acompanhe o progresso no cartão abaixo.`,
+          content: `Perfeito — anotei **${trimmed}** e já comecei. Acompanhe o progresso abaixo.`,
+        }));
+        setState((s) => ({ ...s, status: "idle" }));
+        sendingRef.current = false;
+        pendingKeyRef.current = null;
+        return;
+      }
+
+      // Confirmação de operação destrutiva acontece por mensagem simples.
+      if (activePlan && activePlan.status === "awaiting_confirmation") {
+        const yes = /^\s*(sim|s|pode|confirmo?|confirmar|isso|ok|claro|manda|continuar?)\b/i.test(
+          trimmed,
+        );
+        planRef.current[yes ? "confirmAndExecute" : "cancel"]();
+        patchMessage(assistantId, (m) => ({
+          ...m,
+          status: "done",
+          content: yes
+            ? "Confirmado — executando agora. Acompanhe o progresso abaixo."
+            : "Ok, não vou apagar nada. O que você quer fazer?",
         }));
         setState((s) => ({ ...s, status: "idle" }));
         sendingRef.current = false;
@@ -654,19 +673,21 @@ export function usePlannerChat() {
           // suposições visíveis e nunca interrompem o fluxo.
           const blocking = proposed.missingInformation.filter((m) => m.level === "obrigatoria");
           const pendencies = blocking.map((m) => `• ${m.question}`).join("\n");
-          const autoStarted = proposed.status === "ready";
-          const closing = autoStarted
-            ? "\nJá comecei a executar — acompanhe o progresso no cartão abaixo."
-            : pendencies
-              ? "\nResponda aqui no chat e eu sigo automaticamente (ou clique em **Executar plano** para usar os padrões)."
-              : "\nRevise as etapas no cartão abaixo e clique em **Executar plano** quando quiser que eu comece.";
+          const assumptions = proposed.assumptions.map((a) => `• ${a.label}`).join("\n");
+          const closing =
+            proposed.status === "ready"
+              ? "\nJá comecei a executar — acompanhe o progresso abaixo."
+              : pendencies
+                ? "\nResponda aqui no chat e eu sigo automaticamente."
+                : "\nResponda **sim** para eu seguir com esta operação.";
           patchMessage(assistantId, (m) => ({
             ...m,
             status: "done",
             content: [
-              `Montei um plano para **${proposed.title}**:`,
+              `Entendi: **${proposed.title}**. Vou seguir esta sequência:`,
               lines,
-              pendencies ? `\nPreciso confirmar antes de começar:\n${pendencies}` : "",
+              assumptions && proposed.status === "ready" ? `\n${assumptions}` : "",
+              pendencies ? `\nSó preciso saber:\n${pendencies}` : "",
               closing,
             ]
               .filter(Boolean)

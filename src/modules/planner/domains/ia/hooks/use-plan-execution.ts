@@ -237,12 +237,28 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
   /** Resposta do usuário à pendência → plano liberado e execução imediata. */
   const answerAndExecute = useCallback(
     (answer?: string) => {
+      // Fluxo conversacional: a resposta é incorporada ao pedido original e
+      // o plano é regerado já executando automaticamente (sem confirmação).
+      const current = plan;
+      const ctx = ctxRef.current;
+      const project = projectRef.current;
+      if (answer && current && ctx && project) {
+        const merged = `${messageRef.current} ${answer}`.trim();
+        const next = propose({
+          message: merged,
+          clientMessageId: `${current.clientMessageId}_a`,
+          sessionId: current.sessionId,
+          project,
+          ctx,
+        });
+        if (next) return;
+      }
       const runner = ensureRunner();
       if (!runner) return;
       runner.answerMissing(answer);
       runNow("run");
     },
-    [ensureRunner, runNow],
+    [ensureRunner, plan, propose, runNow],
   );
 
   const pause = useCallback(() => runnerRef.current?.pause(), []);
