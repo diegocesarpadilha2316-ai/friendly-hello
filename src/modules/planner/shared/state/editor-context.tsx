@@ -550,10 +550,10 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
     const onHidden = () => {
       if (document.visibilityState === "hidden") flushLocal();
     };
-    window.addEventListener("beforeunload", flushLocal);
+    window.addEventListener("beforeunload", onBeforeUnload);
     document.addEventListener("visibilitychange", onHidden);
     return () => {
-      window.removeEventListener("beforeunload", flushLocal);
+      window.removeEventListener("beforeunload", onBeforeUnload);
       document.removeEventListener("visibilitychange", onHidden);
     };
   }, [state.dirty, state.project, tenantId]);
