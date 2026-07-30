@@ -830,7 +830,10 @@ export function usePlannerChat() {
                   sessionId,
                   messageId: assistantMessageId,
                   toolName: call.name,
-                  args: (call.args ?? {}) as Record<string, unknown>,
+                  args: {
+                    ...((call.args ?? {}) as Record<string, unknown>),
+                    ...(call.agent ? { __agent: call.agent } : {}),
+                  },
                   status:
                     call.status === "ok" ? "ok" : call.status === "error" ? "error" : "pending",
                   summary: call.message ?? null,
