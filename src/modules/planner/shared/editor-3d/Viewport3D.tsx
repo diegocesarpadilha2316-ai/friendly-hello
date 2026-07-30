@@ -368,8 +368,8 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
 
       {/* Viewport principal */}
       <div className="relative flex min-h-0 flex-col overflow-hidden rounded-md border border-border/60 bg-[#0b0f1a]">
-        <div className="absolute inset-x-0 top-0 z-10 flex flex-wrap items-center justify-between gap-1 border-b border-border/40 bg-background/40 px-2 py-1.5 backdrop-blur">
-          <div className="flex items-center gap-1">
+        <div className="absolute inset-x-0 top-0 z-10 flex h-9 items-center justify-between gap-2 overflow-x-auto border-b border-border/40 bg-background/70 px-2 backdrop-blur [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex shrink-0 items-center gap-1">
             {(Object.keys(CAM_LABEL) as Camera3DMode[]).map((m) => (
               <ToolbarButton
                 key={m}
