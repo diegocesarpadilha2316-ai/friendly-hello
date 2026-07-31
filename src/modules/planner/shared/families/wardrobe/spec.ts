@@ -5,8 +5,23 @@
  * antigo — é convertida para esta ficha ANTES de qualquer montagem.
  * A normalização nunca lança: corrige e registra a suposição.
  */
+import type { InteriorPlan } from "../../interior";
+
 export type WardrobeOpening = "abrir" | "correr" | "sem-porta";
 export type WardrobeMirrorPosition = "central" | "todas" | "lateral" | "interna";
+
+/**
+ * Configuração do interior paramétrico. Tudo é OPCIONAL: projetos antigos
+ * continuam sem este campo e seguem pela conversão dos params legados.
+ */
+export interface WardrobeInteriorConfig {
+  /** Layout interno explícito (edição manual / IA). Prioridade máxima. */
+  readonly plan?: InteriorPlan;
+  /** Preset escolhido pelo usuário. */
+  readonly presetId?: string;
+  /** "preset" força o preset mesmo havendo params legados. */
+  readonly mode?: "auto" | "legado" | "preset";
+}
 
 export interface WardrobeSpec {
   readonly widthMm: number;
@@ -36,6 +51,8 @@ export interface WardrobeSpec {
   readonly plinthHeightMm: number;
   readonly thicknessMm: number;
   readonly backThicknessMm: number;
+  /** Interior paramétrico (opcional). */
+  readonly interior?: WardrobeInteriorConfig;
 }
 
 function num(v: unknown, fallback: number): number {
@@ -148,6 +165,7 @@ export function normalizeWardrobeSpec(input: Partial<WardrobeSpec> = {}): Wardro
     plinthHeightMm: clampNum(input.plinthHeightMm, 0, 250, d.plinthHeightMm),
     thicknessMm: clampNum(input.thicknessMm, 9, 30, d.thicknessMm),
     backThicknessMm: clampNum(input.backThicknessMm, 3, 18, d.backThicknessMm),
+    ...(input.interior ? { interior: input.interior } : {}),
   };
 }
 

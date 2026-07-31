@@ -14,6 +14,7 @@ import {
 import type { FamilyBuildResult } from "../types";
 import { handleType } from "../handles";
 import { normalizeWardrobeSpec, type WardrobeSpec } from "./spec";
+import { resolveWardrobeInterior, type WardrobeInteriorResult } from "./interior";
 
 /** Quais folhas recebem espelho, conforme a ficha. */
 export function mirroredDoorIndexes(spec: WardrobeSpec): ReadonlySet<number> {
@@ -40,6 +41,7 @@ export interface WardrobeLayout extends Record<string, number> {
 /** Monta o roupeiro. Puro e determinístico. */
 export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildResult<WardrobeSpec> & {
   layout: WardrobeLayout;
+  interior: WardrobeInteriorResult;
 } {
   const spec = normalizeWardrobeSpec(input);
   const { widthMm: W, heightMm: H, depthMm: D, thicknessMm: t, backThicknessMm: bt } = spec;
@@ -119,117 +121,21 @@ export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildRes
     },
   );
 
-  /* ── divisórias verticais (colunas proporcionais) ── */
-  for (let i = 1; i < cols; i++) {
-    slots.push({
-      id: `divisoria-${i}`,
-      component: "divisoria-vertical",
-      at: [colX(i) - t, interiorY0, 0],
-      role: `divisória ${i}`,
-      params: {
-        heightMm: interiorH,
-        depthMm: interiorD,
-        thicknessMm: t,
-        positionMm: 0,
-        fullHeight: true,
-        finishId: spec.finishId,
-      },
-    });
-  }
-
-  /* ── gavetas internas (empilhadas na coluna designada) ── */
-  const drawerH = 200;
-  const drawerGap = 3;
-  const drawerStackH = spec.drawers > 0 ? spec.drawers * drawerH + (spec.drawers - 1) * drawerGap : 0;
-  for (let k = 0; k < spec.drawers; k++) {
-    slots.push({
-      id: `gaveta-${k + 1}`,
-      component: "gaveta",
-      at: [colX(spec.drawerColumn), interiorY0 + 10 + k * (drawerH + drawerGap), bt],
-      role: `gaveta ${k + 1}`,
-      params: {
-        widthMm: colW,
-        heightMm: drawerH,
-        depthMm: Math.max(200, interiorD - 30),
-        handle,
-        withFront: true,
-        finishId: spec.finishId,
-      },
-    });
-  }
-
-  /* ── nichos abertos (topo das últimas colunas) ── */
-  const nicheH = 320;
-  const nicheColumns: number[] = [];
-  for (let n = 0; n < spec.niches; n++) {
-    const c = cols === 1 ? 0 : (Math.floor((cols - 1) / 2) + n) % cols;
-    nicheColumns.push(c);
-    slots.push({
-      id: `nicho-${n + 1}`,
-      component: "nicho",
-      at: [colX(c), interiorY0 + interiorH - nicheH * (nicheColumns.filter((x) => x === c).length), bt],
-      role: `nicho ${n + 1}`,
-      params: {
-        widthMm: colW,
-        heightMm: nicheH,
-        depthMm: Math.max(120, interiorD - 20),
-        thicknessMm: t,
-        withBack: false,
-        finishId: spec.finishId,
-      },
-    });
-  }
-
-  /* ── cabideiros (colunas sem gaveteiro têm prioridade) ── */
-  const hangerColumns: number[] = [];
-  const preferred = Array.from({ length: cols }, (_, i) => i).filter(
-    (i) => !(spec.drawers > 0 && i === spec.drawerColumn),
-  );
-  const pool = preferred.length > 0 ? preferred : Array.from({ length: cols }, (_, i) => i);
-  for (let n = 0; n < spec.hangers; n++) hangerColumns.push(pool[n % pool.length]);
-  hangerColumns.forEach((c, n) => {
-    const inColumn = hangerColumns.slice(0, n).filter((x) => x === c).length;
-    const nicheOffset = nicheColumns.includes(c) ? nicheH : 0;
-    const y = interiorY0 + interiorH - nicheOffset - 80 - inColumn * Math.max(600, interiorH / 2.4);
-    slots.push({
-      id: `cabideiro-${n + 1}`,
-      component: "cabideiro",
-      at: [colX(c), 0, 0],
-      role: `cabideiro ${n + 1}`,
-      params: {
-        widthMm: colW,
-        heightMm: Math.max(interiorY0 + 300, y),
-        depthOffsetMm: Math.max(60, interiorD / 2),
-      },
-    });
+  /* ── INTERIOR PARAMÉTRICO ──────────────────────────────────────────────
+   * Nada é desenhado aqui: divisórias, prateleiras, cabideiros, gavetas,
+   * nichos e sapateiras vêm do Layout Engine da Biblioteca de Interiores,
+   * já convertidos em slots da Biblioteca Construtiva.
+   */
+  const interior = resolveWardrobeInterior(spec, {
+    interiorY0,
+    interiorHeightMm: interiorH,
+    innerWidthMm: innerW,
   });
-
-  /* ── prateleiras (acima do gaveteiro / abaixo do cabideiro) ── */
-  for (let c = 0; c < cols; c++) {
-    const n = spec.shelvesPerColumn;
-    if (n <= 0) continue;
-    const isDrawerColumn = spec.drawers > 0 && c === spec.drawerColumn;
-    const yStart = interiorY0 + (isDrawerColumn ? drawerStackH + 30 : 0);
-    const nicheOffset = nicheColumns.includes(c) ? nicheH : 0;
-    const yEnd = interiorY0 + interiorH - nicheOffset;
-    const region = yEnd - yStart;
-    if (region < 200) continue;
-    const step = region / (n + 1);
-    for (let k = 1; k <= n; k++) {
-      slots.push({
-        id: `prateleira-${c}-${k}`,
-        component: "prateleira",
-        at: [colX(c), yStart + step * k, bt],
-        role: `prateleira coluna ${c + 1}`,
-        params: {
-          widthMm: colW,
-          depthMm: Math.max(150, interiorD - 20),
-          thicknessMm: t,
-          positionMm: 0,
-          finishId: spec.finishId,
-        },
-      });
-    }
+  for (const slot of interior.slots) {
+    slots.push({
+      ...slot,
+      params: { finishId: spec.finishId, handle, ...(slot.params ?? {}) },
+    });
   }
 
   /* ── maleiro ── */
@@ -343,5 +249,5 @@ export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildRes
     frontZMm: frontZ,
   };
 
-  return { spec, assembly, layout };
+  return { spec, assembly, layout, interior };
 }

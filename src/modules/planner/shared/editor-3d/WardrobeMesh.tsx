@@ -3,9 +3,14 @@
  * genérico da Biblioteca Construtiva (`AssemblyMesh`). Nenhuma regra
  * construtiva, nenhuma animação e nenhum intertravamento vivem aqui.
  */
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { type InterlockBlock } from "../construction";
-import { buildWardrobe, wardrobeSpecFromLegacy, type LegacyParams } from "../families/wardrobe";
+import {
+  buildWardrobe,
+  wardrobeInteriorDiagnostics,
+  wardrobeSpecFromLegacy,
+  type LegacyParams,
+} from "../families/wardrobe";
 import { AssemblyMesh, MM } from "./AssemblyMesh";
 
 export interface WardrobeMeshProps {
@@ -26,10 +31,14 @@ export interface WardrobeMeshProps {
   shelvesCount?: number;
   style?: string;
   handleStyle?: string;
+  /** Identificação do nó na cena (usada só pelo diagnóstico DEV). */
+  nodeId?: string;
+  /** Preset interno escolhido pelo usuário (opcional). */
+  interiorPresetId?: string;
 }
 
 export function WardrobeMesh(props: WardrobeMeshProps) {
-  const { assembly, spec } = useMemo(() => {
+  const { assembly, spec, interior } = useMemo(() => {
     const base = wardrobeSpecFromLegacy({
       widthMm: props.width / MM,
       heightMm: props.height / MM,
@@ -43,6 +52,9 @@ export function WardrobeMesh(props: WardrobeMeshProps) {
       shelvesPerColumn: props.shelvesCount ?? base.shelvesPerColumn,
       style: props.style ?? base.style,
       handle: props.handleStyle ?? base.handle,
+      ...(props.interiorPresetId
+        ? { interior: { ...base.interior, presetId: props.interiorPresetId } }
+        : {}),
     });
   }, [
     props.width,
@@ -54,7 +66,20 @@ export function WardrobeMesh(props: WardrobeMeshProps) {
     props.shelvesCount,
     props.style,
     props.handleStyle,
+    props.interiorPresetId,
   ]);
+
+  // Diagnóstico por móvel — apenas em desenvolvimento.
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    const diag = wardrobeInteriorDiagnostics(props.nodeId ?? "roupeiro", spec, interior, {
+      pieces: assembly.pieces.length,
+      motions: assembly.motions.filter((m) => m.kind !== "static").length,
+    });
+    const w = window as unknown as { __DIORIS_INTERIOR__?: Record<string, unknown> };
+    w.__DIORIS_INTERIOR__ = { ...(w.__DIORIS_INTERIOR__ ?? {}), [diag.id]: diag };
+    console.debug("[planner:interior]", diag);
+  }, [props.nodeId, spec, interior, assembly]);
 
   return (
     <AssemblyMesh
