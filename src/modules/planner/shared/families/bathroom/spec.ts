@@ -14,7 +14,12 @@ import {
   type KitchenCountertop,
 } from "../kitchen/countertop";
 import { normalizePlinth, type KitchenPlinth } from "../kitchen/plinth";
-import { normalizeSink, type BathroomSink } from "./sink";
+import {
+  minWidthForSinkMm,
+  normalizeSink,
+  SINK_STRUCTURAL_CLEARANCE_MM,
+  type BathroomSink,
+} from "./sink";
 
 /** Módulos atendidos pela família. */
 export type BathroomModuleKind =
@@ -115,15 +120,15 @@ export const BATHROOM_MODULE_PROFILES: Readonly<Record<BathroomModuleKind, Bathr
   "gabinete-piso": { ...G, install: "rodape", defaultWidthMm: 900, doors: 2, drawers: 0, shelves: 1, label: "Gabinete apoiado no piso" },
   "torre-lateral": { ...G, level: "coluna", install: "piso", defaultWidthMm: 400, defaultHeightMm: 1800, defaultDepthMm: 350, doors: 1, drawers: 1, shelves: 3, countertop: false, sink: false, label: "Torre lateral" },
   "nicho-aberto": { ...G, opening: "aberto", defaultWidthMm: 400, defaultHeightMm: 600, defaultDepthMm: 250, doors: 0, drawers: 0, shelves: 2, countertop: false, sink: false, label: "Nicho aberto" },
-  espelheira: { ...G, level: "superior", defaultWidthMm: 900, defaultHeightMm: 700, defaultDepthMm: 150, doors: 2, drawers: 0, shelves: 2, countertop: false, sink: false, mirror: "porta", label: "Armário espelheira" },
-  "armario-superior": { ...G, level: "superior", defaultWidthMm: 700, defaultHeightMm: 650, defaultDepthMm: 200, doors: 2, drawers: 0, shelves: 1, countertop: false, sink: false, label: "Armário superior" },
-  prateleira: { ...G, level: "superior", opening: "aberto", defaultWidthMm: 700, defaultHeightMm: 40, defaultDepthMm: 200, doors: 0, drawers: 0, shelves: 1, countertop: false, sink: false, label: "Prateleira decorativa" },
+  espelheira: { ...G, level: "superior", defaultWidthMm: 900, defaultHeightMm: 700, defaultDepthMm: 150, minDepthMm: 100, doors: 2, drawers: 0, shelves: 2, countertop: false, sink: false, mirror: "porta", label: "Armário espelheira" },
+  "armario-superior": { ...G, level: "superior", defaultWidthMm: 700, defaultHeightMm: 650, defaultDepthMm: 200, minDepthMm: 150, doors: 2, drawers: 0, shelves: 1, countertop: false, sink: false, label: "Armário superior" },
+  prateleira: { ...G, level: "superior", opening: "aberto", defaultWidthMm: 700, defaultHeightMm: 40, defaultDepthMm: 200, minDepthMm: 100, doors: 0, drawers: 0, shelves: 1, countertop: false, sink: false, label: "Prateleira decorativa" },
   "cuba-central": { ...G, defaultWidthMm: 900, doors: 2, drawers: 0, shelves: 0, label: "Módulo cuba central" },
   "cuba-deslocada": { ...G, opening: "misto", defaultWidthMm: 1200, doors: 1, drawers: 2, shelves: 0, label: "Módulo cuba deslocada" },
   "cuba-dupla": { ...G, defaultWidthMm: 1600, doors: 2, drawers: 2, shelves: 0, label: "Módulo cuba dupla" },
   "tapa-vao": { ...G, level: "acabamento", opening: "aberto", defaultWidthMm: 60, defaultHeightMm: 600, defaultDepthMm: 460, minWidthMm: 10, maxWidthMm: 400, doors: 0, drawers: 0, shelves: 0, countertop: false, sink: false, label: "Tapa-vão lateral" },
-  "painel-acabamento": { ...G, level: "acabamento", opening: "aberto", defaultWidthMm: 460, defaultHeightMm: 600, defaultDepthMm: 18, minWidthMm: 50, maxWidthMm: 2400, doors: 0, drawers: 0, shelves: 0, countertop: false, sink: false, label: "Painel de acabamento" },
-  rodabanca: { ...G, level: "acabamento", opening: "aberto", defaultWidthMm: 900, defaultHeightMm: 100, defaultDepthMm: 20, minWidthMm: 100, maxWidthMm: 3000, doors: 0, drawers: 0, shelves: 0, countertop: false, sink: false, label: "Rodabanca" },
+  "painel-acabamento": { ...G, level: "acabamento", opening: "aberto", defaultWidthMm: 460, defaultHeightMm: 600, defaultDepthMm: 18, minWidthMm: 50, maxWidthMm: 2400, minDepthMm: 10, doors: 0, drawers: 0, shelves: 0, countertop: false, sink: false, label: "Painel de acabamento" },
+  rodabanca: { ...G, level: "acabamento", opening: "aberto", defaultWidthMm: 900, defaultHeightMm: 100, defaultDepthMm: 20, minWidthMm: 100, maxWidthMm: 3000, minDepthMm: 10, doors: 0, drawers: 0, shelves: 0, countertop: false, sink: false, label: "Rodabanca" },
 };
 
 /** Tampo do banheiro: reaproveita o tampo da cozinha e acrescenta saia/frontão. */
@@ -166,6 +171,8 @@ export interface BathroomModuleSpec {
   readonly closedBack: boolean;
   /** Permitir gaveta em U sob a cuba. */
   readonly allowUDrawer: boolean;
+  /** Largura mínima de cada perna da gaveta em U (mm) — configurável. */
+  readonly minUDrawerLegMm: number;
 }
 
 export type BathroomModuleInput = Partial<
@@ -278,7 +285,10 @@ export function normalizeBathroomModule(input: BathroomModuleInput = {}): Bathro
 
   const opening = (input.opening ?? p.opening) as BathroomOpening;
   const install = normalizeInstall(input.install, p.install);
+  const thicknessMm = num(input.thicknessMm, 18, 9, 30);
   const wantsSink = p.sink && (input.sink?.type ?? "apoio") !== "nenhuma";
+  const sinkCount = (input.sink?.position ?? (kind === "cuba-dupla" ? "dupla" : "")) === "dupla" ? 2 : 1;
+  const innerWidthMm = Math.max(0, widthMm - 2 * thicknessMm);
   const sink = normalizeSink(
     {
       position: kind === "cuba-deslocada" ? "esquerda" : kind === "cuba-dupla" ? "dupla" : "central",
@@ -286,6 +296,13 @@ export function normalizeBathroomModule(input: BathroomModuleInput = {}): Bathro
       ...defined(input.sink),
     },
     wantsSink,
+    {
+      // A louça padrão se adapta ao módulo; medida explícita é preservada.
+      maxWidthMm: Math.floor(
+        (innerWidthMm - (sinkCount + 1) * SINK_STRUCTURAL_CLEARANCE_MM) / sinkCount,
+      ),
+      maxDepthMm: depthMm - 40,
+    },
   );
 
   const doors = int(input.doors, p.doors, 0, 6);
@@ -321,11 +338,35 @@ export function normalizeBathroomModule(input: BathroomModuleInput = {}): Bathro
     led: input.led ?? false,
     style: input.style ?? "moderno",
     finishId: input.finishId ?? "branco-tx",
-    thicknessMm: num(input.thicknessMm, 18, 9, 30),
+    thicknessMm,
     backThicknessMm: num(input.backThicknessMm, 6, 3, 18),
     closedBack: input.closedBack ?? true,
     allowUDrawer: input.allowUDrawer ?? true,
+    minUDrawerLegMm: int(input.minUDrawerLegMm, 150, 60, 600),
   };
+}
+
+/**
+ * Largura mínima real de um módulo: o mínimo do perfil OU o que a cuba
+ * declarada exige. Usado pelo Layout Engine para não encolher um módulo
+ * de cuba dupla até uma medida impossível.
+ */
+export function bathroomMinWidthMm(input: BathroomModuleInput = {}): number {
+  const kind = normalizeBathroomKind(input.kind);
+  const p = BATHROOM_MODULE_PROFILES[kind];
+  if (!p.sink) return p.minWidthMm;
+  const wantsSink = (input.sink?.type ?? "apoio") !== "nenhuma";
+  if (!wantsSink) return p.minWidthMm;
+  const thicknessMm = num(input.thicknessMm, 18, 9, 30);
+  const sink = normalizeSink(
+    {
+      position: kind === "cuba-deslocada" ? "esquerda" : kind === "cuba-dupla" ? "dupla" : "central",
+      type: kind === "cuba-dupla" ? "dupla" : undefined,
+      ...defined(input.sink),
+    },
+    true,
+  );
+  return Math.max(p.minWidthMm, minWidthForSinkMm(sink, thicknessMm));
 }
 
 export function bathroomHandle(spec: BathroomModuleSpec): ComponentHandle {

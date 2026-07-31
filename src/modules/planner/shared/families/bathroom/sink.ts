@@ -96,11 +96,22 @@ export function normalizeSinkPosition(value: unknown, type: SinkType): SinkPosit
 export function normalizeSink(
   input: Partial<BathroomSink> | undefined,
   enabled = true,
+  limits?: { readonly maxWidthMm?: number; readonly maxDepthMm?: number },
 ): BathroomSink {
   const type = enabled ? normalizeSinkType(input?.type) : "nenhuma";
   const def = SINKS[type];
-  const width = type === "nenhuma" ? 0 : clampNum(input?.widthMm, def.widthMm, 200, 900);
-  const depth = type === "nenhuma" ? 0 : clampNum(input?.depthMm, def.depthMm, 200, 700);
+  /* O padrão da louça se adapta ao módulo; a medida EXPLÍCITA é respeitada
+   * como pedida (e depois reprovada pelo validador se não couber). */
+  const defW =
+    typeof limits?.maxWidthMm === "number"
+      ? Math.min(def.widthMm, Math.max(200, Math.floor(limits.maxWidthMm)))
+      : def.widthMm;
+  const defD =
+    typeof limits?.maxDepthMm === "number"
+      ? Math.min(def.depthMm, Math.max(200, Math.floor(limits.maxDepthMm)))
+      : def.depthMm;
+  const width = type === "nenhuma" ? 0 : clampNum(input?.widthMm, defW, 200, 900);
+  const depth = type === "nenhuma" ? 0 : clampNum(input?.depthMm, defD, 200, 700);
   return {
     type,
     position: normalizeSinkPosition(input?.position, type),
@@ -132,4 +143,86 @@ export function sinkCentersMm(sink: BathroomSink, widthMm: number): readonly num
 
 export function listSinks(): readonly SinkProfileDef[] {
   return Object.values(SINKS).filter((s) => s.id !== "nenhuma");
+}
+
+/* ─────────────────────── compatibilidade cuba × gabinete ─────────────────
+ * A cuba NUNCA é comparada com a largura externa do gabinete e a folga
+ * NUNCA é aplicada duas vezes. Tudo passa por estas quatro medidas.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+/** Margem técnica mínima entre a cuba e cada lateral/divisória (mm). */
+export const SINK_STRUCTURAL_CLEARANCE_MM = 20;
+
+export interface SinkFitInput {
+  readonly widthMm: number;
+  readonly thicknessMm: number;
+  readonly sink: BathroomSink;
+  /** Balanço lateral do tampo (mm por lado). */
+  readonly countertopOverhangSideMm?: number;
+  readonly clearanceMm?: number;
+  /** Profundidade útil do tampo (mm). */
+  readonly topDepthMm?: number;
+}
+
+export interface SinkFit {
+  /** Largura interna útil da caixa (externa − 2 × espessura). */
+  readonly cabinetInnerWidthMm: number;
+  readonly sinkCount: number;
+  readonly sinkWidthMm: number;
+  readonly sinkCutoutWidthMm: number;
+  /** Folga exigida por lado/entre cubas (mm). */
+  readonly requiredSideClearanceMm: number;
+  /** Largura de cuba realmente disponível depois das folgas. */
+  readonly usableSinkWidthMm: number;
+  /** Largura total exigida pelas cubas + folgas. */
+  readonly requiredWidthMm: number;
+  /** Largura do tampo (externa + balanços). */
+  readonly topWidthMm: number;
+  readonly requiredCutoutWidthMm: number;
+  /** A louça, sozinha, cabe na largura interna? */
+  readonly sinkFitsCabinet: boolean;
+  /** Cabe com as folgas técnicas? */
+  readonly clearanceOk: boolean;
+  /** O recorte cabe no tampo? */
+  readonly cutoutFitsTop: boolean;
+  readonly depthOk: boolean;
+}
+
+export function sinkFit(input: SinkFitInput): SinkFit {
+  const s = input.sink;
+  const clearance = Math.max(0, input.clearanceMm ?? SINK_STRUCTURAL_CLEARANCE_MM);
+  const inner = Math.max(0, input.widthMm - 2 * input.thicknessMm);
+  const count = s.type === "nenhuma" ? 0 : s.position === "dupla" ? 2 : 1;
+  const gaps = count > 0 ? count + 1 : 0;
+  const required = count * s.widthMm + gaps * clearance;
+  const usable = Math.max(0, inner - gaps * clearance);
+  const topWidth = input.widthMm + 2 * (input.countertopOverhangSideMm ?? 0);
+  const requiredCutout = count * s.cutoutWidthMm + gaps * clearance;
+  const topDepth = input.topDepthMm ?? 0;
+  return {
+    cabinetInnerWidthMm: inner,
+    sinkCount: count,
+    sinkWidthMm: s.widthMm,
+    sinkCutoutWidthMm: s.cutoutWidthMm,
+    requiredSideClearanceMm: clearance,
+    usableSinkWidthMm: usable,
+    requiredWidthMm: required,
+    topWidthMm: topWidth,
+    requiredCutoutWidthMm: requiredCutout,
+    sinkFitsCabinet: count === 0 || count * s.widthMm <= inner,
+    clearanceOk: count === 0 || required <= inner,
+    cutoutFitsTop: count === 0 || s.cutoutWidthMm === 0 || requiredCutout <= topWidth,
+    depthOk: count === 0 || topDepth <= 0 || s.depthMm <= topDepth,
+  };
+}
+
+/** Largura interna mínima para acomodar a(s) cuba(s) desta ficha. */
+export function minWidthForSinkMm(
+  sink: BathroomSink,
+  thicknessMm = 18,
+  clearanceMm = SINK_STRUCTURAL_CLEARANCE_MM,
+): number {
+  if (sink.type === "nenhuma") return 0;
+  const count = sink.position === "dupla" ? 2 : 1;
+  return Math.ceil(count * sink.widthMm + (count + 1) * clearanceMm + 2 * thicknessMm);
 }

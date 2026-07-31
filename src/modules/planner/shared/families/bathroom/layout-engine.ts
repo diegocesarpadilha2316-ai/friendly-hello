@@ -5,8 +5,9 @@
  *   1. configuração explícita (modules[]);
  *   2. configuração manual legada;
  *   3. preset selecionado;
- *   4. preset automático;
- *   5. fallback mínimo seguro.
+ *   4. composição entre paredes;
+ *   5. preset automático;
+ *   6. fallback mínimo seguro.
  *
  * Nunca sobrescreve configuração manual existente. Sobra só vira tapa-vão
  * real quando o vão é entre paredes ou quando pedido explicitamente.
@@ -21,6 +22,7 @@ import {
 } from "./presets";
 import {
   BATHROOM_MODULE_PROFILES,
+  bathroomMinWidthMm,
   normalizeBathroomKind,
   type BathroomModuleInput,
   type BathroomModuleKind,
@@ -30,6 +32,7 @@ export type BathroomLayoutSource =
   | "explicito"
   | "legado"
   | "preset"
+  | "entre-paredes"
   | "preset-automatico"
   | "fallback";
 
@@ -71,6 +74,8 @@ export interface BathroomLayoutResult {
 }
 
 const MIN_MODULE_MM = 300;
+/** Vão técnico reservado por parede quando a composição é entre paredes. */
+const WALL_GAP_MM = 18;
 
 function place(
   modules: readonly BathroomModuleInput[],
@@ -86,13 +91,17 @@ function place(
     const p = BATHROOM_MODULE_PROFILES[kind];
     const wanted = m.widthMm ?? p.defaultWidthMm;
     const available = totalWidth - x;
-    if (available < Math.min(p.minWidthMm, MIN_MODULE_MM)) {
+    // Mínimo REAL: perfil e, quando há cuba, a largura que a louça exige.
+    const minWidthMm = bathroomMinWidthMm({ ...m, kind });
+    if (available < Math.min(minWidthMm, MIN_MODULE_MM)) {
       warnings.push(`módulo ${kind} descartado: sem espaço restante`);
       return;
     }
     const widthMm = Math.min(wanted, available);
-    if (widthMm < p.minWidthMm) {
-      warnings.push(`módulo ${kind} descartado: ${Math.round(widthMm)} mm < mínimo ${p.minWidthMm} mm`);
+    if (widthMm < minWidthMm) {
+      warnings.push(
+        `módulo ${kind} descartado: ${Math.round(widthMm)} mm < mínimo ${minWidthMm} mm`,
+      );
       return;
     }
     placements.push({
@@ -153,6 +162,10 @@ export function planBathroomLayout(input: BathroomLayoutInput): BathroomLayoutRe
   let modules: readonly BathroomModuleInput[];
 
   const presetId: BathroomPresetId | null = normalizePresetId(input.preset);
+  /** Entre paredes, a composição gerada nasce menor para caber o tapa-vão real. */
+  const generatedWidthMm = betweenWalls
+    ? Math.max(MIN_MODULE_MM, widthMm - 2 * WALL_GAP_MM)
+    : widthMm;
 
   if (input.modules && input.modules.length > 0) {
     source = "explicito";
@@ -165,11 +178,15 @@ export function planBathroomLayout(input: BathroomLayoutInput): BathroomLayoutRe
   } else if (presetId) {
     source = "preset";
     preset = BATHROOM_PRESETS[presetId];
-    modules = modulesFromPreset(preset, widthMm);
+    modules = modulesFromPreset(preset, generatedWidthMm);
+  } else if (betweenWalls) {
+    preset = pickBathroomPreset(widthMm, true);
+    source = "entre-paredes";
+    modules = modulesFromPreset(preset, generatedWidthMm);
   } else {
     preset = pickBathroomPreset(widthMm, betweenWalls);
     source = "preset-automatico";
-    modules = modulesFromPreset(preset, widthMm);
+    modules = modulesFromPreset(preset, generatedWidthMm);
   }
 
   let result = place(modules, widthMm, {
@@ -184,7 +201,15 @@ export function planBathroomLayout(input: BathroomLayoutInput): BathroomLayoutRe
     source = "fallback";
     warnings.push("nenhum módulo coube — aplicado fallback mínimo seguro");
     result = place(
-      [{ kind: "gabinete-1-porta", widthMm: Math.min(widthMm, 600) }],
+      [
+        {
+          kind: "gabinete-1-porta",
+          widthMm: Math.min(widthMm, 600),
+          // Fallback é sempre montável: sem louça e sem tampo obrigatórios.
+          sink: { type: "nenhuma" },
+          countertop: { material: "nenhum" },
+        },
+      ],
       widthMm,
       { heightMm: input.heightMm, depthMm: input.depthMm, finishId: input.finishId },
     );
@@ -201,6 +226,11 @@ export function planBathroomLayout(input: BathroomLayoutInput): BathroomLayoutRe
     const height = input.heightMm ?? preset?.counterHeightMm ?? 600;
     const depth = input.depthMm ?? preset?.depthMm ?? 460;
     if (betweenWalls && half >= 10) {
+      // Os módulos deslocam para a direita do tapa-vão esquerdo.
+      result = {
+        ...result,
+        placements: result.placements.map((p) => ({ ...p, xMm: p.xMm + half })),
+      };
       fillers.push(
         makeFiller({
           id: "tapa-vao-esq",

@@ -358,9 +358,16 @@ export const panel: ConstructionComponent<PanelParams> = {
   normalize(p, ctx) {
     const d = panel.defaults;
     const t = clamp(positive(p.thicknessMm, ctx.thicknessMm || d.thicknessMm), 6, 40);
+    /* Peças técnicas (tapa-vão, acabamento, rodabanca) são naturalmente
+     * estreitas — 18 mm, 40 mm, 80 mm. Nunca normalizar para 100 mm. */
+    const technical =
+      p.fixedRole === "tapa-vao" ||
+      p.fixedRole === "acabamento" ||
+      p.fixedRole === "rodabanca";
+    const minSide = technical ? 5 : 100;
     return {
-      widthMm: clamp(positive(p.widthMm, d.widthMm), 100, 8000),
-      heightMm: clamp(positive(p.heightMm, d.heightMm), 100, 3200),
+      widthMm: clamp(positive(p.widthMm, d.widthMm), minSide, 8000),
+      heightMm: clamp(positive(p.heightMm, d.heightMm), minSide, 3200),
       depthMm: t,
       thicknessMm: t,
       treatment: p.treatment ?? d.treatment,
