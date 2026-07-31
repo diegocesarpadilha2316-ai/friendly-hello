@@ -40,6 +40,8 @@ export interface WardrobeCaseMetrics {
   readonly interiorY0: number;
   readonly interiorHeightMm: number;
   readonly innerWidthMm: number;
+  /** Profundidade da caixa (frentes já descontadas). */
+  readonly caseDepthMm?: number;
 }
 
 export type WardrobeInteriorSource =
@@ -65,6 +67,7 @@ export interface WardrobeInteriorResult {
 export function wardrobeCavity(spec: WardrobeSpec, m: WardrobeCaseMetrics): InteriorCavity {
   const t = spec.thicknessMm;
   const bt = spec.backThicknessMm;
+  const caseD = m.caseDepthMm ?? spec.depthMm - t;
   return {
     id: "roupeiro:vao",
     label: "Vão interno",
@@ -74,7 +77,7 @@ export function wardrobeCavity(spec: WardrobeSpec, m: WardrobeCaseMetrics): Inte
     widthMm: round(Math.max(0, m.innerWidthMm)),
     heightMm: round(Math.max(0, m.interiorHeightMm)),
     // Abertura frontal: o interior nunca invade o plano das frentes.
-    depthMm: round(Math.max(0, spec.depthMm - bt - t)),
+    depthMm: round(Math.max(0, caseD - bt)),
   };
 }
 
@@ -96,7 +99,13 @@ function stripMaleiro(recipe: LayoutRecipe): LayoutRecipe {
 
 /** A ficha tem configuração interna manual/legada digna de preservação? */
 export function hasManualInterior(spec: WardrobeSpec): boolean {
-  return spec.drawers > 0 || spec.shelvesPerColumn > 0 || spec.hangers > 0 || spec.niches > 0;
+  return (
+    spec.drawers > 0 ||
+    spec.shelvesPerColumn > 0 ||
+    spec.hangers > 0 ||
+    spec.niches > 0 ||
+    spec.shoeRacks > 0
+  );
 }
 
 /**
@@ -122,8 +131,24 @@ export function legacyInteriorRecipe(spec: WardrobeSpec): LayoutRecipe {
     hangerRoles.set(c, [...(hangerRoles.get(c) ?? []), `cabideiro ${n + 1}`]);
   }
 
+  // Sapateiras distribuídas pelas colunas sem gaveteiro, uma por vez.
+  const shoeColumns = new Map<number, number>();
+  for (let n = 0; n < spec.shoeRacks; n++) {
+    const c = pool[n % pool.length];
+    shoeColumns.set(c, (shoeColumns.get(c) ?? 0) + 1);
+  }
+
   const columns: LayoutColumn[] = Array.from({ length: cols }, (_, c) => {
     const bands: LayoutBand[] = [];
+    // A sapateira mora na BASE da coluna — por isso entra antes de tudo.
+    if (shoeColumns.has(c)) {
+      bands.push({
+        module: "sapateira",
+        heightMm: 200,
+        repeat: shoeColumns.get(c)!,
+        role: `sapateira coluna ${c + 1}`,
+      });
+    }
     if (c === drawerCol) {
       bands.push({
         module: "gaveta-interna",
@@ -136,14 +161,16 @@ export function legacyInteriorRecipe(spec: WardrobeSpec): LayoutRecipe {
     if (spec.shelvesPerColumn > 0) {
       bands.push({
         module: "prateleira",
-        // Com cabideiro na mesma coluna as prateleiras têm passo fixo,
-        // deixando a sobra para a barra (que exige altura mínima).
-        ...(hangers.length > 0 ? { heightMm: 350 } : { flex: 1 }),
+        flex: 1,
         repeat: spec.shelvesPerColumn,
         role: `prateleira coluna ${c + 1}`,
       });
     }
-    for (const role of hangers) bands.push({ module: "cabideiro", flex: 1, role });
+    // A barra tem altura mínima funcional: ela reserva o vão ANTES das
+    // prateleiras flexíveis, senão o cabideiro é descartado em móveis baixos.
+    hangers.forEach((role, i) =>
+      bands.push({ module: "cabideiro", ...(i === 0 ? { heightMm: 1000 } : { flex: 1 }), role }),
+    );
     const nicheIndex = nicheOfColumn.get(c);
     if (nicheIndex) bands.push({ module: "nicho", heightMm: 320, role: `nicho ${nicheIndex}` });
     return { label: `Coluna ${c + 1}`, flex: 1, bands };

@@ -295,7 +295,8 @@ export const INTERIOR_MODULES: readonly InteriorModuleDef[] = [
     min: dims(250, 80, 300),
     max: dims(1200, 400, 700),
     preferred: dims(600, 180, 500),
-    clearances: { sideMm: 0, frontMm: 0, verticalMm: 20 },
+    // Folga frontal real: a frente da gaveta interna nunca encosta na porta.
+    clearances: { sideMm: 0, frontMm: 20, verticalMm: 20 },
     thicknessMm: 15,
     anchor: "livre",
     rules: [minDepthRule(300, "A gaveta"), minHeightRule(80, "A gaveta")],
@@ -306,7 +307,8 @@ export const INTERIOR_MODULES: readonly InteriorModuleDef[] = [
       {
         key: "gaveta",
         component: "gaveta",
-        params: (fit) => drawerParams(fit, { withFront: true, slide: "oculta-softclose" }),
+        params: (fit) =>
+          drawerParams(fit, { withFront: true, frontFit: "embutida", slide: "oculta-softclose" }),
       },
     ],
   },

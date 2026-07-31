@@ -48,6 +48,7 @@ export const drawer: ConstructionComponent<DrawerParams> = {
     slideLengthMm: 0,
     opening: "softclose",
     withFront: true,
+    frontFit: "sobreposta",
     handle: "perfil-gola",
     capacityKg: 30,
     materialId: "mdf-15",
@@ -71,6 +72,7 @@ export const drawer: ConstructionComponent<DrawerParams> = {
       slideLengthMm: clamp(p.slideLengthMm ?? 0, 0, 800),
       opening: p.opening ?? d.opening,
       withFront: p.withFront ?? d.withFront,
+      frontFit: p.frontFit ?? d.frontFit,
       handle: p.handle ?? d.handle,
       capacityKg: clamp(p.capacityKg ?? d.capacityKg, 5, 80),
       materialId: p.materialId ?? d.materialId,
@@ -84,8 +86,11 @@ export const drawer: ConstructionComponent<DrawerParams> = {
     const t = p.thicknessMm;
     // Corrediça consome folga lateral (13 mm por lado no padrão telescópico).
     const sideClearance = p.slide === "roldana" ? 12.5 : 13;
+    // Frente embutida: a caixa recua para a frente caber DENTRO do envelope.
+    const inset = p.frontFit === "embutida";
+    const frontThk = 18;
     const boxW = round(p.widthMm - sideClearance * 2);
-    const boxD = round(p.depthMm - 10);
+    const boxD = round(p.depthMm - (inset ? frontThk + 2 : 10));
     const boxH = round(Math.max(60, p.heightMm - 20));
     const slideLen = p.slideLengthMm > 0 ? p.slideLengthMm : Math.floor(boxD / 50) * 50;
 
@@ -155,7 +160,9 @@ export const drawer: ConstructionComponent<DrawerParams> = {
         id: `${ctx.instanceId}:frente`,
         partKind: "gaveta-frente",
         label: "Frente integrada",
-        box: box(-sideClearance, -10, boxD, p.widthMm, p.heightMm, 18),
+        box: inset
+          ? box(1.5, 1.5, round(p.depthMm - frontThk), round(p.widthMm - 3), round(p.heightMm - 3), frontThk)
+          : box(-sideClearance, -10, boxD, p.widthMm, p.heightMm, frontThk),
         thicknessMm: 18,
         grain: p.grain,
         finishId: p.finishId,
@@ -378,16 +385,20 @@ export const hangerRod: ConstructionComponent<HangerRodParams> = {
     if (p.widthMm > 1200 && supports < 3) {
       warnings.push(warn("cabideiro-vao", "Vão acima de 1200 mm exige suporte central."));
     }
+    // A barra fica LOGO ABAIXO do topo do vão declarado — nunca acima dele,
+    // senão invade tampo, maleiro ou prateleira do módulo de cima.
+    const barY = round(Math.max(0, p.heightMm - p.diameterMm));
+    const barBox = box(0, barY, p.depthOffsetMm, p.widthMm, p.diameterMm, p.diameterMm);
     return {
       componentId: "cabideiro",
       instanceId: ctx.instanceId,
-      envelope: box(0, p.heightMm, p.depthOffsetMm, p.widthMm, p.diameterMm, p.diameterMm),
+      envelope: barBox,
       pieces: [
         {
           id: `${ctx.instanceId}:barra`,
           partKind: "travessa",
           label: `Cabideiro ${p.profile}`,
-          box: box(0, p.heightMm, p.depthOffsetMm, p.widthMm, p.diameterMm, p.diameterMm),
+          box: barBox,
           thicknessMm: p.diameterMm,
           grain: "livre",
           substrate: p.profile === "led" ? "perfil" : "metal",
@@ -446,12 +457,16 @@ export const topBox: ConstructionComponent<TopBoxParams> = {
   },
   build(p, ctx) {
     const t = p.thicknessMm;
+    // Com portas, a caixa recua a espessura da folha: a frente fecha no
+    // plano declarado, sem a folha atravessar laterais, base ou tampo.
+    const frontThk = p.doors > 0 ? 18 : 0;
+    const caseD = round(Math.max(100, p.depthMm - frontThk));
     const pieces: ConstructionPiece[] = [
       {
         id: `${ctx.instanceId}:lat-e`,
         partKind: "lateral",
         label: "Lateral esquerda",
-        box: box(0, 0, 0, t, p.heightMm, p.depthMm),
+        box: box(0, 0, 0, t, p.heightMm, caseD),
         thicknessMm: t,
         grain: p.grain,
         finishId: p.finishId,
@@ -461,7 +476,7 @@ export const topBox: ConstructionComponent<TopBoxParams> = {
         id: `${ctx.instanceId}:lat-d`,
         partKind: "lateral",
         label: "Lateral direita",
-        box: box(p.widthMm - t, 0, 0, t, p.heightMm, p.depthMm),
+        box: box(p.widthMm - t, 0, 0, t, p.heightMm, caseD),
         thicknessMm: t,
         grain: p.grain,
         finishId: p.finishId,
@@ -471,7 +486,7 @@ export const topBox: ConstructionComponent<TopBoxParams> = {
         id: `${ctx.instanceId}:base`,
         partKind: "base",
         label: "Base do maleiro",
-        box: box(t, 0, 0, p.widthMm - 2 * t, t, p.depthMm),
+        box: box(t, 0, 0, p.widthMm - 2 * t, t, caseD),
         thicknessMm: t,
         grain: "livre",
         finishId: p.finishId,
@@ -481,7 +496,7 @@ export const topBox: ConstructionComponent<TopBoxParams> = {
         id: `${ctx.instanceId}:tampo`,
         partKind: "tampo",
         label: "Tampo do maleiro",
-        box: box(t, p.heightMm - t, 0, p.widthMm - 2 * t, t, p.depthMm),
+        box: box(t, p.heightMm - t, 0, p.widthMm - 2 * t, t, caseD),
         thicknessMm: t,
         grain: "livre",
         finishId: p.finishId,
@@ -493,7 +508,7 @@ export const topBox: ConstructionComponent<TopBoxParams> = {
         id: `${ctx.instanceId}:prateleira`,
         partKind: "prateleira",
         label: "Prateleira interna",
-        box: box(t, round(p.heightMm / 2), 0, p.widthMm - 2 * t, t, p.depthMm - 10),
+        box: box(t, round(p.heightMm / 2), 0, p.widthMm - 2 * t, t, caseD - 10),
         thicknessMm: t,
         grain: "livre",
         finishId: p.finishId,
@@ -506,7 +521,8 @@ export const topBox: ConstructionComponent<TopBoxParams> = {
         id: `${ctx.instanceId}:porta-${i + 1}`,
         partKind: "porta",
         label: `Porta maleiro ${i + 1}`,
-        box: box(3 + i * (w + 3), 3, p.depthMm, w, p.heightMm - 6, 18),
+        // A folha fecha NO plano frontal da caixa, nunca à frente dela.
+        box: box(3 + i * (w + 3), 3, caseD, w, p.heightMm - 6, frontThk),
         thicknessMm: 18,
         grain: p.grain,
         finishId: p.finishId,

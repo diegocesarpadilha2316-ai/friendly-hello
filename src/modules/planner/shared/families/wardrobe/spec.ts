@@ -42,6 +42,8 @@ export interface WardrobeSpec {
   readonly hangers: number;
   /** Nº de nichos abertos. */
   readonly niches: number;
+  /** Nº de sapateiras (bandejas inclinadas na base das colunas). */
+  readonly shoeRacks: number;
   readonly maleiro: boolean;
   readonly maleiroHeightMm: number;
   readonly mirror: { readonly has: boolean; readonly position: WardrobeMirrorPosition };
@@ -85,6 +87,7 @@ export const WARDROBE_DEFAULTS: WardrobeSpec = {
   shelvesPerColumn: 2,
   hangers: 1,
   niches: 0,
+  shoeRacks: 0,
   maleiro: false,
   maleiroHeightMm: 400,
   mirror: { has: false, position: "central" },
@@ -156,6 +159,7 @@ export function normalizeWardrobeSpec(input: Partial<WardrobeSpec> = {}): Wardro
     shelvesPerColumn: clampInt(input.shelvesPerColumn, 0, 10, d.shelvesPerColumn),
     hangers: clampInt(input.hangers, 0, 8, d.hangers),
     niches: clampInt(input.niches, 0, 6, d.niches),
+    shoeRacks: clampInt(input.shoeRacks, 0, 8, d.shoeRacks),
     maleiro,
     maleiroHeightMm,
     mirror: parseMirror(input.mirror),
@@ -180,6 +184,7 @@ export function describeWardrobe(s: WardrobeSpec): string {
   if (s.drawers > 0) bits.push(`${s.drawers} gavetas`);
   if (s.hangers > 0) bits.push(`${s.hangers} cabideiros`);
   if (s.niches > 0) bits.push(`${s.niches} nichos`);
+  if (s.shoeRacks > 0) bits.push(`${s.shoeRacks} sapateiras`);
   if (s.mirror.has) bits.push(`espelho ${s.mirror.position}`);
   return bits.join(" · ");
 }

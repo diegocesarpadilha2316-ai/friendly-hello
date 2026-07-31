@@ -66,6 +66,13 @@ export interface DrawerParams extends CommonMakeParams {
   readonly opening: OpeningType;
   /** Gera a frente junto (false = frente montada por `frente-gaveta`). */
   readonly withFront: boolean;
+  /**
+   * Como a frente se apoia no vão:
+   *  - "sobreposta": cobre a estrutura (padrão histórico, gaveteiro);
+   *  - "embutida": permanece DENTRO do envelope do módulo (gaveta interna),
+   *    sem invadir divisórias nem o plano das portas.
+   */
+  readonly frontFit: "sobreposta" | "embutida";
   readonly handle: HandleType;
   readonly capacityKg: number;
 }
