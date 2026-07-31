@@ -273,17 +273,25 @@ export function planLaundryLayout(input: LaundryLayoutInput): LaundryLayoutResul
     // Fallback mínimo seguro: um gabinete simples, sem hidráulica nem aparelho.
     source = "fallback";
     warnings.push("nenhum módulo coube — aplicado fallback mínimo seguro");
+    /* O fallback SEMPRE entrega um módulo válido: se o espaço é menor que o
+     * mínimo real, o módulo recebe o mínimo e a sobra vira aviso de overflow. */
+    const fallbackWidthMm = Math.max(300, Math.min(widthMm, 600));
+    if (fallbackWidthMm > widthMm) {
+      warnings.push(
+        `espaço de ${Math.round(widthMm)} mm menor que o módulo mínimo de ${fallbackWidthMm} mm`,
+      );
+    }
     result = place(
       [
         {
           kind: "gabinete-inferior",
-          widthMm: Math.max(300, Math.min(widthMm, 600)),
+          widthMm: fallbackWidthMm,
           tub: { type: "nenhum" },
           appliance: { kind: "nenhum" },
           countertop: { material: "nenhum" },
         },
       ],
-      widthMm,
+      Math.max(widthMm, fallbackWidthMm),
       { heightMm: input.heightMm, depthMm: input.depthMm, finishId: input.finishId },
       0,
     );
