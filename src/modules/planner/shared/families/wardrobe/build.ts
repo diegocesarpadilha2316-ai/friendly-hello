@@ -14,6 +14,7 @@ import {
 import type { FamilyBuildResult } from "../types";
 import { handleType } from "../handles";
 import { normalizeWardrobeSpec, type WardrobeSpec } from "./spec";
+import { resolveWardrobeInterior, type WardrobeInteriorResult } from "./interior";
 
 /** Quais folhas recebem espelho, conforme a ficha. */
 export function mirroredDoorIndexes(spec: WardrobeSpec): ReadonlySet<number> {
