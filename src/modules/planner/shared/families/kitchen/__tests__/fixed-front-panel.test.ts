@@ -88,7 +88,15 @@ describe("canto diagonal — abas fixas", () => {
       pieces: [...built.assembly.pieces, gaveta],
       motions: [
         ...built.assembly.motions,
-        { pieceId: gaveta.id, kind: "slide", axis: "z", maxTravelMm: 400, direction: -1 },
+        {
+          pieceId: gaveta.id,
+          kind: "slide",
+          axis: "z",
+          maxTravelMm: 400,
+          direction: -1,
+          durationMs: 600,
+          easing: "ease-out",
+        },
       ],
       desired: { [gaveta.id]: 1 },
       current: {},
@@ -126,11 +134,10 @@ describe("canto diagonal — abas fixas", () => {
   it("8. cozinha em L com canto diagonal continua sem interpenetração", () => {
     const input: KitchenLayoutInput = {
       walls: [
-        { id: "a", lengthMm: 3000, heightMm: 2600 },
+        { id: "a", lengthMm: 3000, heightMm: 2600, cornerKindEnd: "canto-diagonal" },
         { id: "b", lengthMm: 2400, heightMm: 2600 },
       ],
       shape: "L",
-      cornerKind: "canto-diagonal",
     };
     const plan = planKitchen(input);
     const errors = plan.warnings.filter((w) => w.level === "error");
@@ -172,8 +179,10 @@ describe("taxonomia de frentes", () => {
     const piece = (partKind: ConstructionPiece["partKind"], frontRole?: ConstructionPiece["frontRole"]) =>
       ({ partKind, frontRole }) as Pick<ConstructionPiece, "partKind" | "frontRole">;
 
-    expect(classifyFront(piece("porta"), { pieceId: "x", kind: "hinge", axis: "y" })).toBe("porta-abrir");
-    expect(classifyFront(piece("porta"), { pieceId: "x", kind: "slide", axis: "x" })).toBe("porta-correr");
+    const hinge = { pieceId: "x", kind: "hinge", axis: "y", direction: 1, durationMs: 600, easing: "ease-out" } as const;
+    const slide = { pieceId: "x", kind: "slide", axis: "x", direction: 1, durationMs: 600, easing: "ease-out" } as const;
+    expect(classifyFront(piece("porta"), hinge)).toBe("porta-abrir");
+    expect(classifyFront(piece("porta"), slide)).toBe("porta-correr");
     expect(classifyFront(piece("gaveta-frente"))).toBe("gaveta-frente");
     expect(classifyFront(piece("frente-fixa", "painel-fixo"))).toBe("painel-fixo");
     expect(classifyFront(piece("tapa-vao", "tapa-vao"))).toBe("tapa-vao");
