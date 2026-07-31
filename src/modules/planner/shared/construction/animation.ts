@@ -34,9 +34,11 @@ function easeValue(t: number, easing: ConstructionMotion["easing"]): number {
 export function resolveMotion(motion: ConstructionMotion, state: MotionState): MotionTransform {
   const t = easeValue(state, motion.easing);
   const pivot = motion.pivot ?? [0, 0, 0];
+  /** Evita -0 no estado fechado (ruído em comparações e no render). */
+  const z0 = (v: number) => (v === 0 ? 0 : v);
 
   if (motion.kind === "slide") {
-    const travel = (motion.maxTravelMm ?? 0) * t * motion.direction;
+    const travel = z0((motion.maxTravelMm ?? 0) * t * motion.direction);
     return {
       pieceId: motion.pieceId,
       translate:
@@ -54,7 +56,7 @@ export function resolveMotion(motion: ConstructionMotion, state: MotionState): M
     return { pieceId: motion.pieceId, translate: [0, 0, 0], rotateDeg: [0, 0, 0], pivot };
   }
 
-  const angle = (motion.maxAngleDeg ?? 90) * t * motion.direction;
+  const angle = z0((motion.maxAngleDeg ?? 90) * t * motion.direction);
   return {
     pieceId: motion.pieceId,
     translate: [0, 0, 0],
