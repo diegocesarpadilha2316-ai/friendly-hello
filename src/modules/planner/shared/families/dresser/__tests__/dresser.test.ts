@@ -16,7 +16,7 @@ describe("Família gaveteiro — Biblioteca Construtiva", () => {
     for (const s of ["gaveteiro", "Gaveteiro", "cômoda", "dresser"]) {
       expect(resolveFurnitureRenderer({ subtype: s }).renderer).toBe("dresser");
     }
-    expect(resolveFurnitureRenderer({ subtype: "balcao" }).renderer).toBe("cabinet");
+    expect(resolveFurnitureRenderer({ subtype: "estante" }).renderer).toBe("cabinet");
     expect(resolveFurnitureRenderer({ subtype: "roupeiro" }).renderer).toBe("wardrobe");
     expect(
       resolveFurnitureRenderer({ subtype: "modulo", catalogItemId: "mod-gaveteiro-3g" }).renderer,

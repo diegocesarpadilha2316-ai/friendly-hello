@@ -19,7 +19,8 @@ describe("roteamento de renderer — nomes legados", () => {
 
   it("armário genérico com catálogo de roupeiro é convertido", () => {
     expect(wardrobe({ subtype: "armario", catalogItemId: "mod-roupeiro-3-portas" })).toBe("wardrobe");
-    expect(wardrobe({ subtype: "armario", catalogItemId: "balcao-600" })).toBe("cabinet");
+    // "balcao-600" agora é família cozinha (convertida), não mais legado.
+    expect(wardrobe({ subtype: "armario", catalogItemId: "balcao-600" })).toBe("kitchen");
   });
 
   it("nó antigo com mod:* é marcado como conversão legada", () => {
@@ -37,8 +38,13 @@ describe("roteamento de renderer — nomes legados", () => {
     expect(d.legacyConverted).toBe(false);
   });
 
-  it("outras famílias seguem no CabinetMesh com motivo de fallback", () => {
+  it("balcão passa a ser família cozinha", () => {
     const d = resolveFurnitureRenderer({ subtype: "balcao" });
+    expect(d.renderer).toBe("kitchen");
+  });
+
+  it("outras famílias seguem no CabinetMesh com motivo de fallback", () => {
+    const d = resolveFurnitureRenderer({ subtype: "estante" });
     expect(d.renderer).toBe("cabinet");
     expect(d.reason).toMatch(/não pertence/);
   });
