@@ -249,5 +249,5 @@ export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildRes
     frontZMm: frontZ,
   };
 
-  return { spec, assembly, layout };
+  return { spec, assembly, layout, interior };
 }
