@@ -11,9 +11,11 @@ import * as THREE from "three";
 import {
   motionGroupOfPiece,
   openStateForGroup,
+  resolveInterlock,
   resolveMotion,
   type ConstructionMotion,
   type ConstructionPiece,
+  type InterlockBlock,
 } from "../construction";
 import { buildWardrobe, wardrobeSpecFromLegacy, type LegacyParams } from "../families/wardrobe";
 
@@ -30,6 +32,8 @@ export interface WardrobeMeshProps {
   selected?: boolean;
   openDoors?: boolean;
   openDrawers?: boolean;
+  /** Avisos discretos do intertravamento (ex.: "abra a porta desta coluna"). */
+  onInterlock?: (blocked: readonly InterlockBlock[]) => void;
   doorsCount?: number;
   drawersCount?: number;
   shelvesCount?: number;
@@ -40,12 +44,17 @@ export interface WardrobeMeshProps {
 /** Peça animada: interpola o estado 0→1 do rig com dt real do frame. */
 function MotionPiece({
   motion,
-  open,
+  pieceId,
+  targets,
+  states,
   children,
 }: {
   motion?: ConstructionMotion;
-  /** Estado alvo 0→1 vindo dos comandos da interface. */
-  open: number;
+  pieceId: string;
+  /** Estado PERMITIDO (0→1) por peça, já filtrado pelo intertravamento. */
+  targets: React.MutableRefObject<Record<string, number>>;
+  /** Estado real da animação, devolvido ao intertravamento a cada frame. */
+  states: React.MutableRefObject<Record<string, number>>;
   children: React.ReactNode;
 }) {
   const ref = useRef<THREE.Group>(null);
@@ -54,7 +63,8 @@ function MotionPiece({
   useFrame((_, dt) => {
     const g = ref.current;
     if (!g || !motion) return;
-    state.current = THREE.MathUtils.damp(state.current, open, 8, dt);
+    state.current = THREE.MathUtils.damp(state.current, targets.current[pieceId] ?? 0, 8, dt);
+    states.current[pieceId] = state.current;
     const t = resolveMotion(motion, state.current);
     g.position.set(t.translate[0] * MM, t.translate[1] * MM, t.translate[2] * MM);
     g.rotation.set(
@@ -146,11 +156,45 @@ export function WardrobeMesh(props: WardrobeMeshProps) {
     props.handleStyle,
   ]);
 
+  /** Estado real da animação (escrito pelas peças a cada frame). */
+  const states = useRef<Record<string, number>>({});
+  /** Estado permitido, recalculado antes das peças animarem. */
+  const targets = useRef<Record<string, number>>({});
+  const lastNotice = useRef("");
+
   const motionByPiece = useMemo(() => {
     const map = new Map<string, ConstructionMotion>();
     for (const m of assembly.motions) if (m.kind !== "static") map.set(m.pieceId, m);
     return map;
   }, [assembly.motions]);
+
+  /**
+   * Controlador do intertravamento: roda ANTES das peças (priority -1),
+   * lê o estado real da animação e devolve o estado permitido de cada
+   * mecanismo. Nenhuma regra construtiva vive aqui — só a orquestração.
+   */
+  useFrame(() => {
+    const desired: Record<string, number> = {};
+    for (const piece of assembly.pieces) {
+      desired[piece.id] = openStateForGroup(motionGroupOfPiece(piece), {
+        openDoors: props.openDoors,
+        openDrawers: props.openDrawers,
+      });
+    }
+    const result = resolveInterlock({
+      pieces: assembly.pieces,
+      motions: assembly.motions,
+      desired,
+      current: states.current,
+    });
+    targets.current = result.allowed as Record<string, number>;
+
+    const notice = result.blocked.map((b) => b.groupId).join("|");
+    if (notice !== lastNotice.current) {
+      lastNotice.current = notice;
+      if (result.blocked.length > 0) props.onInterlock?.(result.blocked);
+    }
+  }, -1);
 
   // O móvel é montado com origem no canto inferior-esquerdo-fundo;
   // a cena posiciona o grupo pelo CENTRO. Aqui recentramos.
@@ -164,14 +208,14 @@ export function WardrobeMesh(props: WardrobeMeshProps) {
     <group position={offset}>
       {assembly.pieces.map((piece) => {
         const motion = motionByPiece.get(piece.id);
-        // O grupo vem da PEÇA, não do tipo de movimento: porta de correr e
-        // gaveta são ambas "slide" e respondem a comandos diferentes.
-        const open = openStateForGroup(motionGroupOfPiece(piece), {
-          openDoors: props.openDoors,
-          openDrawers: props.openDrawers,
-        });
         return (
-          <MotionPiece key={piece.id} motion={motion} open={open}>
+          <MotionPiece
+            key={piece.id}
+            pieceId={piece.id}
+            motion={motion}
+            targets={targets}
+            states={states}
+          >
             <PieceMesh piece={piece} bodyProps={props.bodyProps} selected={props.selected} />
           </MotionPiece>
         );

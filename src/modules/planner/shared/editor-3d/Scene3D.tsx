@@ -45,6 +45,7 @@ import {
 import { GlassFront } from "./GlassFront";
 import { DecorMesh, isDecorSubtype } from "./DecorMesh";
 import { CabinetMesh, isCabinetSubtype } from "./CabinetMesh";
+import { toast } from "sonner";
 import { WardrobeMesh } from "./WardrobeMesh";
 import { isWardrobeSubtype } from "../families/wardrobe";
 import { ApplianceMesh, isApplianceSubtype } from "./ApplianceMesh";
@@ -523,6 +524,10 @@ function Furniture({
           selected={selected}
           openDoors={viewport.openDoors ?? f.openDoors}
           openDrawers={viewport.openDrawers ?? f.openDrawers}
+          onInterlock={(blocked) => {
+            // Aviso discreto: a gaveta ficou fechada porque a porta está fechada.
+            toast(blocked[0].message, { id: `interlock-${f.id}`, duration: 2600 });
+          }}
           doorsCount={f.doorsCount}
           drawersCount={f.drawersCount}
           shelvesCount={f.shelvesCount}

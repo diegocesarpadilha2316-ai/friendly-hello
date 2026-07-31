@@ -10,6 +10,7 @@ export * from "./geometry";
 export * from "./registry";
 export * from "./assembly";
 export * from "./animation";
+export * from "./interlock";
 export { doorSwing, doorSliding, drawerFront, FRONT_COMPONENTS } from "./components/fronts";
 export {
   drawer,
