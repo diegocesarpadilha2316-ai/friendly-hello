@@ -389,7 +389,7 @@ export function normalizeLaundryModule(input: LaundryModuleInput = {}): LaundryM
     board,
     broomZoneMm: p.broomZone ? int(input.broomZoneMm, 1400, 600, 2400) : int(input.broomZoneMm, 0, 0, 2400),
     broomDivider: input.broomDivider ?? false,
-    stackingKit: input.stackingKit ?? kind === "torre-maquinas" || kind === "torre-tecnica",
+    stackingKit: input.stackingKit ?? (kind === "torre-maquinas" || kind === "torre-tecnica"),
     outerDoor: input.outerDoor ?? (kind === "torre-tecnica" ? true : false),
     sidePanel: input.sidePanel ?? (kind === "torre-maquinas" || kind === "torre-tecnica"),
     style: input.style ?? "moderno",
