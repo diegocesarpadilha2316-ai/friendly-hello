@@ -12,7 +12,7 @@
  * Nada aqui altera dados: a conversão é feita SEMPRE em memória.
  */
 
-export type FurnitureRenderer = "wardrobe" | "dresser" | "cabinet";
+export type FurnitureRenderer = "wardrobe" | "dresser" | "kitchen" | "cabinet";
 
 export interface RendererDecisionInput {
   readonly id?: string;
@@ -72,6 +72,31 @@ const DRESSER_ALIASES = new Set([
 ]);
 
 const DRESSER_CATALOG_HINT = /(gaveteir|comoda|dresser)/i;
+
+/** Nomes que sempre significam módulo de cozinha (família convertida). */
+const KITCHEN_ALIASES = new Set([
+  "cozinha",
+  "modulo-cozinha",
+  "balcao",
+  "balcao-cozinha",
+  "balcao-pia",
+  "balcao-cooktop",
+  "aereo",
+  "aereo-cozinha",
+  "aereo-basculante",
+  "aereo-vidro",
+  "armario-aereo",
+  "torre-quente",
+  "torre-geladeira",
+  "canto-reto",
+  "canto-diagonal",
+  "canto-magico",
+  "cristaleira",
+  "adega",
+  "nicho-aberto",
+]);
+
+const KITCHEN_CATALOG_HINT = /(cozinha|kitchen|balcao|aereo|cooktop|cristaleira|adega|torre-quente)/i;
 
 function numParam(
   params: RendererDecisionInput["params"],
@@ -166,6 +191,24 @@ export function resolveFurnitureRenderer(input: RendererDecisionInput): Renderer
     };
   }
 
+  if (KITCHEN_ALIASES.has(subtype)) {
+    return {
+      renderer: "kitchen",
+      resolvedType: subtype,
+      legacyConverted,
+      reason: `subtype "${input.subtype}" é módulo de cozinha`,
+    };
+  }
+
+  if (KITCHEN_CATALOG_HINT.test(catalog)) {
+    return {
+      renderer: "kitchen",
+      resolvedType: "cozinha",
+      legacyConverted,
+      reason: `catalogItemId "${catalog}" identifica módulo de cozinha`,
+    };
+  }
+
   if (AMBIGUOUS.has(subtype)) {
     if (hasFront(input.params)) {
       return {
@@ -208,7 +251,9 @@ export function logRendererDecision(id: string, decision: RendererDecision): voi
         ? "WardrobeMesh"
         : decision.renderer === "dresser"
           ? "DresserMesh"
-          : "CabinetMesh",
+          : decision.renderer === "kitchen"
+            ? "KitchenMesh"
+            : "CabinetMesh",
     conversaoLegada: decision.legacyConverted,
     motivoFallback: decision.renderer === "cabinet" ? decision.reason : null,
     motivo: decision.reason,
