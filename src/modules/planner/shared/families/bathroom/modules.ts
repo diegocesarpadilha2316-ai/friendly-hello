@@ -476,7 +476,7 @@ interface DrawerBuild {
   readonly slots: AssemblySlot[];
   readonly mechanisms: { groupId: string; slotIds: string[] }[];
   readonly decisions: BathroomDecision[];
-  readonly doorsInstead: number;
+  doorsInstead: number;
 }
 
 /**
