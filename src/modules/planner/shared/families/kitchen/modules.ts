@@ -694,14 +694,15 @@ export function kitchenModuleSlots(spec: KitchenModuleSpec, g: KitchenGeometry):
           component: "painel",
           at: [0, g.caseY0, g.frontZMm],
           role: "aba esquerda do canto diagonal",
-          params: { widthMm: wing, heightMm: g.caseHeightMm, depthMm: t, thicknessMm: t, treatment: "liso", finishId: spec.finishId },
+          // Aba estrutural fixa: fecha o vão, não tem mecanismo.
+          params: { widthMm: wing, heightMm: g.caseHeightMm, depthMm: t, thicknessMm: t, treatment: "liso", fixedRole: "aba-canto", finishId: spec.finishId },
         },
         {
           id: "aba-d",
           component: "painel",
           at: [spec.widthMm - wing, g.caseY0, g.frontZMm],
           role: "aba direita do canto diagonal",
-          params: { widthMm: wing, heightMm: g.caseHeightMm, depthMm: t, thicknessMm: t, treatment: "liso", finishId: spec.finishId },
+          params: { widthMm: wing, heightMm: g.caseHeightMm, depthMm: t, thicknessMm: t, treatment: "liso", fixedRole: "aba-canto", finishId: spec.finishId },
         },
         {
           id: "porta-diagonal",
