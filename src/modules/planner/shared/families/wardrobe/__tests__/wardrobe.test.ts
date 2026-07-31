@@ -10,7 +10,11 @@ import {
 } from "../index";
 import type { ConstructionPiece } from "../../../construction";
 
-const doors = (pieces: readonly ConstructionPiece[]) => pieces.filter((p) => p.partKind === "porta");
+/** Folhas do corpo principal (as portinhas do maleiro são contadas à parte). */
+const doors = (pieces: readonly ConstructionPiece[]) =>
+  pieces.filter((p) => p.partKind === "porta" && !(p.notes ?? "").includes("maleiro"));
+const hinges = (a: ReturnType<typeof buildWardrobe>["assembly"]) =>
+  a.motions.filter((m) => m.kind === "hinge" && m.pieceId.startsWith("porta-"));
 const kind = (pieces: readonly ConstructionPiece[], k: string) =>
   pieces.filter((p) => p.partKind === k);
 const hw = (a: ReturnType<typeof buildWardrobe>["assembly"], k: string) =>
@@ -58,7 +62,7 @@ describe("Família roupeiro — cenários reais", () => {
     const folhas = doors(assembly.pieces);
     expect(folhas).toHaveLength(2);
     // Pivô correto: folha esquerda abre pela esquerda, direita pela direita.
-    const m = assembly.motions.filter((x) => x.kind === "hinge");
+    const m = hinges(assembly);
     expect(m).toHaveLength(2);
     expect(m[0].direction).toBe(1);
     expect(m[1].direction).toBe(-1);
@@ -97,7 +101,7 @@ describe("Família roupeiro — cenários reais", () => {
     });
     expect(spec.doors).toBe(0);
     expect(doors(assembly.pieces)).toHaveLength(0);
-    expect(assembly.motions.filter((m) => m.kind === "hinge")).toHaveLength(0);
+    expect(hinges(assembly)).toHaveLength(0);
     // Estrutura e interior continuam existindo.
     expect(kind(assembly.pieces, "lateral").length).toBeGreaterThanOrEqual(2);
     expect(kind(assembly.pieces, "prateleira").length).toBeGreaterThan(0);
@@ -158,7 +162,7 @@ describe("Família roupeiro — cenários reais", () => {
     const a = buildWardrobe(antes).assembly;
     const b = buildWardrobe(depois).assembly;
     expect(a.motions.every((m) => m.kind !== "hinge")).toBe(true);
-    expect(b.motions.filter((m) => m.kind === "hinge")).toHaveLength(3);
+    expect(hinges(b)).toHaveLength(3);
     // Interior idêntico em quantidade de peças internas.
     const interior = (x: typeof a) =>
       x.pieces.filter((p) => ["prateleira", "gaveta-base", "divisoria"].includes(p.partKind)).length;
