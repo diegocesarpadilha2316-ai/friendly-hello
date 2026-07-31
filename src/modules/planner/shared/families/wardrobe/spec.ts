@@ -165,6 +165,7 @@ export function normalizeWardrobeSpec(input: Partial<WardrobeSpec> = {}): Wardro
     plinthHeightMm: clampNum(input.plinthHeightMm, 0, 250, d.plinthHeightMm),
     thicknessMm: clampNum(input.thicknessMm, 9, 30, d.thicknessMm),
     backThicknessMm: clampNum(input.backThicknessMm, 3, 18, d.backThicknessMm),
+    ...(input.interior ? { interior: input.interior } : {}),
   };
 }
 
