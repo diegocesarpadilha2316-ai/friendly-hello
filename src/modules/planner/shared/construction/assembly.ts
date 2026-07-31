@@ -115,6 +115,42 @@ export function buildAssembly(def: AssemblyDefinition): AssemblyResult {
 }
 
 /** Atalho: repete um componente em N posições ao longo de X (colunas). */
+export interface MechanismGroupInput {
+  readonly result: AssemblyResult;
+  /** Ids de slot que devem virar UM único mecanismo. */
+  readonly slotIds: readonly string[];
+  /** Id do mecanismo resultante (ex.: "gaveta-u-1"). */
+  readonly groupId: string;
+}
+
+/**
+ * Funde vários slots em UM mecanismo: as peças passam a compartilhar o
+ * mesmo prefixo de id, de modo que `mechanismGroupId` (intertravamento) e
+ * o comando da interface tratem tudo como um conjunto só — sem criar
+ * animação paralela. Usado pela gaveta em U (frente única + duas caixas).
+ */
+export function mergeMechanismGroup(input: MechanismGroupInput): AssemblyResult {
+  const { result, slotIds, groupId } = input;
+  const rename = new Map<string, string>();
+  const prefixes = slotIds.map((s) => `${result.id}:${s}:`);
+
+  for (const piece of result.pieces) {
+    const hit = prefixes.find((p) => piece.id.startsWith(p));
+    if (!hit) continue;
+    const slot = hit.slice(`${result.id}:`.length, -1);
+    rename.set(piece.id, `${result.id}:${groupId}:${slot}-${piece.id.slice(hit.length)}`);
+  }
+  if (rename.size === 0) return result;
+
+  return {
+    ...result,
+    pieces: result.pieces.map((p) => (rename.has(p.id) ? { ...p, id: rename.get(p.id)! } : p)),
+    motions: result.motions.map((m) =>
+      rename.has(m.pieceId) ? { ...m, pieceId: rename.get(m.pieceId)! } : m,
+    ),
+  };
+}
+
 export function repeatAlongX(
   slot: Omit<AssemblySlot, "id" | "at">,
   count: number,
