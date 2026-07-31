@@ -120,6 +120,12 @@ export interface RoomWall {
   start: RoomPoint;
   end: RoomPoint;
   center: RoomPoint;
+  /**
+   * Extensão útil da face interna (mm). Vãos de porta/janela são medidos
+   * SEMPRE nesta faixa: `0 .. openingSpanMm`, a partir do início da face
+   * interna (x=0 nas paredes horizontais, z=0 nas verticais).
+   */
+  openingSpanMm: number;
   /** normal apontando para DENTRO do ambiente */
   innerNormal: RoomPoint;
   /** coordenada da face interna (x para paredes verticais, z para horizontais) */
