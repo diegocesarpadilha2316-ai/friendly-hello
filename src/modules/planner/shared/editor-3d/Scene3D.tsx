@@ -25,6 +25,7 @@ import type {
   Scene3DModel,
   WallDescriptor,
   SlabDescriptor,
+  SillDescriptor,
   OpeningDescriptor,
   FurnitureDescriptor,
 } from "./extrusion";
