@@ -183,7 +183,15 @@ export function normalizeKitchenModule(input: KitchenModuleInput = {}): KitchenM
     shelves: int(input.shelves, p.shelves, 0, 8),
     opening,
     handle: input.handle ?? "perfil-gola",
-    countertop: normalizeCountertop(input.countertop, wantsCountertop && p.countertop),
+    countertop: normalizeCountertop(
+      {
+        // O recorte é uma consequência do módulo, não uma escolha solta:
+        // pia sempre tem cuba, cooktop sempre tem recorte de cooktop.
+        cutout: kind === "balcao-pia" ? "cuba" : kind === "balcao-cooktop" ? "cooktop" : "nenhum",
+        ...input.countertop,
+      },
+      wantsCountertop && p.countertop,
+    ),
     plinth: normalizePlinth(input.plinth, p.plinth),
     glassFront,
     led: input.led ?? false,
