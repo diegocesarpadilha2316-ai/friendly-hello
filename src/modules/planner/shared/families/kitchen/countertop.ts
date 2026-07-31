@@ -13,6 +13,7 @@ export type CountertopMaterial =
   | "madeira"
   | "inox"
   | "laminado"
+  | "vidro"
   | "nenhum";
 
 export interface CountertopProfileDef {
@@ -37,6 +38,7 @@ export const COUNTERTOPS: Readonly<Record<CountertopMaterial, CountertopProfileD
   madeira: { id: "madeira", label: "Madeira maciça", thicknessMm: 30, overhangFrontMm: 25, finishId: "freijo-natural", acceptsCutout: true },
   inox: { id: "inox", label: "Inox", thicknessMm: 15, overhangFrontMm: 10, finishId: "inox-escovado", acceptsCutout: true },
   laminado: { id: "laminado", label: "Laminado pós-formado", thicknessMm: 38, overhangFrontMm: 20, finishId: "laminado-branco", acceptsCutout: false },
+  vidro: { id: "vidro", label: "Vidro temperado", thicknessMm: 10, overhangFrontMm: 10, finishId: "vidro-incolor", acceptsCutout: true },
   nenhum: { id: "nenhum", label: "Sem tampo", thicknessMm: 0, overhangFrontMm: 0, finishId: "", acceptsCutout: false },
 };
 
@@ -66,6 +68,7 @@ function material(value: unknown): CountertopMaterial {
   if (/madeira|freijo|carvalho/.test(k)) return "madeira";
   if (/inox|aco/.test(k)) return "inox";
   if (/laminad|formica|postform/.test(k)) return "laminado";
+  if (/vidro|temperad|cristal/.test(k)) return "vidro";
   if (/sem|nenhum|none/.test(k)) return "nenhum";
   return "granito";
 }
