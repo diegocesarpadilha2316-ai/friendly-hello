@@ -107,17 +107,19 @@ export function legacyInteriorRecipe(spec: WardrobeSpec): LayoutRecipe {
   const cols = Math.max(1, spec.columns);
   const drawerCol = spec.drawers > 0 ? Math.min(cols - 1, Math.max(0, spec.drawerColumn)) : -1;
 
-  const nicheColumns = new Set<number>();
+  // Numeração dos nichos preservada do formato antigo (`nicho 1`, `nicho 2`…).
+  const nicheOfColumn = new Map<number, number>();
   for (let n = 0; n < spec.niches; n++) {
-    nicheColumns.add(cols === 1 ? 0 : (Math.floor((cols - 1) / 2) + n) % cols);
+    const c = cols === 1 ? 0 : (Math.floor((cols - 1) / 2) + n) % cols;
+    if (!nicheOfColumn.has(c)) nicheOfColumn.set(c, n + 1);
   }
 
   const preferred = Array.from({ length: cols }, (_, i) => i).filter((i) => i !== drawerCol);
   const pool = preferred.length > 0 ? preferred : Array.from({ length: cols }, (_, i) => i);
-  const hangerCount = new Map<number, number>();
+  const hangerRoles = new Map<number, string[]>();
   for (let n = 0; n < spec.hangers; n++) {
     const c = pool[n % pool.length];
-    hangerCount.set(c, (hangerCount.get(c) ?? 0) + 1);
+    hangerRoles.set(c, [...(hangerRoles.get(c) ?? []), `cabideiro ${n + 1}`]);
   }
 
   const columns: LayoutColumn[] = Array.from({ length: cols }, (_, c) => {
@@ -127,26 +129,23 @@ export function legacyInteriorRecipe(spec: WardrobeSpec): LayoutRecipe {
         module: "gaveta-interna",
         heightMm: 200,
         repeat: spec.drawers,
-        role: `Gaveta · col ${c + 1}`,
+        role: "gaveta",
       });
     }
-    const hangers = hangerCount.get(c) ?? 0;
+    const hangers = hangerRoles.get(c) ?? [];
     if (spec.shelvesPerColumn > 0) {
       bands.push({
         module: "prateleira",
         // Com cabideiro na mesma coluna as prateleiras têm passo fixo,
         // deixando a sobra para a barra (que exige altura mínima).
-        ...(hangers > 0 ? { heightMm: 350 } : { flex: 1 }),
+        ...(hangers.length > 0 ? { heightMm: 350 } : { flex: 1 }),
         repeat: spec.shelvesPerColumn,
-        role: `Prateleira · col ${c + 1}`,
+        role: `prateleira coluna ${c + 1}`,
       });
     }
-    for (let h = 0; h < hangers; h++) {
-      bands.push({ module: "cabideiro", flex: 1, role: `Cabideiro ${h + 1} · col ${c + 1}` });
-    }
-    if (nicheColumns.has(c)) {
-      bands.push({ module: "nicho", heightMm: 320, role: `Nicho · col ${c + 1}` });
-    }
+    for (const role of hangers) bands.push({ module: "cabideiro", flex: 1, role });
+    const nicheIndex = nicheOfColumn.get(c);
+    if (nicheIndex) bands.push({ module: "nicho", heightMm: 320, role: `nicho ${nicheIndex}` });
     return { label: `Coluna ${c + 1}`, flex: 1, bands };
   });
 
