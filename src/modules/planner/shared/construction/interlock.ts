@@ -16,6 +16,7 @@
 import type { ConstructionMotion, ConstructionPiece } from "./types";
 import type { PartKind } from "../engineering/types";
 import { resolveMotion, type MotionState } from "./animation";
+import { isFixedFront } from "./classification";
 
 /** Ajustes do intertravamento. Valores em mm / graus. */
 export interface InterlockConfig {
