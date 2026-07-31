@@ -189,12 +189,19 @@ function layoutColumn(
     for (let r = 0; r < item.repeat; r++) {
       const top = cursorY + each;
       const remaining = colCavity.y + colCavity.heightMm - cursorY;
-      if (each < def.min.heightMm || remaining < def.min.heightMm - 1) {
+      const usableDepth = colCavity.depthMm - def.clearances.frontMm;
+      const usableWidth = colCavity.widthMm - def.clearances.sideMm * 2;
+      const semEspaco =
+        each < def.min.heightMm ||
+        remaining < def.min.heightMm - 1 ||
+        usableWidth < def.min.widthMm - 1 ||
+        usableDepth < def.min.depthMm - 1;
+      if (semEspaco) {
         dropped.push(def.id);
         warnings.push({
           level: "warn",
           code: "faixa-sem-espaco",
-          message: `${def.name}: faixa de ${Math.round(each)} mm menor que o mínimo (${def.min.heightMm} mm) — módulo não inserido.`,
+          message: `${def.name}: vão de ${Math.round(usableWidth)}×${Math.round(each)}×${Math.round(usableDepth)} mm abaixo do mínimo do módulo — não inserido.`,
         });
         cursorY = top + gap;
         continue;
