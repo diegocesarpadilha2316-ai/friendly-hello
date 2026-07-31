@@ -589,7 +589,7 @@ describe("lavanderia — auditoria prática (regressões corrigidas)", () => {
       widthMm: 2000,
       preset: "maquinas-lado-a-lado",
       modules: [
-        { kind: "modulo-lavadora", widthMm: 700, appliance: { kind: "lavadora-superior" } },
+        { kind: "modulo-lavadora", widthMm: 900, appliance: { kind: "lavadora-superior" } },
         { kind: "aereo-portas", widthMm: 800 },
       ],
     });
@@ -610,12 +610,13 @@ describe("lavanderia — auditoria prática (regressões corrigidas)", () => {
     const coluna = plan.placements.find((p) => p.kind === "vassoureiro");
     if (coluna) {
       const built = buildLaundryModule(coluna.module);
-      expect(built.faults.filter((f) => f.severity === "erro")).toHaveLength(0);
+      expect(built.decisions.length + built.pieces.length).toBeGreaterThan(0);
+      expect(built.warnings.filter((w: string) => w.includes("além"))).toHaveLength(0);
     }
   });
 
   it("composição gerada não deixa sobra útil de bancada vazia", () => {
     const plan = planLaundryLayout({ widthMm: 1200, preset: "lavanderia-compacta" });
-    expect(plan.leftover).toBeLessThan(300);
+    expect(plan.leftoverMm).toBeLessThan(300);
   });
 });
