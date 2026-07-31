@@ -23,6 +23,8 @@ const CATEGORY_MAP: Record<FurniturePart["kind"], ProductionPartCategory> = {
   // levam ferragem de movimento.
   "frente-fixa": "frente",
   "tapa-vao": "painel",
+  // Rodabanca / frontão / painel de acabamento: chapa vista, sem ferragem.
+  acabamento: "painel",
   "gaveta-frente": "frente",
   "gaveta-lateral": "gaveta",
   "gaveta-fundo": "gaveta",
