@@ -91,7 +91,8 @@ describe("Intertravamento de mecanismos", () => {
 
   it("porta PARCIALMENTE aberta mantém o bloqueio", () => {
     const s = scene({ widthMm: 1800, doors: 2, opening: "abrir", drawers: 2, columns: 2, drawerColumn: 0 });
-    for (const frac of [0.2, 0.5, 0.75]) {
+    // Estados cujo ângulo real ainda está abaixo do limite seguro (80°).
+    for (const frac of [0.05, 0.15, 0.3]) {
       const partial: Record<string, number> = {};
       for (const d of s.doors) partial[d.id] = frac;
       const r = s.solve({ openDoors: true, openDrawers: true }, partial);
@@ -100,6 +101,14 @@ describe("Intertravamento de mecanismos", () => {
       for (const d of s.drawers) expect(r.allowed[d.id]).toBe(0);
       expect(r.blocked[0].reason).toBe("porta-parcial");
     }
+
+    // Assim que o ângulo cruza o limite, o vão é liberado.
+    const safe: Record<string, number> = {};
+    for (const d of s.doors) safe[d.id] = 0.45;
+    const angleSafe = Math.abs(resolveMotion(s.motionByPiece.get(s.doors[0].id)!, 0.45).rotateDeg[1]);
+    expect(angleSafe).toBeGreaterThanOrEqual(80);
+    const free = s.solve({ openDoors: true, openDrawers: true }, safe);
+    for (const d of s.drawers) expect(free.allowed[d.id]).toBe(1);
   });
 
   it("folha de correr COBRINDO a coluna bloqueia a gaveta", () => {
