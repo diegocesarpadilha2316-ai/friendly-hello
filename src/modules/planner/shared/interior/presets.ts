@@ -245,8 +245,10 @@ export function pickPreset(family: InteriorFamilyId, cavity: InteriorCavity): La
   const candidates = listPresetsForFamily(family);
   if (candidates.length === 0) return getInteriorPreset("roupeiro-solteiro")!;
   if (family === "roupeiro" || family === "closet") {
-    if (cavity.widthMm >= 1800) return getInteriorPreset("roupeiro-casal")!;
-    return candidates[0];
+    if (family === "closet") return getInteriorPreset("closet")!;
+    return cavity.widthMm >= 1800
+      ? getInteriorPreset("roupeiro-casal")!
+      : getInteriorPreset("roupeiro-solteiro")!;
   }
   return candidates[0];
 }
