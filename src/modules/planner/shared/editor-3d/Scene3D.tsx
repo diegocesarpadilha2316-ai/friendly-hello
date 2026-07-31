@@ -888,6 +888,16 @@ function ApplyViewPreset({
  * pelo Dioris Planner: o usuário digita "quero uma cozinha" e vê o
  * projeto inteiro imediatamente.
  */
+/** Ponte de depuração (apenas DEV): expõe a cena para validação no viewport. */
+function SceneDebugBridge() {
+  const { scene } = useThree();
+  useEffect(() => {
+    if (!import.meta.env?.DEV) return;
+    (window as unknown as { __diorisScene?: THREE.Scene }).__diorisScene = scene;
+  }, [scene]);
+  return null;
+}
+
 function AutoFitCamera({
   version,
   center,
