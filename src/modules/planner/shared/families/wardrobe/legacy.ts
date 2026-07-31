@@ -46,11 +46,7 @@ export interface LegacyFurniture {
 /** Subtipos do editor atendidos pela família roupeiro. */
 export const WARDROBE_SUBTYPES = ["roupeiro", "guarda-roupa"] as const;
 
-export function isWardrobeSubtype(subtype: string | undefined): boolean {
-  if (!subtype) return false;
-  const k = subtype.toLowerCase();
-  return (WARDROBE_SUBTYPES as readonly string[]).includes(k);
-}
+// A identificação do subtipo vive em `detect.ts` (normaliza nomes antigos).
 
 /**
  * Converte o formato antigo (dimensões + params soltos) na ficha nova.
