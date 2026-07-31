@@ -47,6 +47,7 @@ import { DecorMesh, isDecorSubtype } from "./DecorMesh";
 import { CabinetMesh, isCabinetSubtype } from "./CabinetMesh";
 import { toast } from "sonner";
 import { WardrobeMesh } from "./WardrobeMesh";
+import { DresserMesh } from "./DresserMesh";
 import { logRendererDecision, resolveFurnitureRenderer } from "../families/wardrobe";
 import { ApplianceMesh, isApplianceSubtype } from "./ApplianceMesh";
 import { CinematicFX } from "./CinematicFX";
@@ -545,6 +546,35 @@ function Furniture({
     );
   }
   const cabinet = viewport.render !== "wireframe" && isCabinetSubtype(f.subtype);
+  const dresser = viewport.render !== "wireframe" && decision.renderer === "dresser";
+  if (dresser) {
+    return (
+      <group
+        position={[pos.x, safeCenterY, pos.z]}
+        rotation={[0, f.rotationY, 0]}
+        onClick={(e: ThreeEvent<MouseEvent>) => {
+          e.stopPropagation();
+          onSelect(f.id);
+        }}
+      >
+        <DresserMesh
+          width={f.width}
+          height={f.height}
+          depth={f.depth}
+          params={f.params}
+          bodyProps={props}
+          selected={selected}
+          openDrawers={viewport.openDrawers ?? f.openDrawers}
+          onInterlock={(blocked) => {
+            toast(blocked[0].message, { id: `interlock-${f.id}`, duration: 2600 });
+          }}
+          drawersCount={f.drawersCount}
+          style={f.style}
+          handleStyle={f.handleStyle}
+        />
+      </group>
+    );
+  }
   if (cabinet) {
     return (
       <group
