@@ -610,7 +610,7 @@ describe("lavanderia — auditoria prática (regressões corrigidas)", () => {
     const coluna = plan.placements.find((p) => p.kind === "vassoureiro");
     if (coluna) {
       const built = buildLaundryModule(coluna.module);
-      expect(built.decisions.length + built.pieces.length).toBeGreaterThan(0);
+      expect(built.assembly.pieces.length).toBeGreaterThan(0);
       expect(built.warnings.filter((w: string) => w.includes("além"))).toHaveLength(0);
     }
   });
