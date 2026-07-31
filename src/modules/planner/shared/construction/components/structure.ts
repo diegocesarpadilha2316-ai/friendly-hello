@@ -348,6 +348,7 @@ export const panel: ConstructionComponent<PanelParams> = {
     slats: 0,
     slatDepthMm: 18,
     orientation: "vertical",
+    fixedRole: "painel-fixo",
     materialId: "mdf-18",
     finishId: "freijo",
     edge: "pvc-0-45",
@@ -365,6 +366,7 @@ export const panel: ConstructionComponent<PanelParams> = {
       slats: intIn(p.slats, 0, 200, d.slats),
       slatDepthMm: clamp(p.slatDepthMm ?? d.slatDepthMm, 5, 60),
       orientation: p.orientation ?? d.orientation,
+      fixedRole: p.fixedRole ?? d.fixedRole,
       materialId: p.materialId ?? d.materialId,
       finishId: p.finishId ?? ctx.finishId ?? d.finishId,
       edge: p.edge ?? d.edge,
@@ -372,11 +374,21 @@ export const panel: ConstructionComponent<PanelParams> = {
     };
   },
   build(p, ctx) {
+    // Um painel é SEMPRE uma frente fixa: não tem mecanismo, não recebe
+    // dobradiça e não responde a "Abrir portas". Emiti-lo como `porta`
+    // (comportamento antigo) fazia o sistema tratá-lo como folha móvel.
+    const isFiller = p.fixedRole === "tapa-vao";
     const pieces: ConstructionPiece[] = [
       {
         id: `${ctx.instanceId}:painel`,
-        partKind: "porta",
-        label: "Painel de fundo",
+        partKind: isFiller ? "tapa-vao" : "frente-fixa",
+        frontRole: p.fixedRole,
+        label:
+          p.fixedRole === "aba-canto"
+            ? "Aba fixa de canto"
+            : isFiller
+              ? "Tapa-vão"
+              : "Painel fixo",
         box: box(0, 0, 0, p.widthMm, p.heightMm, p.thicknessMm),
         thicknessMm: p.thicknessMm,
         grain: p.grain,

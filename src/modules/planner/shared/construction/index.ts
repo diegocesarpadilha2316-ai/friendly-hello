@@ -6,6 +6,7 @@
  */
 export * from "./types";
 export * from "./params";
+export * from "./classification";
 export * from "./geometry";
 export * from "./registry";
 export * from "./assembly";

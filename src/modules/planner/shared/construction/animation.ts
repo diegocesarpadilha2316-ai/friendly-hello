@@ -5,6 +5,7 @@
  */
 import type { ConstructionMotion, ConstructionPiece } from "./types";
 import type { PartKind } from "../engineering/types";
+import { isDoor, isDrawerPart, isFixedFront } from "./classification";
 
 /** Estado normalizado de um mecanismo: 0 = fechado, 1 = totalmente aberto. */
 export type MotionState = number;
@@ -97,21 +98,25 @@ export function groupMotionsByInstance(
  * a responder automaticamente, sem tocar no render.
  * ------------------------------------------------------------------------ */
 
-/** Grupo de mecanismo controlável pela interface. */
-export type MotionGroup = "portas" | "gavetas" | "mecanismos";
-
-const DRAWER_PARTS = new Set<PartKind>([
-  "gaveta-frente",
-  "gaveta-lateral",
-  "gaveta-fundo",
-  "gaveta-base",
-]);
+/**
+ * Grupo de mecanismo controlável pela interface.
+ * "fixo" NÃO é um mecanismo: é a peça que nunca se move (painel fixo,
+ * aba de canto, tapa-vão). Ela existe aqui só para nunca cair no grupo
+ * genérico "mecanismos" e ser contada como algo animável.
+ */
+export type MotionGroup = "portas" | "gavetas" | "mecanismos" | "fixo";
 
 /** A que comando de interface uma peça responde. */
 export function motionGroupOfPart(partKind: PartKind): MotionGroup {
-  if (partKind === "porta") return "portas";
-  if (DRAWER_PARTS.has(partKind)) return "gavetas";
+  if (isFixedFront(partKind)) return "fixo";
+  if (isDoor(partKind)) return "portas";
+  if (isDrawerPart(partKind)) return "gavetas";
   return "mecanismos";
+}
+
+/** Grupos que respondem a algum comando da interface. */
+export function isControllableGroup(group: MotionGroup): boolean {
+  return group !== "fixo";
 }
 
 export function motionGroupOfPiece(piece: Pick<ConstructionPiece, "partKind">): MotionGroup {
@@ -128,6 +133,8 @@ export interface MotionControls {
 
 /** Traduz os comandos da interface no estado 0→1 de um grupo. */
 export function openStateForGroup(group: MotionGroup, controls: MotionControls): MotionState {
+  // Peça fixa: estado sempre 0, independente de qualquer comando.
+  if (group === "fixo") return 0;
   if (group === "portas") return controls.openDoors ? 1 : 0;
   if (group === "gavetas") return controls.openDrawers ? 1 : 0;
   return controls.openMechanisms ? 1 : 0;

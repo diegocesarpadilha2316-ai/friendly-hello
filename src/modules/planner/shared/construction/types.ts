@@ -46,11 +46,20 @@ export interface ConstructionBox {
   readonly depth: number;
 }
 
+/**
+ * Papel de uma frente fixa. Só faz sentido quando `partKind` é
+ * "frente-fixa" ou "tapa-vao" — permite distinguir um painel decorativo
+ * de uma aba estrutural de canto e de um enchimento lateral.
+ */
+export type FrontRole = "painel-fixo" | "aba-canto" | "tapa-vao";
+
 /** Peça sólida produzida por um componente (chapa, frente, régua...). */
 export interface ConstructionPiece {
   readonly id: string;
   /** Mapeia direto para a lista de corte existente (engineering/types). */
   readonly partKind: PartKind;
+  /** Papel da frente fixa (ver FrontRole). Ausente em peças móveis. */
+  readonly frontRole?: FrontRole;
   readonly label: string;
   readonly box: ConstructionBox;
   readonly thicknessMm: number;

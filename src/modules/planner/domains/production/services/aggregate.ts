@@ -19,6 +19,10 @@ const CATEGORY_MAP: Record<FurniturePart["kind"], ProductionPartCategory> = {
   prateleira: "prateleira",
   divisoria: "divisoria",
   porta: "porta",
+  // Frentes fixas continuam sendo chapa de frente na produção — só não
+  // levam ferragem de movimento.
+  "frente-fixa": "frente",
+  "tapa-vao": "painel",
   "gaveta-frente": "frente",
   "gaveta-lateral": "gaveta",
   "gaveta-fundo": "gaveta",

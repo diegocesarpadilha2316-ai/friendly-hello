@@ -137,6 +137,10 @@ export type PartKind =
   | "prateleira"
   | "divisoria"
   | "porta"
+  // Frentes fixas: parecem porta, mas não têm mecanismo. Ver
+  // construction/classification.ts para a taxonomia completa.
+  | "frente-fixa"
+  | "tapa-vao"
   | "gaveta-frente"
   | "gaveta-lateral"
   | "gaveta-fundo"
