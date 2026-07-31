@@ -6,6 +6,7 @@
 import { isDoor, isFinishPart, isFixedFront } from "../../construction/classification";
 import { bathroomReservationConflicts, type BathroomBuildResult } from "./build";
 import { BATHROOM_MODULE_PROFILES } from "./spec";
+import { sinkFit, SINK_STRUCTURAL_CLEARANCE_MM } from "./sink";
 
 export type BathroomIssueLevel = "erro" | "aviso" | "recomendacao";
 
@@ -19,6 +20,8 @@ export interface BathroomErgonomics {
   readonly counterHeightMm: [number, number];
   readonly mirrorBottomMm: [number, number];
   readonly sinkToWallMm: number;
+  /** Margem técnica mínima (erro) entre cuba e lateral/divisória. */
+  readonly sinkStructuralClearanceMm: number;
   readonly sideClearanceMm: number;
   readonly frontClearanceMm: number;
   readonly wallHungFloorGapMm: [number, number];
@@ -28,6 +31,7 @@ export const BATHROOM_ERGONOMICS: BathroomErgonomics = {
   counterHeightMm: [800, 950],
   mirrorBottomMm: [1000, 1200],
   sinkToWallMm: 100,
+  sinkStructuralClearanceMm: SINK_STRUCTURAL_CLEARANCE_MM,
   sideClearanceMm: 50,
   frontClearanceMm: 600,
   wallHungFloorGapMm: [200, 500],
@@ -58,20 +62,47 @@ export function validateBathroomModule(
   /* cuba × tampo × recorte */
   const s = spec.sink;
   if (s.type !== "nenhuma") {
-    if (s.widthMm + 2 * ergonomics.sinkToWallMm > spec.widthMm)
-      err("cuba-larga", "cuba não cabe na largura do módulo com folga lateral");
-    if (s.depthMm > spec.depthMm - 40)
-      err("cuba-profunda", "cuba mais profunda que o tampo disponível");
+    const fit = sinkFit({
+      widthMm: spec.widthMm,
+      thicknessMm: spec.thicknessMm,
+      sink: s,
+      countertopOverhangSideMm: spec.countertop.overhangSideMm,
+      clearanceMm: ergonomics.sinkStructuralClearanceMm,
+      topDepthMm: spec.depthMm + spec.countertop.overhangFrontMm - 40,
+    });
+    /* A cuba é comparada com a largura INTERNA útil, e a folga entra UMA vez
+     * por vão (nunca duas vezes na mesma conta). */
+    if (!fit.sinkFitsCabinet)
+      err(
+        "cuba-incompativel",
+        `cuba ${fit.sinkCount > 1 ? "dupla " : ""}de ${fit.sinkWidthMm} mm não cabe na largura interna útil de ${fit.cabinetInnerWidthMm} mm`,
+      );
+    else if (!fit.clearanceOk)
+      err(
+        "folga-lateral-insuficiente",
+        `folga lateral mínima de ${fit.requiredSideClearanceMm} mm não atendida: exige ${fit.requiredWidthMm} mm e há ${fit.cabinetInnerWidthMm} mm`,
+      );
+    if (!fit.depthOk) err("cuba-profunda", "cuba mais profunda que o tampo disponível");
     if (s.type !== "apoio" && spec.countertop.material === "nenhum")
       err("recorte-sem-tampo", "cuba de embutir/sobrepor exige tampo");
     if (spec.countertop.cutout !== "nenhum") {
-      if (s.cutoutWidthMm > spec.widthMm - 2 * ergonomics.sinkToWallMm)
-        err("recorte-fora", "recorte de cuba ultrapassa o tampo");
-      if (s.cutoutDepthMm > spec.depthMm - 40)
+      if (!fit.cutoutFitsTop)
+        err(
+          "recorte-fora-do-tampo",
+          `recorte de ${fit.sinkCutoutWidthMm} mm ultrapassa o tampo de ${fit.topWidthMm} mm`,
+        );
+      if (s.cutoutDepthMm > spec.depthMm + spec.countertop.overhangFrontMm - 40)
         err("recorte-fora-profundidade", "recorte de cuba ultrapassa a profundidade do tampo");
     }
     if (s.hydraulicHeightMm > g.caseHeightMm)
       warn("reserva-alta", "reserva hidráulica maior que a altura da caixa");
+    /* Distância cuba × parede é RECOMENDAÇÃO, não erro. */
+    const sideGap = (fit.cabinetInnerWidthMm - fit.sinkCount * fit.sinkWidthMm) / (fit.sinkCount + 1);
+    if (fit.sinkCount > 0 && sideGap < ergonomics.sinkToWallMm)
+      tip(
+        "cuba-proxima-parede",
+        `folga recomendada de ${ergonomics.sinkToWallMm} mm entre cuba e lateral (atual ${Math.round(sideGap)} mm)`,
+      );
   }
 
   /* hidráulica × mecanismos */
