@@ -406,6 +406,26 @@ function Slab({
   );
 }
 
+/** Peitoril real da janela — avança para dentro do ambiente. */
+function Sill({
+  s,
+  center,
+  viewport,
+}: {
+  s: SillDescriptor;
+  center: THREE.Vector3;
+  viewport: Viewport3DState;
+}) {
+  if (viewport.render === "wireframe") return null;
+  const pos = explodeVec(s.cx, s.cz, s.y - s.thickness / 2, center, viewport.explode);
+  return (
+    <mesh position={[pos.x, pos.y, pos.z]} rotation={[0, s.rotationY, 0]} castShadow receiveShadow>
+      <boxGeometry args={[s.width, s.thickness, s.depth]} />
+      <meshStandardMaterial color="#e9eaec" roughness={0.4} metalness={0.03} envMapIntensity={1.1} />
+    </mesh>
+  );
+}
+
 function Opening({
   o,
   center,
