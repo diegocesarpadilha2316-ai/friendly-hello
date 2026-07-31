@@ -100,7 +100,14 @@ export function decomposeFurniture(
 
   const edgeMeters =
     (parts
-      .filter((p) => p.kind === "porta" || p.kind === "gaveta-frente" || p.kind === "tampo")
+      .filter(
+        (p) =>
+          p.kind === "porta" ||
+          p.kind === "frente-fixa" ||
+          p.kind === "tapa-vao" ||
+          p.kind === "gaveta-frente" ||
+          p.kind === "tampo",
+      )
       .reduce((acc, p) => acc + 2 * (p.widthMm + p.heightMm) * p.qty, 0) /
       1000) *
     (eng.edge === "sem-fita" ? 0 : 1);
