@@ -5,6 +5,7 @@
  */
 import type { ConstructionMotion, ConstructionPiece } from "./types";
 import type { PartKind } from "../engineering/types";
+import { isDoor, isDrawerPart, isFixedFront } from "./classification";
 
 /** Estado normalizado de um mecanismo: 0 = fechado, 1 = totalmente aberto. */
 export type MotionState = number;
