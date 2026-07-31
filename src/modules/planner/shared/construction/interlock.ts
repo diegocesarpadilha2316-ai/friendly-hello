@@ -36,8 +36,12 @@ export const DEFAULT_INTERLOCK: InterlockConfig = {
   closedEpsilon: 0.02,
 };
 
-/** Peças que funcionam como frente/tapamento do vão. */
-const COVER_KINDS = new Set<PartKind>(["porta"]);
+/**
+ * Peças que funcionam como frente/tapamento do vão.
+ * Inclui as frentes fixas: elas fecham o vão fisicamente, mas o bloqueio
+ * que geram é sempre "frente-fixa" (permanente), nunca "abra a porta".
+ */
+const COVER_KINDS = new Set<PartKind>(["porta", "frente-fixa", "tapa-vao"]);
 
 export interface InterlockBlock {
   /** Mecanismo bloqueado (grupo, ex.: "roupeiro:gaveta-2"). */
@@ -95,6 +99,10 @@ export function coverageSpan(
   cfg: InterlockConfig,
 ): { span: Span; reason: InterlockBlock["reason"] } | null {
   const base = spanOf(piece);
+
+  // Frente fixa: não existe estado aberto. Mesmo que algum componente
+  // emita um rig por engano, ela nunca libera o vão.
+  if (isFixedFront(piece.partKind)) return { span: base, reason: "frente-fixa" };
 
   // Frente sem mecanismo (painel fixo, frente colada): tapa sempre.
   if (!motion || motion.kind === "static") return { span: base, reason: "frente-fixa" };
