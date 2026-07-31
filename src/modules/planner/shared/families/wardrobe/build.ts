@@ -36,6 +36,8 @@ export interface WardrobeLayout extends Record<string, number> {
   interiorHeightMm: number;
   maleiroHeightMm: number;
   frontZMm: number;
+  /** Profundidade da CAIXA (já descontado o plano das frentes). */
+  caseDepthMm: number;
 }
 
 /** Monta o roupeiro. Puro e determinístico. */
@@ -61,8 +63,16 @@ export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildRes
 
   const interiorY0 = caseY0 + t;
   const interiorH = Math.max(200, caseH - 2 * t - (maleiroInternal ? maleiroH : 0));
-  const interiorD = D - bt;
-  const frontZ = D - t;
+  /**
+   * A profundidade da ficha é a MEDIDA EXTERNA, frentes inclusas. A caixa
+   * recua exatamente o que a frente ocupa, para nada furar o plano frontal.
+   */
+  const slidingTracks = spec.doors >= 3 ? 3 : 2;
+  const frontReserve =
+    spec.opening === "abrir" ? t : spec.opening === "correr" ? t + 6 * slidingTracks : 0;
+  const caseD = Math.max(150, D - frontReserve);
+  const interiorD = caseD - bt;
+  const frontZ = caseD;
 
   const slots: AssemblySlot[] = [];
 
@@ -82,14 +92,14 @@ export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildRes
       component: "lateral",
       at: [0, caseY0, 0],
       role: "lateral esquerda",
-      params: { heightMm: caseH, depthMm: D, thicknessMm: t, side: "esquerda", finishId: spec.finishId },
+      params: { heightMm: caseH, depthMm: caseD, thicknessMm: t, side: "esquerda", finishId: spec.finishId },
     },
     {
       id: "lateral-d",
       component: "lateral",
       at: [W - t, caseY0, 0],
       role: "lateral direita",
-      params: { heightMm: caseH, depthMm: D, thicknessMm: t, side: "direita", finishId: spec.finishId },
+      params: { heightMm: caseH, depthMm: caseD, thicknessMm: t, side: "direita", finishId: spec.finishId },
     },
     {
       id: "base",
@@ -105,7 +115,7 @@ export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildRes
       role: "tampo",
       params: {
         widthMm: innerW,
-        depthMm: D,
+        depthMm: caseD,
         thicknessMm: t,
         overhangFrontMm: 0,
         overhangSideMm: 0,
@@ -130,6 +140,7 @@ export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildRes
     interiorY0,
     interiorHeightMm: interiorH,
     innerWidthMm: innerW,
+    caseDepthMm: caseD,
   });
   for (const slot of interior.slots) {
     slots.push({
@@ -148,7 +159,7 @@ export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildRes
       params: {
         widthMm: W,
         heightMm: maleiroH,
-        depthMm: D,
+        depthMm: caseD,
         thicknessMm: t,
         doors: spec.opening === "abrir" ? spec.doors : 0,
         finishId: spec.finishId,
@@ -193,11 +204,11 @@ export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildRes
       });
     }
   } else if (spec.opening === "correr") {
-    const tracks = spec.doors >= 3 ? 3 : 2;
+    const tracks = slidingTracks;
     slots.push({
       id: "portas-correr",
       component: "porta-correr",
-      at: [0, caseY0, D - (t + 6 * tracks)],
+      at: [0, caseY0, caseD],
       role: "portas de correr",
       params: {
         widthMm: W,
@@ -247,6 +258,7 @@ export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildRes
     interiorHeightMm: interiorH,
     maleiroHeightMm: maleiroH,
     frontZMm: frontZ,
+    caseDepthMm: caseD,
   };
 
   return { spec, assembly, layout, interior };
