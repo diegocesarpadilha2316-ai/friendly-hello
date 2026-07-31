@@ -485,14 +485,17 @@ function shelfSlots(
   g: BathroomGeometry,
   count: number,
   region: { y0: number; heightMm: number } = { y0: g.interiorY0, heightMm: g.interiorHeightMm },
-  depthMm = Math.max(100, g.interiorDepthMm - 20),
+  depthOverrideMm?: number,
 ): AssemblySlot[] {
   if (count <= 0) return [];
+  const zone = hydraulicBackZoneMm(spec, g);
+  const depthMm =
+    depthOverrideMm ?? Math.max(100, g.interiorDepthMm - 20 - zone);
   const pitch = region.heightMm / (count + 1);
   return Array.from({ length: count }, (_, i) => ({
     id: `prateleira-${i + 1}`,
     component: "prateleira" as const,
-    at: [spec.thicknessMm, region.y0 + pitch * (i + 1), 0] as [number, number, number],
+    at: [spec.thicknessMm, region.y0 + pitch * (i + 1), zone] as [number, number, number],
     role: `prateleira ${i + 1}`,
     params: {
       widthMm: g.innerWidthMm,
