@@ -137,6 +137,12 @@ function int(v: unknown, fallback: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, Math.round(n)));
 }
 
+/** Remove chaves `undefined` para o spread não apagar um padrão calculado. */
+function defined<T extends object>(o: T | undefined): Partial<T> {
+  if (!o) return {};
+  return Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined)) as Partial<T>;
+}
+
 /** Normaliza o `kind` vindo de texto livre (IA, catálogo, projeto antigo). */
 export function normalizeKitchenKind(value: string | undefined | null): KitchenModuleKind {
   const k = (value ?? "")
@@ -202,11 +208,11 @@ export function normalizeKitchenModule(input: KitchenModuleInput = {}): KitchenM
         // O recorte é uma consequência do módulo, não uma escolha solta:
         // pia sempre tem cuba, cooktop sempre tem recorte de cooktop.
         cutout: kind === "balcao-pia" ? "cuba" : kind === "balcao-cooktop" ? "cooktop" : "nenhum",
-        ...input.countertop,
+        ...defined(input.countertop),
       },
       wantsCountertop && p.countertop,
     ),
-    plinth: normalizePlinth(input.plinth, p.plinth),
+    plinth: normalizePlinth(defined(input.plinth), p.plinth),
     glassFront,
     led: input.led ?? false,
     style: input.style ?? "moderno",
