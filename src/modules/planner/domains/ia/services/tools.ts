@@ -305,6 +305,17 @@ const ROOM_BLUEPRINTS: Readonly<Record<string, RoomBlueprint>> = {
       { catalogItemId: "planta-suculenta", xRatio: 0.15, yRatio: 0.35 },
     ],
   },
+  lavanderia: {
+    label: "Lavanderia completa",
+    shape: "linear",
+    pieces: [
+      { description: "máquina de lavar frontal 700mm", count: 1, wall: "bottom" },
+      { description: "balcão com tanque 800mm", count: 1, wall: "bottom" },
+      { description: "vassoureiro 600mm", count: 1, wall: "bottom" },
+      { description: "aéreo lavanderia 800mm", count: 2, wall: "bottom" },
+    ],
+    style: "moderno",
+  },
 };
 
 export function toolCreateRoomPreset(
@@ -339,7 +350,7 @@ export function toolCreateRoomPreset(
   if (!blueprint) {
     return {
       project,
-      summary: `Não conheço o ambiente "${args.preset}". Tente cozinha, closet, dormitório, sala, escritório ou banheiro.`,
+      summary: `Não conheço o ambiente "${args.preset}". Tente cozinha, closet, dormitório, sala, escritório, banheiro ou lavanderia.`,
       affectedIds: [],
     };
   }
@@ -511,6 +522,11 @@ export function toolCreateRoomPreset(
   if (decorPlaced > 0) parts.push(`${decorPlaced} itens de decoração`);
   if (res.skipped > 0) parts.push(`${res.skipped} ignoradas`);
   const audit = auditLines.length > 0 ? ` ${auditLines.join(" ")}` : "";
+  const beforeIds = new Set(furnitureInRoom(room).map((item) => item.id));
+  const afterRoom = getRoom(next, ctx);
+  const affectedIds = afterRoom
+    ? furnitureInRoom(afterRoom).filter((item) => !beforeIds.has(item.id)).map((item) => item.id)
+    : [];
   return {
     project: next,
     summary:
@@ -518,7 +534,7 @@ export function toolCreateRoomPreset(
       `${describeAnalysis(analysis)}\n` +
       `${composition.notes.join(" · ")}.` +
       (qualityLine ? `\n${qualityLine}` : ""),
-    affectedIds: [],
+    affectedIds,
   };
 }
 
@@ -961,6 +977,7 @@ export function toolInsertDescribed(
   const stepBase = overrides.width ?? match.item.parametric.defaults.width;
   const step = stepBase + 40;
 
+  const beforeIds = new Set(furnitureInRoom(room).map((item) => item.id));
   let next = project;
   for (let i = 0; i < count; i++) {
     next = insertItemIntoProject(next, ctx, match.item, {
@@ -970,10 +987,13 @@ export function toolInsertDescribed(
       materialId: match.materialId,
     });
   }
+  const afterRoom = getRoom(next, ctx);
   return {
     project: next,
     summary: `${count}× ${match.item.name} inserido (${match.reasons.join(", ")}).`,
-    affectedIds: [],
+    affectedIds: afterRoom
+      ? furnitureInRoom(afterRoom).filter((item) => !beforeIds.has(item.id)).map((item) => item.id)
+      : [],
   };
 }
 

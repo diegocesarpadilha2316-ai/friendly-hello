@@ -10,6 +10,7 @@ import type { PlannerProject } from "@/modules/planner/shared";
 import { usePlannerEditor } from "@/modules/planner/shared";
 import { readMemory, updateMemoryFromTurn } from "../memory";
 import type { ToolContext } from "../services/tools";
+import { validatePostExecution } from "../services/post-execution";
 import {
   PlanRunner,
   generatePlan,
@@ -91,6 +92,7 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
           editor.updateProject(() => project);
         },
         onUpdate: commit,
+        validateAppliedProject: (before, after) => validatePostExecution({ before, after, ctx }),
       });
       runnerRef.current = runner;
       return runner;

@@ -87,7 +87,7 @@ function ambienteStages(description: string): readonly PipelineStage[] {
       id: "modulos",
       title: "Criar módulos",
       description,
-      tool: "insert_described",
+      tool: "create_room_preset",
       scope: "comodo",
       optional: false,
       dependsOn: ["estilo"],
