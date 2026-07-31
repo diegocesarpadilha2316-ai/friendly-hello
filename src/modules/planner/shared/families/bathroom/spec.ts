@@ -14,7 +14,12 @@ import {
   type KitchenCountertop,
 } from "../kitchen/countertop";
 import { normalizePlinth, type KitchenPlinth } from "../kitchen/plinth";
-import { normalizeSink, type BathroomSink } from "./sink";
+import {
+  minWidthForSinkMm,
+  normalizeSink,
+  SINK_STRUCTURAL_CLEARANCE_MM,
+  type BathroomSink,
+} from "./sink";
 
 /** Módulos atendidos pela família. */
 export type BathroomModuleKind =
@@ -166,6 +171,8 @@ export interface BathroomModuleSpec {
   readonly closedBack: boolean;
   /** Permitir gaveta em U sob a cuba. */
   readonly allowUDrawer: boolean;
+  /** Largura mínima de cada perna da gaveta em U (mm) — configurável. */
+  readonly minUDrawerLegMm: number;
 }
 
 export type BathroomModuleInput = Partial<
@@ -278,7 +285,10 @@ export function normalizeBathroomModule(input: BathroomModuleInput = {}): Bathro
 
   const opening = (input.opening ?? p.opening) as BathroomOpening;
   const install = normalizeInstall(input.install, p.install);
+  const thicknessMm = num(input.thicknessMm, 18, 9, 30);
   const wantsSink = p.sink && (input.sink?.type ?? "apoio") !== "nenhuma";
+  const sinkCount = (input.sink?.position ?? (kind === "cuba-dupla" ? "dupla" : "")) === "dupla" ? 2 : 1;
+  const innerWidthMm = Math.max(0, widthMm - 2 * thicknessMm);
   const sink = normalizeSink(
     {
       position: kind === "cuba-deslocada" ? "esquerda" : kind === "cuba-dupla" ? "dupla" : "central",
@@ -286,6 +296,13 @@ export function normalizeBathroomModule(input: BathroomModuleInput = {}): Bathro
       ...defined(input.sink),
     },
     wantsSink,
+    {
+      // A louça padrão se adapta ao módulo; medida explícita é preservada.
+      maxWidthMm: Math.floor(
+        (innerWidthMm - (sinkCount + 1) * SINK_STRUCTURAL_CLEARANCE_MM) / sinkCount,
+      ),
+      maxDepthMm: depthMm - 40,
+    },
   );
 
   const doors = int(input.doors, p.doors, 0, 6);
@@ -321,11 +338,35 @@ export function normalizeBathroomModule(input: BathroomModuleInput = {}): Bathro
     led: input.led ?? false,
     style: input.style ?? "moderno",
     finishId: input.finishId ?? "branco-tx",
-    thicknessMm: num(input.thicknessMm, 18, 9, 30),
+    thicknessMm,
     backThicknessMm: num(input.backThicknessMm, 6, 3, 18),
     closedBack: input.closedBack ?? true,
     allowUDrawer: input.allowUDrawer ?? true,
+    minUDrawerLegMm: int(input.minUDrawerLegMm, 150, 60, 600),
   };
+}
+
+/**
+ * Largura mínima real de um módulo: o mínimo do perfil OU o que a cuba
+ * declarada exige. Usado pelo Layout Engine para não encolher um módulo
+ * de cuba dupla até uma medida impossível.
+ */
+export function bathroomMinWidthMm(input: BathroomModuleInput = {}): number {
+  const kind = normalizeBathroomKind(input.kind);
+  const p = BATHROOM_MODULE_PROFILES[kind];
+  if (!p.sink) return p.minWidthMm;
+  const wantsSink = (input.sink?.type ?? "apoio") !== "nenhuma";
+  if (!wantsSink) return p.minWidthMm;
+  const thicknessMm = num(input.thicknessMm, 18, 9, 30);
+  const sink = normalizeSink(
+    {
+      position: kind === "cuba-deslocada" ? "esquerda" : kind === "cuba-dupla" ? "dupla" : "central",
+      type: kind === "cuba-dupla" ? "dupla" : undefined,
+      ...defined(input.sink),
+    },
+    true,
+  );
+  return Math.max(p.minWidthMm, minWidthForSinkMm(sink, thicknessMm));
 }
 
 export function bathroomHandle(spec: BathroomModuleSpec): ComponentHandle {
