@@ -327,6 +327,7 @@ function nicheSlot(
   heightMm: number,
   role: string,
   shelves = 0,
+  opts: { withBack?: boolean; depthMm?: number } = {},
 ): AssemblySlot {
   return {
     id,
@@ -336,15 +337,86 @@ function nicheSlot(
     params: {
       widthMm: g.innerWidthMm,
       heightMm,
-      depthMm: g.interiorDepthMm,
+      depthMm: opts.depthMm ?? g.interiorDepthMm,
       thicknessMm: spec.thicknessMm,
-      withBack: true,
+      withBack: opts.withBack ?? true,
       ledStrip: spec.led,
       shelves,
       finishId: spec.finishId,
     },
   };
 }
+
+/**
+ * Volumes técnicos reservados por módulo (cuba, sifão, cooktop, forno,
+ * micro-ondas, geladeira). Não são marcenaria, mas ocupam espaço e por isso
+ * nenhuma gaveta, prateleira ou divisória pode invadi-los.
+ */
+export interface KitchenModuleReservation {
+  readonly id: string;
+  readonly kind: string;
+  readonly box: { readonly x: number; readonly y: number; readonly z: number; readonly width: number; readonly height: number; readonly depth: number };
+  readonly note: string;
+}
+
+export function kitchenReservedVolumes(
+  spec: KitchenModuleSpec,
+  g: KitchenGeometry,
+): readonly KitchenModuleReservation[] {
+  const t = spec.thicknessMm;
+  const out: KitchenModuleReservation[] = [];
+  const full = (id: string, kind: string, y: number, h: number, note: string, depth = g.interiorDepthMm) =>
+    out.push({
+      id,
+      kind,
+      box: { x: t, y, z: 0, width: g.innerWidthMm, height: h, depth },
+      note,
+    });
+
+  if (spec.kind === "balcao-pia") {
+    const h = Math.min(400, g.interiorHeightMm);
+    full("cuba", "cuba", g.interiorY0 + g.interiorHeightMm - h, h, "cuba + sifão + área hidráulica");
+  }
+  if (spec.kind === "balcao-cooktop") {
+    const h = Math.min(COOKTOP_RESERVE_MM, g.interiorHeightMm);
+    full("cooktop", "cooktop", g.interiorY0 + g.interiorHeightMm - h, h, "caixa do cooktop e ligação de gás/elétrica");
+  }
+  if (spec.kind === "torre-quente") {
+    const bottomH = Math.max(300, g.interiorHeightMm * 0.35);
+    const depth = Math.max(120, g.interiorDepthMm - spec.applianceGapBackMm);
+    full("forno", "forno", g.interiorY0 + bottomH, OVEN_NICHE_MM, "forno embutido com ventilação traseira", depth);
+    full(
+      "microondas",
+      "microondas",
+      g.interiorY0 + bottomH + OVEN_NICHE_MM,
+      MICROWAVE_NICHE_MM,
+      "micro-ondas embutido",
+      depth,
+    );
+  }
+  if (spec.kind === "torre-geladeira") {
+    const applianceH = Math.min(g.caseHeightMm - 400, 1900);
+    out.push({
+      id: "geladeira",
+      kind: "geladeira",
+      box: {
+        x: t + spec.applianceGapSideMm,
+        y: g.caseY0,
+        z: 0,
+        width: Math.max(100, g.innerWidthMm - 2 * spec.applianceGapSideMm),
+        height: Math.max(100, applianceH - spec.applianceGapTopMm),
+        depth: Math.max(120, g.caseDepthMm - spec.applianceGapBackMm),
+      },
+      note: `geladeira com folgas ${spec.applianceGapSideMm}/${spec.applianceGapTopMm}/${spec.applianceGapBackMm} mm`,
+    });
+  }
+  return out;
+}
+
+/** Faixa reservada sob o tampo do cooktop (nenhuma gaveta entra aqui). */
+export const COOKTOP_RESERVE_MM = 180;
+export const OVEN_NICHE_MM = 600;
+export const MICROWAVE_NICHE_MM = 400;
 
 /* ────────────────────────────── receitas por módulo ───────────────────────── */
 
@@ -391,11 +463,11 @@ export function kitchenModuleSlots(spec: KitchenModuleSpec, g: KitchenGeometry):
     case "balcao-cooktop": {
       // Cooktop exige gavetas rasas (a de cima desvia da cuba do cooktop).
       slots.push(...caseSlots(spec, g));
-      const shallow = 180;
+      const shallow = COOKTOP_RESERVE_MM;
       slots.push(
         ...drawerSlots(spec, g, Math.max(1, spec.drawers), {
           y0: g.interiorY0,
-          heightMm: Math.max(200, g.interiorHeightMm - shallow),
+          heightMm: Math.max(200, Math.min(g.interiorHeightMm - shallow, g.interiorHeightMm)),
         }),
       );
       slots.push(
@@ -451,7 +523,8 @@ export function kitchenModuleSlots(spec: KitchenModuleSpec, g: KitchenGeometry):
     case "nicho-aberto": {
       slots.push(
         ...caseSlots(spec, g, { withTop: true }),
-        nicheSlot("nicho", spec, g, g.interiorY0, g.interiorHeightMm, "nicho", spec.shelves),
+        // O fundo já vem da caixa: o nicho não repete o painel traseiro.
+        nicheSlot("nicho", spec, g, g.interiorY0, g.interiorHeightMm, "nicho", spec.shelves, { withBack: false }),
       );
       return slots;
     }
@@ -459,14 +532,16 @@ export function kitchenModuleSlots(spec: KitchenModuleSpec, g: KitchenGeometry):
     /* ── colunas ── */
     case "torre-quente": {
       slots.push(...caseSlots(spec, g));
-      const ovenH = 600;
-      const microH = 400;
+      const ovenH = OVEN_NICHE_MM;
+      const microH = MICROWAVE_NICHE_MM;
       const y0 = g.interiorY0;
       const bottomH = Math.max(300, g.interiorHeightMm * 0.35);
       const ovenY = y0 + bottomH;
       const microY = ovenY + ovenH;
       const topY = microY + microH;
       const topH = Math.max(0, g.interiorY0 + g.interiorHeightMm - topY);
+      // Ventilação traseira: o nicho é mais raso que o interior da caixa.
+      const nicheDepth = Math.max(120, g.interiorDepthMm - spec.applianceGapBackMm);
 
       // Vão inferior: gaveta (panelas) e/ou porta.
       if (spec.drawers > 0) {
@@ -480,8 +555,8 @@ export function kitchenModuleSlots(spec: KitchenModuleSpec, g: KitchenGeometry):
         );
       }
       slots.push(
-        nicheSlot("nicho-forno", spec, g, ovenY, ovenH, "nicho do forno"),
-        nicheSlot("nicho-microondas", spec, g, microY, microH, "nicho do micro-ondas"),
+        nicheSlot("nicho-forno", spec, g, ovenY, ovenH, "nicho do forno", 0, { depthMm: nicheDepth }),
+        nicheSlot("nicho-microondas", spec, g, microY, microH, "nicho do micro-ondas", 0, { depthMm: nicheDepth }),
       );
       if (topH > 250) {
         slots.push(
@@ -498,6 +573,8 @@ export function kitchenModuleSlots(spec: KitchenModuleSpec, g: KitchenGeometry):
     case "torre-geladeira": {
       // Painéis de acabamento em volta do eletrodoméstico: sem porta, sem fundo cheio.
       const applianceH = Math.min(g.caseHeightMm - 400, 1900);
+      // A travessa sobe a folga superior do eletrodoméstico.
+      const trimY = g.caseY0 + applianceH + spec.applianceGapTopMm;
       slots.push(
         {
           id: "lateral-e",
@@ -516,11 +593,11 @@ export function kitchenModuleSlots(spec: KitchenModuleSpec, g: KitchenGeometry):
         {
           id: "travessa",
           component: "tampo",
-          at: [t, g.caseY0 + applianceH, 0],
+          at: [t, trimY, 0],
           role: "travessa sobre a geladeira",
           params: {
             widthMm: g.innerWidthMm,
-            depthMm: g.caseDepthMm,
+            depthMm: Math.max(120, g.caseDepthMm - spec.applianceGapBackMm),
             thicknessMm: t,
             overhangFrontMm: 0,
             overhangSideMm: 0,
@@ -543,12 +620,12 @@ export function kitchenModuleSlots(spec: KitchenModuleSpec, g: KitchenGeometry):
           },
         });
       }
-      const topBoxH = Math.max(0, g.caseHeightMm - applianceH - t);
+      const topBoxH = Math.max(0, g.caseY0 + g.caseHeightMm - trimY - t);
       if (topBoxH > 250) {
         slots.push({
           id: "maleiro",
           component: "maleiro",
-          at: [0, g.caseY0 + applianceH + t, 0],
+          at: [0, trimY + t, 0],
           role: "armário sobre a geladeira",
           params: {
             widthMm: spec.widthMm,

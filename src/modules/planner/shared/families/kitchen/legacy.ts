@@ -87,14 +87,24 @@ export function kitchenSpecFromLegacy(f: LegacyKitchenModule): KitchenModuleSpec
     finishId: asText(pick(p, "eng:finishId", "finishId", "color", "cor")),
     thicknessMm: asNumber(pick(p, "eng:thicknessMm", "thicknessMm")),
     backThicknessMm: asNumber(pick(p, "eng:backThicknessMm", "backThicknessMm")),
+    applianceGapSideMm: asNumber(pick(p, "eng:applianceGapSideMm")),
+    applianceGapTopMm: asNumber(pick(p, "eng:applianceGapTopMm")),
+    applianceGapBackMm: asNumber(pick(p, "eng:applianceGapBackMm")),
     countertop: {
       material: asText(pick(p, "mod:countertop", "countertop", "tampo", "bancada")) as never,
       thicknessMm: asNumber(pick(p, "eng:countertopThicknessMm", "countertopThicknessMm")),
       backsplashMm: asNumber(pick(p, "mod:backsplashMm", "rodabanca")),
+      overhangFrontMm: asNumber(pick(p, "eng:countertopOverhangFrontMm")),
+      overhangSideMm: asNumber(pick(p, "eng:countertopOverhangSideMm")),
+      finishId: asText(pick(p, "eng:countertopFinishId")),
+      cutout: asText(pick(p, "mod:countertopCutout")) as never,
     },
     plinth: {
       kind: asText(pick(p, "mod:plinth", "plinth", "rodape")) as never,
       heightMm: asNumber(pick(p, "eng:plinthHeightMm", "plinthHeightMm")),
+      recessMm: asNumber(pick(p, "eng:plinthRecessMm")),
+      finishId: asText(pick(p, "eng:plinthFinishId")),
+      removable: asBool(pick(p, "eng:plinthRemovable")),
     },
   });
 }
@@ -105,4 +115,44 @@ export function applyKitchenPatch(
   patch: Partial<KitchenModuleSpec>,
 ): KitchenModuleSpec {
   return normalizeKitchenModule({ ...current, ...patch });
+}
+
+/**
+ * PERSISTÊNCIA — ficha → `params` do módulo do projeto.
+ *
+ * Sem migração e sem coluna nova: o projeto já guarda um mapa livre de
+ * `params`. Este serializador é o par exato de `kitchenSpecFromLegacy`, de
+ * modo que salvar e reabrir devolve a MESMA composição (tampo, rodapé,
+ * recorte, eletrodomésticos, folgas e movimentos).
+ */
+export function kitchenLegacyParams(spec: KitchenModuleSpec): Record<string, string | number | boolean> {
+  return {
+    "mod:kind": spec.kind,
+    "mod:doors": spec.doors,
+    "mod:drawers": spec.drawers,
+    "mod:shelves": spec.shelves,
+    "mod:opening": spec.opening,
+    "mod:handle": spec.handle,
+    "mod:style": spec.style,
+    "mod:glass": spec.glassFront,
+    "mod:led": spec.led,
+    "mod:countertop": spec.countertop.material,
+    "mod:countertopCutout": spec.countertop.cutout,
+    "mod:backsplashMm": spec.countertop.backsplashMm,
+    "mod:plinth": spec.plinth.kind,
+    "eng:countertopThicknessMm": spec.countertop.thicknessMm,
+    "eng:countertopOverhangFrontMm": spec.countertop.overhangFrontMm,
+    "eng:countertopOverhangSideMm": spec.countertop.overhangSideMm,
+    "eng:countertopFinishId": spec.countertop.finishId,
+    "eng:plinthHeightMm": spec.plinth.heightMm,
+    "eng:plinthRecessMm": spec.plinth.recessMm,
+    "eng:plinthFinishId": spec.plinth.finishId,
+    "eng:plinthRemovable": spec.plinth.removable,
+    "eng:finishId": spec.finishId,
+    "eng:thicknessMm": spec.thicknessMm,
+    "eng:backThicknessMm": spec.backThicknessMm,
+    "eng:applianceGapSideMm": spec.applianceGapSideMm,
+    "eng:applianceGapTopMm": spec.applianceGapTopMm,
+    "eng:applianceGapBackMm": spec.applianceGapBackMm,
+  };
 }

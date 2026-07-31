@@ -18,6 +18,7 @@ export * from "./build";
 export * from "./layout-engine";
 export * from "./validator";
 export * from "./legacy";
+export * from "./diagnostics";
 
 export const kitchenFamily: FurnitureFamily<KitchenModuleSpec> = {
   id: "cozinha",
