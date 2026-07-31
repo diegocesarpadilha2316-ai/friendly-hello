@@ -103,7 +103,10 @@ export function applyWardrobePatch(
   current: WardrobeSpec,
   patch: Partial<WardrobeSpec>,
 ): WardrobeSpec {
-  const merged: Partial<WardrobeSpec> = { ...current, ...patch };
+  const merged: { -readonly [K in keyof WardrobeSpec]?: WardrobeSpec[K] } = {
+    ...current,
+    ...patch,
+  };
   // Colunas derivadas: se o usuário mudou o nº de portas de abrir sem falar
   // de colunas, as colunas acompanham as portas (comportamento de marcenaria).
   if (
