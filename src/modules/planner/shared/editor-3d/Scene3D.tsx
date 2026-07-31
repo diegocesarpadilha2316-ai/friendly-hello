@@ -316,33 +316,45 @@ function Wall({
   });
   return (
     <group position={[pos.x, pos.y, pos.z]} rotation={[0, w.rotationY, 0]}>
-      <mesh
-        ref={meshRef}
-        castShadow
-        receiveShadow
-        onClick={(e: ThreeEvent<MouseEvent>) => {
-          e.stopPropagation();
-          onSelect(w.id);
-        }}
-      >
-        <boxGeometry args={[w.length, w.height, w.thickness]} />
-        <meshStandardMaterial ref={matRef} {...props} />
-      </mesh>
-      {/* Rodapé real (100 mm, saliente 12 mm) — só em modo material e com
-          a parede visível. Detalhe barato que ancora o ambiente e elimina
-          a junta "flutuante" entre parede e piso. */}
+      {/* Recortes REAIS de portas e janelas: a parede é composta por peças
+          sólidas que contornam os vãos (sem CSG). */}
+      {pieces.map((piece, index) => (
+        <mesh
+          key={piece.key}
+          ref={index === 0 ? meshRef : undefined}
+          position={[piece.offset, piece.y, 0]}
+          castShadow
+          receiveShadow
+          onClick={(e: ThreeEvent<MouseEvent>) => {
+            e.stopPropagation();
+            onSelect(w.id);
+          }}
+        >
+          <boxGeometry args={[piece.width, piece.height, w.thickness]} />
+          <meshStandardMaterial ref={index === 0 ? matRef : undefined} {...props} />
+        </mesh>
+      ))}
+      {/* Rodapé ARQUITETÔNICO (independente do móvel): altura e espessura
+          reais vindas do Room Architecture Engine, interrompido nos vãos
+          de porta. Ancora o ambiente e elimina a junta "flutuante". */}
       {viewport.render === "material" && opacity > 0.5 ? (
-        [-1, 1].map((side) => (
-          <mesh
-            key={`skirt-${side}`}
-            position={[0, -w.height / 2 + 0.05, side * (w.thickness / 2 + 0.006)]}
-            castShadow
-            receiveShadow
-          >
-            <boxGeometry args={[w.length, 0.1, 0.012]} />
-            <meshStandardMaterial color="#f2f3f5" roughness={0.45} metalness={0.02} envMapIntensity={1.1} />
-          </mesh>
-        ))
+        bbRuns.map((run) =>
+          [-1, 1].map((side) => (
+            <mesh
+              key={`${run.key}-${side}`}
+              position={[
+                run.offset,
+                -w.height / 2 + bbHeight / 2,
+                side * (w.thickness / 2 + bbThickness / 2),
+              ]}
+              castShadow
+              receiveShadow
+            >
+              <boxGeometry args={[run.width, bbHeight, bbThickness]} />
+              <meshStandardMaterial color="#f2f3f5" roughness={0.45} metalness={0.02} envMapIntensity={1.1} />
+            </mesh>
+          )),
+        )
       ) : null}
     </group>
   );
