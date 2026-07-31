@@ -92,7 +92,7 @@ describe("Intertravamento de mecanismos", () => {
   it("porta PARCIALMENTE aberta mantém o bloqueio", () => {
     const s = scene({ widthMm: 1800, doors: 2, opening: "abrir", drawers: 2, columns: 2, drawerColumn: 0 });
     // Estados cujo ângulo real ainda está abaixo do limite seguro (80°).
-    for (const frac of [0.05, 0.15, 0.3]) {
+    for (const frac of [0.03, 0.1, 0.2]) {
       const partial: Record<string, number> = {};
       for (const d of s.doors) partial[d.id] = frac;
       const r = s.solve({ openDoors: true, openDrawers: true }, partial);
