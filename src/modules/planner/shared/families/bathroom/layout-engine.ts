@@ -74,6 +74,8 @@ export interface BathroomLayoutResult {
 }
 
 const MIN_MODULE_MM = 300;
+/** Vão técnico reservado por parede quando a composição é entre paredes. */
+const WALL_GAP_MM = 18;
 
 function place(
   modules: readonly BathroomModuleInput[],
@@ -160,6 +162,10 @@ export function planBathroomLayout(input: BathroomLayoutInput): BathroomLayoutRe
   let modules: readonly BathroomModuleInput[];
 
   const presetId: BathroomPresetId | null = normalizePresetId(input.preset);
+  /** Entre paredes, a composição gerada nasce menor para caber o tapa-vão real. */
+  const generatedWidthMm = betweenWalls
+    ? Math.max(MIN_MODULE_MM, widthMm - 2 * WALL_GAP_MM)
+    : widthMm;
 
   if (input.modules && input.modules.length > 0) {
     source = "explicito";
@@ -172,15 +178,15 @@ export function planBathroomLayout(input: BathroomLayoutInput): BathroomLayoutRe
   } else if (presetId) {
     source = "preset";
     preset = BATHROOM_PRESETS[presetId];
-    modules = modulesFromPreset(preset, widthMm);
+    modules = modulesFromPreset(preset, generatedWidthMm);
   } else if (betweenWalls) {
     preset = pickBathroomPreset(widthMm, true);
     source = "entre-paredes";
-    modules = modulesFromPreset(preset, widthMm);
+    modules = modulesFromPreset(preset, generatedWidthMm);
   } else {
     preset = pickBathroomPreset(widthMm, betweenWalls);
     source = "preset-automatico";
-    modules = modulesFromPreset(preset, widthMm);
+    modules = modulesFromPreset(preset, generatedWidthMm);
   }
 
   let result = place(modules, widthMm, {
