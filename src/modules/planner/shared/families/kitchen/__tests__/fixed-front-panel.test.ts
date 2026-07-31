@@ -123,9 +123,14 @@ describe("canto diagonal — abas fixas", () => {
     const [left, right] = wings(built.assembly.pieces).sort((a, b) => a.box.x - b.box.x);
     const door = built.assembly.pieces.find((p) => p.partKind === "porta");
     expect(door).toBeDefined();
-    // As frentes se tocam (sem vão) na horizontal.
-    expect(door!.box.x).toBeCloseTo(left.box.x + left.box.width, 1);
-    expect(right.box.x).toBeCloseTo(door!.box.x + door!.box.width, 1);
+    // Entre a aba fixa e a folha móvel só pode existir a folga de frente
+    // (0–4 mm). Negativo = frentes se atravessando; acima disso = vão aberto.
+    const revealLeft = door!.box.x - (left.box.x + left.box.width);
+    const revealRight = right.box.x - (door!.box.x + door!.box.width);
+    for (const reveal of [revealLeft, revealRight]) {
+      expect(reveal).toBeGreaterThanOrEqual(0);
+      expect(reveal).toBeLessThanOrEqual(4);
+    }
     // E ficam no mesmo plano frontal e na mesma altura.
     expect(left.box.z).toBeCloseTo(door!.box.z, 1);
     expect(left.box.height).toBeCloseTo(door!.box.height, 1);
