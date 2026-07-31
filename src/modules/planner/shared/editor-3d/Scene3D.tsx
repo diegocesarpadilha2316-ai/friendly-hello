@@ -524,6 +524,7 @@ function Furniture({
         }}
       >
         <WardrobeMesh
+          nodeId={f.id}
           width={f.width}
           height={f.height}
           depth={f.depth}
