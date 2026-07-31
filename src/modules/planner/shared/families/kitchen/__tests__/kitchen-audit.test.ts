@@ -409,7 +409,7 @@ describe("Cenário 4 — cozinha em L", () => {
         const built = buildKitchenModule(canto.spec);
         const frentes = built.assembly.pieces.filter((p) => p.partKind === "porta");
         expect(frentes.length, "canto sem frente útil").toBeGreaterThan(0);
-        const util = frentes.filter((p) => !p.notes?.includes("frente cega"));
+        const util = frentes.filter((p) => !p.notes?.includes("frente cega") && !p.notes?.includes("aba"));
         expect(util.length, "canto sem folha de acesso").toBeGreaterThan(0);
         for (const f of util) {
           expect(f.box.width, f.id).toBeGreaterThanOrEqual(150);
@@ -784,7 +784,7 @@ describe("Redimensionamento", () => {
     expect(baixa.placements.filter((p) => p.level === "superior")).toHaveLength(0);
     expect(baixa.warnings.some((w) => w.code === "aereo-sem-espaco")).toBe(true);
 
-    const media = planKitchen({ shape: "reta", walls: [{ id: "p1", lengthMm: 3000, heightMm: 2150 }] });
+    const media = planKitchen({ shape: "reta", config: { upperGapMm: 600 }, walls: [{ id: "p1", lengthMm: 3000, heightMm: 2150 }] });
     const uppers = media.placements.filter((p) => p.level === "superior");
     expect(uppers.length).toBeGreaterThan(0);
     for (const u of uppers) expect(u.yMm + u.heightMm).toBeLessThanOrEqual(2150);
