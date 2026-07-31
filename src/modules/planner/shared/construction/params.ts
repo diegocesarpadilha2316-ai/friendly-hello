@@ -188,4 +188,9 @@ export interface PanelParams extends PanelLikeParams {
   readonly slats: number;
   readonly slatDepthMm: number;
   readonly orientation: "vertical" | "horizontal";
+  /**
+   * Papel do painel no móvel. Nenhum deles recebe rig — o parâmetro só
+   * escolhe a classificação correta na lista de corte e no diagnóstico.
+   */
+  readonly fixedRole: "painel-fixo" | "aba-canto" | "tapa-vao";
 }
