@@ -562,3 +562,61 @@ describe("lavanderia — não-regressão nas famílias já aprovadas", () => {
     expect(Object.keys(LAUNDRY_PRESETS)).toHaveLength(10);
   });
 });
+
+/* ──────────────── auditoria no viewport: correções aplicadas ──────────────── */
+
+describe("lavanderia — auditoria prática (regressões corrigidas)", () => {
+  const uppers = ["aereo-simples", "aereo-portas", "nicho-aberto", "prateleira"];
+
+  it("aéreos não se sobrepõem entre si: cada um ganha a própria faixa de parede", () => {
+    const plan = planLaundryLayout({ widthMm: 1200, preset: "lavanderia-compacta" });
+    const ups = plan.placements.filter((p) => uppers.includes(p.kind));
+    expect(ups.length).toBeGreaterThan(1);
+    for (let i = 1; i < ups.length; i++) {
+      expect(ups[i].xMm).toBeGreaterThanOrEqual(ups[i - 1].xMm + ups[i - 1].widthMm);
+    }
+  });
+
+  it("altura de instalação do aéreo é calculada acima da bancada real", () => {
+    const plan = planLaundryLayout({ widthMm: 1200, preset: "lavanderia-compacta" });
+    const up = plan.placements.find((p) => uppers.includes(p.kind))!;
+    expect(up.module.floorGapMm).toBeGreaterThan(1200);
+  });
+
+  it("máquina de abertura superior empurra o aéreo acima do curso da tampa", () => {
+    const baixa = planLaundryLayout({ widthMm: 2000, preset: "maquinas-lado-a-lado" });
+    const alta = planLaundryLayout({
+      widthMm: 2000,
+      preset: "maquinas-lado-a-lado",
+      modules: [
+        { kind: "modulo-lavadora", widthMm: 900, appliance: { kind: "lavadora-superior" } },
+        { kind: "aereo-portas", widthMm: 800 },
+      ],
+    });
+    const gap = (p: ReturnType<typeof planLaundryLayout>) =>
+      p.placements.find((x) => uppers.includes(x.kind))!.module.floorGapMm ?? 0;
+    expect(gap(alta)).toBeGreaterThan(gap(baixa));
+  });
+
+  it("tampo e acabamento não herdam a altura/profundidade do balcão", () => {
+    const plan = planLaundryLayout({ widthMm: 2000, preset: "maquinas-lado-a-lado", heightMm: 1050 });
+    const tampo = plan.placements.find((p) => p.kind === "tampo-continuo");
+    expect(tampo?.module.heightMm).toBeUndefined();
+    expect(buildLaundryModule(tampo!.module).spec.heightMm).toBeLessThan(100);
+  });
+
+  it("coluna alta não é forçada à altura da bancada (vassoureiro segue válido)", () => {
+    const plan = planLaundryLayout({ widthMm: 6000, heightMm: 900 });
+    const coluna = plan.placements.find((p) => p.kind === "vassoureiro");
+    if (coluna) {
+      const built = buildLaundryModule(coluna.module);
+      expect(built.assembly.pieces.length).toBeGreaterThan(0);
+      expect(built.warnings.filter((w: string) => w.includes("além"))).toHaveLength(0);
+    }
+  });
+
+  it("composição gerada não deixa sobra útil de bancada vazia", () => {
+    const plan = planLaundryLayout({ widthMm: 1200, preset: "lavanderia-compacta" });
+    expect(plan.leftoverMm).toBeLessThan(300);
+  });
+});

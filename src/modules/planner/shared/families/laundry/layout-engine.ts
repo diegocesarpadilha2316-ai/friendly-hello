@@ -22,10 +22,12 @@ import {
   type LaundryPreset,
   type LaundryPresetId,
 } from "./presets";
+import { laundryGeometry } from "./modules";
 import {
   LAUNDRY_MODULE_PROFILES,
   laundryMinWidthMm,
   normalizeLaundryKind,
+  normalizeLaundryModule,
   type LaundryModuleInput,
   type LaundryModuleKind,
 } from "./spec";
@@ -85,6 +87,12 @@ export interface LaundryLayoutResult {
 }
 
 const MIN_MODULE_MM = 200;
+/** Largura mínima de sobra que ainda vale fechar com um gabinete real. */
+const MIN_BENCH_FILL_MM = 300;
+/** Folga entre o topo da bancada (ou da tampa) e a base do aéreo. */
+const UPPER_CLEARANCE_MM = 500;
+/** Altura máxima de instalação de um aéreo (alcance real). */
+const MAX_UPPER_MOUNT_MM = 2000;
 /** Vão técnico reservado por parede quando a composição é entre paredes. */
 const WALL_GAP_MM = 18;
 /** Circulação mínima recomendada à frente da composição. */
@@ -105,6 +113,9 @@ function place(
   const warnings: string[] = [];
   const dropped: string[] = [];
   let x = 0;
+  /* Aéreos e prateleiras têm cursor PRÓPRIO: eles não consomem a bancada,
+   * mas também não podem ocupar a mesma faixa de parede um do outro. */
+  let xUpper = 0;
 
   modules.forEach((m, i) => {
     const kind = normalizeLaundryKind(m.kind);
@@ -112,7 +123,7 @@ function place(
     /* Aéreo e prateleira não consomem a largura da bancada. */
     const overlays = p.level === "superior";
     const wanted = m.widthMm ?? p.defaultWidthMm;
-    const available = overlays ? totalWidth : totalWidth - x;
+    const available = overlays ? totalWidth - xUpper : totalWidth - x;
     const minWidthMm = laundryMinWidthMm({ ...m, kind });
 
     if (available < Math.min(minWidthMm, MIN_MODULE_MM)) {
@@ -129,12 +140,16 @@ function place(
     placements.push({
       id: `${kind}-${run}-${i + 1}`,
       kind,
-      xMm: Math.round(overlays ? 0 : x),
+      xMm: Math.round(overlays ? xUpper : x),
       widthMm: Math.round(widthMm),
       run,
       module: {
-        heightMm: overlays ? undefined : defaults.heightMm,
-        depthMm: overlays ? undefined : defaults.depthMm,
+        /* Altura da bancada só vale para a BANCADA: colunas, tampos,
+         * acabamentos e aéreos mantêm a altura do próprio perfil. */
+        heightMm: p.level === "bancada" ? defaults.heightMm : undefined,
+        /* Profundidade da bancada vale para bancada e colunas; aéreos,
+         * tampos e acabamentos mantêm a profundidade do próprio perfil. */
+        depthMm: p.level === "bancada" || p.level === "coluna" ? defaults.depthMm : undefined,
         finishId: defaults.finishId,
         install: overlays ? "suspenso" : (defaults.install as LaundryModuleInput["install"]),
         ...m,
@@ -142,7 +157,8 @@ function place(
         widthMm: Math.round(widthMm),
       },
     });
-    if (!overlays) x += widthMm;
+    if (overlays) xUpper += widthMm;
+    else x += widthMm;
   });
 
   return { placements, leftover: Math.max(0, Math.round(totalWidth - x)), warnings, dropped };
@@ -297,7 +313,80 @@ export function planLaundryLayout(input: LaundryLayoutInput): LaundryLayoutResul
     );
   }
 
+  /* Altura de instalação dos aéreos: derivada da bancada real (tampo, e o
+   * curso da tampa quando existe máquina de abertura superior). Nunca
+   * sobrescreve uma altura informada explicitamente. */
+  const benchSpecs = result.placements
+    .filter((pl) => {
+      const level = LAUNDRY_MODULE_PROFILES[pl.kind].level;
+      /* Colunas ocupam a própria faixa de parede: não empurram o aéreo. */
+      return level === "bancada" || level === "tampo";
+    })
+    .map((pl) => normalizeLaundryModule(pl.module));
+  const benchTopMm = benchSpecs.reduce((acc, spec) => {
+    const g = laundryGeometry(spec);
+    const lid = spec.appliance.doorOpening === "superior" ? spec.appliance.topLidMm : 0;
+    return Math.max(acc, g.topOfCountertopMm + lid);
+  }, 0);
+  if (benchTopMm > 0) {
+    const mountMm = benchTopMm + UPPER_CLEARANCE_MM;
+    if (mountMm > MAX_UPPER_MOUNT_MM) {
+      warnings.push(
+        `aéreo não cabe acima da bancada de ${Math.round(benchTopMm)} mm — instalado no limite de ${MAX_UPPER_MOUNT_MM} mm`,
+      );
+    }
+    result = {
+      ...result,
+      placements: result.placements.map((pl) =>
+        LAUNDRY_MODULE_PROFILES[pl.kind].level === "superior" && pl.module.floorGapMm === undefined
+          ? { ...pl, module: { ...pl.module, floorGapMm: Math.min(MAX_UPPER_MOUNT_MM, mountMm) } }
+          : pl,
+      ),
+    };
+  }
+
   warnings.push(...result.warnings);
+
+  /* Sobra de bancada em composição GERADA nunca fica vazia: um gabinete
+   * flexível fecha o vão (configuração explícita e legada não são tocadas). */
+  /* Entre paredes a sobra pertence aos tapa-vãos reais: só o excedente
+   * acima dessa reserva pode virar gabinete. */
+  const fillableLeftoverMm = Math.max(
+    0,
+    result.leftover - (wantsBetweenWalls ? 2 * WALL_GAP_MM : 0),
+  );
+  if (
+    (source === "preset" || source === "preset-automatico" || source === "entre-paredes") &&
+    fillableLeftoverMm >= MIN_BENCH_FILL_MM
+  ) {
+    const extra = place(
+      [
+        {
+          kind: "gabinete-inferior",
+          widthMm: fillableLeftoverMm,
+          ...(preset?.countertop ? { countertop: { material: preset.countertop as never } } : {}),
+        },
+      ],
+      fillableLeftoverMm,
+      defaults,
+      0,
+    );
+    const shift = result.placements
+      .filter((pl) => LAUNDRY_MODULE_PROFILES[pl.kind].level !== "superior" && pl.run === 0)
+      .reduce((acc, pl) => Math.max(acc, pl.xMm + pl.widthMm), 0);
+    result = {
+      ...result,
+      placements: [
+        ...result.placements,
+        ...extra.placements.map((pl) => ({
+          ...pl,
+          id: `${pl.kind}-fill-${result.placements.length + 1}`,
+          xMm: pl.xMm + shift,
+        })),
+      ],
+      leftover: result.leftover - (fillableLeftoverMm - extra.leftover),
+    };
+  }
 
   // Tapa-vão REAL: só entre paredes ou quando explicitamente pedido.
   const fillers: FillerPiece[] = [];
