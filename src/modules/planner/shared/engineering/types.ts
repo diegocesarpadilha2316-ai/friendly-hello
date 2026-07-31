@@ -141,6 +141,9 @@ export type PartKind =
   // construction/classification.ts para a taxonomia completa.
   | "frente-fixa"
   | "tapa-vao"
+  // Acabamento: peça vista que NÃO é frente (rodabanca, frontão, painel de
+  // acabamento). Nunca recebe rig e nunca é tratada como porta.
+  | "acabamento"
   | "gaveta-frente"
   | "gaveta-lateral"
   | "gaveta-fundo"

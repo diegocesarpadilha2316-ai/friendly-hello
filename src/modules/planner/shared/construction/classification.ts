@@ -18,6 +18,17 @@ export const MOVABLE_FRONT_KINDS = new Set<PartKind>(["porta", "gaveta-frente"])
 /** Frentes fixas: fecham o vão, mas NUNCA se movem e NUNCA recebem rig. */
 export const FIXED_FRONT_KINDS = new Set<PartKind>(["frente-fixa", "tapa-vao"]);
 
+/**
+ * Acabamentos: peças vistas que NÃO são frente (rodabanca, frontão, painel
+ * de acabamento). Entram na produção e na fita de borda, mas nunca recebem
+ * rig, nunca respondem a comandos e nunca tapam vão no intertravamento.
+ */
+export const FINISH_KINDS = new Set<PartKind>(["acabamento"]);
+
+export function isFinishPart(partKind: PartKind): boolean {
+  return FINISH_KINDS.has(partKind);
+}
+
 /** Peças que compõem o corpo de uma gaveta (movem junto com a frente). */
 export const DRAWER_PART_KINDS = new Set<PartKind>([
   "gaveta-frente",
@@ -74,5 +85,5 @@ export function classifyFront(
 
 /** Uma peça fixa nunca deve carregar rig — usado por validações e diagnóstico. */
 export function shouldHaveRig(piece: Pick<ConstructionPiece, "partKind">): boolean {
-  return !isFixedFront(piece.partKind);
+  return !isFixedFront(piece.partKind) && !isFinishPart(piece.partKind);
 }

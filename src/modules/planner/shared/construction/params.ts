@@ -191,6 +191,9 @@ export interface PanelParams extends PanelLikeParams {
   /**
    * Papel do painel no móvel. Nenhum deles recebe rig — o parâmetro só
    * escolhe a classificação correta na lista de corte e no diagnóstico.
+   * "acabamento"/"rodabanca" saem como `acabamento` (não são frente).
    */
-  readonly fixedRole: "painel-fixo" | "aba-canto" | "tapa-vao";
+  readonly fixedRole: "painel-fixo" | "aba-canto" | "tapa-vao" | "acabamento" | "rodabanca";
+  /** Substrato da chapa (espelho fixo, vidro fixo, MDF). */
+  readonly substrate: FrontSubstrate;
 }

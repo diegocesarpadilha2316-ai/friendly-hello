@@ -51,7 +51,18 @@ export interface ConstructionBox {
  * "frente-fixa" ou "tapa-vao" — permite distinguir um painel decorativo
  * de uma aba estrutural de canto e de um enchimento lateral.
  */
-export type FrontRole = "painel-fixo" | "aba-canto" | "tapa-vao";
+/**
+ * Papel de uma peça fixa vista. "painel-fixo", "aba-canto" e "tapa-vao"
+ * fecham vão (partKind `frente-fixa` / `tapa-vao`). "acabamento" e
+ * "rodabanca" NÃO são frentes: são peças de acabamento (partKind
+ * `acabamento`), entram na produção mas nunca no intertravamento.
+ */
+export type FrontRole =
+  | "painel-fixo"
+  | "aba-canto"
+  | "tapa-vao"
+  | "acabamento"
+  | "rodabanca";
 
 /** Peça sólida produzida por um componente (chapa, frente, régua...). */
 export interface ConstructionPiece {

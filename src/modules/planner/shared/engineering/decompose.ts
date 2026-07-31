@@ -105,6 +105,7 @@ export function decomposeFurniture(
           p.kind === "porta" ||
           p.kind === "frente-fixa" ||
           p.kind === "tapa-vao" ||
+          p.kind === "acabamento" ||
           p.kind === "gaveta-frente" ||
           p.kind === "tampo",
       )

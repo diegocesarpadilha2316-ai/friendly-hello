@@ -49,6 +49,7 @@ import { toast } from "sonner";
 import { WardrobeMesh } from "./WardrobeMesh";
 import { DresserMesh } from "./DresserMesh";
 import { KitchenMesh } from "./KitchenMesh";
+import { BathroomMesh } from "./BathroomMesh";
 import { logRendererDecision, resolveFurnitureRenderer } from "../families/wardrobe";
 import { ApplianceMesh, isApplianceSubtype } from "./ApplianceMesh";
 import { CinematicFX } from "./CinematicFX";
@@ -550,6 +551,41 @@ function Furniture({
   const cabinet = viewport.render !== "wireframe" && isCabinetSubtype(f.subtype);
   const dresser = viewport.render !== "wireframe" && decision.renderer === "dresser";
   const kitchen = viewport.render !== "wireframe" && decision.renderer === "kitchen";
+  const bathroom = viewport.render !== "wireframe" && decision.renderer === "bathroom";
+  if (bathroom) {
+    return (
+      <group
+        position={[pos.x, safeCenterY, pos.z]}
+        rotation={[0, f.rotationY, 0]}
+        onClick={(e: ThreeEvent<MouseEvent>) => {
+          e.stopPropagation();
+          onSelect(f.id);
+        }}
+      >
+        <BathroomMesh
+          nodeId={f.id}
+          width={f.width}
+          height={f.height}
+          depth={f.depth}
+          subtype={f.subtype}
+          catalogItemId={f.catalogItemId}
+          params={f.params}
+          bodyProps={props}
+          selected={selected}
+          openDoors={viewport.openDoors ?? f.openDoors}
+          openDrawers={viewport.openDrawers ?? f.openDrawers}
+          onInterlock={(blocked) => {
+            toast(blocked[0].message, { id: `interlock-${f.id}`, duration: 2600 });
+          }}
+          doorsCount={f.doorsCount}
+          drawersCount={f.drawersCount}
+          shelvesCount={f.shelvesCount}
+          style={f.style}
+          handleStyle={f.handleStyle}
+        />
+      </group>
+    );
+  }
   if (kitchen) {
     return (
       <group

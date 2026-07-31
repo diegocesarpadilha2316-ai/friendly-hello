@@ -8,3 +8,5 @@ export * from "./handles";
 export * from "./wardrobe";
 export * from "./dresser";
 export * from "./kitchen";
+export * from "./bathroom";
+export * from "./filler";

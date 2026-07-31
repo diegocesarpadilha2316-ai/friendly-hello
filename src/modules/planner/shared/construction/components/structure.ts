@@ -349,6 +349,7 @@ export const panel: ConstructionComponent<PanelParams> = {
     slatDepthMm: 18,
     orientation: "vertical",
     fixedRole: "painel-fixo",
+    substrate: "mdf",
     materialId: "mdf-18",
     finishId: "freijo",
     edge: "pvc-0-45",
@@ -367,6 +368,7 @@ export const panel: ConstructionComponent<PanelParams> = {
       slatDepthMm: clamp(p.slatDepthMm ?? d.slatDepthMm, 5, 60),
       orientation: p.orientation ?? d.orientation,
       fixedRole: p.fixedRole ?? d.fixedRole,
+      substrate: p.substrate ?? d.substrate,
       materialId: p.materialId ?? d.materialId,
       finishId: p.finishId ?? ctx.finishId ?? d.finishId,
       edge: p.edge ?? d.edge,
@@ -378,22 +380,33 @@ export const panel: ConstructionComponent<PanelParams> = {
     // dobradiça e não responde a "Abrir portas". Emiti-lo como `porta`
     // (comportamento antigo) fazia o sistema tratá-lo como folha móvel.
     const isFiller = p.fixedRole === "tapa-vao";
+    const isFinish = p.fixedRole === "acabamento" || p.fixedRole === "rodabanca";
+    const substrate: ConstructionPiece["substrate"] =
+      p.substrate === "espelho"
+        ? "espelho"
+        : p.substrate === "vidro" || p.substrate === "aluminio-vidro"
+          ? "vidro"
+          : "chapa";
     const pieces: ConstructionPiece[] = [
       {
         id: `${ctx.instanceId}:painel`,
-        partKind: isFiller ? "tapa-vao" : "frente-fixa",
+        partKind: isFinish ? "acabamento" : isFiller ? "tapa-vao" : "frente-fixa",
         frontRole: p.fixedRole,
         label:
           p.fixedRole === "aba-canto"
             ? "Aba fixa de canto"
             : isFiller
               ? "Tapa-vão"
-              : "Painel fixo",
+              : p.fixedRole === "rodabanca"
+                ? "Rodabanca"
+                : p.fixedRole === "acabamento"
+                  ? "Painel de acabamento"
+                  : "Painel fixo",
         box: box(0, 0, 0, p.widthMm, p.heightMm, p.thicknessMm),
         thicknessMm: p.thicknessMm,
         grain: p.grain,
         finishId: p.finishId,
-        substrate: "chapa",
+        substrate,
       },
     ];
 
