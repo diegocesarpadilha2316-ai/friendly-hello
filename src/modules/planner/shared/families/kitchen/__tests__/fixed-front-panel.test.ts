@@ -133,7 +133,10 @@ describe("canto diagonal — abas fixas", () => {
     }
     // E ficam no mesmo plano frontal e na mesma altura.
     expect(left.box.z).toBeCloseTo(door!.box.z, 1);
-    expect(left.box.height).toBeCloseTo(door!.box.height, 1);
+    // A folha móvel é apenas a folga (topo + base) mais baixa que a aba fixa.
+    const vertical = left.box.height - door!.box.height;
+    expect(vertical).toBeGreaterThanOrEqual(0);
+    expect(vertical).toBeLessThanOrEqual(6);
   });
 
   it("8. cozinha em L com canto diagonal continua sem interpenetração", () => {
