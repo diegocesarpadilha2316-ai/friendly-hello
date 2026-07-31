@@ -11,9 +11,11 @@ import * as THREE from "three";
 import {
   motionGroupOfPiece,
   openStateForGroup,
+  resolveInterlock,
   resolveMotion,
   type ConstructionMotion,
   type ConstructionPiece,
+  type InterlockBlock,
 } from "../construction";
 import { buildWardrobe, wardrobeSpecFromLegacy, type LegacyParams } from "../families/wardrobe";
 
@@ -30,6 +32,8 @@ export interface WardrobeMeshProps {
   selected?: boolean;
   openDoors?: boolean;
   openDrawers?: boolean;
+  /** Avisos discretos do intertravamento (ex.: "abra a porta desta coluna"). */
+  onInterlock?: (blocked: readonly InterlockBlock[]) => void;
   doorsCount?: number;
   drawersCount?: number;
   shelvesCount?: number;
@@ -40,12 +44,17 @@ export interface WardrobeMeshProps {
 /** Peça animada: interpola o estado 0→1 do rig com dt real do frame. */
 function MotionPiece({
   motion,
-  open,
+  pieceId,
+  targets,
+  states,
   children,
 }: {
   motion?: ConstructionMotion;
-  /** Estado alvo 0→1 vindo dos comandos da interface. */
-  open: number;
+  pieceId: string;
+  /** Estado PERMITIDO (0→1) por peça, já filtrado pelo intertravamento. */
+  targets: React.MutableRefObject<Record<string, number>>;
+  /** Estado real da animação, devolvido ao intertravamento a cada frame. */
+  states: React.MutableRefObject<Record<string, number>>;
   children: React.ReactNode;
 }) {
   const ref = useRef<THREE.Group>(null);
@@ -54,7 +63,8 @@ function MotionPiece({
   useFrame((_, dt) => {
     const g = ref.current;
     if (!g || !motion) return;
-    state.current = THREE.MathUtils.damp(state.current, open, 8, dt);
+    state.current = THREE.MathUtils.damp(state.current, targets.current[pieceId] ?? 0, 8, dt);
+    states.current[pieceId] = state.current;
     const t = resolveMotion(motion, state.current);
     g.position.set(t.translate[0] * MM, t.translate[1] * MM, t.translate[2] * MM);
     g.rotation.set(
