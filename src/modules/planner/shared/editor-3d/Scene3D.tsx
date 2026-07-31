@@ -1306,6 +1306,9 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
           {model.openings.map((o) => (
             <Opening key={o.id} o={o} center={center} viewport={viewport} selected={selectedId === o.id} onSelect={onSelect} />
           ))}
+          {(model.sills ?? []).map((s) => (
+            <Sill key={s.id} s={s} center={center} viewport={viewport} />
+          ))}
           {model.furniture.map((f) => (
             <Furniture key={f.id} f={f} center={center} viewport={viewport} selected={selectedId === f.id} onSelect={onSelect} />
           ))}
