@@ -25,9 +25,11 @@ import type {
   Scene3DModel,
   WallDescriptor,
   SlabDescriptor,
+  SillDescriptor,
   OpeningDescriptor,
   FurnitureDescriptor,
 } from "./extrusion";
+import { baseboardRuns, wallPieces } from "./extrusion";
 import type { Viewport3DState } from "./types";
 import {
   getCachedLibraryMaterial,
@@ -279,6 +281,10 @@ function Wall({
   if (clipped) return null;
   const wireframe = viewport.render === "wireframe";
   const opacity = viewport.wallOpacity;
+  const pieces = wallPieces(w);
+  const bbRuns = baseboardRuns(w);
+  const bbHeight = w.baseboard?.heightM ?? 0.1;
+  const bbThickness = w.baseboard?.thicknessM ?? 0.015;
   const props = useTexturedMaterialProps(
     w.materialId,
     [w.length, w.height],
@@ -316,33 +322,45 @@ function Wall({
   });
   return (
     <group position={[pos.x, pos.y, pos.z]} rotation={[0, w.rotationY, 0]}>
-      <mesh
-        ref={meshRef}
-        castShadow
-        receiveShadow
-        onClick={(e: ThreeEvent<MouseEvent>) => {
-          e.stopPropagation();
-          onSelect(w.id);
-        }}
-      >
-        <boxGeometry args={[w.length, w.height, w.thickness]} />
-        <meshStandardMaterial ref={matRef} {...props} />
-      </mesh>
-      {/* Rodapé real (100 mm, saliente 12 mm) — só em modo material e com
-          a parede visível. Detalhe barato que ancora o ambiente e elimina
-          a junta "flutuante" entre parede e piso. */}
+      {/* Recortes REAIS de portas e janelas: a parede é composta por peças
+          sólidas que contornam os vãos (sem CSG). */}
+      {pieces.map((piece, index) => (
+        <mesh
+          key={piece.key}
+          ref={index === 0 ? meshRef : undefined}
+          position={[piece.offset, piece.y, 0]}
+          castShadow
+          receiveShadow
+          onClick={(e: ThreeEvent<MouseEvent>) => {
+            e.stopPropagation();
+            onSelect(w.id);
+          }}
+        >
+          <boxGeometry args={[piece.width, piece.height, w.thickness]} />
+          <meshStandardMaterial ref={index === 0 ? matRef : undefined} {...props} />
+        </mesh>
+      ))}
+      {/* Rodapé ARQUITETÔNICO (independente do móvel): altura e espessura
+          reais vindas do Room Architecture Engine, interrompido nos vãos
+          de porta. Ancora o ambiente e elimina a junta "flutuante". */}
       {viewport.render === "material" && opacity > 0.5 ? (
-        [-1, 1].map((side) => (
-          <mesh
-            key={`skirt-${side}`}
-            position={[0, -w.height / 2 + 0.05, side * (w.thickness / 2 + 0.006)]}
-            castShadow
-            receiveShadow
-          >
-            <boxGeometry args={[w.length, 0.1, 0.012]} />
-            <meshStandardMaterial color="#f2f3f5" roughness={0.45} metalness={0.02} envMapIntensity={1.1} />
-          </mesh>
-        ))
+        bbRuns.map((run) =>
+          [-1, 1].map((side) => (
+            <mesh
+              key={`${run.key}-${side}`}
+              position={[
+                run.offset,
+                -w.height / 2 + bbHeight / 2,
+                side * (w.thickness / 2 + bbThickness / 2),
+              ]}
+              castShadow
+              receiveShadow
+            >
+              <boxGeometry args={[run.width, bbHeight, bbThickness]} />
+              <meshStandardMaterial color="#f2f3f5" roughness={0.45} metalness={0.02} envMapIntensity={1.1} />
+            </mesh>
+          )),
+        )
       ) : null}
     </group>
   );
@@ -385,6 +403,26 @@ function Slab({
     >
       <boxGeometry args={[s.width, s.thickness, s.depth]} />
       <meshStandardMaterial {...props} />
+    </mesh>
+  );
+}
+
+/** Peitoril real da janela — avança para dentro do ambiente. */
+function Sill({
+  s,
+  center,
+  viewport,
+}: {
+  s: SillDescriptor;
+  center: THREE.Vector3;
+  viewport: Viewport3DState;
+}) {
+  if (viewport.render === "wireframe") return null;
+  const pos = explodeVec(s.cx, s.cz, s.y - s.thickness / 2, center, viewport.explode);
+  return (
+    <mesh position={[pos.x, pos.y, pos.z]} rotation={[0, s.rotationY, 0]} castShadow receiveShadow>
+      <boxGeometry args={[s.width, s.thickness, s.depth]} />
+      <meshStandardMaterial color="#e9eaec" roughness={0.4} metalness={0.03} envMapIntensity={1.1} />
     </mesh>
   );
 }
@@ -1288,6 +1326,9 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
           ))}
           {model.openings.map((o) => (
             <Opening key={o.id} o={o} center={center} viewport={viewport} selected={selectedId === o.id} onSelect={onSelect} />
+          ))}
+          {(model.sills ?? []).map((s) => (
+            <Sill key={s.id} s={s} center={center} viewport={viewport} />
           ))}
           {model.furniture.map((f) => (
             <Furniture key={f.id} f={f} center={center} viewport={viewport} selected={selectedId === f.id} onSelect={onSelect} />

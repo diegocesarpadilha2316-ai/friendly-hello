@@ -16,3 +16,4 @@ export * from "./engineering";
 export * from "./construction";
 /** Biblioteca paramétrica de módulos internos (namespace para evitar colisões). */
 export * as interior from "./interior";
+export * as room from "./room";
