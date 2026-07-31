@@ -45,6 +45,8 @@ import {
 import { GlassFront } from "./GlassFront";
 import { DecorMesh, isDecorSubtype } from "./DecorMesh";
 import { CabinetMesh, isCabinetSubtype } from "./CabinetMesh";
+import { WardrobeMesh } from "./WardrobeMesh";
+import { isWardrobeSubtype } from "../families/wardrobe";
 import { ApplianceMesh, isApplianceSubtype } from "./ApplianceMesh";
 import { CinematicFX } from "./CinematicFX";
 
@@ -493,6 +495,39 @@ function Furniture({
           depth={f.depth}
           color={f.overrideColor}
           selected={selected}
+        />
+      </group>
+    );
+  }
+  // ── FAMÍLIA ROUPEIRO ──
+  // Roupeiros deixam de usar geometria procedural e passam a ser montados
+  // pela Biblioteca Construtiva Paramétrica. Demais móveis seguem no
+  // caminho antigo até serem convertidos, um a um.
+  const wardrobe = viewport.render !== "wireframe" && isWardrobeSubtype(f.subtype);
+  if (wardrobe) {
+    return (
+      <group
+        position={[pos.x, safeCenterY, pos.z]}
+        rotation={[0, f.rotationY, 0]}
+        onClick={(e: ThreeEvent<MouseEvent>) => {
+          e.stopPropagation();
+          onSelect(f.id);
+        }}
+      >
+        <WardrobeMesh
+          width={f.width}
+          height={f.height}
+          depth={f.depth}
+          params={f.params}
+          bodyProps={props}
+          selected={selected}
+          openDoors={viewport.openDoors ?? f.openDoors}
+          openDrawers={viewport.openDrawers ?? f.openDrawers}
+          doorsCount={f.doorsCount}
+          drawersCount={f.drawersCount}
+          shelvesCount={f.shelvesCount}
+          style={f.style}
+          handleStyle={f.handleStyle}
         />
       </group>
     );
