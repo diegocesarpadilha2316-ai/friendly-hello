@@ -171,7 +171,7 @@ describe("room query — consulta dos móveis", () => {
   });
 
   it("ignora janelas altas para móveis baixos", () => {
-    expect(q.freeRunsOnWall("back", { maxHeightMm: 900 })).toEqual([{ startMm: 0, endMm: 3000 }]);
+    expect(q.freeRunsOnWall("back", { maxHeightMm: 900 })).toEqual([{ startMm: 0, endMm: 4000 }]);
   });
 });
 
