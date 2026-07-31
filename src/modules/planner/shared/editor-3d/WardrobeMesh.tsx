@@ -9,6 +9,8 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import {
+  motionGroupOfPiece,
+  openStateForGroup,
   resolveMotion,
   type ConstructionMotion,
   type ConstructionPiece,
@@ -42,7 +44,8 @@ function MotionPiece({
   children,
 }: {
   motion?: ConstructionMotion;
-  open: boolean;
+  /** Estado alvo 0→1 vindo dos comandos da interface. */
+  open: number;
   children: React.ReactNode;
 }) {
   const ref = useRef<THREE.Group>(null);
@@ -51,7 +54,7 @@ function MotionPiece({
   useFrame((_, dt) => {
     const g = ref.current;
     if (!g || !motion) return;
-    state.current = THREE.MathUtils.damp(state.current, open ? 1 : 0, 8, dt);
+    state.current = THREE.MathUtils.damp(state.current, open, 8, dt);
     const t = resolveMotion(motion, state.current);
     g.position.set(t.translate[0] * MM, t.translate[1] * MM, t.translate[2] * MM);
     g.rotation.set(
@@ -161,8 +164,12 @@ export function WardrobeMesh(props: WardrobeMeshProps) {
     <group position={offset}>
       {assembly.pieces.map((piece) => {
         const motion = motionByPiece.get(piece.id);
-        const isDrawer = piece.partKind.startsWith("gaveta") || motion?.kind === "slide";
-        const open = isDrawer ? !!props.openDrawers : !!props.openDoors;
+        // O grupo vem da PEÇA, não do tipo de movimento: porta de correr e
+        // gaveta são ambas "slide" e respondem a comandos diferentes.
+        const open = openStateForGroup(motionGroupOfPiece(piece), {
+          openDoors: props.openDoors,
+          openDrawers: props.openDrawers,
+        });
         return (
           <MotionPiece key={piece.id} motion={motion} open={open}>
             <PieceMesh piece={piece} bodyProps={props.bodyProps} selected={props.selected} />
