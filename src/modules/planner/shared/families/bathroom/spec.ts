@@ -336,8 +336,4 @@ export function bathroomLevel(kind: BathroomModuleKind): BathroomLevel {
   return BATHROOM_MODULE_PROFILES[kind].level;
 }
 
-export function bathroomModuleLabel(spec: BathroomModuleSpec): string {
-  return BATHROOM_MODULE_PROFILES[spec.kind].label;
-}
-
 export { COUNTERTOPS };
