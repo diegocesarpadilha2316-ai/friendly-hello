@@ -37,10 +37,13 @@ function fitDims(
   ];
 }
 
-/** Aplica ancoragem do módulo dentro do vão. */
+/**
+ * Aplica ancoragem do módulo dentro do vão.
+ * "base" é PREFERÊNCIA (regra de aviso), nunca imposição: empilhar duas
+ * sapateiras não pode colapsar as duas no piso do vão.
+ */
 function anchorY(def: InteriorModuleDef, cavity: InteriorCavity, y: number, h: number): number {
   if (def.anchor === "topo") return round(cavity.y + cavity.heightMm - h);
-  if (def.anchor === "base") return round(cavity.y);
   return round(y);
 }
 
