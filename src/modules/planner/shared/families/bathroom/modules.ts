@@ -679,15 +679,16 @@ function plainDrawer(
   depthMm: number,
   handle: ReturnType<typeof bathroomHandle>,
 ): AssemblySlot {
+  const zone = hydraulicBackZoneMm(spec, g);
   return {
     id,
     component: "gaveta",
-    at: [x, y, Math.max(spec.backThicknessMm, g.caseDepthMm - depthMm)],
+    at: [x, y, Math.max(spec.backThicknessMm + zone, g.caseDepthMm - depthMm)],
     role,
     params: {
       widthMm,
       heightMm,
-      depthMm,
+      depthMm: Math.min(depthMm, Math.max(150, g.caseDepthMm - zone - spec.backThicknessMm)),
       thicknessMm: Math.min(15, spec.thicknessMm),
       bottomThicknessMm: spec.backThicknessMm,
       slide: "oculta-softclose",
