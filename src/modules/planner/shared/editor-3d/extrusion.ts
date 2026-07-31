@@ -87,6 +87,8 @@ export interface FurnitureDescriptor {
   handleStyle?: string;
   hardwareFinish?: string;
   frontStyle?: string;
+  /** Params crus do nó — usados pelas famílias paramétricas (ex.: roupeiro). */
+  params?: Readonly<Record<string, string | number | boolean | null | undefined>>;
 }
 
 export interface Scene3DModel {
@@ -258,6 +260,7 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
         handleStyle: strParam("mod:handle", "handle", "puxador"),
         hardwareFinish: strParam("mod:hardware", "hardware", "ferragem"),
         frontStyle: strParam("mod:front", "front:style"),
+        params: p.params as FurnitureDescriptor["params"],
       });
     }
   }
