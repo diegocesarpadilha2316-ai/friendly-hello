@@ -47,7 +47,7 @@ import { DecorMesh, isDecorSubtype } from "./DecorMesh";
 import { CabinetMesh, isCabinetSubtype } from "./CabinetMesh";
 import { toast } from "sonner";
 import { WardrobeMesh } from "./WardrobeMesh";
-import { isWardrobeSubtype } from "../families/wardrobe";
+import { logRendererDecision, resolveFurnitureRenderer } from "../families/wardrobe";
 import { ApplianceMesh, isApplianceSubtype } from "./ApplianceMesh";
 import { CinematicFX } from "./CinematicFX";
 
@@ -504,7 +504,14 @@ function Furniture({
   // Roupeiros deixam de usar geometria procedural e passam a ser montados
   // pela Biblioteca Construtiva Paramétrica. Demais móveis seguem no
   // caminho antigo até serem convertidos, um a um.
-  const wardrobe = viewport.render !== "wireframe" && isWardrobeSubtype(f.subtype);
+  const decision = resolveFurnitureRenderer({
+    id: f.id,
+    subtype: f.subtype,
+    catalogItemId: f.catalogItemId,
+    params: f.params,
+  });
+  logRendererDecision(f.id, decision);
+  const wardrobe = viewport.render !== "wireframe" && decision.renderer === "wardrobe";
   if (wardrobe) {
     return (
       <group

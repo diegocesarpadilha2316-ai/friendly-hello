@@ -10,6 +10,7 @@ import { WARDROBE_SUBTYPES } from "./legacy";
 export * from "./spec";
 export * from "./build";
 export * from "./legacy";
+export * from "./detect";
 
 export const wardrobeFamily: FurnitureFamily<WardrobeSpec> = {
   id: "roupeiro",
