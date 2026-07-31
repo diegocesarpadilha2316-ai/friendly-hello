@@ -5,8 +5,9 @@
  *   1. configuração explícita (modules[]);
  *   2. configuração manual legada;
  *   3. preset selecionado;
- *   4. preset automático;
- *   5. fallback mínimo seguro.
+ *   4. composição entre paredes;
+ *   5. preset automático;
+ *   6. fallback mínimo seguro.
  *
  * Nunca sobrescreve configuração manual existente. Sobra só vira tapa-vão
  * real quando o vão é entre paredes ou quando pedido explicitamente.
@@ -21,6 +22,7 @@ import {
 } from "./presets";
 import {
   BATHROOM_MODULE_PROFILES,
+  bathroomMinWidthMm,
   normalizeBathroomKind,
   type BathroomModuleInput,
   type BathroomModuleKind,
@@ -30,6 +32,7 @@ export type BathroomLayoutSource =
   | "explicito"
   | "legado"
   | "preset"
+  | "entre-paredes"
   | "preset-automatico"
   | "fallback";
 
@@ -86,13 +89,17 @@ function place(
     const p = BATHROOM_MODULE_PROFILES[kind];
     const wanted = m.widthMm ?? p.defaultWidthMm;
     const available = totalWidth - x;
-    if (available < Math.min(p.minWidthMm, MIN_MODULE_MM)) {
+    // Mínimo REAL: perfil e, quando há cuba, a largura que a louça exige.
+    const minWidthMm = bathroomMinWidthMm({ ...m, kind });
+    if (available < Math.min(minWidthMm, MIN_MODULE_MM)) {
       warnings.push(`módulo ${kind} descartado: sem espaço restante`);
       return;
     }
     const widthMm = Math.min(wanted, available);
-    if (widthMm < p.minWidthMm) {
-      warnings.push(`módulo ${kind} descartado: ${Math.round(widthMm)} mm < mínimo ${p.minWidthMm} mm`);
+    if (widthMm < minWidthMm) {
+      warnings.push(
+        `módulo ${kind} descartado: ${Math.round(widthMm)} mm < mínimo ${minWidthMm} mm`,
+      );
       return;
     }
     placements.push({
@@ -166,6 +173,10 @@ export function planBathroomLayout(input: BathroomLayoutInput): BathroomLayoutRe
     source = "preset";
     preset = BATHROOM_PRESETS[presetId];
     modules = modulesFromPreset(preset, widthMm);
+  } else if (betweenWalls) {
+    preset = pickBathroomPreset(widthMm, true);
+    source = "entre-paredes";
+    modules = modulesFromPreset(preset, widthMm);
   } else {
     preset = pickBathroomPreset(widthMm, betweenWalls);
     source = "preset-automatico";
@@ -184,7 +195,15 @@ export function planBathroomLayout(input: BathroomLayoutInput): BathroomLayoutRe
     source = "fallback";
     warnings.push("nenhum módulo coube — aplicado fallback mínimo seguro");
     result = place(
-      [{ kind: "gabinete-1-porta", widthMm: Math.min(widthMm, 600) }],
+      [
+        {
+          kind: "gabinete-1-porta",
+          widthMm: Math.min(widthMm, 600),
+          // Fallback é sempre montável: sem louça e sem tampo obrigatórios.
+          sink: { type: "nenhuma" },
+          countertop: { material: "nenhum" },
+        },
+      ],
       widthMm,
       { heightMm: input.heightMm, depthMm: input.depthMm, finishId: input.finishId },
     );
