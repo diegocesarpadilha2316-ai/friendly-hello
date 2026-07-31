@@ -545,17 +545,37 @@ function drawerSlots(
   const t = spec.thicknessMm;
   const gap = 3;
   const heights = bathroomDrawerHeights(count, region.heightMm, gap);
-  const fullDepth = Math.max(200, g.interiorDepthMm - 20);
-  const spans = siphonSpansMm(spec);
+  const backZone = hydraulicBackZoneMm(spec, g);
+  const fullDepth = Math.max(200, g.interiorDepthMm - 20 - backZone);
+  // Faixas reais (sifão + válvula), no centro REAL da cuba — nunca assumido.
+  const spans = hydraulicSpansMm(spec, g);
   const interiorX0 = t;
   const interiorX1 = spec.widthMm - t;
+  const minLeg = spec.minUDrawerLegMm;
+
+  /** Pernas possíveis: vãos livres entre as faixas hidráulicas. */
+  const legRanges = (): { x0: number; x1: number }[] => {
+    const out: { x0: number; x1: number }[] = [];
+    let cursor = interiorX0;
+    for (const s of spans) {
+      const x1 = Math.min(interiorX1, Math.max(cursor, s.x0));
+      if (x1 - cursor > 0) out.push({ x0: cursor, x1 });
+      cursor = Math.max(cursor, Math.min(interiorX1, s.x1));
+    }
+    if (interiorX1 - cursor > 0) out.push({ x0: cursor, x1: interiorX1 });
+    return out;
+  };
 
   let y = region.y0;
   heights.forEach((h, i) => {
     const id = `gaveta-${i + 1}`;
     const top = y + h;
     // A reserva hidráulica só é relevante se a gaveta estiver na altura dela.
-    const hit = spans.find(() => spec.sink.type !== "nenhuma" && top > g.topOfCaseMm - spec.sink.hydraulicHeightMm);
+    const inReserve =
+      spec.sink.type !== "nenhuma" &&
+      spans.length > 0 &&
+      top > g.topOfCaseMm - spec.sink.hydraulicHeightMm;
+    const hit = inReserve ? spans[0] : undefined;
 
     if (!hit) {
       out.slots.push(plainDrawer(spec, g, id, `gaveta ${i + 1}`, interiorX0, g.innerWidthMm, y, h, fullDepth, handle));
@@ -563,56 +583,36 @@ function drawerSlots(
       return;
     }
 
-    const leftW = hit.x0 - 20 - interiorX0;
-    const rightW = interiorX1 - (hit.x1 + 20);
+    const legs = legRanges().filter((l) => l.x1 - l.x0 >= minLeg);
     const siphonDepth = spec.sink.siphonMm + 40;
-    const shallow = g.interiorDepthMm - siphonDepth;
+    const shallow = g.interiorDepthMm - siphonDepth - backZone;
 
-    if (spec.allowUDrawer && leftW >= 150 && rightW >= 150) {
+    if (spec.allowUDrawer && legs.length >= 2) {
       const groupId = `gaveta-u-${i + 1}`;
       const boxDepth = fullDepth;
-      const zBox = Math.max(spec.backThicknessMm, g.caseDepthMm - boxDepth);
+      const zBox = Math.max(spec.backThicknessMm + backZone, g.caseDepthMm - boxDepth);
+      const boxSlots: AssemblySlot[] = legs.map((l, k) => ({
+        id: `${groupId}-caixa-${k + 1}`,
+        component: "gaveta",
+        at: [l.x0, y, zBox],
+        role: `gaveta em U ${i + 1} — caixa ${k + 1}`,
+        params: {
+          widthMm: l.x1 - l.x0,
+          heightMm: h,
+          depthMm: Math.min(boxDepth, g.caseDepthMm - zBox),
+          thicknessMm: Math.min(15, t),
+          bottomThicknessMm: spec.backThicknessMm,
+          slide: "oculta-softclose",
+          opening: "softclose",
+          withFront: false,
+          frontFit: "sobreposta",
+          capacityKg: 20,
+          handle,
+          finishId: spec.finishId,
+        },
+      }));
       out.slots.push(
-        {
-          id: `${groupId}-caixa-e`,
-          component: "gaveta",
-          at: [interiorX0, y, zBox],
-          role: `gaveta em U ${i + 1} — caixa esquerda`,
-          params: {
-            widthMm: leftW,
-            heightMm: h,
-            depthMm: boxDepth,
-            thicknessMm: Math.min(15, t),
-            bottomThicknessMm: spec.backThicknessMm,
-            slide: "oculta-softclose",
-            opening: "softclose",
-            withFront: false,
-            frontFit: "sobreposta",
-            capacityKg: 20,
-            handle,
-            finishId: spec.finishId,
-          },
-        },
-        {
-          id: `${groupId}-caixa-d`,
-          component: "gaveta",
-          at: [hit.x1 + 20, y, zBox],
-          role: `gaveta em U ${i + 1} — caixa direita`,
-          params: {
-            widthMm: rightW,
-            heightMm: h,
-            depthMm: boxDepth,
-            thicknessMm: Math.min(15, t),
-            bottomThicknessMm: spec.backThicknessMm,
-            slide: "oculta-softclose",
-            opening: "softclose",
-            withFront: false,
-            frontFit: "sobreposta",
-            capacityKg: 20,
-            handle,
-            finishId: spec.finishId,
-          },
-        },
+        ...boxSlots,
         {
           id: `${groupId}-frente`,
           component: "frente-gaveta",
@@ -631,12 +631,12 @@ function drawerSlots(
       );
       out.mechanisms.push({
         groupId,
-        slotIds: [`${groupId}-caixa-e`, `${groupId}-caixa-d`, `${groupId}-frente`],
+        slotIds: [...boxSlots.map((s) => s.id), `${groupId}-frente`],
       });
       out.decisions.push({
         id,
         action: "gaveta-em-u",
-        reason: `sifão em ${hit.x0}–${hit.x1} mm: frente única com recorte central, curso único`,
+        reason: `reserva hidráulica em ${hit.x0}–${hit.x1} mm: frente única, ${boxSlots.length} caixa(s), curso único`,
       });
       y += h + gap;
       return;
@@ -649,7 +649,7 @@ function drawerSlots(
       out.decisions.push({
         id,
         action: "gaveta-reduzida",
-        reason: `profundidade reduzida para ${Math.round(shallow)} mm — desvia do sifão`,
+        reason: `profundidade reduzida para ${Math.round(shallow)} mm — desvia do sifão e da reserva traseira`,
       });
       y += h + gap;
       return;
@@ -659,7 +659,7 @@ function drawerSlots(
     out.decisions.push({
       id,
       action: "gaveta-vira-porta",
-      reason: "sem curso livre nem largura lateral suficiente para gaveta em U",
+      reason: `sem curso livre nem perna ≥ ${minLeg} mm para gaveta em U`,
     });
     y += h + gap;
   });
