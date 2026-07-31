@@ -283,7 +283,12 @@ export function normalizeBathroomModule(input: BathroomModuleInput = {}): Bathro
   const heightMm = num(input.heightMm, p.defaultHeightMm, 40, 2400);
   const depthMm = num(input.depthMm, p.defaultDepthMm, p.minDepthMm, p.maxDepthMm);
 
-  const opening = (input.opening ?? p.opening) as BathroomOpening;
+  const requestedDrawers = int(input.drawers, p.drawers, 0, 8);
+  const declaredOpening = (input.opening ?? p.opening) as BathroomOpening;
+  /* Gaveta pedida num módulo de abrir NÃO pode ser apagada em silêncio:
+   * o módulo passa a operar como misto (gavetas + portas). */
+  const opening: BathroomOpening =
+    declaredOpening === "abrir" && requestedDrawers > 0 ? "misto" : declaredOpening;
   const install = normalizeInstall(input.install, p.install);
   const thicknessMm = num(input.thicknessMm, 18, 9, 30);
   const wantsSink = p.sink && (input.sink?.type ?? "apoio") !== "nenhuma";
@@ -306,7 +311,7 @@ export function normalizeBathroomModule(input: BathroomModuleInput = {}): Bathro
   );
 
   const doors = int(input.doors, p.doors, 0, 6);
-  const drawers = int(input.drawers, p.drawers, 0, 8);
+  const drawers = requestedDrawers;
 
   return {
     kind,
