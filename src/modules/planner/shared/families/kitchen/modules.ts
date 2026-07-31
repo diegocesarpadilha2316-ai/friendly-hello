@@ -327,6 +327,7 @@ function nicheSlot(
   heightMm: number,
   role: string,
   shelves = 0,
+  opts: { withBack?: boolean; depthMm?: number } = {},
 ): AssemblySlot {
   return {
     id,
@@ -336,15 +337,86 @@ function nicheSlot(
     params: {
       widthMm: g.innerWidthMm,
       heightMm,
-      depthMm: g.interiorDepthMm,
+      depthMm: opts.depthMm ?? g.interiorDepthMm,
       thicknessMm: spec.thicknessMm,
-      withBack: true,
+      withBack: opts.withBack ?? true,
       ledStrip: spec.led,
       shelves,
       finishId: spec.finishId,
     },
   };
 }
+
+/**
+ * Volumes técnicos reservados por módulo (cuba, sifão, cooktop, forno,
+ * micro-ondas, geladeira). Não são marcenaria, mas ocupam espaço e por isso
+ * nenhuma gaveta, prateleira ou divisória pode invadi-los.
+ */
+export interface KitchenModuleReservation {
+  readonly id: string;
+  readonly kind: string;
+  readonly box: { readonly x: number; readonly y: number; readonly z: number; readonly width: number; readonly height: number; readonly depth: number };
+  readonly note: string;
+}
+
+export function kitchenReservedVolumes(
+  spec: KitchenModuleSpec,
+  g: KitchenGeometry,
+): readonly KitchenModuleReservation[] {
+  const t = spec.thicknessMm;
+  const out: KitchenModuleReservation[] = [];
+  const full = (id: string, kind: string, y: number, h: number, note: string, depth = g.interiorDepthMm) =>
+    out.push({
+      id,
+      kind,
+      box: { x: t, y, z: 0, width: g.innerWidthMm, height: h, depth },
+      note,
+    });
+
+  if (spec.kind === "balcao-pia") {
+    const h = Math.min(400, g.interiorHeightMm);
+    full("cuba", "cuba", g.interiorY0 + g.interiorHeightMm - h, h, "cuba + sifão + área hidráulica");
+  }
+  if (spec.kind === "balcao-cooktop") {
+    const h = Math.min(COOKTOP_RESERVE_MM, g.interiorHeightMm);
+    full("cooktop", "cooktop", g.interiorY0 + g.interiorHeightMm - h, h, "caixa do cooktop e ligação de gás/elétrica");
+  }
+  if (spec.kind === "torre-quente") {
+    const bottomH = Math.max(300, g.interiorHeightMm * 0.35);
+    const depth = Math.max(120, g.interiorDepthMm - spec.applianceGapBackMm);
+    full("forno", "forno", g.interiorY0 + bottomH, OVEN_NICHE_MM, "forno embutido com ventilação traseira", depth);
+    full(
+      "microondas",
+      "microondas",
+      g.interiorY0 + bottomH + OVEN_NICHE_MM,
+      MICROWAVE_NICHE_MM,
+      "micro-ondas embutido",
+      depth,
+    );
+  }
+  if (spec.kind === "torre-geladeira") {
+    const applianceH = Math.min(g.caseHeightMm - 400, 1900);
+    out.push({
+      id: "geladeira",
+      kind: "geladeira",
+      box: {
+        x: t + spec.applianceGapSideMm,
+        y: g.caseY0,
+        z: 0,
+        width: Math.max(100, g.innerWidthMm - 2 * spec.applianceGapSideMm),
+        height: Math.max(100, applianceH - spec.applianceGapTopMm),
+        depth: Math.max(120, g.caseDepthMm - spec.applianceGapBackMm),
+      },
+      note: `geladeira com folgas ${spec.applianceGapSideMm}/${spec.applianceGapTopMm}/${spec.applianceGapBackMm} mm`,
+    });
+  }
+  return out;
+}
+
+/** Faixa reservada sob o tampo do cooktop (nenhuma gaveta entra aqui). */
+export const COOKTOP_RESERVE_MM = 180;
+export const OVEN_NICHE_MM = 600;
+export const MICROWAVE_NICHE_MM = 400;
 
 /* ────────────────────────────── receitas por módulo ───────────────────────── */
 
