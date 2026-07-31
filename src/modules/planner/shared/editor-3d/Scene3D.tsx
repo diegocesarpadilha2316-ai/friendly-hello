@@ -906,6 +906,37 @@ function AutoFitCamera({
   centerRef.current = center;
   diagRef.current = diag;
   wallRef.current = wallHeight;
+  return <CameraFitBody camera={camera} centerRef={centerRef} diagRef={diagRef} wallRef={wallRef} />;
+}
+
+/** Ponte de depuração (apenas DEV): expõe a cena para validação no viewport. */
+function SceneDebugBridge() {
+  const { scene } = useThree();
+  useEffect(() => {
+    if (!import.meta.env?.DEV) return;
+    (window as unknown as { __diorisScene?: THREE.Scene }).__diorisScene = scene;
+  }, [scene]);
+  return null;
+}
+
+function CameraFitBody({
+  camera,
+  centerRef,
+  diagRef,
+  wallRef,
+}: {
+  camera: THREE.Camera;
+  centerRef: React.MutableRefObject<THREE.Vector3>;
+  diagRef: React.MutableRefObject<number>;
+  wallRef: React.MutableRefObject<number>;
+}) {
+  const { camera } = useThree();
+  const centerRef = useRef(center);
+  const diagRef = useRef(diag);
+  const wallRef = useRef(wallHeight);
+  centerRef.current = center;
+  diagRef.current = diag;
+  wallRef.current = wallHeight;
   useEffect(() => {
     const c = centerRef.current;
     const d = Math.max(6, diagRef.current * 1.35);
