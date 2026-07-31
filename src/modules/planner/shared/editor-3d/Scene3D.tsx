@@ -28,6 +28,7 @@ import type {
   OpeningDescriptor,
   FurnitureDescriptor,
 } from "./extrusion";
+import { baseboardRuns, wallPieces } from "./extrusion";
 import type { Viewport3DState } from "./types";
 import {
   getCachedLibraryMaterial,
