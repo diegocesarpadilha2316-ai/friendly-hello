@@ -91,35 +91,41 @@ export function validatePlacement(plan: InteriorPlan, p: InteriorPlacement): Int
 /** Valida o projeto interno inteiro. */
 export function validateInteriorPlan(plan: InteriorPlan): InteriorValidation {
   const all: InteriorIssue[] = [];
-  const counts = new Map<string, number>();
+  /** Contagem por sub-vão (coluna), não pelo móvel inteiro. */
+  const counts = new Map<string, Map<string, number>>();
 
   for (const p of plan.placements) {
     all.push(...validatePlacement(plan, p));
-    counts.set(p.moduleId, (counts.get(p.moduleId) ?? 0) + 1);
+    const scope = subCavityKey(p.id, plan.id);
+    const byModule = counts.get(scope) ?? new Map<string, number>();
+    byModule.set(p.moduleId, (byModule.get(p.moduleId) ?? 0) + 1);
+    counts.set(scope, byModule);
   }
 
-  // Limite de instâncias e incompatibilidade entre módulos do mesmo vão.
-  for (const [moduleId, qty] of counts) {
-    const def = getInteriorModule(moduleId);
-    if (!def) continue;
-    if (def.limits.maxPerCavity > 0 && qty > def.limits.maxPerCavity) {
-      all.push(
-        issue(
-          "error",
-          "limite-instancias",
-          `${def.name}: máximo de ${def.limits.maxPerCavity} por vão (encontrados ${qty}).`,
-        ),
-      );
-    }
-    for (const other of def.incompatibleWith) {
-      if (counts.has(other)) {
+  // Limite de instâncias e incompatibilidade dentro do mesmo sub-vão.
+  for (const byModule of counts.values()) {
+    for (const [moduleId, qty] of byModule) {
+      const def = getInteriorModule(moduleId);
+      if (!def) continue;
+      if (def.limits.maxPerCavity > 0 && qty > def.limits.maxPerCavity) {
         all.push(
           issue(
             "error",
-            "incompatibilidade",
-            `${def.name} não pode dividir o vão com ${getInteriorModule(other)?.name ?? other}.`,
+            "limite-instancias",
+            `${def.name}: máximo de ${def.limits.maxPerCavity} por vão (encontrados ${qty}).`,
           ),
         );
+      }
+      for (const other of def.incompatibleWith) {
+        if (byModule.has(other)) {
+          all.push(
+            issue(
+              "error",
+              "incompatibilidade",
+              `${def.name} não pode dividir o vão com ${getInteriorModule(other)?.name ?? other}.`,
+            ),
+          );
+        }
       }
     }
   }
@@ -151,4 +157,10 @@ export function validateInteriorPlan(plan: InteriorPlan): InteriorValidation {
   const errors = all.filter((i) => i.level === "error");
   const warnings = all.filter((i) => i.level === "warn");
   return { ok: errors.length === 0, errors, warnings };
+}
+
+/** Escopo de contagem: o id do placement carrega o sub-vão que o gerou. */
+function subCavityKey(placementId: string, planId: string): string {
+  const cut = placementId.lastIndexOf(":");
+  return cut > 0 ? placementId.slice(0, cut) : planId;
 }
