@@ -196,10 +196,10 @@ function buildWalls(input: {
   const horizontal = walls.filter((w) => w.side === "front" || w.side === "back");
   const vertical = walls.filter((w) => w.side === "left" || w.side === "right");
   for (const h of horizontal) {
-    (h as { joints: string[] }).joints = vertical.map((v) => v.id);
+    (h as unknown as { joints: readonly string[] }).joints = vertical.map((v) => v.id);
   }
   for (const v of vertical) {
-    (v as { joints: string[] }).joints = horizontal.map((h) => h.id);
+    (v as unknown as { joints: readonly string[] }).joints = horizontal.map((h) => h.id);
   }
   return walls;
 }
@@ -422,7 +422,7 @@ export function buildRoomArchitecture(spec: RoomArchitectureSpec): RoomArchitect
         });
       }
     }
-    (wall as { cutouts: readonly RoomWallCutout[] }).cutouts = cuts;
+    (wall as unknown as { cutouts: readonly RoomWallCutout[] }).cutouts = cuts;
     if (wall.joints.length === 0) {
       issues.push({
         code: "wall-without-joint",
