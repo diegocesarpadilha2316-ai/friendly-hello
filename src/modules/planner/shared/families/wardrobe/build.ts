@@ -12,18 +12,8 @@ import {
   type ConstructionPiece,
 } from "../../construction";
 import type { FamilyBuildResult } from "../types";
+import { handleType } from "../handles";
 import { normalizeWardrobeSpec, type WardrobeSpec } from "./spec";
-
-/** Tradução do puxador da ficha para o vocabulário dos componentes. */
-function handleType(handle: string): "tubular" | "perfil-gola" | "cava" | "botao" | "push" {
-  const k = handle.toLowerCase();
-  if (k.includes("gola") || k.includes("perfil")) return "perfil-gola";
-  if (k.includes("cava") || k.includes("usinad")) return "cava";
-  if (k.includes("botao") || k.includes("botão")) return "botao";
-  if (k.includes("none") || k.includes("push") || k.includes("sem")) return "push";
-  if (k.includes("tubular") || k.includes("barra")) return "tubular";
-  return "perfil-gola";
-}
 
 /** Quais folhas recebem espelho, conforme a ficha. */
 export function mirroredDoorIndexes(spec: WardrobeSpec): ReadonlySet<number> {

@@ -4,4 +4,6 @@
  * continuam no caminho antigo até serem migradas uma a uma.
  */
 export * from "./types";
+export * from "./handles";
 export * from "./wardrobe";
+export * from "./dresser";

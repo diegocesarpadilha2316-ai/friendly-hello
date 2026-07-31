@@ -12,7 +12,7 @@
  * Nada aqui altera dados: a conversão é feita SEMPRE em memória.
  */
 
-export type FurnitureRenderer = "wardrobe" | "cabinet";
+export type FurnitureRenderer = "wardrobe" | "dresser" | "cabinet";
 
 export interface RendererDecisionInput {
   readonly id?: string;
@@ -60,6 +60,18 @@ const WARDROBE_ALIASES = new Set([
 const AMBIGUOUS = new Set(["closet", "armario", "armario-alto", "guarda-volumes"]);
 
 const CATALOG_HINT = /(roupeiro|guarda[-_ ]?roupa|wardrobe|closet)/i;
+
+/** Nomes que sempre significam gaveteiro (família convertida). */
+const DRESSER_ALIASES = new Set([
+  "gaveteiro",
+  "gaveteiros",
+  "comoda",
+  "comodas",
+  "dresser",
+  "drawer-unit",
+]);
+
+const DRESSER_CATALOG_HINT = /(gaveteir|comoda|dresser)/i;
 
 function numParam(
   params: RendererDecisionInput["params"],
@@ -136,6 +148,24 @@ export function resolveFurnitureRenderer(input: RendererDecisionInput): Renderer
     };
   }
 
+  if (DRESSER_ALIASES.has(subtype)) {
+    return {
+      renderer: "dresser",
+      resolvedType: subtype,
+      legacyConverted,
+      reason: `subtype "${input.subtype}" é alias de gaveteiro`,
+    };
+  }
+
+  if (DRESSER_CATALOG_HINT.test(catalog)) {
+    return {
+      renderer: "dresser",
+      resolvedType: "gaveteiro",
+      legacyConverted,
+      reason: `catalogItemId "${catalog}" identifica gaveteiro`,
+    };
+  }
+
   if (AMBIGUOUS.has(subtype)) {
     if (hasFront(input.params)) {
       return {
@@ -173,7 +203,12 @@ export function logRendererDecision(id: string, decision: RendererDecision): voi
   console.info("[planner:renderer]", {
     id,
     tipo: decision.resolvedType,
-    renderer: decision.renderer === "wardrobe" ? "WardrobeMesh" : "CabinetMesh",
+    renderer:
+      decision.renderer === "wardrobe"
+        ? "WardrobeMesh"
+        : decision.renderer === "dresser"
+          ? "DresserMesh"
+          : "CabinetMesh",
     conversaoLegada: decision.legacyConverted,
     motivoFallback: decision.renderer === "cabinet" ? decision.reason : null,
     motivo: decision.reason,
