@@ -8,7 +8,14 @@
 import { buildAssembly, type AssemblyResult, type ConstructionHardwareRef } from "../../construction";
 import type { FamilyBuildResult } from "../types";
 import { normalizeKitchenModule, type KitchenModuleInput, type KitchenModuleSpec } from "./spec";
-import { kitchenGeometry, kitchenModuleLabel, kitchenModuleSlots, type KitchenGeometry } from "./modules";
+import {
+  kitchenGeometry,
+  kitchenModuleLabel,
+  kitchenModuleSlots,
+  kitchenReservedVolumes,
+  type KitchenGeometry,
+  type KitchenModuleReservation,
+} from "./modules";
 
 /** Ferragens específicas de cozinha que não pertencem a um componente. */
 export function kitchenExtraHardware(spec: KitchenModuleSpec): ConstructionHardwareRef[] {
@@ -53,6 +60,8 @@ export function kitchenExtraHardware(spec: KitchenModuleSpec): ConstructionHardw
 
 export interface KitchenBuildResult extends FamilyBuildResult<KitchenModuleSpec> {
   readonly layout: KitchenGeometry;
+  /** Volumes técnicos que nenhuma peça pode invadir. */
+  readonly reservations: readonly KitchenModuleReservation[];
 }
 
 /** Monta UM módulo de cozinha. Puro e determinístico. */
@@ -84,5 +93,27 @@ export function buildKitchenModule(input: KitchenModuleInput = {}): KitchenBuild
       }
     : base;
 
-  return { spec, assembly, layout: g };
+  return { spec, assembly, layout: g, reservations: kitchenReservedVolumes(spec, g) };
+}
+
+/** A peça invade algum volume técnico reservado? Usado na auditoria. */
+export function kitchenReservationConflicts(
+  result: KitchenBuildResult,
+): readonly { pieceId: string; reservationId: string }[] {
+  const hits: { pieceId: string; reservationId: string }[] = [];
+  const eps = 2;
+  for (const r of result.reservations) {
+    for (const p of result.assembly.pieces) {
+      // Só mecanismos e prateleiras podem conflitar; a caixa é o continente.
+      if (!/gaveta|prateleira|divisoria/.test(p.partKind)) continue;
+      const b = p.box;
+      const hit =
+        b.x < r.box.x + r.box.width - eps &&
+        r.box.x < b.x + b.width - eps &&
+        b.y < r.box.y + r.box.height - eps &&
+        r.box.y < b.y + b.height - eps;
+      if (hit) hits.push({ pieceId: p.id, reservationId: r.id });
+    }
+  }
+  return hits;
 }
