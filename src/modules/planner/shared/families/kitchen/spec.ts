@@ -111,6 +111,12 @@ export interface KitchenModuleSpec {
   readonly finishId: string;
   readonly thicknessMm: number;
   readonly backThicknessMm: number;
+  /** Folga lateral do eletrodoméstico dentro do nicho (mm). */
+  readonly applianceGapSideMm: number;
+  /** Folga superior do eletrodoméstico dentro do nicho (mm). */
+  readonly applianceGapTopMm: number;
+  /** Folga/ventilação traseira do eletrodoméstico (mm). */
+  readonly applianceGapBackMm: number;
 }
 
 /** Entrada tolerante: tampo e rodapé podem vir parciais (IA, catálogo, UI). */
@@ -173,13 +179,21 @@ export function normalizeKitchenModule(input: KitchenModuleInput = {}): KitchenM
   const glassFront = input.glassFront ?? (kind === "aereo-vidro" || kind === "cristaleira");
   const wantsCountertop = p.countertop && (input.countertop?.material ?? "granito") !== "nenhum";
 
+  // Sob a cuba não existe gaveta: o sifão e a área hidráulica ocupam o vão.
+  const drawers =
+    kind === "balcao-pia"
+      ? 0
+      : opening === "abrir" && p.drawers === 0
+        ? int(input.drawers, 0, 0, 6)
+        : int(input.drawers, p.drawers, 0, 6);
+
   return {
     kind,
     widthMm,
     heightMm,
     depthMm,
     doors,
-    drawers: opening === "abrir" && p.drawers === 0 ? int(input.drawers, 0, 0, 6) : int(input.drawers, p.drawers, 0, 6),
+    drawers,
     shelves: int(input.shelves, p.shelves, 0, 8),
     opening,
     handle: input.handle ?? "perfil-gola",
@@ -199,6 +213,9 @@ export function normalizeKitchenModule(input: KitchenModuleInput = {}): KitchenM
     finishId: input.finishId ?? "branco-tx",
     thicknessMm: num(input.thicknessMm, 18, 9, 30),
     backThicknessMm: num(input.backThicknessMm, 6, 3, 18),
+    applianceGapSideMm: int(input.applianceGapSideMm, 30, 0, 200),
+    applianceGapTopMm: int(input.applianceGapTopMm, 50, 0, 300),
+    applianceGapBackMm: int(input.applianceGapBackMm, 50, 0, 200),
   };
 }
 
