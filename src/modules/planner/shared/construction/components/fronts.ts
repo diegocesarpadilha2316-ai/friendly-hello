@@ -273,12 +273,16 @@ export const doorSliding: ConstructionComponent<DoorSlidingParams> = {
         substrate: substrateOf(p.substrate),
         notes: `trilho ${track + 1}`,
       });
+      // A folha corre até encostar no limite do vão — nunca para fora do móvel.
+      const toRight = round(p.widthMm - leafW - x);
+      const toLeft = round(x);
+      const goesLeft = i === p.leaves - 1 || toLeft > toRight;
       motions.push({
         pieceId: id,
         kind: "slide",
         axis: "x",
-        maxTravelMm: round(p.widthMm - leafW),
-        direction: i === p.leaves - 1 ? -1 : 1,
+        maxTravelMm: Math.max(0, goesLeft ? toLeft : toRight),
+        direction: goesLeft ? -1 : 1,
         durationMs: p.softClose ? 1100 : 700,
         easing: p.softClose ? "soft-close" : "ease-out",
       });
