@@ -113,6 +113,12 @@ export interface KitchenModuleSpec {
   readonly backThicknessMm: number;
 }
 
+/** Entrada tolerante: tampo e rodapé podem vir parciais (IA, catálogo, UI). */
+export type KitchenModuleInput = Partial<Omit<KitchenModuleSpec, "countertop" | "plinth">> & {
+  readonly countertop?: Partial<KitchenCountertop>;
+  readonly plinth?: Partial<KitchenPlinth>;
+};
+
 function num(v: unknown, fallback: number, min: number, max: number): number {
   const n = typeof v === "number" ? v : Number(v);
   if (!Number.isFinite(n) || n <= 0) return fallback;
@@ -152,7 +158,7 @@ export function normalizeKitchenKind(value: string | undefined | null): KitchenM
 }
 
 /** Preenche a ficha a partir do perfil do módulo. Nunca lança. */
-export function normalizeKitchenModule(input: Partial<KitchenModuleSpec> = {}): KitchenModuleSpec {
+export function normalizeKitchenModule(input: KitchenModuleInput = {}): KitchenModuleSpec {
   const kind = normalizeKitchenKind(input.kind);
   const p = KITCHEN_MODULE_PROFILES[kind];
   const widthMm = num(input.widthMm, p.defaultWidthMm, 200, 2000);

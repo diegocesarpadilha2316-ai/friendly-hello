@@ -8,7 +8,13 @@
  * Nada aqui desenha: a saída é uma lista de `KitchenPlacement`, cada uma
  * com a ficha do módulo pronta para `buildKitchenModule()`.
  */
-import { normalizeKitchenModule, type KitchenLevel, type KitchenModuleKind, type KitchenModuleSpec } from "./spec";
+import {
+  normalizeKitchenModule,
+  type KitchenLevel,
+  type KitchenModuleInput,
+  type KitchenModuleKind,
+  type KitchenModuleSpec,
+} from "./spec";
 import type { KitchenCountertop } from "./countertop";
 import type { KitchenPlinth } from "./plinth";
 
@@ -262,7 +268,7 @@ export function planKitchen(input: KitchenLayoutInput): KitchenLayoutResult {
     heightMm: number,
     depthMm: number,
     role: string,
-    extra: Partial<KitchenModuleSpec> = {},
+    extra: KitchenModuleInput = {},
   ) => {
     const spec = normalizeKitchenModule({
       ...baseSpecDefaults,

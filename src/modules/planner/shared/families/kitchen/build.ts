@@ -7,7 +7,7 @@
  */
 import { buildAssembly, type AssemblyResult, type ConstructionHardwareRef } from "../../construction";
 import type { FamilyBuildResult } from "../types";
-import { normalizeKitchenModule, type KitchenModuleSpec } from "./spec";
+import { normalizeKitchenModule, type KitchenModuleInput, type KitchenModuleSpec } from "./spec";
 import { kitchenGeometry, kitchenModuleLabel, kitchenModuleSlots, type KitchenGeometry } from "./modules";
 
 /** Ferragens específicas de cozinha que não pertencem a um componente. */
@@ -56,7 +56,7 @@ export interface KitchenBuildResult extends FamilyBuildResult<KitchenModuleSpec>
 }
 
 /** Monta UM módulo de cozinha. Puro e determinístico. */
-export function buildKitchenModule(input: Partial<KitchenModuleSpec> = {}): KitchenBuildResult {
+export function buildKitchenModule(input: KitchenModuleInput = {}): KitchenBuildResult {
   const spec = normalizeKitchenModule(input);
   const g = kitchenGeometry(spec);
   const slots = kitchenModuleSlots(spec, g);
