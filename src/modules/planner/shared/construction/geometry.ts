@@ -1,7 +1,12 @@
 /**
  * Utilitários geométricos puros da biblioteca construtiva (mm).
  */
-import type { ConstructionBox, ConstructionPiece, ConstructionWarning } from "./types";
+import type {
+  ConstructionBox,
+  ConstructionMotion,
+  ConstructionPiece,
+  ConstructionWarning,
+} from "./types";
 import type { GrainDirection } from "../engineering/types";
 
 export function box(

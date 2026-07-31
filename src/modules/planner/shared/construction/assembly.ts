@@ -15,7 +15,7 @@ import type {
   ConstructionWarning,
 } from "./types";
 import { buildComponent, makeContext } from "./registry";
-import { translatePiece, unionBox, round } from "./geometry";
+import { translateMotion, translatePiece, unionBox, round } from "./geometry";
 
 /** Um componente colocado dentro do móvel. */
 export interface AssemblySlot {
@@ -83,7 +83,9 @@ export function buildAssembly(def: AssemblyDefinition): AssemblyResult {
       });
     }
     hardware.push(...result.hardware.map((h) => ({ ...h, id: `${instanceId}:${h.id}` })));
-    motions.push(...result.motions);
+    // O rig acompanha a peça: sem transladar o pivô, uma porta posicionada
+    // em x=902 giraria em torno do eixo x=2 do móvel (bug de integração).
+    motions.push(...result.motions.map((m) => translateMotion(m, offset)));
     warnings.push(
       ...result.warnings.map((w) => ({ ...w, message: `[${slot.role ?? slot.id}] ${w.message}` })),
     );
