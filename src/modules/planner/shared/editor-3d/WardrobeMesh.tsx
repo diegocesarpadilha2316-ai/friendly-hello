@@ -115,6 +115,7 @@ function PieceMesh({
 
   return (
     <mesh
+      name={`piece:${piece.id}:${piece.partKind}`}
       position={[(box.x + box.width / 2) * MM, (box.y + box.height / 2) * MM, (box.z + box.depth / 2) * MM]}
       castShadow
       receiveShadow
