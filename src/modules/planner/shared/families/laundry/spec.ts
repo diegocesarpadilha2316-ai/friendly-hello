@@ -318,9 +318,6 @@ export function normalizeLaundryModule(input: LaundryModuleInput = {}): LaundryM
   const kind = normalizeLaundryKind(input.kind);
   const p = LAUNDRY_MODULE_PROFILES[kind];
 
-  const widthMm = num(input.widthMm, p.defaultWidthMm, p.minWidthMm, p.maxWidthMm);
-  const heightMm = num(input.heightMm, p.defaultHeightMm, 40, 2600);
-  const depthMm = num(input.depthMm, p.defaultDepthMm, p.minDepthMm, p.maxDepthMm);
   const thicknessMm = num(input.thicknessMm, 18, 9, 30);
 
   const requestedDrawers = int(input.drawers, p.drawers, 0, 8);
@@ -336,6 +333,30 @@ export function normalizeLaundryModule(input: LaundryModuleInput = {}): LaundryM
   const appliance = normalizeAppliance(
     { kind: p.appliance, ...defined(input.appliance) },
     p.appliance !== "nenhum" || applianceRequested,
+  );
+
+  /* O aparelho é um volume TÉCNICO: o nicho nunca pode ser menor que o
+   * envelope declarado no catálogo (aparelho + folgas). As dimensões pedidas
+   * só sobem — nunca encolhem por conta do aparelho. */
+  const envelope = appliance.kind === "nenhum" ? null : applianceEnvelopeMm(appliance);
+  const plinthPre = normalizePlinth(defined(input.plinth), install === "rodape");
+  const topPre = input.countertop?.material === "nenhum" ? 0 : 40;
+  const widthMm = Math.max(
+    num(input.widthMm, p.defaultWidthMm, p.minWidthMm, p.maxWidthMm),
+    envelope ? envelope.widthMm + 2 * thicknessMm : 0,
+  );
+  const heightMm = Math.max(
+    num(input.heightMm, p.defaultHeightMm, 40, 2600),
+    envelope
+      ? envelope.heightMm +
+        2 * thicknessMm +
+        (install === "rodape" ? plinthPre.heightMm : 0) +
+        (p.countertop && appliance.doorOpening !== "superior" ? topPre : 0)
+      : 0,
+  );
+  const depthMm = Math.max(
+    num(input.depthMm, p.defaultDepthMm, p.minDepthMm, p.maxDepthMm),
+    envelope ? envelope.depthMm : 0,
   );
 
   const wantsTub = (input.tub?.type ?? p.tub) !== "nenhum";
@@ -376,7 +397,7 @@ export function normalizeLaundryModule(input: LaundryModuleInput = {}): LaundryM
           : 0,
     feetHeightMm: int(input.feetHeightMm, install === "pes" ? 120 : 0, 0, 300),
     recessMm: int(input.recessMm, 0, 0, 300),
-    plinth: normalizePlinth(defined(input.plinth), install === "rodape"),
+    plinth: plinthPre,
     countertop: normalizeLaundryTop(
       defined(input.countertop) as Partial<LaundryCountertop>,
       countertopEnabled,
