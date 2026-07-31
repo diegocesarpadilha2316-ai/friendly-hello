@@ -73,13 +73,16 @@ describe("lavanderia — build de todos os módulos", () => {
 /* ───────────────────────── máquinas e ventilação ───────────────────────── */
 
 describe("lavanderia — aparelhos", () => {
-  it("máquina frontal reserva volume, abertura de porta e ventilação", () => {
+  it("máquina frontal reserva volume, abertura de porta e instalação", () => {
     const r = buildLaundryModule({ kind: "modulo-lavadora", widthMm: 700 });
     const kinds = r.reservations.map((x) => x.kind);
     expect(kinds).toContain("aparelho");
     expect(kinds).toContain("abertura-porta");
-    expect(kinds).toContain("ventilacao");
+    expect(kinds).toContain("manutencao");
     assertSane(r);
+
+    const dryer = buildLaundryModule({ kind: "modulo-secadora" });
+    expect(dryer.reservations.map((x) => x.kind)).toContain("ventilacao");
   });
 
   it("máquina superior nunca recebe tampo e reserva abertura superior", () => {
@@ -296,7 +299,7 @@ describe("lavanderia — layout engine (prioridade)", () => {
   });
 
   it("6. fallback mínimo seguro quando nada cabe", () => {
-    const plan = planLaundryLayout({ widthMm: 320, preset: "area-servico-completa" });
+    const plan = planLaundryLayout({ widthMm: 200, preset: "area-servico-completa" });
     expect(plan.source).toBe("fallback");
     expect(plan.placements).toHaveLength(1);
     const r = buildLaundryModule(plan.placements[0].module);
