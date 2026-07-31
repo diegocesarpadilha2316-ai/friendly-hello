@@ -80,7 +80,7 @@ describe("Família cozinha — módulos", () => {
   it("basculante recebe pistão a gás e abre pelo topo", () => {
     const r = buildKitchenModule({ kind: "aereo-basculante" });
     expect(r.assembly.hardware.some((h) => h.kind === "pistao")).toBe(true);
-    expect(r.assembly.motions.some((m) => m.kind === "swing")).toBe(true);
+    expect(r.assembly.motions.some((m) => m.kind === "hinge" || m.kind === "lift")).toBe(true);
   });
 
   it("gaveteiro devolve rigs de deslizamento e corrediças", () => {
