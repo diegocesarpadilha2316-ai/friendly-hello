@@ -14,3 +14,5 @@ export * from "./editor-3d";
 export * from "./library";
 export * from "./engineering";
 export * from "./construction";
+/** Biblioteca paramétrica de módulos internos (namespace para evitar colisões). */
+export * as interior from "./interior";
