@@ -16,7 +16,7 @@ export function kitchenExtraHardware(spec: KitchenModuleSpec): ConstructionHardw
   if (spec.opening === "basculante") {
     extra.push({
       id: "pistao",
-      kind: "amortecedor",
+      kind: "pistao",
       qty: 2,
       itemId: "blum-aventos-hf",
       notes: "pistão a gás para basculante",
@@ -25,17 +25,17 @@ export function kitchenExtraHardware(spec: KitchenModuleSpec): ConstructionHardw
   if (spec.kind === "canto-magico") {
     extra.push({
       id: "canto-magico",
-      kind: "acessorio",
+      kind: "trilho",
       qty: 1,
       itemId: "kessebohmer-magic-corner",
       notes: "mecanismo articulado de canto",
     });
   }
   if (spec.kind === "balcao-pia") {
-    extra.push({ id: "lixeira", kind: "acessorio", qty: 1, notes: "suporte de lixeira embutida" });
+    extra.push({ id: "lixeira", kind: "trilho", qty: 1, notes: "suporte de lixeira embutida" });
   }
   if (spec.kind === "torre-quente") {
-    extra.push({ id: "tomada", kind: "acessorio", qty: 2, notes: "ponto elétrico para forno/micro-ondas" });
+    extra.push({ id: "tomada", kind: "perfil", qty: 2, notes: "ponto elétrico para forno/micro-ondas" });
   }
   if (spec.led) {
     extra.push({ id: "led", kind: "perfil", qty: 1, notes: "fita LED + perfil de alumínio" });
@@ -43,7 +43,7 @@ export function kitchenExtraHardware(spec: KitchenModuleSpec): ConstructionHardw
   if (spec.countertop.cutout !== "nenhum") {
     extra.push({
       id: `recorte-${spec.countertop.cutout}`,
-      kind: "acessorio",
+      kind: "perfil",
       qty: 1,
       notes: `recorte de ${spec.countertop.cutout} no tampo ${spec.countertop.material}`,
     });
