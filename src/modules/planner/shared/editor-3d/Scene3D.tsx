@@ -1016,6 +1016,7 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
       }}
       onPointerMissed={() => onSelect(null)}
     >
+      <SceneDebugBridge />
       {viewport.render === "material" ? (
         <color attach="background" args={[dayPreset.bgFallback]} />
       ) : (
