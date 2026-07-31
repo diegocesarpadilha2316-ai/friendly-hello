@@ -14,7 +14,7 @@ import type { ConstructionPiece } from "../../../construction";
 const doors = (pieces: readonly ConstructionPiece[]) =>
   pieces.filter((p) => p.partKind === "porta" && !(p.notes ?? "").includes("maleiro"));
 const hinges = (a: ReturnType<typeof buildWardrobe>["assembly"]) =>
-  a.motions.filter((m) => m.kind === "hinge" && m.pieceId.startsWith("porta-"));
+  a.motions.filter((m) => m.kind === "hinge" && /^roupeiro:porta-/.test(m.pieceId));
 const kind = (pieces: readonly ConstructionPiece[], k: string) =>
   pieces.filter((p) => p.partKind === k);
 const hw = (a: ReturnType<typeof buildWardrobe>["assembly"], k: string) =>
