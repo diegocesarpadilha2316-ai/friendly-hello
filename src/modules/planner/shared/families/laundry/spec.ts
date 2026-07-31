@@ -354,9 +354,15 @@ export function normalizeLaundryModule(input: LaundryModuleInput = {}): LaundryM
         (p.countertop && appliance.doorOpening !== "superior" ? topPre : 0)
       : 0,
   );
+  /* A frente (porta/tapa) e o recuo consomem profundidade útil: o envelope do
+   * aparelho é medido DENTRO da caixa. */
+  const openingPre = opening;
+  const frontReservePre =
+    openingPre === "correr" ? thicknessMm + 12 : openingPre === "aberto" ? 0 : thicknessMm;
+  const recessPre = int(input.recessMm, 0, 0, 300);
   const depthMm = Math.max(
     num(input.depthMm, p.defaultDepthMm, p.minDepthMm, p.maxDepthMm),
-    envelope ? envelope.depthMm : 0,
+    envelope ? envelope.depthMm + frontReservePre + recessPre : 0,
   );
 
   const wantsTub = (input.tub?.type ?? p.tub) !== "nenhum";
@@ -396,7 +402,7 @@ export function normalizeLaundryModule(input: LaundryModuleInput = {}): LaundryM
           ? int(input.feetHeightMm, 120, 40, 300)
           : 0,
     feetHeightMm: int(input.feetHeightMm, install === "pes" ? 120 : 0, 0, 300),
-    recessMm: int(input.recessMm, 0, 0, 300),
+    recessMm: recessPre,
     plinth: plinthPre,
     countertop: normalizeLaundryTop(
       defined(input.countertop) as Partial<LaundryCountertop>,

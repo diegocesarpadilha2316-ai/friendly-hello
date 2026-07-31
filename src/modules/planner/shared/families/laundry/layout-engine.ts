@@ -277,7 +277,7 @@ export function planLaundryLayout(input: LaundryLayoutInput): LaundryLayoutResul
       [
         {
           kind: "gabinete-inferior",
-          widthMm: Math.min(widthMm, 600),
+          widthMm: Math.max(300, Math.min(widthMm, 600)),
           tub: { type: "nenhum" },
           appliance: { kind: "nenhum" },
           countertop: { material: "nenhum" },

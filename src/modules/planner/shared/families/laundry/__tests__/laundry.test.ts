@@ -107,10 +107,10 @@ describe("lavanderia — aparelhos", () => {
     expect(errors(r).some((e) => e.code === "ventilacao-bloqueada")).toBe(true);
   });
 
-  it("nicho estreito para a máquina é erro, não aviso", () => {
+  it("nicho estreito é ampliado ao envelope técnico do aparelho", () => {
     const r = buildLaundryModule({ kind: "modulo-lavadora", widthMm: 450 });
-    const codes = errors(r).map((e) => e.code);
-    expect(codes.some((c) => c === "maquina-nao-cabe" || c === "largura-minima")).toBe(true);
+    expect(r.spec.widthMm).toBeGreaterThanOrEqual(APPLIANCES["lavadora-frontal"].widthMm);
+    expect(errors(r)).toEqual([]);
   });
 
   it("torre abre em dois aparelhos reais", () => {
@@ -299,7 +299,10 @@ describe("lavanderia — layout engine (prioridade)", () => {
   });
 
   it("6. fallback mínimo seguro quando nada cabe", () => {
-    const plan = planLaundryLayout({ widthMm: 200, preset: "area-servico-completa" });
+    const plan = planLaundryLayout({
+      widthMm: 200,
+      modules: [{ kind: "gabinete-tanque", widthMm: 1200 }],
+    });
     expect(plan.source).toBe("fallback");
     expect(plan.placements).toHaveLength(1);
     const r = buildLaundryModule(plan.placements[0].module);
