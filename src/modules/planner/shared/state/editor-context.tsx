@@ -545,12 +545,13 @@ export function PlannerEditorProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Autosave — debounced 800ms após qualquer mudança "dirty".
+  // Autosave — debounce maior reduz serialização/upload de snapshots durante
+  // comandos compostos da IA; o flush crítico abaixo preserva a última edição.
   useEffect(() => {
     if (!state.dirty || !state.project) return;
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
     const project = state.project;
-    autosaveTimer.current = setTimeout(() => persist(project), 800);
+    autosaveTimer.current = setTimeout(() => persist(project), 1_500);
     return () => {
       if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
     };

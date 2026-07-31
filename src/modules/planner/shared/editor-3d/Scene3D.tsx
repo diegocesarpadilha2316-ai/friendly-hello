@@ -265,7 +265,15 @@ function explodeVec(cx: number, cz: number, cy: number, center: THREE.Vector3, f
   return new THREE.Vector3(cx + dir.x, cy + dir.y, cz + dir.z);
 }
 
-function FurnitureRuntimeEvidence({ f, renderer }: { f: FurnitureDescriptor; renderer: string }) {
+function FurnitureRuntimeEvidence({
+  f,
+  renderer,
+  autoFitVersion,
+}: {
+  f: FurnitureDescriptor;
+  renderer: string;
+  autoFitVersion: number;
+}) {
   const { camera } = useThree();
   useEffect(() => {
     const common = {
@@ -287,7 +295,7 @@ function FurnitureRuntimeEvidence({ f, renderer }: { f: FurnitureDescriptor; ren
     const frustum = new THREE.Frustum();
     frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
     reportSceneRuntime({ itemId: f.id, renderer, pieces, visible: true, framed: frustum.intersectsSphere(sphere), recordedAt: Date.now() });
-  }, [camera, f.id, f.subtype, f.catalogItemId, f.params, f.width, f.height, f.depth, f.cx, f.cz, f.y, renderer]);
+  }, [camera, autoFitVersion, f.id, f.subtype, f.catalogItemId, f.params, f.width, f.height, f.depth, f.cx, f.cz, f.y, renderer]);
   return null;
 }
 
@@ -584,7 +592,13 @@ function Furniture({
     params: f.params,
   });
   logRendererDecision(f.id, decision);
-  const runtimeEvidence = <FurnitureRuntimeEvidence f={f} renderer={decision.renderer} />;
+  const runtimeEvidence = (
+    <FurnitureRuntimeEvidence
+      f={f}
+      renderer={decision.renderer}
+      autoFitVersion={viewport.autoFitVersion ?? 0}
+    />
+  );
   const wardrobe = viewport.render !== "wireframe" && decision.renderer === "wardrobe";
   if (wardrobe) {
     return (
@@ -1146,15 +1160,6 @@ function AutoFitCamera({
   return null;
 }
 
-function AutoResize() {
-  const ref = useRef<THREE.Group>(null!);
-  useFrame(() => {
-    // hook reservado para animações futuras
-    if (ref.current) ref.current.updateMatrixWorld();
-  });
-  return null;
-}
-
 export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCommitTransform }: Scene3DProps) {
   const { cx, cz } = centerOffset(model);
   // Alvo da câmera: 1/3 da altura da parede (~olho baixo). Isso ancora o
@@ -1358,7 +1363,6 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
       {viewport.showAxes ? <axesHelper args={[2]} position={[cx, 0.01, cz]} /> : null}
 
       <group>
-          <AutoResize />
           {model.floors.map((s) => (
             <Slab key={s.id} s={s} kind="floor" center={center} viewport={viewport} selected={selectedId === s.id} onSelect={onSelect} />
           ))}
