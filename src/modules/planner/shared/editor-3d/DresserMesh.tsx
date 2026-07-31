@@ -1,46 +1,39 @@
 /**
- * RENDER DO ROUPEIRO — apenas resolve a ficha e delega ao renderizador
- * genérico da Biblioteca Construtiva (`AssemblyMesh`). Nenhuma regra
- * construtiva, nenhuma animação e nenhum intertravamento vivem aqui.
+ * RENDER DO GAVETEIRO — mesma arquitetura do roupeiro: a ficha vira
+ * montagem pela Biblioteca Construtiva e o desenho/animação/intertravamento
+ * ficam a cargo do `AssemblyMesh`. Não existe caminho paralelo.
  */
 import { useMemo } from "react";
 import { type InterlockBlock } from "../construction";
-import { buildWardrobe, wardrobeSpecFromLegacy, type LegacyParams } from "../families/wardrobe";
+import { buildDresser, dresserSpecFromLegacy, type LegacyDresserParams } from "../families/dresser";
 import { AssemblyMesh, MM } from "./AssemblyMesh";
 
-export interface WardrobeMeshProps {
+export interface DresserMeshProps {
   /** Dimensões em metros, vindas do descritor da cena. */
   width: number;
   height: number;
   depth: number;
-  /** Params soltos do móvel (formato antigo e novo convivem). */
-  params?: LegacyParams;
+  params?: LegacyDresserParams;
   bodyProps?: Record<string, unknown>;
   selected?: boolean;
-  openDoors?: boolean;
   openDrawers?: boolean;
-  /** Avisos discretos do intertravamento (ex.: "abra a porta desta coluna"). */
   onInterlock?: (blocked: readonly InterlockBlock[]) => void;
-  doorsCount?: number;
   drawersCount?: number;
-  shelvesCount?: number;
   style?: string;
   handleStyle?: string;
 }
 
-export function WardrobeMesh(props: WardrobeMeshProps) {
+export function DresserMesh(props: DresserMeshProps) {
   const { assembly, spec } = useMemo(() => {
-    const base = wardrobeSpecFromLegacy({
+    const base = dresserSpecFromLegacy({
       widthMm: props.width / MM,
       heightMm: props.height / MM,
       depthMm: props.depth / MM,
       params: props.params,
     });
-    return buildWardrobe({
+    return buildDresser({
       ...base,
-      doors: props.doorsCount ?? base.doors,
       drawers: props.drawersCount ?? base.drawers,
-      shelvesPerColumn: props.shelvesCount ?? base.shelvesPerColumn,
       style: props.style ?? base.style,
       handle: props.handleStyle ?? base.handle,
     });
@@ -49,9 +42,7 @@ export function WardrobeMesh(props: WardrobeMeshProps) {
     props.height,
     props.depth,
     props.params,
-    props.doorsCount,
     props.drawersCount,
-    props.shelvesCount,
     props.style,
     props.handleStyle,
   ]);
@@ -62,7 +53,6 @@ export function WardrobeMesh(props: WardrobeMeshProps) {
       sizeMm={{ widthMm: spec.widthMm, heightMm: spec.heightMm, depthMm: spec.depthMm }}
       bodyProps={props.bodyProps}
       selected={props.selected}
-      openDoors={props.openDoors}
       openDrawers={props.openDrawers}
       onInterlock={props.onInterlock}
     />
