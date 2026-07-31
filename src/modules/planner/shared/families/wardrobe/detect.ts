@@ -12,7 +12,13 @@
  * Nada aqui altera dados: a conversão é feita SEMPRE em memória.
  */
 
-export type FurnitureRenderer = "wardrobe" | "dresser" | "kitchen" | "bathroom" | "cabinet";
+export type FurnitureRenderer =
+  | "wardrobe"
+  | "dresser"
+  | "kitchen"
+  | "bathroom"
+  | "laundry"
+  | "cabinet";
 
 export interface RendererDecisionInput {
   readonly id?: string;
@@ -116,6 +122,33 @@ const BATHROOM_ALIASES = new Set([
 ]);
 
 const BATHROOM_CATALOG_HINT = /(banheiro|lavabo|vanity|bathroom|espelheira|rodabanca)/i;
+
+/** Nomes que sempre significam módulo de lavanderia (família convertida). */
+const LAUNDRY_ALIASES_SET = new Set([
+  "lavanderia",
+  "lavanderias",
+  "area-de-servico",
+  "area-servico",
+  "laundry",
+  "laundry-room",
+  "tanque",
+  "gabinete-tanque",
+  "vassoureiro",
+  "maquina",
+  "maquina-de-lavar",
+  "modulo-lavadora",
+  "modulo-secadora",
+  "secadora",
+  "lava-e-seca",
+  "torre-maquinas",
+  "torre-tecnica",
+  "armario-limpeza",
+  "modulo-tabua",
+  "modulo-cestos",
+]);
+
+const LAUNDRY_CATALOG_HINT =
+  /(lavanderia|area[-_ ]?de[-_ ]?servico|laundry|tanque|vassoureiro|lavadora|secadora|lava[-_ ]?e[-_ ]?seca)/i;
 
 function numParam(
   params: RendererDecisionInput["params"],
@@ -246,6 +279,24 @@ export function resolveFurnitureRenderer(input: RendererDecisionInput): Renderer
     };
   }
 
+  if (LAUNDRY_ALIASES_SET.has(subtype)) {
+    return {
+      renderer: "laundry",
+      resolvedType: subtype,
+      legacyConverted,
+      reason: `subtype "${input.subtype}" é módulo de lavanderia`,
+    };
+  }
+
+  if (LAUNDRY_CATALOG_HINT.test(catalog)) {
+    return {
+      renderer: "laundry",
+      resolvedType: "lavanderia",
+      legacyConverted,
+      reason: `catalogItemId "${catalog}" identifica módulo de lavanderia`,
+    };
+  }
+
   if (AMBIGUOUS.has(subtype)) {
     if (hasFront(input.params)) {
       return {
@@ -292,7 +343,9 @@ export function logRendererDecision(id: string, decision: RendererDecision): voi
             ? "KitchenMesh"
             : decision.renderer === "bathroom"
               ? "BathroomMesh"
-              : "CabinetMesh",
+              : decision.renderer === "laundry"
+                ? "LaundryMesh"
+                : "CabinetMesh",
     conversaoLegada: decision.legacyConverted,
     motivoFallback: decision.renderer === "cabinet" ? decision.reason : null,
     motivo: decision.reason,

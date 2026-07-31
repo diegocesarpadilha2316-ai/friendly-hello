@@ -9,4 +9,5 @@ export * from "./wardrobe";
 export * from "./dresser";
 export * from "./kitchen";
 export * from "./bathroom";
+export * from "./laundry";
 export * from "./filler";
