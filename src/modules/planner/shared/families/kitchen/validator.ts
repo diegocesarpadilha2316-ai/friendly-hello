@@ -99,12 +99,12 @@ export function validateKitchenLayout(result: KitchenLayoutResult): KitchenValid
       });
     }
     const leaves = p.spec.doors;
-    if (leaves > 0 && p.widthMm / leaves > cfg.maxModuleWidthMm / 1.8) {
+    if (leaves > 0 && p.widthMm / leaves > cfg.maxLeafWidthMm + 1) {
       warnings.push({
         code: "folha-larga",
         level: "warn",
         wallId: p.wallId,
-        message: `${p.id}: folha de ${Math.round(p.widthMm / leaves)} mm — prever mais uma divisão.`,
+        message: `${p.id}: folha de ${Math.round(p.widthMm / leaves)} mm — acima de ${cfg.maxLeafWidthMm} mm, prever mais uma divisão.`,
       });
     }
   }
@@ -234,10 +234,12 @@ export function validateKitchenLayout(result: KitchenLayoutResult): KitchenValid
     }
   }
 
-  /* ── 7. aéreo sobre cooktop ── */
+  /* ── 7. aéreo sobre o COOKTOP (o aparelho, não a caixa) ── */
   const uppers = result.placements.filter((p) => p.level === "superior");
-  for (const cook of result.placements.filter((p) => p.kind === "balcao-cooktop" && p.wallId !== "ilha")) {
-    const above = uppers.find((u) => u.wallId === cook.wallId && overlaps(u, cook));
+  for (const cook of result.reservations.filter((r) => r.kind === "cooktop")) {
+    const above = uppers.find(
+      (u) => u.wallId === cook.wallId && u.xMm < cook.xMm + cook.widthMm - 1 && cook.xMm < u.xMm + u.widthMm - 1,
+    );
     if (above) {
       errors.push({
         code: "aereo-sobre-cooktop",

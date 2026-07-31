@@ -124,6 +124,8 @@ export interface KitchenConfig {
   readonly moduleWidthsMm: readonly number[];
   readonly minModuleWidthMm: number;
   readonly maxModuleWidthMm: number;
+  /** Largura máxima de UMA folha de porta antes de empenar. */
+  readonly maxLeafWidthMm: number;
   /** Sobra que um módulo vizinho absorve antes de virar tamponamento. */
   readonly maxAbsorbMm: number;
   /** Altura livre reservada para a coifa acima da bancada. */
@@ -147,6 +149,7 @@ export const KITCHEN_DEFAULT_CONFIG: KitchenConfig = {
   moduleWidthsMm: [800, 700, 600, 500, 450, 400],
   minModuleWidthMm: 300,
   maxModuleWidthMm: 900,
+  maxLeafWidthMm: 700,
   maxAbsorbMm: 250,
   hoodGapMm: 700,
   hoodHeightMm: 350,
