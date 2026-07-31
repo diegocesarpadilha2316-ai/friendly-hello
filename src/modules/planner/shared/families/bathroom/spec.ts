@@ -120,15 +120,15 @@ export const BATHROOM_MODULE_PROFILES: Readonly<Record<BathroomModuleKind, Bathr
   "gabinete-piso": { ...G, install: "rodape", defaultWidthMm: 900, doors: 2, drawers: 0, shelves: 1, label: "Gabinete apoiado no piso" },
   "torre-lateral": { ...G, level: "coluna", install: "piso", defaultWidthMm: 400, defaultHeightMm: 1800, defaultDepthMm: 350, doors: 1, drawers: 1, shelves: 3, countertop: false, sink: false, label: "Torre lateral" },
   "nicho-aberto": { ...G, opening: "aberto", defaultWidthMm: 400, defaultHeightMm: 600, defaultDepthMm: 250, doors: 0, drawers: 0, shelves: 2, countertop: false, sink: false, label: "Nicho aberto" },
-  espelheira: { ...G, level: "superior", defaultWidthMm: 900, defaultHeightMm: 700, defaultDepthMm: 150, doors: 2, drawers: 0, shelves: 2, countertop: false, sink: false, mirror: "porta", label: "Armário espelheira" },
-  "armario-superior": { ...G, level: "superior", defaultWidthMm: 700, defaultHeightMm: 650, defaultDepthMm: 200, doors: 2, drawers: 0, shelves: 1, countertop: false, sink: false, label: "Armário superior" },
-  prateleira: { ...G, level: "superior", opening: "aberto", defaultWidthMm: 700, defaultHeightMm: 40, defaultDepthMm: 200, doors: 0, drawers: 0, shelves: 1, countertop: false, sink: false, label: "Prateleira decorativa" },
+  espelheira: { ...G, level: "superior", defaultWidthMm: 900, defaultHeightMm: 700, defaultDepthMm: 150, minDepthMm: 100, doors: 2, drawers: 0, shelves: 2, countertop: false, sink: false, mirror: "porta", label: "Armário espelheira" },
+  "armario-superior": { ...G, level: "superior", defaultWidthMm: 700, defaultHeightMm: 650, defaultDepthMm: 200, minDepthMm: 150, doors: 2, drawers: 0, shelves: 1, countertop: false, sink: false, label: "Armário superior" },
+  prateleira: { ...G, level: "superior", opening: "aberto", defaultWidthMm: 700, defaultHeightMm: 40, defaultDepthMm: 200, minDepthMm: 100, doors: 0, drawers: 0, shelves: 1, countertop: false, sink: false, label: "Prateleira decorativa" },
   "cuba-central": { ...G, defaultWidthMm: 900, doors: 2, drawers: 0, shelves: 0, label: "Módulo cuba central" },
   "cuba-deslocada": { ...G, opening: "misto", defaultWidthMm: 1200, doors: 1, drawers: 2, shelves: 0, label: "Módulo cuba deslocada" },
   "cuba-dupla": { ...G, defaultWidthMm: 1600, doors: 2, drawers: 2, shelves: 0, label: "Módulo cuba dupla" },
   "tapa-vao": { ...G, level: "acabamento", opening: "aberto", defaultWidthMm: 60, defaultHeightMm: 600, defaultDepthMm: 460, minWidthMm: 10, maxWidthMm: 400, doors: 0, drawers: 0, shelves: 0, countertop: false, sink: false, label: "Tapa-vão lateral" },
-  "painel-acabamento": { ...G, level: "acabamento", opening: "aberto", defaultWidthMm: 460, defaultHeightMm: 600, defaultDepthMm: 18, minWidthMm: 50, maxWidthMm: 2400, doors: 0, drawers: 0, shelves: 0, countertop: false, sink: false, label: "Painel de acabamento" },
-  rodabanca: { ...G, level: "acabamento", opening: "aberto", defaultWidthMm: 900, defaultHeightMm: 100, defaultDepthMm: 20, minWidthMm: 100, maxWidthMm: 3000, doors: 0, drawers: 0, shelves: 0, countertop: false, sink: false, label: "Rodabanca" },
+  "painel-acabamento": { ...G, level: "acabamento", opening: "aberto", defaultWidthMm: 460, defaultHeightMm: 600, defaultDepthMm: 18, minWidthMm: 50, maxWidthMm: 2400, minDepthMm: 10, doors: 0, drawers: 0, shelves: 0, countertop: false, sink: false, label: "Painel de acabamento" },
+  rodabanca: { ...G, level: "acabamento", opening: "aberto", defaultWidthMm: 900, defaultHeightMm: 100, defaultDepthMm: 20, minWidthMm: 100, maxWidthMm: 3000, minDepthMm: 10, doors: 0, drawers: 0, shelves: 0, countertop: false, sink: false, label: "Rodabanca" },
 };
 
 /** Tampo do banheiro: reaproveita o tampo da cozinha e acrescenta saia/frontão. */
