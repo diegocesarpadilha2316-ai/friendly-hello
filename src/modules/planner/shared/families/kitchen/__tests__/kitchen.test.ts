@@ -196,8 +196,9 @@ describe("Kitchen Layout Engine", () => {
         { id: "b", lengthMm: 2400, cornerStart: true, fixtures: [{ id: "ck", kind: "cooktop", atMm: 1200 }] },
       ],
     });
-    expect(result.placements.some((p) => p.kind === "canto-diagonal")).toBe(true);
-    expect(result.placements.some((p) => p.kind === "canto-reto")).toBe(true);
+    // o canto tem UM dono; a outra parede apenas reserva o retorno
+    expect(result.placements.filter((p) => p.kind.startsWith("canto"))).toHaveLength(1);
+    expect(result.reservations.some((x) => x.kind === "retorno-de-canto")).toBe(true);
     const v = validateKitchenLayout(result);
     expect(v.errors, JSON.stringify(v.errors)).toHaveLength(0);
   });

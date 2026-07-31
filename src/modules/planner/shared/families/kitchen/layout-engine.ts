@@ -111,6 +111,8 @@ export interface KitchenConfig {
   readonly baseHeightMm: number;
   readonly baseDepthMm: number;
   readonly upperHeightMm: number;
+  /** Abaixo disso o aéreo deixa de ser útil e é descartado. */
+  readonly minUpperHeightMm: number;
   readonly upperDepthMm: number;
   /** Distância entre o tampo e o fundo do aéreo (mm). */
   readonly upperGapMm: number;
@@ -138,6 +140,7 @@ export const KITCHEN_DEFAULT_CONFIG: KitchenConfig = {
   baseHeightMm: 900,
   baseDepthMm: 600,
   upperHeightMm: 700,
+  minUpperHeightMm: 500,
   upperDepthMm: 350,
   upperGapMm: 500,
   columnHeightMm: 2200,
@@ -810,7 +813,19 @@ export function planKitchen(input: KitchenLayoutInput): KitchenLayoutResult {
     /* ── 5. balcões nos trechos livres ── */
     for (const seg of freeBase) {
       const parts = splitRun(seg.endMm - seg.startMm, cfg);
-      if (parts.length === 0) continue;
+      if (parts.length === 0) {
+        const width = seg.endMm - seg.startMm;
+        if (width >= 1) {
+          fillers.push({ wallId: wall.id, xMm: seg.startMm, widthMm: width, heightMm: cfg.baseHeightMm });
+          warnings.push({
+            code: "tamponamento",
+            level: "info",
+            wallId: wall.id,
+            message: `Tamponamento de ${Math.round(width)} mm em ${Math.round(seg.startMm)} mm.`,
+          });
+        }
+        continue;
+      }
       let x = seg.startMm;
       parts.forEach((w, i) => {
         add({
@@ -916,7 +931,7 @@ export function planKitchen(input: KitchenLayoutInput): KitchenLayoutResult {
     let upperHeight = cfg.upperHeightMm;
     if (upperY + upperHeight > wallHeight) {
       const fit = wallHeight - upperY;
-      if (fit < 350) {
+      if (fit < cfg.minUpperHeightMm) {
         warnings.push({
           code: "aereo-sem-espaco",
           level: "warn",
