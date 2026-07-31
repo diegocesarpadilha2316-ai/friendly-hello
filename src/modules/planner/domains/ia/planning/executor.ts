@@ -49,6 +49,7 @@ export interface PlanRunnerOptions {
   readonly onUpdate: (plan: ProjectPlan) => void;
   /** Snapshot anterior à execução, quando o plano exige checkpoint. */
   readonly onCheckpoint?: (project: PlannerProject, planId: string) => void;
+  readonly validateAppliedProject?: (before: PlannerProject, after: PlannerProject) => Promise<{ ok: boolean; summary: string }>;
 }
 
 const TERMINAL_STEP: readonly PlanStepStatus[] = [
@@ -312,10 +313,19 @@ export class PlanRunner {
           signal: this.controller.signal,
         });
 
-        const result = outcome.result;
+        let result = outcome.result;
         if (result.ok && outcome.project !== project) {
+          const previous = project;
           project = outcome.project;
           this.options.applyProject(project);
+          if (this.options.validateAppliedProject && ["insert_item", "insert_described", "layout_room", "create_room_preset"].includes(next.toolName)) {
+            const validation = await this.options.validateAppliedProject(previous, project);
+            if (!validation.ok) {
+              result = { ...result, ok: false, errorCode: "INTERNAL", summary: validation.summary };
+            } else {
+              result = { ...result, summary: `${result.summary} ${validation.summary}` };
+            }
+          }
         }
 
         this.emit(

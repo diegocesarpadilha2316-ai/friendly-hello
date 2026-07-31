@@ -37,7 +37,10 @@ import {
 const empty = () => z.object({}).strict();
 
 /** Adapta um executor legado ao contrato padronizado. */
-function legacy(name: ToolName): (args: unknown, run: PlannerToolRunContext) => PlannerToolOutcome {
+function legacy(
+  name: ToolName,
+  mutating: boolean,
+): (args: unknown, run: PlannerToolRunContext) => PlannerToolOutcome {
   return (args, run) => {
     const fn = (TOOL_FUNCTIONS as Record<string, unknown>)[name] as
       | ((p: PlannerProject, c: ToolContext, a: unknown) => ToolExecutionResult)
@@ -46,10 +49,16 @@ function legacy(name: ToolName): (args: unknown, run: PlannerToolRunContext) => 
       return { summary: `Ferramenta indisponível: ${name}.`, errorCode: "NOT_FOUND" };
     }
     const res = fn(run.project, run.ctx, args ?? {});
+    // Ferramenta mutante que devolveu exatamente o projeto de entrada não
+    // realizou a ação. Sem este marcador o runner convertia mensagens como
+    // “sem cômodo ativo”/“item não encontrado” em sucesso e o chat dizia
+    // “Pronto” apesar de nada ter mudado.
+    const noChange = mutating && res.project === run.project;
     return {
       project: res.project,
       summary: res.summary,
       affectedIds: res.affectedIds,
+      errorCode: noChange ? "NOT_FOUND" : undefined,
     };
   };
 }
@@ -84,7 +93,7 @@ function contract(name: ToolName, meta: Meta): PlannerToolContract {
     singletonPerTurn: meta.singletonPerTurn ?? false,
     timeout: meta.timeout ?? 8_000,
     maxAffected: meta.maxAffected,
-    execute: (meta.execute ?? legacy(name)) as PlannerToolContract["execute"],
+    execute: (meta.execute ?? legacy(name, meta.mutating ?? false)) as PlannerToolContract["execute"],
   };
 }
 

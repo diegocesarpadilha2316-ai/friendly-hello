@@ -56,6 +56,11 @@ import { LaundryMesh } from "./LaundryMesh";
 import { logRendererDecision, resolveFurnitureRenderer } from "../families/wardrobe";
 import { ApplianceMesh, isApplianceSubtype } from "./ApplianceMesh";
 import { CinematicFX } from "./CinematicFX";
+import { reportSceneRuntime } from "./scene-runtime";
+import { buildWardrobe, wardrobeSpecFromLegacy } from "../families/wardrobe";
+import { buildKitchenModule, kitchenSpecFromLegacy } from "../families/kitchen";
+import { bathroomFromLegacy, buildBathroomModule } from "../families/bathroom";
+import { buildLaundryModule, laundryFromLegacy } from "../families/laundry";
 
 interface Scene3DProps {
   model: Scene3DModel;
@@ -260,6 +265,47 @@ function explodeVec(cx: number, cz: number, cy: number, center: THREE.Vector3, f
   return new THREE.Vector3(cx + dir.x, cy + dir.y, cz + dir.z);
 }
 
+function FurnitureRuntimeEvidence({
+  f,
+  renderer,
+  autoFitVersion,
+}: {
+  f: FurnitureDescriptor;
+  renderer: string;
+  autoFitVersion: number;
+}) {
+  const { camera } = useThree();
+  useEffect(() => {
+    let frame = 0;
+    const common = {
+      id: f.id,
+      subtype: f.subtype,
+      catalogItemId: f.catalogItemId,
+      params: f.params,
+      widthMm: Math.round(f.width * 1000),
+      heightMm: Math.round(f.height * 1000),
+      depthMm: Math.round(f.depth * 1000),
+    };
+    let pieces = 1;
+    if (renderer === "wardrobe") pieces = buildWardrobe(wardrobeSpecFromLegacy(common)).assembly.pieces.length;
+    else if (renderer === "kitchen") pieces = buildKitchenModule(kitchenSpecFromLegacy(common)).assembly.pieces.length;
+    else if (renderer === "bathroom") pieces = buildBathroomModule(bathroomFromLegacy(common)).assembly.pieces.length;
+    else if (renderer === "laundry") pieces = buildLaundryModule(laundryFromLegacy(common)).assembly.pieces.length;
+    // Aguarda o efeito de AutoFitCamera do mesmo commit antes de comprovar
+    // o frustum; assim não validamos contra a câmera antiga.
+    frame = window.requestAnimationFrame(() => {
+      camera.updateMatrixWorld();
+      const center = new THREE.Vector3(f.cx, f.y + f.height / 2, f.cz);
+      const sphere = new THREE.Sphere(center, Math.max(f.width, f.height, f.depth) / 2);
+      const frustum = new THREE.Frustum();
+      frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+      reportSceneRuntime({ itemId: f.id, renderer, pieces, visible: true, framed: frustum.intersectsSphere(sphere), recordedAt: Date.now() });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [camera, autoFitVersion, f.id, f.subtype, f.catalogItemId, f.params, f.width, f.height, f.depth, f.cx, f.cz, f.y, renderer]);
+  return null;
+}
+
 function Wall({
   w,
   center,
@@ -275,6 +321,11 @@ function Wall({
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const matRef = useRef<THREE.MeshStandardMaterial>(null);
+  const fadeVectors = useRef({
+    wall: new THREE.Vector3(),
+    toCenter: new THREE.Vector3(),
+    toWall: new THREE.Vector3(),
+  });
   const pos = explodeVec(w.cx, w.cz, w.height / 2, center, viewport.explode);
   const clipped =
     viewport.sectionHeight != null && w.height / 2 > (viewport.sectionHeight / 1000);
@@ -301,9 +352,9 @@ function Wall({
     const base = opacity;
     let target = base;
     if (viewport.autoFadeNearWalls && !selected) {
-      const wallPos = new THREE.Vector3(pos.x, pos.y, pos.z);
-      const camToCenter = new THREE.Vector3().subVectors(center, camera.position);
-      const camToWall = new THREE.Vector3().subVectors(wallPos, camera.position);
+      const wallPos = fadeVectors.current.wall.set(pos.x, pos.y, pos.z);
+      const camToCenter = fadeVectors.current.toCenter.subVectors(center, camera.position);
+      const camToWall = fadeVectors.current.toWall.subVectors(wallPos, camera.position);
       const distCenter = camToCenter.length();
       const distWall = camToWall.length();
       // Alinhado com o vetor câmera→centro e mais perto que o centro?
@@ -553,6 +604,13 @@ function Furniture({
     params: f.params,
   });
   logRendererDecision(f.id, decision);
+  const runtimeEvidence = (
+    <FurnitureRuntimeEvidence
+      f={f}
+      renderer={decision.renderer}
+      autoFitVersion={viewport.autoFitVersion ?? 0}
+    />
+  );
   const wardrobe = viewport.render !== "wireframe" && decision.renderer === "wardrobe";
   if (wardrobe) {
     return (
@@ -564,6 +622,7 @@ function Furniture({
           onSelect(f.id);
         }}
       >
+        {runtimeEvidence}
         <WardrobeMesh
           nodeId={f.id}
           width={f.width}
@@ -602,6 +661,7 @@ function Furniture({
           onSelect(f.id);
         }}
       >
+        {runtimeEvidence}
         <LaundryMesh
           nodeId={f.id}
           width={f.width}
@@ -636,6 +696,7 @@ function Furniture({
           onSelect(f.id);
         }}
       >
+        {runtimeEvidence}
         <BathroomMesh
           nodeId={f.id}
           width={f.width}
@@ -670,6 +731,7 @@ function Furniture({
           onSelect(f.id);
         }}
       >
+        {runtimeEvidence}
         <KitchenMesh
           width={f.width}
           height={f.height}
@@ -702,6 +764,7 @@ function Furniture({
           onSelect(f.id);
         }}
       >
+        {runtimeEvidence}
         <DresserMesh
           width={f.width}
           height={f.height}
@@ -730,6 +793,7 @@ function Furniture({
           onSelect(f.id);
         }}
       >
+        {runtimeEvidence}
         <CabinetMesh
           subtype={f.subtype as never}
           width={f.width}
@@ -762,6 +826,8 @@ function Furniture({
     );
   }
   return (
+    <group>
+      {runtimeEvidence}
     <mesh
       position={[pos.x, safeCenterY, pos.z]}
       rotation={[0, f.rotationY, 0]}
@@ -784,6 +850,7 @@ function Furniture({
         />
       ) : null}
     </mesh>
+    </group>
   );
 }
 
@@ -1105,15 +1172,6 @@ function AutoFitCamera({
   return null;
 }
 
-function AutoResize() {
-  const ref = useRef<THREE.Group>(null!);
-  useFrame(() => {
-    // hook reservado para animações futuras
-    if (ref.current) ref.current.updateMatrixWorld();
-  });
-  return null;
-}
-
 export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCommitTransform }: Scene3DProps) {
   const { cx, cz } = centerOffset(model);
   // Alvo da câmera: 1/3 da altura da parede (~olho baixo). Isso ancora o
@@ -1317,7 +1375,6 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
       {viewport.showAxes ? <axesHelper args={[2]} position={[cx, 0.01, cz]} /> : null}
 
       <group>
-          <AutoResize />
           {model.floors.map((s) => (
             <Slab key={s.id} s={s} kind="floor" center={center} viewport={viewport} selected={selectedId === s.id} onSelect={onSelect} />
           ))}
