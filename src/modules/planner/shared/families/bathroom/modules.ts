@@ -171,6 +171,49 @@ export function siphonSpansMm(
   }));
 }
 
+/**
+ * Profundidade, a partir da parede (z = 0), reservada para entrada de água e
+ * saída de esgoto. Nenhuma gaveta, prateleira ou divisória pode encostar
+ * nela — por isso todas as peças internas nascem recuadas desta faixa.
+ */
+export function hydraulicBackZoneMm(
+  spec: BathroomModuleSpec,
+  g: BathroomGeometry,
+  marginMm = 5,
+): number {
+  if (spec.sink.type === "nenhuma") return 0;
+  let zone = 0;
+  for (const r of bathroomReservedVolumes(spec, g)) {
+    if (r.kind !== "agua" && r.kind !== "esgoto") continue;
+    zone = Math.max(zone, r.box.z + r.box.depth);
+  }
+  return Math.min(Math.max(0, g.caseDepthMm - 150), Math.round(zone + marginMm));
+}
+
+/**
+ * Faixas em X que o mecanismo não pode atravessar na zona de meia
+ * profundidade: sifão e válvula (a água/esgoto já saem pelo recuo traseiro).
+ * O recorte NÃO é assumido como central: ele vem do centro real da cuba.
+ */
+export function hydraulicSpansMm(
+  spec: BathroomModuleSpec,
+  g: BathroomGeometry,
+  marginMm = 20,
+): readonly { x0: number; x1: number }[] {
+  if (spec.sink.type === "nenhuma") return [];
+  const raw = bathroomReservedVolumes(spec, g)
+    .filter((r) => r.kind === "sifao" || r.kind === "valvula")
+    .map((r) => ({ x0: r.box.x - marginMm, x1: r.box.x + r.box.width + marginMm }))
+    .sort((a, b) => a.x0 - b.x0);
+  const merged: { x0: number; x1: number }[] = [];
+  for (const s of raw) {
+    const last = merged[merged.length - 1];
+    if (last && s.x0 <= last.x1) last.x1 = Math.max(last.x1, s.x1);
+    else merged.push({ ...s });
+  }
+  return merged.map((s) => ({ x0: Math.round(s.x0), x1: Math.round(s.x1) }));
+}
+
 /* ───────────────────────── decisões registradas ───────────────────────── */
 
 export type BathroomDecisionAction =
