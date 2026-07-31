@@ -28,9 +28,9 @@ describe("audit", () => {
     report("C1 reta 2.5m", { shape:"reta", walls:[{ id:"p1", lengthMm:2500, heightMm:2700, fixtures:[
       {id:"pia",kind:"pia",atMm:200,widthMm:1200},{id:"ck",kind:"cooktop",atMm:1600,widthMm:800},{id:"coifa",kind:"coifa",atMm:1600,widthMm:800}]}]});
     report("C2 reta 3.5m", { shape:"reta", walls:[{ id:"p1", lengthMm:3500, heightMm:2700, fixtures:[
-      {id:"gel",kind:"geladeira",atMm:0,widthMm:800},{id:"tq",kind:"torre-quente",atMm:800,widthMm:600},
-      {id:"pia",kind:"pia",atMm:1400,widthMm:1200},{id:"ll",kind:"lava-loucas",atMm:2600,widthMm:600},
-      {id:"ck",kind:"cooktop",atMm:3200,widthMm:800},{id:"coifa",kind:"coifa",atMm:3200,widthMm:800}]}]});
+      {id:"gel",kind:"geladeira",atMm:0,widthMm:700},{id:"tq",kind:"torre-quente",atMm:700,widthMm:600},
+      {id:"pia",kind:"pia",atMm:1300,widthMm:1000},{id:"ll",kind:"lava-loucas",atMm:2300,widthMm:600},
+      {id:"ck",kind:"cooktop",atMm:2700,widthMm:800},{id:"coifa",kind:"coifa",atMm:2700,widthMm:800}]}]});
     report("C3 reta 5m", { shape:"reta", walls:[{ id:"p1", lengthMm:5000, heightMm:2700, fixtures:[
       {id:"gel",kind:"geladeira",atMm:0,widthMm:800},{id:"tq",kind:"torre-quente",atMm:800,widthMm:600},
       {id:"pia",kind:"pia",atMm:2000,widthMm:1200},{id:"ll",kind:"lava-loucas",atMm:3200,widthMm:600},
