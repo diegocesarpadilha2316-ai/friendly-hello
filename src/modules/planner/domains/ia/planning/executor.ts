@@ -318,7 +318,7 @@ export class PlanRunner {
           const previous = project;
           project = outcome.project;
           this.options.applyProject(project);
-          if (next.category === undefined && this.options.validateAppliedProject && ["insert_item", "insert_described", "layout_room", "create_room_preset"].includes(next.toolName)) {
+          if (this.options.validateAppliedProject && ["insert_item", "insert_described", "layout_room", "create_room_preset"].includes(next.toolName)) {
             const validation = await this.options.validateAppliedProject(previous, project);
             if (!validation.ok) {
               result = { ...result, ok: false, errorCode: "INTERNAL", summary: validation.summary };

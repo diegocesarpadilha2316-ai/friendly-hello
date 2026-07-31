@@ -1,10 +1,9 @@
 import {
   buildScene3D,
   listPrimitives,
-  resolveFurnitureRenderer,
   type PlannerProject,
 } from "@/modules/planner/shared";
-import { buildWardrobe, wardrobeSpecFromLegacy } from "@/modules/planner/shared/families/wardrobe";
+import { buildWardrobe, resolveFurnitureRenderer, wardrobeSpecFromLegacy } from "@/modules/planner/shared/families/wardrobe";
 import { buildKitchenModule, kitchenSpecFromLegacy } from "@/modules/planner/shared/families/kitchen";
 import { bathroomFromLegacy, buildBathroomModule } from "@/modules/planner/shared/families/bathroom";
 import { buildLaundryModule, laundryFromLegacy } from "@/modules/planner/shared/families/laundry";

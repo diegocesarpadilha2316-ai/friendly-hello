@@ -56,6 +56,11 @@ import { LaundryMesh } from "./LaundryMesh";
 import { logRendererDecision, resolveFurnitureRenderer } from "../families/wardrobe";
 import { ApplianceMesh, isApplianceSubtype } from "./ApplianceMesh";
 import { CinematicFX } from "./CinematicFX";
+import { reportSceneRuntime } from "./scene-runtime";
+import { buildWardrobe, wardrobeSpecFromLegacy } from "../families/wardrobe";
+import { buildKitchenModule, kitchenSpecFromLegacy } from "../families/kitchen";
+import { bathroomFromLegacy, buildBathroomModule } from "../families/bathroom";
+import { buildLaundryModule, laundryFromLegacy } from "../families/laundry";
 
 interface Scene3DProps {
   model: Scene3DModel;
@@ -258,6 +263,32 @@ function explodeVec(cx: number, cz: number, cy: number, center: THREE.Vector3, f
   const dir = new THREE.Vector3(cx - center.x, cy - center.y, cz - center.z);
   dir.multiplyScalar(factor);
   return new THREE.Vector3(cx + dir.x, cy + dir.y, cz + dir.z);
+}
+
+function FurnitureRuntimeEvidence({ f, renderer }: { f: FurnitureDescriptor; renderer: string }) {
+  const { camera } = useThree();
+  useEffect(() => {
+    const common = {
+      id: f.id,
+      subtype: f.subtype,
+      catalogItemId: f.catalogItemId,
+      params: f.params,
+      widthMm: Math.round(f.width * 1000),
+      heightMm: Math.round(f.height * 1000),
+      depthMm: Math.round(f.depth * 1000),
+    };
+    let pieces = 1;
+    if (renderer === "wardrobe") pieces = buildWardrobe(wardrobeSpecFromLegacy(common)).assembly.pieces.length;
+    else if (renderer === "kitchen") pieces = buildKitchenModule(kitchenSpecFromLegacy(common)).assembly.pieces.length;
+    else if (renderer === "bathroom") pieces = buildBathroomModule(bathroomFromLegacy(common)).assembly.pieces.length;
+    else if (renderer === "laundry") pieces = buildLaundryModule(laundryFromLegacy(common)).assembly.pieces.length;
+    const center = new THREE.Vector3(f.cx, f.y + f.height / 2, f.cz);
+    const sphere = new THREE.Sphere(center, Math.max(f.width, f.height, f.depth) / 2);
+    const frustum = new THREE.Frustum();
+    frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+    reportSceneRuntime({ itemId: f.id, renderer, pieces, visible: true, framed: frustum.intersectsSphere(sphere), recordedAt: Date.now() });
+  }, [camera, f.id, f.subtype, f.catalogItemId, f.params, f.width, f.height, f.depth, f.cx, f.cz, f.y, renderer]);
+  return null;
 }
 
 function Wall({
@@ -553,6 +584,7 @@ function Furniture({
     params: f.params,
   });
   logRendererDecision(f.id, decision);
+  const runtimeEvidence = <FurnitureRuntimeEvidence f={f} renderer={decision.renderer} />;
   const wardrobe = viewport.render !== "wireframe" && decision.renderer === "wardrobe";
   if (wardrobe) {
     return (
@@ -564,6 +596,7 @@ function Furniture({
           onSelect(f.id);
         }}
       >
+        {runtimeEvidence}
         <WardrobeMesh
           nodeId={f.id}
           width={f.width}
@@ -602,6 +635,7 @@ function Furniture({
           onSelect(f.id);
         }}
       >
+        {runtimeEvidence}
         <LaundryMesh
           nodeId={f.id}
           width={f.width}
@@ -636,6 +670,7 @@ function Furniture({
           onSelect(f.id);
         }}
       >
+        {runtimeEvidence}
         <BathroomMesh
           nodeId={f.id}
           width={f.width}
@@ -670,6 +705,7 @@ function Furniture({
           onSelect(f.id);
         }}
       >
+        {runtimeEvidence}
         <KitchenMesh
           width={f.width}
           height={f.height}
@@ -702,6 +738,7 @@ function Furniture({
           onSelect(f.id);
         }}
       >
+        {runtimeEvidence}
         <DresserMesh
           width={f.width}
           height={f.height}
@@ -730,6 +767,7 @@ function Furniture({
           onSelect(f.id);
         }}
       >
+        {runtimeEvidence}
         <CabinetMesh
           subtype={f.subtype as never}
           width={f.width}
@@ -762,6 +800,8 @@ function Furniture({
     );
   }
   return (
+    <group>
+      {runtimeEvidence}
     <mesh
       position={[pos.x, safeCenterY, pos.z]}
       rotation={[0, f.rotationY, 0]}
@@ -784,6 +824,7 @@ function Furniture({
         />
       ) : null}
     </mesh>
+    </group>
   );
 }
 
