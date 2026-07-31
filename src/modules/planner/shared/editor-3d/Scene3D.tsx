@@ -279,6 +279,10 @@ function Wall({
   if (clipped) return null;
   const wireframe = viewport.render === "wireframe";
   const opacity = viewport.wallOpacity;
+  const pieces = wallPieces(w);
+  const bbRuns = baseboardRuns(w);
+  const bbHeight = w.baseboard?.heightM ?? 0.1;
+  const bbThickness = w.baseboard?.thicknessM ?? 0.015;
   const props = useTexturedMaterialProps(
     w.materialId,
     [w.length, w.height],
