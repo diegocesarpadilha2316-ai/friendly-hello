@@ -231,7 +231,9 @@ export const back: ConstructionComponent<BackParams> = {
     const d = back.defaults;
     const t = clamp(positive(p.thicknessMm, ctx.backThicknessMm || d.thicknessMm), 3, 18);
     return {
-      widthMm: clamp(positive(p.widthMm, d.widthMm), 100, 6000),
+      // O fundo pode nascer estreito quando é RECORTADO para liberar a área
+      // hidráulica. Clamp em 100 mm criava peça maior que o vão (silencioso).
+      widthMm: clamp(positive(p.widthMm, d.widthMm), 20, 6000),
       heightMm: clamp(positive(p.heightMm, d.heightMm), 100, 3000),
       depthMm: t,
       thicknessMm: t,

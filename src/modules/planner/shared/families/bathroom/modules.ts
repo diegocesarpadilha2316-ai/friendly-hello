@@ -16,6 +16,7 @@ import { makeFiller, fillerSlot } from "../filler";
 import { sinkCentersMm, SINKS } from "./sink";
 import {
   bathroomHandle,
+  bathroomLevel,
   BATHROOM_MODULE_PROFILES,
   type BathroomModuleSpec,
 } from "./spec";
@@ -315,15 +316,19 @@ function caseSlots(
       const cuts = [{ x0: 0, x1: W }];
       let pieces: { x0: number; x1: number }[] = cuts;
       for (const s of spans) {
+        // A faixa hidráulica é recortada DENTRO da caixa: sifão de cuba larga
+        // em módulo estreito não pode gerar recorte fora do envelope.
+        const sx0 = Math.max(0, Math.min(W, s.x0));
+        const sx1 = Math.max(0, Math.min(W, s.x1));
         const next: { x0: number; x1: number }[] = [];
         for (const p of pieces) {
-          if (s.x1 <= p.x0 || s.x0 >= p.x1) next.push(p);
+          if (sx1 <= p.x0 || sx0 >= p.x1) next.push(p);
           else {
-            if (s.x0 - p.x0 > 60) next.push({ x0: p.x0, x1: s.x0 - 20 });
-            if (p.x1 - s.x1 > 60) next.push({ x0: s.x1 + 20, x1: p.x1 });
+            if (sx0 - p.x0 > 60) next.push({ x0: p.x0, x1: Math.min(p.x1, sx0 - 20) });
+            if (p.x1 - sx1 > 60) next.push({ x0: Math.max(p.x0, sx1 + 20), x1: p.x1 });
           }
         }
-        pieces = next;
+        pieces = next.filter((p) => p.x1 - p.x0 >= 20 && p.x0 >= 0 && p.x1 <= W);
       }
       pieces.forEach((p, i) => {
         slots.push({
@@ -458,8 +463,11 @@ function doorSlots(
 ): AssemblySlot[] {
   if (count <= 0) return [];
   const handle = bathroomHandle(spec);
-  // Só a PORTA espelhada recebe rig; espelho fixo/painel são acabamento.
-  const substrate = spec.mirror === "porta" ? "espelho" : "mdf";
+  /* Espelho é material de módulo SUPERIOR (espelheira / armário superior).
+   * Um gabinete de bancada nunca recebe folha espelhada só porque o preset
+   * pede espelheira na composição. */
+  const substrate =
+    spec.mirror === "porta" && bathroomLevel(spec.kind) === "superior" ? "espelho" : "mdf";
   const leafW = spec.widthMm / count;
   return Array.from({ length: count }, (_, i) => ({
     id: `${idPrefix}-${i + 1}`,
@@ -862,7 +870,21 @@ export function bathroomModuleSlots(
       ? Math.min(g.interiorHeightMm * 0.55, 420)
       : spec.opening === "gaveta"
         ? g.interiorHeightMm
-        : 0;
+        : /* Gavetas pedidas num módulo de abrir (ex.: cuba dupla) nunca podem
+           * ser descartadas em silêncio: o módulo passa a operar como misto. */
+          spec.drawers > 0
+          ? Math.min(g.interiorHeightMm * 0.55, 420)
+          : 0;
+
+  if (spec.opening === "misto" && BATHROOM_MODULE_PROFILES[spec.kind].opening === "abrir") {
+    warnings.push("módulo de abrir com gavetas solicitadas: operando como misto");
+  }
+
+  if (spec.mirror === "porta" && bathroomLevel(spec.kind) !== "superior") {
+    warnings.push(
+      "espelho de porta ignorado: gabinete de bancada não recebe folha espelhada (use espelheira)",
+    );
+  }
 
   if (spec.drawers > 0 && drawerRegionH > 0) {
     const d = drawerSlots(spec, g, spec.drawers, { y0: g.interiorY0, heightMm: drawerRegionH });

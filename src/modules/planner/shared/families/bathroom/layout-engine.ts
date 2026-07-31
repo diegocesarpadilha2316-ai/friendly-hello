@@ -132,7 +132,15 @@ function modulesFromPreset(preset: BathroomPreset, widthMm: number): BathroomMod
   const towerWidth = required.includes("torre-lateral")
     ? BATHROOM_MODULE_PROFILES["torre-lateral"].defaultWidthMm
     : 0;
-  const benchWidth = Math.max(MIN_MODULE_MM, widthMm - towerWidth);
+  /* A bancada nunca passa do máximo do preset nem do máximo do perfil do
+   * módulo: a sobra real fica para o tapa-vão, em vez de virar um módulo
+   * gigante fora de fabricação. */
+  const benchKind = required.find((k) => k !== "torre-lateral");
+  const profileMax = benchKind ? BATHROOM_MODULE_PROFILES[benchKind].maxWidthMm : Infinity;
+  const benchWidth = Math.max(
+    MIN_MODULE_MM,
+    Math.min(widthMm - towerWidth, preset.maxWidthMm, profileMax),
+  );
 
   for (const kind of required) {
     if (kind === "torre-lateral") continue;
@@ -155,6 +163,10 @@ function modulesFromPreset(preset: BathroomPreset, widthMm: number): BathroomMod
 export function planBathroomLayout(input: BathroomLayoutInput): BathroomLayoutResult {
   const widthMm = Math.max(MIN_MODULE_MM, Math.round(input.widthMm || 900));
   const betweenWalls = input.betweenWalls ?? false;
+  const wantsBetweenWalls =
+    betweenWalls || (normalizePresetId(input.preset) !== null && !input.modules && !input.legacyModules
+      ? BATHROOM_PRESETS[normalizePresetId(input.preset)!].betweenWalls
+      : false);
   const warnings: string[] = [];
 
   let source: BathroomLayoutSource;
@@ -163,7 +175,7 @@ export function planBathroomLayout(input: BathroomLayoutInput): BathroomLayoutRe
 
   const presetId: BathroomPresetId | null = normalizePresetId(input.preset);
   /** Entre paredes, a composição gerada nasce menor para caber o tapa-vão real. */
-  const generatedWidthMm = betweenWalls
+  const generatedWidthMm = wantsBetweenWalls
     ? Math.max(MIN_MODULE_MM, widthMm - 2 * WALL_GAP_MM)
     : widthMm;
 
@@ -176,8 +188,10 @@ export function planBathroomLayout(input: BathroomLayoutInput): BathroomLayoutRe
     source = "legado";
     modules = input.legacyModules;
   } else if (presetId) {
-    source = "preset";
     preset = BATHROOM_PRESETS[presetId];
+    /* Composição gerada para um vão fechado é, por definição, entre paredes —
+     * a origem precisa registrar isso mesmo quando o preset foi escolhido. */
+    source = betweenWalls || preset.betweenWalls ? "entre-paredes" : "preset";
     modules = modulesFromPreset(preset, generatedWidthMm);
   } else if (betweenWalls) {
     preset = pickBathroomPreset(widthMm, true);
@@ -219,13 +233,13 @@ export function planBathroomLayout(input: BathroomLayoutInput): BathroomLayoutRe
 
   // Tapa-vão REAL: só entre paredes ou quando explicitamente pedido.
   const fillers: FillerPiece[] = [];
-  const wantsFiller = input.fillGaps ?? betweenWalls ?? false;
+  const wantsFiller = input.fillGaps ?? wantsBetweenWalls;
   if (wantsFiller && result.leftover >= 10) {
     const last = result.placements[result.placements.length - 1];
-    const half = betweenWalls ? Math.round(result.leftover / 2) : result.leftover;
+    const half = wantsBetweenWalls ? Math.round(result.leftover / 2) : result.leftover;
     const height = input.heightMm ?? preset?.counterHeightMm ?? 600;
     const depth = input.depthMm ?? preset?.depthMm ?? 460;
-    if (betweenWalls && half >= 10) {
+    if (wantsBetweenWalls && half >= 10) {
       // Os módulos deslocam para a direita do tapa-vão esquerdo.
       result = {
         ...result,
@@ -268,13 +282,15 @@ export function planBathroomLayout(input: BathroomLayoutInput): BathroomLayoutRe
     }
   }
 
+  const covered = fillers.filter((f) => f.widthMm >= 10).reduce((a, f) => a + f.widthMm, 0);
   return {
     source,
     preset,
     widthMm,
     placements: result.placements,
     fillers: fillers.filter((f) => f.widthMm >= 10),
-    leftoverMm: wantsFiller ? 0 : result.leftover,
+    /* Sobra REAL: o que nenhum tapa-vão cobriu. Nunca zerar por otimismo. */
+    leftoverMm: Math.max(0, result.leftover - covered),
     warnings,
   };
 }

@@ -352,3 +352,62 @@ describe("banheiro — não-regressão nas famílias já aprovadas", () => {
     for (const f of fixas) expect(r.assembly.motions.some((m) => m.pieceId === f.id)).toBe(false);
   });
 });
+/* Achados reais da auditoria de viewport da Família Banheiro. Cada caso
+ * abaixo reproduz um bug corrigido — não remover sem substituir. */
+describe("banheiro — auditoria de viewport (não-regressão)", () => {
+  it("gaveta pedida em módulo de abrir vira misto em vez de desaparecer", () => {
+    const spec = normalizeBathroomModule({ kind: "cuba-dupla", widthMm: 1600, drawers: 2 });
+    expect(spec.opening).toBe("misto");
+    expect(spec.drawers).toBe(2);
+    const r = buildBathroomModule({ kind: "cuba-dupla", widthMm: 1600, drawers: 2 });
+    expect(r.assembly.pieces.some((p) => p.partKind === "gaveta-frente")).toBe(true);
+  });
+
+  it("módulo estreito com cuba embutida não gera fundo fora do envelope", () => {
+    const r = buildBathroomModule({ kind: "cuba-central", widthMm: 380, depthMm: 500 });
+    for (const p of r.assembly.pieces) {
+      expect(p.box.x).toBeGreaterThanOrEqual(-1);
+      expect(p.box.x + p.box.width).toBeLessThanOrEqual(381);
+    }
+    expect(validateBathroomModule(r).issues.filter((i) => i.level === "erro")).toEqual([]);
+  });
+
+  it("gabinete de bancada não recebe folha espelhada de preset", () => {
+    const r = buildBathroomModule({ kind: "gabinete-suspenso", mirror: "porta" });
+    expect(r.assembly.pieces.some((p) => p.substrate === "espelho")).toBe(false);
+    const e = buildBathroomModule({ kind: "espelheira", mirror: "porta" });
+    expect(e.assembly.pieces.some((p) => p.substrate === "espelho")).toBe(true);
+  });
+
+  it("entre paredes gera tapa-vão real dos dois lados e zera a sobra", () => {
+    for (const gap of [18, 40, 63, 80, 150]) {
+      const plan = planBathroomLayout({
+        widthMm: 1100 + 2 * gap,
+        modules: [{ kind: "cuba-central", widthMm: 1100 }],
+        betweenWalls: true,
+      });
+      expect(plan.fillers.map((f) => f.widthMm)).toEqual([gap, gap]);
+      expect(plan.leftoverMm).toBe(0);
+      expect(plan.placements[0].xMm).toBe(gap);
+    }
+  });
+
+  it("preset entre paredes registra a origem entre-paredes", () => {
+    const plan = planBathroomLayout({ widthMm: 1200, preset: "gabinete-entre-paredes" });
+    expect(plan.source).toBe("entre-paredes");
+    expect(plan.fillers.length).toBe(2);
+  });
+
+  it("porta fechada bloqueia gaveta em U do gabinete de cuba deslocada", () => {
+    const r = buildBathroomModule({
+      kind: "cuba-deslocada",
+      widthMm: 1200,
+      doors: 1,
+      drawers: 3,
+      sink: { position: "esquerda" },
+    });
+    expect(r.assembly.pieces.filter((p) => p.partKind === "gaveta-frente").length).toBeGreaterThan(0);
+    expect(r.assembly.motions.filter((m) => m.kind === "slide").length).toBeGreaterThan(0);
+    expect(r.assembly.motions.filter((m) => m.kind === "hinge").length).toBeGreaterThan(0);
+  });
+});
