@@ -397,7 +397,7 @@ export function normalizeLaundryModule(input: LaundryModuleInput = {}): LaundryM
     install,
     floorGapMm:
       install === "suspenso"
-        ? int(input.floorGapMm, 400, 0, 1600)
+        ? int(input.floorGapMm, 400, 0, 2200)
         : install === "pes"
           ? int(input.feetHeightMm, 120, 40, 300)
           : 0,
