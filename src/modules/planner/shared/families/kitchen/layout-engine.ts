@@ -813,19 +813,7 @@ export function planKitchen(input: KitchenLayoutInput): KitchenLayoutResult {
     /* ── 5. balcões nos trechos livres ── */
     for (const seg of freeBase) {
       const parts = splitRun(seg.endMm - seg.startMm, cfg);
-      if (parts.length === 0) {
-        const width = seg.endMm - seg.startMm;
-        if (width >= 1) {
-          fillers.push({ wallId: wall.id, xMm: seg.startMm, widthMm: width, heightMm: cfg.baseHeightMm });
-          warnings.push({
-            code: "tamponamento",
-            level: "info",
-            wallId: wall.id,
-            message: `Tamponamento de ${Math.round(width)} mm em ${Math.round(seg.startMm)} mm.`,
-          });
-        }
-        continue;
-      }
+      if (parts.length === 0) continue;
       let x = seg.startMm;
       parts.forEach((w, i) => {
         add({

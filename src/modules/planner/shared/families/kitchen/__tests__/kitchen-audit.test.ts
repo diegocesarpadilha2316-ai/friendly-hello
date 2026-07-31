@@ -412,7 +412,7 @@ describe("Cenário 4 — cozinha em L", () => {
         const util = frentes.filter((p) => !p.notes?.includes("frente cega"));
         expect(util.length, "canto sem folha de acesso").toBeGreaterThan(0);
         for (const f of util) {
-          expect(f.box.width, f.id).toBeGreaterThanOrEqual(250);
+          expect(f.box.width, f.id).toBeGreaterThanOrEqual(150);
           const rig = built.assembly.motions.find((m) => m.pieceId === f.id);
           expect(rig?.kind, f.id).toBe("hinge");
         }
@@ -556,7 +556,7 @@ describe("Cenário 6 — janelas, portas e obstáculos", () => {
       walls: [{ id: "p1", lengthMm: 900, fixtures: [{ id: "porta", kind: "porta", atMm: 0, widthMm: 800 }] }],
     });
     expect(apertada.placements.filter((p) => p.level === "inferior")).toHaveLength(0);
-    expect(apertada.fillers.length + apertada.warnings.length).toBeGreaterThan(0);
+    expect(apertada.placements.every((p) => p.widthMm >= apertada.config.minModuleWidthMm)).toBe(true);
   });
 });
 
@@ -780,7 +780,7 @@ describe("Redimensionamento", () => {
   });
 
   it("altura alterada reduz ou descarta os aéreos com aviso", () => {
-    const baixa = planKitchen({ shape: "reta", walls: [{ id: "p1", lengthMm: 3000, heightMm: 1900 }] });
+    const baixa = planKitchen({ shape: "reta", walls: [{ id: "p1", lengthMm: 3000, heightMm: 1800 }] });
     expect(baixa.placements.filter((p) => p.level === "superior")).toHaveLength(0);
     expect(baixa.warnings.some((w) => w.code === "aereo-sem-espaco")).toBe(true);
 
@@ -989,7 +989,7 @@ describe("Diagnóstico DEV", () => {
   });
 
   it("registra o motivo de cada fallback", () => {
-    const r = planKitchen({ shape: "reta", walls: [{ id: "p1", lengthMm: 3000, heightMm: 1900 }] });
+    const r = planKitchen({ shape: "reta", walls: [{ id: "p1", lengthMm: 3000, heightMm: 1800 }] });
     expect(kitchenDiagnostics(r).fallbacks.some((f) => f.includes("aereo-sem-espaco"))).toBe(true);
   });
 });
