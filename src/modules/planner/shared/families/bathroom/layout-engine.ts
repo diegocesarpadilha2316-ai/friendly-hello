@@ -226,6 +226,11 @@ export function planBathroomLayout(input: BathroomLayoutInput): BathroomLayoutRe
     const height = input.heightMm ?? preset?.counterHeightMm ?? 600;
     const depth = input.depthMm ?? preset?.depthMm ?? 460;
     if (betweenWalls && half >= 10) {
+      // Os módulos deslocam para a direita do tapa-vão esquerdo.
+      result = {
+        ...result,
+        placements: result.placements.map((p) => ({ ...p, xMm: p.xMm + half })),
+      };
       fillers.push(
         makeFiller({
           id: "tapa-vao-esq",
