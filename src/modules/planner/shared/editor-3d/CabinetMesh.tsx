@@ -17,9 +17,14 @@ export type CabinetSubtype =
   | "bancada" | "tampo" | "ilha"
   | "prateleira" | "nicho" | "painel" | "cristaleira";
 
+/**
+ * Caminho legado — mantido apenas para as famílias que AINDA não foram
+ * convertidas para a Biblioteca Construtiva. Roupeiro e gaveteiro saíram
+ * daqui: são roteados antes, no `Scene3D`, para `WardrobeMesh`/`DresserMesh`.
+ */
 const CABINET_SUBTYPES = new Set<CabinetSubtype>([
   "closet","roupeiro","armario","guarda-roupa",
-  "balcao","aereo","torre","gaveteiro",
+  "balcao","aereo","torre",
   "bancada","tampo","ilha",
   "prateleira","nicho","painel","cristaleira",
 ]);
