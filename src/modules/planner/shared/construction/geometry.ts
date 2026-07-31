@@ -75,6 +75,27 @@ export function translatePiece(
   return { ...p, box: translateBox(p.box, offset) };
 }
 
+/**
+ * Move um rig de animação junto com a peça.
+ * O componente descreve o mecanismo no SEU espaço local; ao ser posicionado
+ * dentro de um móvel, o pivô precisa acompanhar o mesmo deslocamento — sem
+ * isso a porta gira em torno de um eixo que não existe no móvel.
+ */
+export function translateMotion(
+  m: ConstructionMotion,
+  offset: readonly [number, number, number],
+): ConstructionMotion {
+  if (!m.pivot) return m;
+  return {
+    ...m,
+    pivot: [
+      round(m.pivot[0] + offset[0]),
+      round(m.pivot[1] + offset[1]),
+      round(m.pivot[2] + offset[2]),
+    ],
+  };
+}
+
 export function warn(code: string, message: string): ConstructionWarning {
   return { code, message };
 }
