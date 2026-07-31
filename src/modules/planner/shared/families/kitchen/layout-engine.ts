@@ -586,6 +586,17 @@ export function planKitchen(input: KitchenLayoutInput): KitchenLayoutResult {
     const cornerModules = drafts.filter((d) => d.wallId === wall.id && d.origin === "canto");
     for (const c of cornerModules) freeBase = subtract(freeBase, { startMm: c.xMm, endMm: c.xMm + c.widthMm });
     for (const r of reserved) freeBase = subtract(freeBase, r);
+    // No nível superior a quina é resolvida por UMA das paredes: a que não é
+    // dona do canto libera a profundidade do aéreo, senão os dois se cruzam.
+    for (const side of ["start", "end"] as const) {
+      if (!cornerReturn.has(`${wall.id}:${side}`)) continue;
+      freeUpper = subtract(
+        freeUpper,
+        side === "start"
+          ? { startMm: 0, endMm: cfg.upperDepthMm }
+          : { startMm: wallLen - cfg.upperDepthMm, endMm: wallLen },
+      );
+    }
 
     /* ── 3. módulos ditados por aparelho ── */
     const hoodSpans: Span[] = [];
@@ -816,6 +827,25 @@ export function planKitchen(input: KitchenLayoutInput): KitchenLayoutResult {
         });
         x += w;
       });
+    }
+
+    /* ── 5b. módulo colado na quina não pode ser de gaveta ──
+     * A gaveta precisa de curso livre; encostada no canto ela bate no
+     * módulo perpendicular. Ali entra porta, que abre para fora. */
+    {
+      const clearance = cfg.ergonomics.cornerDrawerClearanceMm;
+      const cornerEdges: number[] = [
+        ...cornerModules.flatMap((c) => [c.xMm, c.xMm + c.widthMm]),
+        ...reserved.flatMap((r) => [r.startMm, r.endMm]),
+      ];
+      for (const d of drafts) {
+        if (d.wallId !== wall.id || d.origin !== "automatico" || d.level !== "inferior") continue;
+        if (d.kind !== "gaveteiro" && d.kind !== "gavetao") continue;
+        const touches = cornerEdges.some(
+          (edge) => Math.abs(edge - d.xMm) < clearance || Math.abs(edge - (d.xMm + d.widthMm)) < clearance,
+        );
+        if (touches) d.kind = "balcao";
+      }
     }
 
     /* ── 6. sobras: o vizinho absorve; o resto vira tamponamento ── */
