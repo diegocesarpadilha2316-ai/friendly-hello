@@ -164,7 +164,7 @@ function inferEnvironment(t: string): string | null {
   if (/(sala|living|estar)/.test(t)) return "sala";
   if (/(escritori|home office)/.test(t)) return "escritorio";
   if (/(banheir|lavab)/.test(t)) return "banheiro";
-  if (/(lavanderi)/.test(t)) return "cozinha"; // lavanderia usa blueprint de cozinha (com pia + gaveteiros)
+  if (/(lavanderi|area de servico)/.test(t)) return "lavanderia";
   return null;
 }
 
@@ -185,7 +185,7 @@ function inferFromModules(dec: Decomposition): string | null {
 // 2) Validação — nunca executar Blueprint incompleto
 // ─────────────────────────────────────────────────────────────────────────
 
-const VALID_ENVS = new Set(["cozinha", "closet", "dormitorio", "sala", "escritorio", "banheiro"]);
+const VALID_ENVS = new Set(["cozinha", "closet", "dormitorio", "sala", "escritorio", "banheiro", "lavanderia"]);
 
 export function validateBlueprint(bp: PlannerBlueprint): BlueprintValidation {
   const errors: string[] = [];
@@ -196,7 +196,7 @@ export function validateBlueprint(bp: PlannerBlueprint): BlueprintValidation {
   // Módulos vazios são aceitáveis (usuário disse "quero uma cozinha" —
   // o Engine aplica o blueprint padrão do ambiente). Só bloqueamos quando
   // veio um pedaço não resolvido junto, para não silenciar divergência.
-  if (bp.unresolved.length > 0 && bp.modules.length === 0) {
+  if (bp.unresolved.length > 0) {
     errors.push(`Não reconheci: ${bp.unresolved.slice(0, 3).join(", ")}.`);
   }
 

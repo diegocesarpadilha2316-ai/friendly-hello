@@ -163,6 +163,7 @@ const PRESET_KEYWORDS: Array<{ preset: string; words: string[] }> = [
   { preset: "sala", words: ["sala", "estar", "living"] },
   { preset: "escritorio", words: ["escritorio", "home office"] },
   { preset: "banheiro", words: ["banheiro", "lavabo"] },
+  { preset: "lavanderia", words: ["lavanderia", "area de servico"] },
 ];
 
 const SUBTYPE_KEYWORDS: Array<{ subtype: string; words: string[] }> = [

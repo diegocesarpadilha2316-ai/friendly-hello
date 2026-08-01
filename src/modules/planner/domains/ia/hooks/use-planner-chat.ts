@@ -670,8 +670,8 @@ export function usePlannerChat() {
         planRef.current.answerAndExecute(trimmed);
         patchMessage(assistantId, (m) => ({
           ...m,
-          status: "done",
-          content: `Show, ${trimmed} então. Já tô montando aqui pra você.`,
+          status: "streaming",
+          content: `Entendido: ${trimmed}. Estou executando e só confirmarei após validar o resultado no viewport.`,
         }));
         setState((s) => ({ ...s, status: "idle" }));
         sendingRef.current = false;
@@ -689,7 +689,7 @@ export function usePlannerChat() {
           ...m,
           status: "done",
           content: yes
-            ? "Beleza, tô fazendo agora."
+            ? "Execução iniciada. Vou confirmar somente após validar o resultado no viewport."
             : "Ok, não mexi em nada. Me diz o que você prefere.",
         }));
         setState((s) => ({ ...s, status: "idle" }));
