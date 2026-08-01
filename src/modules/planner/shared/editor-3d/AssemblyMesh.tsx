@@ -7,7 +7,7 @@
  * (roupeiro, gaveteiro, e as próximas) usa exatamente este renderizador —
  * não existe pipeline paralelo.
  */
-import { memo, useEffect, useMemo, useRef } from "react";
+import { memo, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import {
@@ -131,6 +131,7 @@ function AssemblyMeshComponent(props: AssemblyMeshProps) {
   /** Estado permitido, recalculado antes das peças animarem. */
   const targets = useRef<Record<string, number>>({});
   const lastNotice = useRef("");
+  const lastControls = useRef("");
 
   const motionByPiece = useMemo(() => {
     const map = new Map<string, ConstructionMotion>();
@@ -143,7 +144,13 @@ function AssemblyMeshComponent(props: AssemblyMeshProps) {
    * lê o estado real da animação e devolve o estado permitido de cada
    * mecanismo. Nenhuma regra construtiva vive aqui — só a orquestração.
    */
-  useEffect(() => {
+  useFrame(() => {
+    const controls = `${Boolean(props.openDoors)}:${Boolean(props.openDrawers)}`;
+    const moving = Object.entries(targets.current).some(
+      ([id, target]) => Math.abs((states.current[id] ?? 0) - target) > 0.001,
+    );
+    if (!moving && lastControls.current === controls) return;
+    lastControls.current = controls;
     const desired: Record<string, number> = {};
     for (const piece of assembly.pieces) {
       desired[piece.id] = openStateForGroup(motionGroupOfPiece(piece), {
@@ -164,7 +171,7 @@ function AssemblyMeshComponent(props: AssemblyMeshProps) {
       lastNotice.current = notice;
       if (result.blocked.length > 0) props.onInterlock?.(result.blocked);
     }
-  }, [assembly.pieces, assembly.motions, props.openDoors, props.openDrawers, props.onInterlock]);
+  }, -1);
 
   // O móvel é montado com origem no canto inferior-esquerdo-fundo;
   // a cena posiciona o grupo pelo CENTRO. Aqui recentramos.

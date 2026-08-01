@@ -28,7 +28,7 @@ export function sceneRuntimeEvidence(itemId: string): SceneRuntimeEvidence | nul
 
 export async function waitForSceneRuntime(
   itemIds: readonly string[],
-  timeoutMs = 4_000,
+  timeoutMs = 8_000,
 ): Promise<{ ok: true; evidence: readonly SceneRuntimeEvidence[] } | { ok: false; reason: string }> {
   if (typeof window === "undefined") {
     return { ok: false, reason: "O viewport 3D não está disponível para validar a criação." };
