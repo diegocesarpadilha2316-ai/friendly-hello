@@ -37,6 +37,7 @@ import { DEFAULT_VIEWPORT_3D, type Camera3DMode, type Camera3DView, type Render3
 import { Scene3D } from "./Scene3D";
 import type { PlannerProject, PlannerRoom } from "../types/project";
 import { RotateCw, Trash2, Copy } from "lucide-react";
+import { plannerDiagnosticsEnabled } from "./runtime-diagnostics";
 
 const CAM_LABEL: Record<Camera3DMode, string> = {
   orbit: "Orbit",
@@ -200,7 +201,7 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
   // Room Architecture Engine — diagnóstico DEV (`window.__DIORIS_ROOM__`).
   // Nenhuma mutação: apenas fotografa a arquitetura e os móveis do cômodo.
   useEffect(() => {
-    if (!room) return;
+    if (!room || !plannerDiagnosticsEnabled()) return;
     const arch = buildRoomArchitecture(roomArchitectureSpecFrom(room));
     publishRoomDiagnostics(arch, roomFurnitureBoxesFrom(room));
   }, [room]);

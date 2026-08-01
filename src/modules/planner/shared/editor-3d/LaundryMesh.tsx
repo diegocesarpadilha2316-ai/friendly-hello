@@ -14,6 +14,7 @@ import {
   publishLaundryDiagnostic,
 } from "../families/laundry";
 import { AssemblyMesh, MM } from "./AssemblyMesh";
+import { plannerDiagnosticsEnabled } from "./runtime-diagnostics";
 
 export interface LaundryMeshProps {
   nodeId?: string;
@@ -57,14 +58,16 @@ export function LaundryMesh(props: LaundryMeshProps) {
       style: props.style ?? legacy.style,
       handle: props.handleStyle ?? legacy.handle,
     });
-    publishLaundryDiagnostic(
-      buildLaundryDiagnostic({
-        id: props.nodeId ?? built.spec.kind,
-        result: built,
-        legacyConverted: true,
-        layoutSource: "legado",
-      }),
-    );
+    if (plannerDiagnosticsEnabled()) {
+      publishLaundryDiagnostic(
+        buildLaundryDiagnostic({
+          id: props.nodeId ?? built.spec.kind,
+          result: built,
+          legacyConverted: true,
+          layoutSource: "legado",
+        }),
+      );
+    }
     return built;
   }, [
     props.nodeId,

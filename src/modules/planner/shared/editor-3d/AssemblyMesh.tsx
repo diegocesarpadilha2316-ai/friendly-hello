@@ -7,7 +7,7 @@
  * (roupeiro, gaveteiro, e as próximas) usa exatamente este renderizador —
  * não existe pipeline paralelo.
  */
-import { useMemo, useRef } from "react";
+import { memo, useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import {
@@ -123,7 +123,7 @@ function PieceMesh({
   );
 }
 
-export function AssemblyMesh(props: AssemblyMeshProps) {
+function AssemblyMeshComponent(props: AssemblyMeshProps) {
   const { assembly } = props;
 
   /** Estado real da animação (escrito pelas peças a cada frame). */
@@ -143,7 +143,7 @@ export function AssemblyMesh(props: AssemblyMeshProps) {
    * lê o estado real da animação e devolve o estado permitido de cada
    * mecanismo. Nenhuma regra construtiva vive aqui — só a orquestração.
    */
-  useFrame(() => {
+  useEffect(() => {
     const desired: Record<string, number> = {};
     for (const piece of assembly.pieces) {
       desired[piece.id] = openStateForGroup(motionGroupOfPiece(piece), {
@@ -164,7 +164,7 @@ export function AssemblyMesh(props: AssemblyMeshProps) {
       lastNotice.current = notice;
       if (result.blocked.length > 0) props.onInterlock?.(result.blocked);
     }
-  }, -1);
+  }, [assembly.pieces, assembly.motions, props.openDoors, props.openDrawers, props.onInterlock]);
 
   // O móvel é montado com origem no canto inferior-esquerdo-fundo;
   // a cena posiciona o grupo pelo CENTRO. Aqui recentramos.
@@ -190,3 +190,5 @@ export function AssemblyMesh(props: AssemblyMeshProps) {
     </group>
   );
 }
+
+export const AssemblyMesh = memo(AssemblyMeshComponent);

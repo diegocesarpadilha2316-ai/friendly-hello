@@ -11,6 +11,13 @@ const evidence = new Map<string, SceneRuntimeEvidence>();
 const listeners = new Set<() => void>();
 
 export function reportSceneRuntime(next: SceneRuntimeEvidence): void {
+  const current = evidence.get(next.itemId);
+  if (
+    current?.renderer === next.renderer &&
+    current.pieces === next.pieces &&
+    current.visible === next.visible &&
+    current.framed === next.framed
+  ) return;
   evidence.set(next.itemId, next);
   for (const listener of listeners) listener();
 }

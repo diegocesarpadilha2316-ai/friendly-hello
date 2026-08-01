@@ -12,6 +12,7 @@ import {
   type LegacyParams,
 } from "../families/wardrobe";
 import { AssemblyMesh, MM } from "./AssemblyMesh";
+import { plannerDiagnosticsEnabled } from "./runtime-diagnostics";
 
 export interface WardrobeMeshProps {
   /** Dimensões em metros, vindas do descritor da cena. */
@@ -71,14 +72,13 @@ export function WardrobeMesh(props: WardrobeMeshProps) {
 
   // Diagnóstico por móvel — apenas em desenvolvimento.
   useEffect(() => {
-    if (!import.meta.env.DEV) return;
+    if (!plannerDiagnosticsEnabled()) return;
     const diag = wardrobeInteriorDiagnostics(props.nodeId ?? "roupeiro", spec, interior, {
       pieces: assembly.pieces.length,
       motions: assembly.motions.filter((m) => m.kind !== "static").length,
     });
     const w = window as unknown as { __DIORIS_INTERIOR__?: Record<string, unknown> };
     w.__DIORIS_INTERIOR__ = { ...(w.__DIORIS_INTERIOR__ ?? {}), [diag.id]: diag };
-    console.debug("[planner:interior]", diag);
   }, [props.nodeId, spec, interior, assembly]);
 
   return (
