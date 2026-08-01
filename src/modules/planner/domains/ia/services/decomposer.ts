@@ -26,6 +26,7 @@ const PRESETS: Array<{ preset: string; words: string[] }> = [
   { preset: "sala", words: ["sala", "estar", "living"] },
   { preset: "escritorio", words: ["escritorio", "home office"] },
   { preset: "banheiro", words: ["banheiro", "lavabo"] },
+  { preset: "lavanderia", words: ["lavanderia", "area de servico"] },
 ];
 
 /**
@@ -134,6 +135,27 @@ const TOKENS: ModuleToken[] = [
     label: "Lava-louças",
     re: /lava[-\s]?louc/,
     descBase: "lava-louças 600mm inox",
+    wall: "bottom",
+  },
+  {
+    id: "gabinete-banheiro",
+    label: "Gabinete suspenso",
+    re: /gabinete(?:\s+de\s+banheiro)?|gabinete\s+suspenso/,
+    descBase: "gabinete de banheiro suspenso",
+    wall: "bottom",
+  },
+  {
+    id: "maquina-lavar",
+    label: "Máquina de lavar",
+    re: /maquina(?:\s+de)?\s+lavar|lavadora/,
+    descBase: "máquina de lavar frontal 700mm",
+    wall: "bottom",
+  },
+  {
+    id: "tanque",
+    label: "Tanque",
+    re: /\btanque\b/,
+    descBase: "balcão com tanque 800mm",
     wall: "bottom",
   },
 ];

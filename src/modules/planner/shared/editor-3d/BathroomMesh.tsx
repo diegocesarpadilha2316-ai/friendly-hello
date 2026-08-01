@@ -13,6 +13,7 @@ import {
   publishBathroomDiagnostic,
 } from "../families/bathroom";
 import { AssemblyMesh, MM } from "./AssemblyMesh";
+import { plannerDiagnosticsEnabled } from "./runtime-diagnostics";
 
 export interface BathroomMeshProps {
   nodeId?: string;
@@ -56,14 +57,16 @@ export function BathroomMesh(props: BathroomMeshProps) {
       style: props.style ?? legacy.style,
       handle: props.handleStyle ?? legacy.handle,
     });
-    publishBathroomDiagnostic(
-      buildBathroomDiagnostic({
-        id: props.nodeId ?? built.spec.kind,
-        result: built,
-        legacyConverted: true,
-        layoutSource: "legado",
-      }),
-    );
+    if (plannerDiagnosticsEnabled()) {
+      publishBathroomDiagnostic(
+        buildBathroomDiagnostic({
+          id: props.nodeId ?? built.spec.kind,
+          result: built,
+          legacyConverted: true,
+          layoutSource: "legado",
+        }),
+      );
+    }
     return built;
   }, [
     props.nodeId,

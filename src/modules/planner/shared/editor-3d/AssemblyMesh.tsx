@@ -7,7 +7,7 @@
  * (roupeiro, gaveteiro, e as próximas) usa exatamente este renderizador —
  * não existe pipeline paralelo.
  */
-import { useMemo, useRef } from "react";
+import { memo, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import {
@@ -123,7 +123,7 @@ function PieceMesh({
   );
 }
 
-export function AssemblyMesh(props: AssemblyMeshProps) {
+function AssemblyMeshComponent(props: AssemblyMeshProps) {
   const { assembly } = props;
 
   /** Estado real da animação (escrito pelas peças a cada frame). */
@@ -131,6 +131,7 @@ export function AssemblyMesh(props: AssemblyMeshProps) {
   /** Estado permitido, recalculado antes das peças animarem. */
   const targets = useRef<Record<string, number>>({});
   const lastNotice = useRef("");
+  const lastControls = useRef("");
 
   const motionByPiece = useMemo(() => {
     const map = new Map<string, ConstructionMotion>();
@@ -144,6 +145,12 @@ export function AssemblyMesh(props: AssemblyMeshProps) {
    * mecanismo. Nenhuma regra construtiva vive aqui — só a orquestração.
    */
   useFrame(() => {
+    const controls = `${Boolean(props.openDoors)}:${Boolean(props.openDrawers)}`;
+    const moving = Object.entries(targets.current).some(
+      ([id, target]) => Math.abs((states.current[id] ?? 0) - target) > 0.001,
+    );
+    if (!moving && lastControls.current === controls) return;
+    lastControls.current = controls;
     const desired: Record<string, number> = {};
     for (const piece of assembly.pieces) {
       desired[piece.id] = openStateForGroup(motionGroupOfPiece(piece), {
@@ -190,3 +197,5 @@ export function AssemblyMesh(props: AssemblyMeshProps) {
     </group>
   );
 }
+
+export const AssemblyMesh = memo(AssemblyMeshComponent);

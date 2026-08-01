@@ -277,6 +277,8 @@ function FurnitureRuntimeEvidence({
   const { camera } = useThree();
   useEffect(() => {
     let frame = 0;
+    let retry = 0;
+    let timer = 0;
     const common = {
       id: f.id,
       subtype: f.subtype,
@@ -293,15 +295,26 @@ function FurnitureRuntimeEvidence({
     else if (renderer === "laundry") pieces = buildLaundryModule(laundryFromLegacy(common)).assembly.pieces.length;
     // Aguarda o efeito de AutoFitCamera do mesmo commit antes de comprovar
     // o frustum; assim não validamos contra a câmera antiga.
-    frame = window.requestAnimationFrame(() => {
+    const report = () => {
       camera.updateMatrixWorld();
       const center = new THREE.Vector3(f.cx, f.y + f.height / 2, f.cz);
       const sphere = new THREE.Sphere(center, Math.max(f.width, f.height, f.depth) / 2);
       const frustum = new THREE.Frustum();
       frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
-      reportSceneRuntime({ itemId: f.id, renderer, pieces, visible: true, framed: frustum.intersectsSphere(sphere), recordedAt: Date.now() });
-    });
-    return () => window.cancelAnimationFrame(frame);
+      const framed = frustum.intersectsSphere(sphere);
+      reportSceneRuntime({ itemId: f.id, renderer, pieces, visible: true, framed, recordedAt: Date.now() });
+      if (!framed && retry < 8) {
+        retry += 1;
+        timer = window.setTimeout(() => {
+          frame = window.requestAnimationFrame(report);
+        }, 100);
+      }
+    };
+    frame = window.requestAnimationFrame(report);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
+    };
   }, [camera, autoFitVersion, f.id, f.subtype, f.catalogItemId, f.params, f.width, f.height, f.depth, f.cx, f.cz, f.y, renderer]);
   return null;
 }
@@ -560,6 +573,7 @@ function Furniture({
           onSelect(f.id);
         }}
       >
+        <FurnitureRuntimeEvidence f={f} renderer="decor" autoFitVersion={viewport.autoFitVersion ?? 0} />
         <DecorMesh
           subtype={f.subtype as never}
           width={f.width}
@@ -582,6 +596,7 @@ function Furniture({
           onSelect(f.id);
         }}
       >
+        <FurnitureRuntimeEvidence f={f} renderer="appliance" autoFitVersion={viewport.autoFitVersion ?? 0} />
         <ApplianceMesh
           subtype={f.subtype as never}
           width={f.width}

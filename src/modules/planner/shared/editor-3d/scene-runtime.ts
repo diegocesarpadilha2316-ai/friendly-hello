@@ -11,6 +11,13 @@ const evidence = new Map<string, SceneRuntimeEvidence>();
 const listeners = new Set<() => void>();
 
 export function reportSceneRuntime(next: SceneRuntimeEvidence): void {
+  const current = evidence.get(next.itemId);
+  if (
+    current?.renderer === next.renderer &&
+    current.pieces === next.pieces &&
+    current.visible === next.visible &&
+    current.framed === next.framed
+  ) return;
   evidence.set(next.itemId, next);
   for (const listener of listeners) listener();
 }
@@ -21,7 +28,7 @@ export function sceneRuntimeEvidence(itemId: string): SceneRuntimeEvidence | nul
 
 export async function waitForSceneRuntime(
   itemIds: readonly string[],
-  timeoutMs = 4_000,
+  timeoutMs = 8_000,
 ): Promise<{ ok: true; evidence: readonly SceneRuntimeEvidence[] } | { ok: false; reason: string }> {
   if (typeof window === "undefined") {
     return { ok: false, reason: "O viewport 3D não está disponível para validar a criação." };
