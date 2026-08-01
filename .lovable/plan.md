@@ -1,64 +1,46 @@
-# Módulo 05 — Biblioteca Profissional de Móveis
+# Validação real no viewport + relatório de estabilização
 
-A base atual já existe (`src/modules/planner/shared/library/*` e domínio `catalog/*`). Vou **estender** esses arquivos — não reescrever — respeitando o ciclo *implementar → integrar → testar → validar* (memória `planner-stability-first`).
+Você pediu um relatório objetivo, não apenas "os testes passaram". Para isso ser honesto, primeiro é preciso medir o sistema rodando — os quatro comandos ainda não foram confirmados visualmente no viewport real. Portanto esta etapa **não está concluída** até a validação abaixo ser executada.
 
-## Etapas (na ordem de execução)
+## O que será feito
 
-### 1. Taxonomia e enriquecimento do catálogo
-- Consolidar as **21 categorias solicitadas** (Cozinha, Closet, Dormitório, Banheiro, Lavanderia, Home Office, Sala, Painéis, Ilhas, Torres, Cristaleiras, Nichos, Aéreos, Inferiores, Balcões, Roupeiros, Mesa, Estante, Rack, Criado-mudo) em `catalog.ts`, mantendo compatibilidade retro.
-- Introduzir **subcategorias** (`subcategoryId`) — ex: `cozinha › balcao-1p`, `cozinha › torre-quente`.
-- Enriquecer cada item com metadados faltantes: `doors`, `drawers`, `shelves`, `weight`, `code`, `manufacturer`, `line`, `finish`, tags de busca semântica.
+### 1. Execução real dos quatro comandos
+Automação de navegador contra o app rodando, autenticada, entrando em `/planner/ia` e enviando um comando por sessão:
+- Crie um closet de casal
+- Crie uma cozinha em L
+- Crie um banheiro com gabinete suspenso
+- Crie uma lavanderia com máquina e tanque
 
-### 2. Busca inteligente + filtros avançados
-- Novo módulo `search-index.ts` (em memória, sem dependências) com:
-  - normalização (case/acento/palavras semelhantes via distância de Levenshtein leve),
-  - índice invertido carregado on-demand.
-- Painel de filtros: categoria · subcategoria · fabricante · linha · material · cor · nº portas · nº gavetas · faixas de largura/altura/profundidade.
+Para cada comando: screenshot do viewport, leitura dos diagnósticos de runtime (`__DIORIS_ROOM__`, evidência de cena, contagem de meshes) e registro de erros de console. Resultado por comando: apareceu / não apareceu / apareceu incompleto.
 
-### 3. Reformulação visual do `LibraryPanel`
-- Layout catálogo: **grid de cards** com miniatura, código, medidas, portas/gavetas, badge de material.
-- Abas: **Recentes · Favoritos · Mais utilizados · Todos**, mais navegação por árvore de categorias/subcategorias.
-- Carregamento sob demanda (windowing simples por `IntersectionObserver`).
+### 2. Medições antes/depois
+Coleta instrumentada, com valores reais e método declarado para cada um:
+- FPS médio e mínimo em 10s de órbita
+- quantidade de meshes e draw calls
+- número de renders React dos componentes do viewport
+- número de reconstruções do Assembly por interação
+- tempo do autosave (debounce + duração)
+- memória do renderer Three.js quando exposta
 
-### 4. Drag & Drop + inserção inteligente
-- Já existe `insert.ts`; adicionar em `physics.ts`:
-  - snap-to-wall automático,
-  - detecção de colisão AABB reutilizando o motor do Módulo 04,
-  - alinhamento e abertura automática do Inspector (evento `planner:focus-selection`).
+Onde um número "antes" não puder ser reconstruído com confiança, o relatório dirá explicitamente "não medido" em vez de estimar.
 
-### 5. IA restrita à Biblioteca
-- Em `src/modules/planner/domains/ia/services/matcher.ts`: enforce **hard-fail** quando não houver item de catálogo — nunca inventar geometria.
-- Blueprint da IA passa a receber `catalogCandidates` da nova busca.
+### 3. Causas raiz documentadas com evidência
+- Invisibilidade: apontar o ponto exato do fluxo (interpretação da IA, blueprint, decomposer, montagem, publicação de evidência de cena ou câmera) com o arquivo e a linha que provam a causa.
+- Lentidão: apontar o cálculo por frame ou re-render responsável, com a medição que o sustenta.
 
-### 6. Favoritos/Recentes/Mais utilizados persistentes
-- `use-favorites.ts` já persiste favoritos; adicionar contadores de uso e "recentes" com timestamp em `localStorage` por tenant.
-- Sincronizado com o painel (aba "Mais utilizados").
+### 4. Correções somente do que a validação reprovar
+Nenhuma funcionalidade nova. Se um dos quatro comandos falhar, o defeito é corrigido no ponto identificado e o comando é reexecutado até passar visualmente.
 
-## Fora de escopo desta rodada (deferido)
-- **Marketplace / importação de terceiros** — memória `no-marketplace-until-launch` proíbe até o lançamento; deixo apenas a *estrutura de import stub* pronta em `catalog/import.ts` (já existe), sem UI.
-- Miniaturas fotorrealistas geradas por render — usaremos as thumbnails procedurais 2D existentes.
-
-## Validação (ciclo obrigatório)
-Ao final: typecheck limpo, smoke test manual das ações (pesquisar, filtrar, arrastar, duplicar, editar, trocar material, criar via IA, excluir, salvar, reabrir). Corrijo qualquer regressão antes de encerrar o módulo.
+### 5. Relatório final
+Documento com: causas raiz, lista de arquivos alterados, resultado prático dos quatro comandos, tabela antes/depois, cálculos contínuos removidos, como ficou a validação de sucesso da IA, contagem final de testes e saída do typecheck.
 
 ## Detalhes técnicos
-```text
-src/modules/planner/shared/library/
-├── catalog.ts              (+ subcategoryId, +metadados)
-├── catalog-extended.ts     (+ novos itens por categoria faltante)
-├── search-index.ts         (NOVO — índice + fuzzy)
-├── filters.ts              (NOVO — schema de filtros e apply())
-├── LibraryPanel.tsx        (redesign: grid + filtros + abas)
-├── LibraryFilters.tsx      (NOVO — painel de filtros)
-├── LibraryCard.tsx         (NOVO — card do item)
-├── insert.ts               (snap + colisão + focus Inspector)
-├── physics.ts              (snap-to-wall)
-└── use-favorites.ts        (+ recentes + contadores)
 
-src/modules/planner/domains/ia/services/
-└── matcher.ts              (hard-fail sem catálogo)
-```
+- Automação via Playwright headless contra `http://localhost:8080`, viewport 1280x1800, sessão Supabase restaurada antes de navegar para rota autenticada.
+- Diagnósticos já existentes reaproveitados: `src/modules/planner/shared/editor-3d/runtime-diagnostics.ts`, `scene-runtime.ts`, `Scene3D.tsx`.
+- Pontos de inspeção do fluxo da IA: `src/modules/planner/domains/ia/services/{interpreter,blueprint,decomposer,post-execution}.ts` e o hook de chat/execução de plano.
+- Testes e typecheck rodados ao final; nenhum número do relatório vem de suposição.
 
-Todas as mutações continuam passando por `updateProject()` — herdando Undo/Redo, Autosave, Banco, Inspector, Lista de Corte, Orçamento.
+## Critério de aprovação
 
-Aprovar para eu executar as 6 etapas em sequência (sem parar entre elas).
+A etapa só é declarada concluída quando os quatro comandos produzirem móvel visível em screenshot, sem erro de console, e as medições depois estiverem registradas.
