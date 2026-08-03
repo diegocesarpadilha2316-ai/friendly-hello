@@ -15,6 +15,12 @@ export interface DiagnosticStep {
     objectCreated?: boolean;
     interruptionReason?: string;
     fullException?: string;
+    itemsInserted?: number;
+    projectId?: string;
+    roomId?: string;
+    furnitureBefore?: number;
+    furnitureAfter?: number;
+    sceneObjectCount?: number;
   };
 }
 

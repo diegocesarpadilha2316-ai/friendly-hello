@@ -110,6 +110,27 @@ export function PlannerDiagnosticPanel() {
                     <CheckCircle2 className={cn("h-3 w-3", step.details?.objectCreated ? "text-green-500" : "text-muted-foreground")} />
                     <span>Object3D: {step.details?.objectCreated ? "Sim" : "Não"}</span>
                   </div>
+                  
+                  {step.details?.projectId && (
+                    <div className="col-span-2 space-y-1 border-t border-border/30 pt-1 mt-1">
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>Projeto ID:</span>
+                        <span className="font-mono text-[8px] truncate max-w-[150px]">{step.details.projectId}</span>
+                      </div>
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>Cômodo ID:</span>
+                        <span className="font-mono text-[8px] truncate max-w-[150px]">{step.details.roomId}</span>
+                      </div>
+                      <div className="flex justify-between font-medium">
+                        <span>Móveis (Antes/Depois):</span>
+                        <span>{step.details.furnitureBefore ?? 0} → {step.details.furnitureAfter ?? 0}</span>
+                      </div>
+                      <div className="flex justify-between font-medium text-primary">
+                        <span>Objetos na Cena:</span>
+                        <span>{step.details.sceneObjectCount ?? 0}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
