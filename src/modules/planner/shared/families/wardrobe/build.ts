@@ -71,7 +71,7 @@ export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildRes
   const frontReserve =
     spec.opening === "abrir" ? t : spec.opening === "correr" ? t + 6 * slidingTracks : 0;
   const caseD = Math.max(150, D - frontReserve);
-  const isCloset = spec.opening === "vão-livre"; // Definido na taxonomia Dioris para módulos sem frente
+  const isCloset = spec.opening === "sem-porta"; // Definido na taxonomia Dioris para módulos sem frente
   const interiorD = caseD - bt;
   const frontZ = caseD;
 
