@@ -507,6 +507,7 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
             gizmoMode={gizmoMode}
             onCommitTransform={commitTransform}
           />
+          <PlannerDiagnosticPanel />
         </div>
 
         {/* Barra de gizmos — flutuante, canto superior direito. */}
