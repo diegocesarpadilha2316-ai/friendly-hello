@@ -293,6 +293,8 @@ function FurnitureRuntimeEvidence({
     else if (renderer === "kitchen") pieces = buildKitchenModule(kitchenSpecFromLegacy(common)).assembly.pieces.length;
     else if (renderer === "bathroom") pieces = buildBathroomModule(bathroomFromLegacy(common)).assembly.pieces.length;
     else if (renderer === "laundry") pieces = buildLaundryModule(laundryFromLegacy(common)).assembly.pieces.length;
+    else if (renderer === "decor" || renderer === "appliance") pieces = 1;
+
     // Aguarda o efeito de AutoFitCamera do mesmo commit antes de comprovar
     // o frustum; assim não validamos contra a câmera antiga.
     const report = () => {
@@ -301,13 +303,33 @@ function FurnitureRuntimeEvidence({
       const sphere = new THREE.Sphere(center, Math.max(f.width, f.height, f.depth) / 2);
       const frustum = new THREE.Frustum();
       frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+      
       const framed = frustum.intersectsSphere(sphere);
-      reportSceneRuntime({ itemId: f.id, renderer, pieces, visible: true, framed, recordedAt: Date.now() });
-      if (!framed && retry < 8) {
+      
+      // Procura o objeto na cena pelo nome
+      const scene = camera.parent;
+      let visible = false;
+      if (scene) {
+        const obj = scene.getObjectByName(`furniture-${f.id}`);
+        if (obj) {
+          visible = true;
+        }
+      }
+
+      reportSceneRuntime({ 
+        itemId: f.id, 
+        renderer, 
+        pieces, 
+        visible, 
+        framed, 
+        recordedAt: Date.now() 
+      });
+
+      if ((!visible || !framed) && retry < 15) {
         retry += 1;
         timer = window.setTimeout(() => {
           frame = window.requestAnimationFrame(report);
-        }, 100);
+        }, 200);
       }
     };
     frame = window.requestAnimationFrame(report);
