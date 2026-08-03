@@ -1120,6 +1120,9 @@ export function usePlannerChat() {
   );
 
   const clear = useCallback(() => {
+    if (import.meta.env.DEV) {
+      useDiagnostic.getState().reset();
+    }
     const currentProjectId = sessionRef.current?.projectId ?? null;
     storeSession(currentProjectId, null);
     sessionRef.current = null;
