@@ -11,7 +11,7 @@ import {
   type AssemblySlot,
   type ConstructionPiece,
 } from "../../construction";
-import type { FamilyBuildResult } from "../types";
+import type { FamilyBuildResult, FamilyRequirementSpec } from "../types";
 import { handleType } from "../handles";
 import { normalizeWardrobeSpec, type WardrobeSpec } from "./spec";
 import { resolveWardrobeInterior, type WardrobeInteriorResult } from "./interior";

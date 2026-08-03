@@ -6,7 +6,7 @@
  * Peças, ferragens, folgas e rigs vêm dos componentes.
  */
 import { buildAssembly, type AssemblyResult, type ConstructionHardwareRef } from "../../construction";
-import type { FamilyBuildResult } from "../types";
+import type { FamilyBuildResult, FamilyRequirementSpec } from "../types";
 import { normalizeKitchenModule, type KitchenModuleInput, type KitchenModuleSpec } from "./spec";
 import {
   kitchenGeometry,
