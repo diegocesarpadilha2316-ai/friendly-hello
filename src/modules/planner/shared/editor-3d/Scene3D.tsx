@@ -1269,6 +1269,15 @@ function AutoFitCamera({
 
 export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCommitTransform }: Scene3DProps) {
   const { cx, cz } = centerOffset(model);
+
+  useFrame((state) => {
+    if (import.meta.env.DEV) {
+      const furnitureGroup = state.scene.children.find(c => c.name === "furniture-layer");
+      (window as any).__DIORIS_SCENE_OBJECTS__ = furnitureGroup ? furnitureGroup.children.length : 
+        state.scene.children.filter(c => c.name?.startsWith("furniture-")).length;
+    }
+  });
+
   // Alvo da câmera: 1/3 da altura da parede (~olho baixo). Isso ancora o
   // piso (y=0) no terço inferior da tela e reforça a percepção de escala.
   // NUNCA usar o centro do bounding box (meio do volume) — o ambiente
