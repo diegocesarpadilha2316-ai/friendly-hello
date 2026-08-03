@@ -95,7 +95,7 @@ export interface LaundryBuildResult extends FamilyBuildResult<LaundryModuleSpec>
   readonly requirements: FamilyRequirementSpec;
 }
 
-const LAUNDRY_REQUIREMENTS: FamilyRequirementSpec = {
+export const LAUNDRY_REQUIREMENTS: FamilyRequirementSpec = {
   mandatory: ["base", "lateral-e", "lateral-d"],
   important: ["tampo", "fundo", "frente"],
   optional: ["gaveta", "prateleira", "acessorio"]

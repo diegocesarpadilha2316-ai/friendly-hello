@@ -65,7 +65,7 @@ export interface KitchenBuildResult extends FamilyBuildResult<KitchenModuleSpec>
   readonly requirements: FamilyRequirementSpec;
 }
 
-const KITCHEN_REQUIREMENTS: FamilyRequirementSpec = {
+export const KITCHEN_REQUIREMENTS: FamilyRequirementSpec = {
   mandatory: ["base", "lateral-e", "lateral-d"],
   important: ["tampo", "fundo", "frente"],
   optional: ["gaveta", "prateleira", "led", "acessorio"]

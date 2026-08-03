@@ -73,7 +73,7 @@ export interface BathroomBuildResult extends FamilyBuildResult<BathroomModuleSpe
   readonly requirements: FamilyRequirementSpec;
 }
 
-const BATHROOM_REQUIREMENTS: FamilyRequirementSpec = {
+export const BATHROOM_REQUIREMENTS: FamilyRequirementSpec = {
   mandatory: ["base", "lateral-e", "lateral-d"],
   important: ["tampo", "fundo", "frente"],
   optional: ["gaveta", "prateleira", "acessorio"]
