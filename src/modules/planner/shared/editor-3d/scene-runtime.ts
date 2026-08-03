@@ -35,7 +35,7 @@ export async function waitForSceneRuntime(
   }
   const read = () => itemIds.map(sceneRuntimeEvidence);
   const valid = (rows: readonly (SceneRuntimeEvidence | null)[]): rows is readonly SceneRuntimeEvidence[] =>
-    rows.every((row) => Boolean(row?.visible && row.framed && row.pieces > 0));
+    rows.every((row) => Boolean(row?.visible && row.pieces > 0));
   const current = read();
   if (valid(current)) return { ok: true, evidence: current };
 
@@ -52,11 +52,11 @@ export async function waitForSceneRuntime(
       cleanup();
       const missing = itemIds.filter((id) => {
         const row = sceneRuntimeEvidence(id);
-        return !row?.visible || !row.framed || row.pieces <= 0;
+        return !row?.visible || row.pieces <= 0;
       });
       resolve({
         ok: false,
-        reason: `O móvel foi salvo, mas o viewport não confirmou visibilidade e enquadramento: ${missing.join(", ")}.`,
+        reason: `O móvel foi salvo, mas o viewport não confirmou visibilidade: ${missing.join(", ")}.`,
       });
     }, timeoutMs);
     const cleanup = () => {
