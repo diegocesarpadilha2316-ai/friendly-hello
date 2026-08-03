@@ -24,6 +24,7 @@ export interface FamilyRequirementSpec {
   readonly optional: readonly string[];
 }
 
+
 export interface FamilyBuildResult<TSpec> {
   /** Ficha normalizada efetivamente usada (auditável). */
   readonly spec: TSpec;
