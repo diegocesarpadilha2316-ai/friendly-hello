@@ -15,8 +15,7 @@ export function reportSceneRuntime(next: SceneRuntimeEvidence): void {
   if (
     current?.renderer === next.renderer &&
     current.pieces === next.pieces &&
-    current.visible === next.visible &&
-    current.framed === next.framed
+    current.visible === next.visible
   ) return;
   evidence.set(next.itemId, next);
   for (const listener of listeners) listener();
