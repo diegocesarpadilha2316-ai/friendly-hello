@@ -22,6 +22,7 @@ import {
   Sparkles,
   ZapOff,
   ArrowDownToLine,
+  Terminal,
 } from "lucide-react";
 import { Button } from "@/core/components/ui-kit";
 import { cn } from "@/lib/utils";
@@ -35,6 +36,8 @@ import {
 } from "../room";
 import { DEFAULT_VIEWPORT_3D, type Camera3DMode, type Camera3DView, type Render3DMode, type Viewport3DState } from "./types";
 import { Scene3D } from "./Scene3D";
+import { PlannerDiagnosticPanel } from "../../domains/ia/components/PlannerDiagnosticPanel";
+import { useDiagnostic } from "../../domains/ia/services/diagnostics";
 import type { PlannerProject, PlannerRoom } from "../types/project";
 import { RotateCw, Trash2, Copy } from "lucide-react";
 import { plannerDiagnosticsEnabled } from "./runtime-diagnostics";
@@ -409,6 +412,15 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
             ))}
           </div>
           <div className="flex shrink-0 items-center gap-1">
+            {import.meta.env.DEV && (
+              <ToolbarButton
+                active={useDiagnostic.getState().isOpen}
+                onClick={() => useDiagnostic.getState().setOpen(!useDiagnostic.getState().isOpen)}
+                title="Diagnóstico de IA"
+              >
+                <Terminal className="h-3.5 w-3.5" /> IA
+              </ToolbarButton>
+            )}
             <ToolbarButton
               active={viewport.showGrid}
               onClick={() => setViewport((v) => ({ ...v, showGrid: !v.showGrid }))}
@@ -506,6 +518,7 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
             gizmoMode={gizmoMode}
             onCommitTransform={commitTransform}
           />
+          <PlannerDiagnosticPanel />
         </div>
 
         {/* Barra de gizmos — flutuante, canto superior direito. */}

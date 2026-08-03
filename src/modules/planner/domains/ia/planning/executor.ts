@@ -16,6 +16,7 @@
 import type { PlannerProject } from "@/modules/planner/shared";
 import type { ToolContext } from "../services/tools";
 import { runPlannerTool } from "../tools/runner";
+import { useDiagnostic } from "../services/diagnostics";
 import { isStepUnlocked, refreshBlocked } from "./graph";
 import { buildFinalReport } from "./report";
 import {
@@ -276,6 +277,18 @@ export class PlanRunner {
       updatedAt: new Date().toISOString(),
     });
 
+    if (import.meta.env.DEV) {
+      useDiagnostic.getState().startPlan(this.plan.planId);
+      // Iniciar todas como pending para o fluxo visual
+      this.plan.steps.forEach(s => {
+        useDiagnostic.getState().updateStep(s.stepId, { 
+          id: s.stepId, 
+          name: s.title, 
+          status: "pending" 
+        });
+      });
+    }
+
     let project = baseProject;
 
     try {
@@ -302,6 +315,11 @@ export class PlanRunner {
           ),
         );
 
+        const startTime = Date.now();
+        if (import.meta.env.DEV) {
+          useDiagnostic.getState().updateStep(next.stepId, { status: "running" });
+        }
+
         const outcome = await runPlannerTool({
           tool: next.toolName,
           args: next.args,
@@ -312,6 +330,8 @@ export class PlanRunner {
           confirmed: this.plan.confirmed || !next.requiresConfirmation,
           signal: this.controller.signal,
         });
+
+        const duration = Date.now() - startTime;
 
         let result = outcome.result;
         if (result.ok && outcome.project !== project) {
@@ -328,6 +348,21 @@ export class PlanRunner {
           }
         }
 
+        if (import.meta.env.DEV) {
+          useDiagnostic.getState().updateStep(next.stepId, { 
+            status: result.ok ? "success" : "error",
+            durationMs: duration,
+            error: result.ok ? undefined : result.summary,
+            details: {
+              renderer: (next.args as any)?.style?.renderer || "standard",
+              familyName: (next.args as any)?.templateId || (next.args as any)?.family,
+              moduleCount: (next.args as any)?.modules?.length || (next.args as any)?.items?.length,
+              objectCreated: result.ok && ["insert_item", "insert_described", "layout_room"].includes(next.toolName),
+              fullException: result.ok ? undefined : result.summary
+            }
+          });
+        }
+
         this.emit(
           patchStep(this.plan, next.stepId, {
             status: result.ok ? "completed" : "failed",
@@ -336,6 +371,23 @@ export class PlanRunner {
             finishedAt: new Date().toISOString(),
           }),
         );
+
+        if (import.meta.env.DEV) {
+          useDiagnostic.getState().updateStep(next.stepId, { 
+            status: result.ok ? "success" : "error",
+            durationMs: duration,
+            error: result.ok ? undefined : result.summary,
+            details: {
+              pieceCount: (result as any).pieceCount,
+              renderer: (next.args as any)?.style?.renderer || "standard",
+              familyName: (next.args as any)?.templateId || (next.args as any)?.family,
+              moduleCount: (next.args as any)?.modules?.length || (next.args as any)?.items?.length,
+              objectCreated: result.ok && ["insert_item", "insert_described", "layout_room"].includes(next.toolName),
+              fullException: result.ok ? undefined : result.summary,
+              interruptionReason: result.ok ? undefined : "Falha na etapa crítica"
+            }
+          });
+        }
 
         if (!result.ok) {
           // Falha interrompe o plano: nada é executado fora de ordem.
@@ -349,11 +401,19 @@ export class PlanRunner {
       // marcada como falha e o plano encerra em estado repetível.
       const message = error instanceof Error ? error.message : "Falha inesperada na execução.";
       const running = this.plan.steps.find((s) => s.status === "running");
-      const steps = this.plan.steps.map((s) =>
-        s.stepId === running?.stepId
-          ? { ...s, status: "failed" as PlanStepStatus, warnings: [...s.warnings, message] }
-          : s,
-      );
+      const steps = this.plan.steps.map((s) => {
+        if (s.stepId === running?.stepId) {
+          if (import.meta.env.DEV) {
+            useDiagnostic.getState().updateStep(s.stepId, { 
+              status: "error", 
+              error: message,
+              details: { fullException: message }
+            });
+          }
+          return { ...s, status: "failed" as PlanStepStatus, warnings: [...s.warnings, message] };
+        }
+        return s;
+      });
       this.emit({
         ...this.plan,
         steps,
