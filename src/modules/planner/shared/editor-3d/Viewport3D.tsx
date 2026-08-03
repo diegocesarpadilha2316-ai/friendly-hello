@@ -510,14 +510,17 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
         </div>
 
         <div className="relative min-h-0 flex-1">
-          <Scene3D
-            model={model}
-            viewport={viewport}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-            gizmoMode={gizmoMode}
-            onCommitTransform={commitTransform}
-          />
+          {room && model && (
+            <Scene3D
+              room={room}
+              model={model}
+              viewport={viewport}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+              gizmoMode={gizmoMode}
+              onCommitTransform={commitTransform}
+            />
+          )}
           <PlannerDiagnosticPanel />
         </div>
 
