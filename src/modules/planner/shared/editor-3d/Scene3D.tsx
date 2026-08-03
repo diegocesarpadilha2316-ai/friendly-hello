@@ -160,7 +160,7 @@ function useTexturedMaterialProps(
     };
     if (lib?.textureUrl && !props.wireframe) {
       const base = loadTexture(lib.textureUrl);
-      const tex = base.clone();
+      const tex = base; // Remove clone() excessivo para reduzir GC e carga de GPU
       tex.needsUpdate = true;
       // Tile em metros a partir da largura/comprimento da chapa (padrão 1m×2m).
       const tileX = (lib.widthMm ?? 1000) / 1000;
@@ -189,12 +189,12 @@ function useTexturedMaterialProps(
           t.repeat.set(repX, repY);
           t.needsUpdate = true;
         };
-        const nrm = loadTexture(pbr.maps.normal, false).clone();
+        const nrm = loadTexture(pbr.maps.normal, false); // Remove clone() excessivo
         applyTiling(nrm);
         props.normalMap = nrm;
         props.normalScale = new THREE.Vector2(1, 1);
 
-        const arm = loadTexture(pbr.maps.arm, false).clone();
+        const arm = loadTexture(pbr.maps.arm, false); // Remove clone() excessivo
         applyTiling(arm);
         // Three.js lê aoMap=R, roughnessMap=G, metalnessMap=B automaticamente
         // quando bindado à mesma textura ARM combinada.
@@ -222,12 +222,10 @@ function useTexturedMaterialProps(
         const repX = Math.max(0.25, Math.abs(sizeX) / tile);
         const repY = Math.max(0.25, Math.abs(sizeY) / tile);
         const withTiling = (t: THREE.Texture) => {
-          const c = t.clone();
-          c.wrapS = THREE.RepeatWrapping;
-          c.wrapT = THREE.RepeatWrapping;
-          c.repeat.set(repX, repY);
-          c.needsUpdate = true;
-          return c;
+          t.wrapS = THREE.RepeatWrapping;
+          t.wrapT = THREE.RepeatWrapping;
+          t.repeat.set(repX, repY);
+          return t;
         };
         props.map = withTiling(surf.map);
         props.normalMap = withTiling(surf.normalMap);
@@ -293,6 +291,8 @@ function FurnitureRuntimeEvidence({
     else if (renderer === "kitchen") pieces = buildKitchenModule(kitchenSpecFromLegacy(common)).assembly.pieces.length;
     else if (renderer === "bathroom") pieces = buildBathroomModule(bathroomFromLegacy(common)).assembly.pieces.length;
     else if (renderer === "laundry") pieces = buildLaundryModule(laundryFromLegacy(common)).assembly.pieces.length;
+    else if (renderer === "decor" || renderer === "appliance") pieces = 1;
+
     // Aguarda o efeito de AutoFitCamera do mesmo commit antes de comprovar
     // o frustum; assim não validamos contra a câmera antiga.
     const report = () => {
@@ -301,13 +301,33 @@ function FurnitureRuntimeEvidence({
       const sphere = new THREE.Sphere(center, Math.max(f.width, f.height, f.depth) / 2);
       const frustum = new THREE.Frustum();
       frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+      
       const framed = frustum.intersectsSphere(sphere);
-      reportSceneRuntime({ itemId: f.id, renderer, pieces, visible: true, framed, recordedAt: Date.now() });
-      if (!framed && retry < 8) {
+      
+      // Procura o objeto na cena pelo nome
+      const scene = camera.parent;
+      let visible = false;
+      if (scene) {
+        const obj = scene.getObjectByName(`furniture-${f.id}`);
+        if (obj) {
+          visible = true;
+        }
+      }
+
+      reportSceneRuntime({ 
+        itemId: f.id, 
+        renderer, 
+        pieces, 
+        visible, 
+        framed, 
+        recordedAt: Date.now() 
+      });
+
+      if (!visible && retry < 15) {
         retry += 1;
         timer = window.setTimeout(() => {
           frame = window.requestAnimationFrame(report);
-        }, 100);
+        }, 200);
       }
     };
     frame = window.requestAnimationFrame(report);
@@ -566,6 +586,7 @@ function Furniture({
   if (decor) {
     return (
       <group
+        name={`furniture-${f.id}`}
         position={[pos.x, safeBottom, pos.z]}
         rotation={[0, f.rotationY, 0]}
         onClick={(e: ThreeEvent<MouseEvent>) => {
@@ -589,6 +610,7 @@ function Furniture({
   if (appliance) {
     return (
       <group
+        name={`furniture-${f.id}`}
         position={[pos.x, safeBottom, pos.z]}
         rotation={[0, f.rotationY, 0]}
         onClick={(e: ThreeEvent<MouseEvent>) => {
@@ -630,6 +652,7 @@ function Furniture({
   if (wardrobe) {
     return (
       <group
+        name={`furniture-${f.id}`}
         position={[pos.x, safeCenterY, pos.z]}
         rotation={[0, f.rotationY, 0]}
         onClick={(e: ThreeEvent<MouseEvent>) => {
@@ -669,6 +692,7 @@ function Furniture({
   if (laundry) {
     return (
       <group
+        name={`furniture-${f.id}`}
         position={[pos.x, safeCenterY, pos.z]}
         rotation={[0, f.rotationY, 0]}
         onClick={(e: ThreeEvent<MouseEvent>) => {
@@ -704,6 +728,7 @@ function Furniture({
   if (bathroom) {
     return (
       <group
+        name={`furniture-${f.id}`}
         position={[pos.x, safeCenterY, pos.z]}
         rotation={[0, f.rotationY, 0]}
         onClick={(e: ThreeEvent<MouseEvent>) => {
@@ -739,6 +764,7 @@ function Furniture({
   if (kitchen) {
     return (
       <group
+        name={`furniture-${f.id}`}
         position={[pos.x, safeCenterY, pos.z]}
         rotation={[0, f.rotationY, 0]}
         onClick={(e: ThreeEvent<MouseEvent>) => {
@@ -772,6 +798,7 @@ function Furniture({
   if (dresser) {
     return (
       <group
+        name={`furniture-${f.id}`}
         position={[pos.x, safeCenterY, pos.z]}
         rotation={[0, f.rotationY, 0]}
         onClick={(e: ThreeEvent<MouseEvent>) => {
@@ -801,6 +828,7 @@ function Furniture({
   if (cabinet) {
     return (
       <group
+        name={`furniture-${f.id}`}
         position={[pos.x, safeCenterY, pos.z]}
         rotation={[0, f.rotationY, 0]}
         onClick={(e: ThreeEvent<MouseEvent>) => {
@@ -841,30 +869,30 @@ function Furniture({
     );
   }
   return (
-    <group>
+    <group name={`furniture-${f.id}`}>
       {runtimeEvidence}
-    <mesh
-      position={[pos.x, safeCenterY, pos.z]}
-      rotation={[0, f.rotationY, 0]}
-      castShadow
-      receiveShadow
-      onClick={(e: ThreeEvent<MouseEvent>) => {
-        e.stopPropagation();
-        onSelect(f.id);
-      }}
-    >
-      <boxGeometry args={[f.width, f.height, f.depth]} />
-      <meshStandardMaterial {...props} />
-      {(f.frontType === "vidro" || f.frontType === "reeded") ? (
-        <GlassFront
-          width={f.width}
-          height={f.height}
-          depth={f.depth}
-          variant={f.frontType}
-          tint={f.glassTint}
-        />
-      ) : null}
-    </mesh>
+      <mesh
+        position={[pos.x, safeCenterY, pos.z]}
+        rotation={[0, f.rotationY, 0]}
+        castShadow
+        receiveShadow
+        onClick={(e: ThreeEvent<MouseEvent>) => {
+          e.stopPropagation();
+          onSelect(f.id);
+        }}
+      >
+        <boxGeometry args={[f.width, f.height, f.depth]} />
+        <meshStandardMaterial {...props} />
+        {f.frontType === "vidro" || f.frontType === "reeded" ? (
+          <GlassFront
+            width={f.width}
+            height={f.height}
+            depth={f.depth}
+            variant={f.frontType}
+            tint={f.glassTint}
+          />
+        ) : null}
+      </mesh>
     </group>
   );
 }
@@ -1197,11 +1225,9 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
     () => new THREE.Vector3(cx, Math.max(0.6, viewport.wallHeight / 3000), cz),
     [cx, cz, viewport.wallHeight],
   );
-  const diag = Math.hypot(model.bounds.maxX - model.bounds.minX, model.bounds.maxZ - model.bounds.minZ) || 8;
-  const camDist = Math.max(6, diag * 1.2);
-  // Altura da câmera: um pouco acima da linha do olho (1.6 m) sem
-  // exagerar — piso sempre visível na base do frame.
-  const camHeight = Math.max(1.6, camDist * 0.5);
+  const diag = useMemo(() => Math.hypot(model.bounds.maxX - model.bounds.minX, model.bounds.maxZ - model.bounds.minZ) || 8, [model.bounds]);
+  const camDist = useMemo(() => Math.max(6, diag * 1.2), [diag]);
+  const camHeight = useMemo(() => Math.max(1.6, camDist * 0.5), [camDist]);
   const daytime = viewport.daytime ?? "noon";
   // Presets de horário — sol (posição/cor/intensidade), fill e ambiente.
   const dayPreset = useMemo(() => {
@@ -1257,7 +1283,7 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
         };
     }
   }, [daytime, diag]);
-  const useSky = viewport.render === "material" && dayPreset.showSky;
+  const useSky = useMemo(() => viewport.render === "material" && dayPreset.showSky, [viewport.render, dayPreset.showSky]);
 
   return (
     <Canvas
@@ -1305,8 +1331,8 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
             intensity={dayPreset.sunIntensity}
             color={dayPreset.sunColor}
             castShadow
-            shadow-mapSize-width={4096}
-            shadow-mapSize-height={4096}
+            shadow-mapSize-width={viewport.cinematic ? 4096 : 2048}
+            shadow-mapSize-height={viewport.cinematic ? 4096 : 2048}
             shadow-bias={-0.00015}
             shadow-normalBias={0.04}
             shadow-camera-far={60}
@@ -1365,7 +1391,7 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
         <ContactShadows
           position={[cx, 0.002, cz]}
           scale={Math.max(diag * 2, 20)}
-          resolution={2048}
+          resolution={viewport.cinematic ? 2048 : 1024}
           blur={1.8}
           far={4}
           opacity={0.72}

@@ -59,15 +59,13 @@ function AuthenticatedLayout() {
   const navigate = useNavigate();
   const href = useRouterState({ select: (s) => s.location.href });
   const redirectedRef = useRef(false);
-    // Temporary bypass for stabilization audit
-    return;
-    /*
+  useEffect(() => {
     if (loading || user) return;
     if (redirectedRef.current) return;
     redirectedRef.current = true;
     const safe = href.startsWith("/auth") ? "/" : href;
     navigate({ to: "/auth", search: { redirect: safe }, replace: true });
-    */
+  }, [loading, user, navigate, href]);
 
   if (loading) {
     return (
