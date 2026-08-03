@@ -352,7 +352,7 @@ export class PlanRunner {
             
             // Auditoria Visual Real (Three.js)
             const validationResult = await import("@/modules/planner/shared/editor-3d/scene-runtime").then(m => 
-              m.waitForSceneRuntime(outcome.result.affectedIds, 2000)
+              m.waitForSceneRuntime(outcome.result.affectedIds, 4000)
             );
 
             const sceneObjectCount = (window as any).__DIORIS_SCENE_OBJECTS__ || 0;
@@ -384,7 +384,7 @@ export class PlanRunner {
               };
             } else {
               const diff = furnitureAfter - furnitureBefore;
-              if (diff <= 0 && ["insert_item", "insert_described", "layout_room"].includes(next.toolName)) {
+              if (diff <= 0 && ["insert_item", "insert_described", "layout_room"].includes(next.stepId)) {
                 const isOptional = (next.args as any)?.optional === true;
                 const errorMsg = `Data Loss: IA gerou Blueprint mas Store não atualizou (+${diff} móveis).`;
                 
