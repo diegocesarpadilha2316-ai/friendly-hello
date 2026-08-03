@@ -305,13 +305,14 @@ function FurnitureRuntimeEvidence({
       const obj = scene.getObjectByName(`furniture-${f.id}`);
       let visible = false;
       let scaleValid = false;
-      let withinBounds = true; // Simplificado: assumimos que o descriptor já reflete posição válida no Room Engine
+      let withinBounds = true; 
       let aboveFloor = true;
       let notBehindCamera = true;
       let framed = false;
 
       if (obj) {
         visible = obj.visible;
+        
         // Valida escala
         const worldScale = new THREE.Vector3();
         obj.getWorldScale(worldScale);
@@ -320,7 +321,7 @@ function FurnitureRuntimeEvidence({
         // Valida posição em relação ao piso (y=0)
         const worldPos = new THREE.Vector3();
         obj.getWorldPosition(worldPos);
-        aboveFloor = worldPos.y >= -0.05; // tolerância pequena
+        aboveFloor = worldPos.y >= -0.05;
 
         // Calcula bounding box real na cena
         const box = new THREE.Box3().setFromObject(obj);
@@ -337,6 +338,11 @@ function FurnitureRuntimeEvidence({
         const frustum = new THREE.Frustum();
         frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
         framed = frustum.intersectsSphere(sphere);
+        
+        // Verifica clipping (sectionHeight)
+        if (viewport.sectionHeight != null) {
+          if (worldPos.y > (viewport.sectionHeight / 1000)) visible = false;
+        }
       }
 
       reportSceneRuntime({ 
@@ -352,7 +358,7 @@ function FurnitureRuntimeEvidence({
         recordedAt: Date.now() 
       });
 
-      if ((!visible || !framed || !scaleValid) && retry < 20) {
+      if ((!visible || !framed || !scaleValid || !notBehindCamera) && retry < 30) {
         retry += 1;
         timer = window.setTimeout(() => {
           frame = window.requestAnimationFrame(report);
@@ -1059,11 +1065,20 @@ function FocusOnSelection({
   };
   const [tick, setTick] = useState(0);
 
-  // Reage ao focusTick do viewport (automação da IA)
+  // Reage ao focusTick global (automação da IA) ou eventos de janela
   useEffect(() => {
-    if (viewport.focusTick && viewport.focusTick > 0) {
-      setTick((t) => t + 1);
-    }
+    const handleFocus = () => setTick((t) => t + 1);
+    if (viewport.focusTick && viewport.focusTick > 0) handleFocus();
+    
+    // Bridge para quando a IA sinaliza via window (fora do ciclo de render do EditorState)
+    const timer = setInterval(() => {
+      const win = window as any;
+      if (win.__DIORIS_FOCUS_TICK__ !== win.__LAST_FOCUS_TICK__) {
+        win.__LAST_FOCUS_TICK__ = win.__DIORIS_FOCUS_TICK__;
+        handleFocus();
+      }
+    }, 100);
+    return () => clearInterval(timer);
   }, [viewport.focusTick]);
   const anim = useRef<{
     active: boolean;

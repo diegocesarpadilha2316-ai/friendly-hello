@@ -85,19 +85,26 @@ export async function validatePostExecution(input: {
 
   const itemIds = created.map((item) => item.id);
   
-  // Automação: selecionar o primeiro item criado e disparar o enquadramento (focusTick)
-  // para que o viewport mova a câmera antes de validar a visibilidade.
-  const firstId = itemIds[0];
-  input.after.environments.forEach(env => {
-    env.rooms.forEach(room => {
-      if (room.id === input.ctx.roomId) {
-        room.viewport = {
-          ...room.viewport,
-          focusTick: (room.viewport.focusTick ?? 0) + 1
-        };
-      }
-    });
-  });
+  // Automação: disparar o enquadramento (focusTick) para que o viewport mova 
+  // a câmera antes de validar a visibilidade. O focusTick é consumido 
+  // pelo FocusOnSelection no Scene3D.
+  const room = input.after.environments
+    .flatMap(e => e.rooms)
+    .find(r => r.id === input.ctx.roomId);
+
+  if (room) {
+    const nodes = Object.values(room.nodes);
+    // Procuramos o nó de configuração do ambiente ou um nó que carregue metadados de viewport
+    // Como o PlannerRoom não tem campo viewport direto, usamos o sistema de eventos/runtime
+    // O Scene3D e o usePlannerEditor sincronizam o estado. 
+    // Para sinalizar o focusTick sem quebrar o tipo PlannerRoom, usamos o EventBus.
+    const bus = (await import("@/modules/planner/shared/events")).getPlannerEventBus();
+    bus.emit("project:node-selected", { projectId: input.after.id, nodeId: itemIds[0] });
+    // @ts-ignore - Injetamos o tick via window bridge se necessário ou confiamos no hook que observa a seleção
+    if (typeof window !== 'undefined') {
+      (window as any).__DIORIS_FOCUS_TICK__ = ((window as any).__DIORIS_FOCUS_TICK__ || 0) + 1;
+    }
+  }
 
   const runtime = await waitForSceneRuntime(itemIds, 12_000);
   if (!runtime.ok) return { ok: false, itemIds, summary: runtime.reason };
