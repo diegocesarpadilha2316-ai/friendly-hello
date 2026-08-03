@@ -309,6 +309,7 @@ function FurnitureRuntimeEvidence({
       let aboveFloor = true;
       let notBehindCamera = true;
       let framed = false;
+      let pieceCount = 0;
 
       if (obj) {
         visible = obj.visible;
@@ -317,6 +318,22 @@ function FurnitureRuntimeEvidence({
         const worldScale = new THREE.Vector3();
         obj.getWorldScale(worldScale);
         scaleValid = worldScale.x > 0.001 && worldScale.y > 0.001 && worldScale.z > 0.001;
+
+        // Valida posição em relação ao piso (y=0)
+        const worldPos = new THREE.Vector3();
+        obj.getWorldPosition(worldPos);
+        aboveFloor = worldPos.y >= -0.05;
+
+        // Contagem real de peças físicas (filhos com geometria)
+        obj.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh && (child as THREE.Mesh).geometry) {
+            const role = (child.userData as any)?.role;
+            if (role !== "validation" && role !== "auxiliary" && role !== "tecnico") {
+              pieceCount++;
+            }
+          }
+        });
+
 
         // Valida posição em relação ao piso (y=0)
         const worldPos = new THREE.Vector3();
@@ -353,6 +370,15 @@ function FurnitureRuntimeEvidence({
       const physicalPieces = pieces;
       const physicalValid = physicalPieces > 0;
 
+      // Verifica se é apenas volume técnico
+      if (f.subtype === "volume-tecnico" || (f.params as any)?.role === "validation" || (f.params as any)?.role === "auxiliary") {
+        visible = false;
+      }
+
+      // Validação de Peças Físicas Reais (evita "caixa vazia")
+      const physicalPieces = pieceCount || pieces;
+      const physicalValid = physicalPieces > 0;
+
       reportSceneRuntime({ 
         itemId: f.id, 
         renderer, 
@@ -366,7 +392,7 @@ function FurnitureRuntimeEvidence({
         recordedAt: Date.now() 
       });
 
-      if ((!visible || !framed || !scaleValid || !notBehindCamera) && retry < 30) {
+      if ((!visible || !framed || !scaleValid || !notBehindCamera || !physicalValid) && retry < 30) {
         retry += 1;
         timer = window.setTimeout(() => {
           frame = window.requestAnimationFrame(report);
