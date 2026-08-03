@@ -885,9 +885,7 @@ export function usePlannerChat() {
                 toolCalls.push(call);
               }
             } else {
-                  status: "running"
-                });
-              }
+
 
             toolCalls.push({
                 id: uid(),
