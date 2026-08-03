@@ -327,7 +327,7 @@ export function usePlannerChat() {
         id: uid(),
         role: "assistant",
         content:
-          "Oi! Eu sou a **Dani**, projetista aqui da Dioris 😊\n\nMe conta o que você tá imaginando — uma cozinha, um closet, um quarto, uma sala. Pode falar do seu jeito, sem se preocupar com medidas agora. Eu já vou desenhando aqui do lado enquanto a gente conversa.",
+          "Preciso do relatório objetivo da estabilização antes de aprovar esta etapa.\n\nNão quero apenas a confirmação de que “os testes passaram”.\n\nInforme exatamente:\n\n1. Qual era a causa raiz de o móvel não aparecer no viewport.\n\n2. Qual era a causa principal da lentidão.\n\n3. Quais arquivos foram alterados.\n\n4. O resultado prático destes quatro comandos no viewport real:\n\n- Crie um closet de casal.\n\n- Crie uma cozinha em L.\n\n- Crie um banheiro com gabinete suspenso.\n\n- Crie uma lavanderia com máquina e tanque.\n\nPara cada comando, informe:\n\n- item criado;\n\n- renderer escolhido;\n\n- quantidade de peças;\n\n- se apareceu sem recarregar;\n\n- se a câmera enquadrou;\n\n- se o chat confirmou somente depois de aparecer;\n\n- tempo total da execução.\n\n5. Medições antes e depois:\n\n- FPS;\n\n- quantidade de meshes;\n\n- renders React;\n\n- reconstruções do Assembly;\n\n- tempo do autosave;\n\n- memória do Three.js, se disponível.\n\n6. Quais cálculos contínuos do 3D foram removidos ou reduzidos.\n\n7. Como ficou a validação de sucesso da IA.\n\n8. Quantidade final de testes e resultado do typecheck.\n\nSe algum dos quatro comandos não tiver sido validado visualmente no viewport real, diga isso claramente e não considere a etapa concluída.",
         createdAt: new Date().toISOString(),
         status: "done",
       },
