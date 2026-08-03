@@ -328,7 +328,7 @@ export function usePlannerChat() {
         id: uid(),
         role: "assistant",
         content:
-          "Oi! Eu sou a **Dani**, projetista aqui da Dioris 😊\n\nMe conta o que você tá imaginando — uma cozinha, um closet, um quarto, uma sala. Pode falar do seu jeito, sem se preocupar com medidas agora. Vc consegue acessar e fazer um teste real.",
+          "Oi! Eu sou a **Dani**, projetista aqui da Dioris 😊\n\nMe conta o que você tá imaginando — uma cozinha, um closet, um quarto, uma sala. Pode falar do seu jeito, sem se preocupar com medidas agora. Faz uma auditoria e tente resolver pois estava ok e agora tá dando esse problema.",
         createdAt: new Date().toISOString(),
         status: "done",
       },
