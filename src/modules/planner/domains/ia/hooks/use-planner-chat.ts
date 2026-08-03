@@ -1035,8 +1035,6 @@ export function usePlannerChat() {
         sendingRef.current = false;
       } catch (err) {
         console.warn("[planner-chat] falha ao processar envio", err);
-          });
-        }
         patchMessage(assistantId, (m) => ({
           ...m,
           status: "error",
