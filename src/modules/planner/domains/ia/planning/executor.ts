@@ -339,11 +339,45 @@ export class PlanRunner {
           project = outcome.project;
           this.options.applyProject(project);
           if (this.options.validateAppliedProject && ["insert_item", "insert_described", "layout_room", "create_room_preset"].includes(next.toolName)) {
+            const countFurniture = (p: PlannerProject) => 
+              p.environments.flatMap(e => e.rooms).flatMap(r => 
+                Object.values(r.nodes).filter(n => n.kind === "module" && n.params.role === "furniture")
+              ).length;
+
+            const furnitureBefore = countFurniture(previous);
+            const furnitureAfter = countFurniture(project);
+            
+            // Bridge para Scene3D obter Object3D count via window (instrumentação temporária)
+            const sceneObjectCount = (window as any).__DIORIS_SCENE_OBJECTS__ || 0;
+
+            if (import.meta.env.DEV) {
+              useDiagnostic.getState().updateStep(next.stepId, {
+                details: {
+                  projectId: project.id,
+                  roomId: this.options.ctx.roomId,
+                  itemsInserted: (result as any).itemsCount || (next.args as any)?.modules?.length || 1,
+                  furnitureBefore,
+                  furnitureAfter,
+                  sceneObjectCount
+                }
+              });
+            }
+
             const validation = await this.options.validateAppliedProject(previous, project);
             if (!validation.ok) {
               result = { ...result, ok: false, errorCode: "INTERNAL", summary: validation.summary };
             } else {
-              result = { ...result, summary: `${result.summary} ${validation.summary}` };
+              // Se o projeto não mudou o número de móveis mas deveria, falha
+              if (furnitureAfter <= furnitureBefore && ["insert_item", "insert_described", "layout_room"].includes(next.toolName)) {
+                result = { 
+                  ...result, 
+                  ok: false, 
+                  errorCode: "INTERNAL", 
+                  summary: `Data Loss Detected: O motor Assembly gerou dados mas o Store do projeto não foi atualizado. (Antes: ${furnitureBefore}, Depois: ${furnitureAfter})` 
+                };
+              } else {
+                result = { ...result, summary: `${result.summary} ${validation.summary}` };
+              }
             }
           }
         }
