@@ -1,9 +1,11 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-import { PanelLeft } from "lucide-react";
+import { PanelLeft, Box, Layout, MessageSquare } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 import { useIsMobile } from "@/hooks/use-mobile";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
