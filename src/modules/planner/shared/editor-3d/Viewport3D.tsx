@@ -35,6 +35,7 @@ import {
 } from "../room";
 import { DEFAULT_VIEWPORT_3D, type Camera3DMode, type Camera3DView, type Render3DMode, type Viewport3DState } from "./types";
 import { Scene3D } from "./Scene3D";
+import { PlannerDiagnosticPanel } from "../../domains/ia/components/PlannerDiagnosticPanel";
 import type { PlannerProject, PlannerRoom } from "../types/project";
 import { RotateCw, Trash2, Copy } from "lucide-react";
 import { plannerDiagnosticsEnabled } from "./runtime-diagnostics";
