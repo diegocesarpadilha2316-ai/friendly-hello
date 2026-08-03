@@ -222,12 +222,10 @@ function useTexturedMaterialProps(
         const repX = Math.max(0.25, Math.abs(sizeX) / tile);
         const repY = Math.max(0.25, Math.abs(sizeY) / tile);
         const withTiling = (t: THREE.Texture) => {
-          const c = t.clone();
-          c.wrapS = THREE.RepeatWrapping;
-          c.wrapT = THREE.RepeatWrapping;
-          c.repeat.set(repX, repY);
-          c.needsUpdate = true;
-          return c;
+          t.wrapS = THREE.RepeatWrapping;
+          t.wrapT = THREE.RepeatWrapping;
+          t.repeat.set(repX, repY);
+          return t;
         };
         props.map = withTiling(surf.map);
         props.normalMap = withTiling(surf.normalMap);
