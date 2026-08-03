@@ -1058,6 +1058,13 @@ function FocusOnSelection({
     controls: (THREE.EventDispatcher & { target: THREE.Vector3; update?: () => void }) | null;
   };
   const [tick, setTick] = useState(0);
+
+  // Reage ao focusTick do viewport (automação da IA)
+  useEffect(() => {
+    if (viewport.focusTick && viewport.focusTick > 0) {
+      setTick((t) => t + 1);
+    }
+  }, [viewport.focusTick]);
   const anim = useRef<{
     active: boolean;
     fromPos: THREE.Vector3;

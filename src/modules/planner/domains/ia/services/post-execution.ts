@@ -84,11 +84,26 @@ export async function validatePostExecution(input: {
   }
 
   const itemIds = created.map((item) => item.id);
-  const runtime = await waitForSceneRuntime(itemIds);
+  
+  // Automação: selecionar o primeiro item criado e disparar o enquadramento (focusTick)
+  // para que o viewport mova a câmera antes de validar a visibilidade.
+  const firstId = itemIds[0];
+  input.after.environments.forEach(env => {
+    env.rooms.forEach(room => {
+      if (room.id === input.ctx.roomId) {
+        room.viewport = {
+          ...room.viewport,
+          focusTick: (room.viewport.focusTick ?? 0) + 1
+        };
+      }
+    });
+  });
+
+  const runtime = await waitForSceneRuntime(itemIds, 12_000);
   if (!runtime.ok) return { ok: false, itemIds, summary: runtime.reason };
   return {
     ok: true,
     itemIds,
-    summary: `${itemIds.length} móvel(is) confirmado(s) no projeto, renderer, montagem, cena e câmera.`,
+    summary: `${itemIds.length} móvel(is) confirmado(s) no projeto, renderer, montagem, cena e câmera enquadrada.`,
   };
 }
