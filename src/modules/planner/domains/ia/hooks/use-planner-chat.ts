@@ -864,6 +864,22 @@ export function usePlannerChat() {
               (t) => t.status === "pending" && t.name === chunk.toolName,
             );
             if (chunk.toolResult) {
+              const callDuration = startedAt ? Date.now() - startedAt : 0;
+              if (import.meta.env.DEV) {
+                const isError = chunk.toolOutcome && !chunk.toolOutcome.ok;
+                useDiagnostic.getState().updateStep(chunk.toolName, { 
+                  status: isError ? "error" : "success",
+                  durationMs: callDuration,
+                  error: isError ? chunk.toolOutcome?.summary : undefined,
+                  details: {
+                    renderer: (chunk.toolArgs as any)?.style?.renderer || "standard",
+                    familyName: (chunk.toolArgs as any)?.templateId || (chunk.toolArgs as any)?.family,
+                    moduleCount: (chunk.toolArgs as any)?.modules?.length || (chunk.toolArgs as any)?.items?.length,
+                    objectCreated: !isError && ["insert_item", "insert_described", "layout_room"].includes(chunk.toolName),
+                    fullException: isError ? chunk.toolOutcome?.summary : undefined
+                  }
+                });
+              }
               // resultado — atualiza projeto e marca a tool como ok
               mutatedProject = chunk.toolResult.project;
               // Etapa 9 — o resultado padronizado dita status e avisos.
@@ -887,21 +903,12 @@ export function usePlannerChat() {
                 toolCalls.push(call);
               }
             } else {
-            const callDuration = Date.now() - callStartTime;
-            if (import.meta.env.DEV) {
-              useDiagnostic.getState().updateStep(chunk.toolCall.id, { 
-                status: res.status === "ok" ? "success" : "error",
-                durationMs: callDuration,
-                error: res.status === "error" ? res.message : undefined,
-                details: {
-                  renderer: (chunk.toolCall.args as any)?.style?.renderer || "standard",
-                  familyName: (chunk.toolCall.args as any)?.templateId || (chunk.toolCall.args as any)?.family,
-                  moduleCount: (chunk.toolCall.args as any)?.modules?.length || (chunk.toolCall.args as any)?.items?.length,
-                  objectCreated: res.status === "ok" && ["insert_item", "insert_described", "layout_room"].includes(chunk.toolCall.name),
-                  fullException: res.status === "error" ? res.message : undefined
-                }
-              });
-            }
+              if (import.meta.env.DEV) {
+                useDiagnostic.getState().updateStep(chunk.toolName, { 
+                  name: `IA: ${chunk.toolName}`,
+                  status: "running"
+                });
+              }
 
             toolCalls.push({
                 id: uid(),
@@ -1052,12 +1059,12 @@ export function usePlannerChat() {
       } catch (err) {
         console.warn("[planner-chat] falha ao processar envio", err);
         if (import.meta.env.DEV) {
-          const message = err instanceof Error ? err.message : String(err);
+          const msg = err instanceof Error ? err.message : String(err);
           useDiagnostic.getState().updateStep("global-error", { 
             name: "Erro de Orquestração", 
             status: "error", 
-            error: message,
-            details: { fullException: message }
+            error: msg,
+            details: { fullException: msg }
           });
         }
         patchMessage(assistantId, (m) => ({
