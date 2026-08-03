@@ -43,10 +43,10 @@ export function PlannerDiagnosticPanel() {
           <span className="text-sm font-bold">Diagnóstico Interno</span>
         </div>
         <div className="flex items-center gap-1">
-          <Button size="xs" variant="ghost" onClick={copyReport} title="Copiar relatório">
+          <Button size="sm" variant="ghost" onClick={copyReport} title="Copiar relatório">
             <Copy className="h-3.5 w-3.5" />
           </Button>
-          <Button size="xs" variant="ghost" onClick={() => setOpen(false)}>✕</Button>
+          <Button size="sm" variant="ghost" onClick={() => setOpen(false)}>✕</Button>
         </div>
       </header>
 
@@ -118,7 +118,7 @@ export function PlannerDiagnosticPanel() {
       </div>
 
       <footer className="border-t border-border bg-muted/30 p-2 text-center">
-        <Button variant="outline" size="xs" className="w-full text-[10px]" onClick={reset}>
+        <Button variant="outline" size="sm" className="w-full text-[10px]" onClick={reset}>
           Limpar Diagnóstico
         </Button>
       </footer>
