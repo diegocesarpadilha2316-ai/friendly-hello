@@ -597,6 +597,7 @@ function Furniture({
   selected: boolean;
   onSelect: (id: string | null) => void;
 }) {
+  if (f.subtype === "volume-tecnico" || (f.params as any)?.role === "validation" || (f.params as any)?.role === "auxiliary") return null;
   const pos = explodeVec(f.cx, f.cz, f.y, center, viewport.explode);
   // Aterramento garantido no render: independente do que o extrusor
   // enviou, base do móvel nunca fica abaixo de y=0 (topo do piso).

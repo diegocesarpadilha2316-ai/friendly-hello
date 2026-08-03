@@ -370,12 +370,19 @@ export class PlanRunner {
             } else {
               const diff = furnitureAfter - furnitureBefore;
               if (diff <= 0 && ["insert_item", "insert_described", "layout_room"].includes(next.toolName)) {
-                result = { 
-                  ...result, 
-                  ok: false, 
-                  errorCode: "INTERNAL", 
-                  summary: `Data Loss: IA gerou Assembly mas Store não atualizou. (Móveis Antes: ${furnitureBefore}, Depois: ${furnitureAfter}). Verifique o target {envId: ${this.options.ctx.environmentId}, roomId: ${this.options.ctx.roomId}}.` 
-                };
+                const isOptional = (next.args as any)?.optional === true;
+                const errorMsg = `Data Loss: IA gerou Assembly mas Store não atualizou. (Móveis Antes: ${furnitureBefore}, Depois: ${furnitureAfter}). Verifique o target {envId: ${this.options.ctx.environmentId}, roomId: ${this.options.ctx.roomId}}.`;
+                
+                if (isOptional) {
+                  result = { ...result, ok: true, summary: `${result.summary} [Aviso: ${errorMsg}]`, warnings: [...result.warnings, errorMsg] };
+                } else {
+                  result = { 
+                    ...result, 
+                    ok: false, 
+                    errorCode: "INTERNAL", 
+                    summary: errorMsg
+                  };
+                }
               } else {
                 result = { ...result, summary: `${result.summary} [Auditoria: +${diff} móveis no Store, ${sceneObjectCount} na Cena]` };
               }
@@ -407,14 +414,22 @@ export class PlanRunner {
           }),
         );
 
+        // Não interrompe o plano se for um erro parcial de inserção de acessórios em um closet grande.
+        // Se o móvel principal foi criado (+1 móvel), o plano pode seguir com avisos.
         if (!result.ok) {
-          break;
+          const isOptionalFailure = (next.args as any)?.optional === true;
+          if (isOptionalFailure) {
+            console.warn(`[PlanRunner] Falha opcional no passo ${next.stepId}: ${result.summary}`);
+          } else {
+            break;
+          }
         }
 
         this.emit({ ...this.plan, steps: refreshBlocked(this.plan.steps) });
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Falha inesperada na execução.";
+      const stack = error instanceof Error ? error.stack : undefined;
       const running = this.plan.steps.find((s) => s.status === "running");
       const steps = this.plan.steps.map((s) => {
         if (s.stepId === running?.stepId) {
@@ -422,7 +437,7 @@ export class PlanRunner {
             useDiagnostic.getState().updateStep(s.stepId, { 
               status: "error", 
               error: message,
-              details: { fullException: message }
+              details: { fullException: `${message}${stack ? `\n${stack}` : ""}` }
             });
           }
           return { ...s, status: "failed" as PlanStepStatus, warnings: [...s.warnings, message] };
@@ -432,7 +447,7 @@ export class PlanRunner {
       this.emit({
         ...this.plan,
         steps,
-        warnings: [...this.plan.warnings, message],
+        warnings: [...this.plan.warnings, `${message}${stack ? `\n${stack}` : ""}`],
         updatedAt: new Date().toISOString(),
       });
     } finally {

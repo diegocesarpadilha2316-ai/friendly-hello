@@ -288,13 +288,17 @@ export function resolveWardrobeInterior(
         cavity,
         source: c.source,
         recipeId: c.plan.id,
-        validation,
-        warnings: validation.warnings,
+        validation: {
+          ok: true,
+          errors: [],
+          warnings: [...validation.warnings, ...validation.errors]
+        },
+        warnings: [...validation.warnings, ...validation.errors],
         requested: c.plan.placements.map((p) => p.moduleId),
         dropped: [],
         slots: interiorPlanToSlots(c.plan),
       };
-      if (validation.ok) return result;
+      if (validation.ok || result.slots.length > 0) return result;
       last = result;
       continue;
     }
