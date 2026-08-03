@@ -863,30 +863,30 @@ function Furniture({
     );
   }
   return (
-    <group>
+    <group name={`furniture-${f.id}`}>
       {runtimeEvidence}
-    <mesh
-      position={[pos.x, safeCenterY, pos.z]}
-      rotation={[0, f.rotationY, 0]}
-      castShadow
-      receiveShadow
-      onClick={(e: ThreeEvent<MouseEvent>) => {
-        e.stopPropagation();
-        onSelect(f.id);
-      }}
-    >
-      <boxGeometry args={[f.width, f.height, f.depth]} />
-      <meshStandardMaterial {...props} />
-      {(f.frontType === "vidro" || f.frontType === "reeded") ? (
-        <GlassFront
-          width={f.width}
-          height={f.height}
-          depth={f.depth}
-          variant={f.frontType}
-          tint={f.glassTint}
-        />
-      ) : null}
-    </mesh>
+      <mesh
+        position={[pos.x, safeCenterY, pos.z]}
+        rotation={[0, f.rotationY, 0]}
+        castShadow
+        receiveShadow
+        onClick={(e: ThreeEvent<MouseEvent>) => {
+          e.stopPropagation();
+          onSelect(f.id);
+        }}
+      >
+        <boxGeometry args={[f.width, f.height, f.depth]} />
+        <meshStandardMaterial {...props} />
+        {f.frontType === "vidro" || f.frontType === "reeded" ? (
+          <GlassFront
+            width={f.width}
+            height={f.height}
+            depth={f.depth}
+            variant={f.frontType}
+            tint={f.glassTint}
+          />
+        ) : null}
+      </mesh>
     </group>
   );
 }
