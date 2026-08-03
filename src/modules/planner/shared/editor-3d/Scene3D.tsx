@@ -160,7 +160,7 @@ function useTexturedMaterialProps(
     };
     if (lib?.textureUrl && !props.wireframe) {
       const base = loadTexture(lib.textureUrl);
-      const tex = base.clone();
+      const tex = base; // Remove clone() excessivo para reduzir GC e carga de GPU
       tex.needsUpdate = true;
       // Tile em metros a partir da largura/comprimento da chapa (padrão 1m×2m).
       const tileX = (lib.widthMm ?? 1000) / 1000;
@@ -189,12 +189,12 @@ function useTexturedMaterialProps(
           t.repeat.set(repX, repY);
           t.needsUpdate = true;
         };
-        const nrm = loadTexture(pbr.maps.normal, false).clone();
+        const nrm = loadTexture(pbr.maps.normal, false); // Remove clone() excessivo
         applyTiling(nrm);
         props.normalMap = nrm;
         props.normalScale = new THREE.Vector2(1, 1);
 
-        const arm = loadTexture(pbr.maps.arm, false).clone();
+        const arm = loadTexture(pbr.maps.arm, false); // Remove clone() excessivo
         applyTiling(arm);
         // Three.js lê aoMap=R, roughnessMap=G, metalnessMap=B automaticamente
         // quando bindado à mesma textura ARM combinada.
