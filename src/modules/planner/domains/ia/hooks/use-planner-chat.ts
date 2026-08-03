@@ -34,6 +34,7 @@ import {
   loadRules,
 } from "@/modules/planner/shared";
 import { runAgent } from "../services/agent";
+import { useDiagnostic } from "../services/diagnostics";
 import { listToolContracts } from "../tools/registry";
 import { FINISHING_PRESETS } from "../services/finishing";
 import { streamLovableReply } from "../services/ai-stream";
