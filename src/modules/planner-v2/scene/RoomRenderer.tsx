@@ -1,29 +1,24 @@
 import React, { useMemo } from 'react';
 import * as THREE from 'three';
 import { RoomResult, WallGeometry } from '../room/types';
-import { Text } from '@react-three/drei';
 
-interface RoomRendererProps {
-  result: RoomResult;
-  showCeiling?: boolean;
-  showBaseboard?: boolean;
-  debug?: boolean;
+interface WallMeshProps {
+  wall: WallGeometry;
+  mode: 'technical' | 'presentation';
+  showBaseboard: boolean;
 }
 
-const WallMesh: React.FC<{ wall: WallGeometry; debug: boolean }> = ({ wall, debug }) => {
-  const mesh = useMemo(() => {
+const WallMesh: React.FC<WallMeshProps> = ({ wall, mode, showBaseboard }) => {
+  const geometry = useMemo(() => {
     const shape = new THREE.Shape();
-    // Inicia o contorno da parede (sentido anti-horário)
     shape.moveTo(-wall.width / 2, -wall.height / 2);
     shape.lineTo(wall.width / 2, -wall.height / 2);
     shape.lineTo(wall.width / 2, wall.height / 2);
     shape.lineTo(-wall.width / 2, wall.height / 2);
     shape.lineTo(-wall.width / 2, -wall.height / 2);
 
-    // Adiciona os furos (recortes)
     wall.openings.forEach((op) => {
       const hole = new THREE.Path();
-      // O offset é em relação ao canto inferior esquerdo da parede útil
       const x = op.x - wall.width / 2;
       const y = op.y - wall.height / 2;
       hole.moveTo(x, y);
@@ -34,71 +29,63 @@ const WallMesh: React.FC<{ wall: WallGeometry; debug: boolean }> = ({ wall, debu
       shape.holes.push(hole);
     });
 
-    const extrudeSettings = {
+    return new THREE.ExtrudeGeometry(shape, {
       steps: 1,
       depth: wall.thickness,
       bevelEnabled: false,
-    };
-
-    return new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    });
   }, [wall]);
 
   return (
     <group position={wall.position} rotation={wall.rotation}>
-      <mesh geometry={mesh}>
-        <meshStandardMaterial color="#888888" side={THREE.DoubleSide} />
+      <mesh geometry={geometry} castShadow receiveShadow>
+        <meshStandardMaterial 
+          color={mode === 'technical' ? '#f0f0f0' : '#ffffff'} 
+          roughness={0.9}
+        />
       </mesh>
-      {debug && (
-        <Text
-          position={[0, wall.height / 2 + 0.2, 0]}
-          fontSize={0.2}
-          color="white"
-          anchorX="center"
-          anchorY="middle"
-        >
-          {wall.id.toUpperCase()}
-        </Text>
-      )}
     </group>
   );
 };
 
+interface RoomRendererProps {
+  result: RoomResult;
+  mode: 'technical' | 'presentation';
+  showCeiling?: boolean;
+  showBaseboard?: boolean;
+}
+
 export const RoomRenderer: React.FC<RoomRendererProps> = ({ 
   result, 
+  mode,
   showCeiling = true,
-  showBaseboard = true,
-  debug = false 
+  showBaseboard = true 
 }) => {
   const { floor, ceiling, walls } = result;
 
   return (
     <group>
-      {/* Floor - Upper surface at Y=0 */}
-      <mesh position={[floor.width / 2, -floor.thickness / 2, floor.depth / 2]}>
+      {/* Floor */}
+      <mesh 
+        position={[floor.width / 2, -floor.thickness / 2, floor.depth / 2]}
+        receiveShadow
+      >
         <boxGeometry args={[floor.width, floor.thickness, floor.depth]} />
-        <meshStandardMaterial color="#444444" />
+        <meshStandardMaterial color="#d1c7bc" roughness={0.7} />
       </mesh>
 
       {/* Ceiling */}
       {showCeiling && (
         <mesh position={[ceiling.width / 2, result.bounds.max[1] + ceiling.thickness / 2, ceiling.depth / 2]}>
           <boxGeometry args={[ceiling.width, ceiling.thickness, ceiling.depth]} />
-          <meshStandardMaterial color="#eeeeee" transparent opacity={0.3} />
+          <meshStandardMaterial color="#ffffff" roughness={1} />
         </mesh>
       )}
 
       {/* Walls */}
       {walls.map((wall) => (
-        <WallMesh key={wall.id} wall={wall} debug={debug} />
+        <WallMesh key={wall.id} wall={wall} mode={mode} showBaseboard={showBaseboard} />
       ))}
-
-      {/* Debug Helpers */}
-      {debug && (
-        <>
-          <axesHelper args={[2]} />
-          <gridHelper args={[10, 10, 0xffffff, 0x444444]} position={[floor.width/2, 0, floor.depth/2]} />
-        </>
-      )}
     </group>
   );
 };
