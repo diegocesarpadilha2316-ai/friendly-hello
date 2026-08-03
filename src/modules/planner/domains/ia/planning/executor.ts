@@ -374,7 +374,7 @@ export class PlanRunner {
                   ...result, 
                   ok: false, 
                   errorCode: "INTERNAL", 
-                  summary: `Data Loss: IA gerou Assembly mas Store não atualizou. (Móveis Antes: ${furnitureBefore}, Depois: ${furnitureAfter}).` 
+                  summary: `Data Loss: IA gerou Assembly mas Store não atualizou. (Móveis Antes: ${furnitureBefore}, Depois: ${furnitureAfter}). Verifique o target {envId: ${this.options.ctx.environmentId}, roomId: ${this.options.ctx.roomId}}.` 
                 };
               } else {
                 result = { ...result, summary: `${result.summary} [Auditoria: +${diff} móveis no Store, ${sceneObjectCount} na Cena]` };

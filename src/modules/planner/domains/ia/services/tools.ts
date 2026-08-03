@@ -139,9 +139,15 @@ export function toolInsertItem(
 
   let next = project;
   for (let i = 0; i < count; i++) {
-    next = insertItemIntoProject(next, ctx, item, {
+    const updated = insertItemIntoProject(next, ctx, item, {
       at: { x: startX + i * step, y: startY },
     });
+    // Verificação de segurança: Se o objeto retornado é referencialmente idêntico ao anterior,
+    // a inserção falhou silenciosamente (provavelmente ambiente/cômodo inválido no target).
+    if (updated === next) {
+      console.warn(`[IA Tool] Falha na inserção do item ${item.id}: Store não alterado.`);
+    }
+    next = updated;
   }
   return {
     project: next,
