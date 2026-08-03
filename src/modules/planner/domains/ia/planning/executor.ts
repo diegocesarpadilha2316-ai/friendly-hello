@@ -16,7 +16,6 @@
 import type { PlannerProject } from "@/modules/planner/shared";
 import type { ToolContext } from "../services/tools";
 import { runPlannerTool } from "../tools/runner";
-import { useDiagnostic } from "../services/diagnostics";
 import { isStepUnlocked, refreshBlocked } from "./graph";
 import { buildFinalReport } from "./report";
 import {
@@ -50,7 +49,6 @@ export interface PlanRunnerOptions {
   readonly onUpdate: (plan: ProjectPlan) => void;
   /** Snapshot anterior à execução, quando o plano exige checkpoint. */
   readonly onCheckpoint?: (project: PlannerProject, planId: string) => void;
-  readonly validateAppliedProject?: (before: PlannerProject, after: PlannerProject) => Promise<{ ok: boolean; summary: string }>;
 }
 
 const TERMINAL_STEP: readonly PlanStepStatus[] = [
@@ -277,18 +275,6 @@ export class PlanRunner {
       updatedAt: new Date().toISOString(),
     });
 
-    if (import.meta.env.DEV) {
-      useDiagnostic.getState().startPlan(this.plan.planId);
-      // Iniciar todas como pending para o fluxo visual
-      this.plan.steps.forEach(s => {
-        useDiagnostic.getState().updateStep(s.stepId, { 
-          id: s.stepId, 
-          name: s.title, 
-          status: "pending" 
-        });
-      });
-    }
-
     let project = baseProject;
 
     try {
@@ -315,11 +301,6 @@ export class PlanRunner {
           ),
         );
 
-        const startTime = Date.now();
-        if (import.meta.env.DEV) {
-          useDiagnostic.getState().updateStep(next.stepId, { status: "running" });
-        }
-
         const outcome = await runPlannerTool({
           tool: next.toolName,
           args: next.args,
@@ -331,88 +312,10 @@ export class PlanRunner {
           signal: this.controller.signal,
         });
 
-        const duration = Date.now() - startTime;
-
-        let result = outcome.result;
+        const result = outcome.result;
         if (result.ok && outcome.project !== project) {
-          const previous = project;
           project = outcome.project;
           this.options.applyProject(project);
-
-          if (this.options.validateAppliedProject && ["insert_item", "insert_described", "layout_room", "create_room_preset"].includes(next.toolName)) {
-            const countFurniture = (p: PlannerProject) => {
-              const rooms = p.environments.flatMap(e => e.rooms);
-              return rooms.flatMap(r => 
-                Object.values(r.nodes).filter(n => n.kind === "module" && n.params.role === "furniture" && r.nodeOrder.includes(n.id))
-              ).length;
-            };
-
-            const furnitureBefore = countFurniture(previous);
-            const furnitureAfter = countFurniture(project);
-            
-            // Auditoria Visual Real (Three.js)
-            const validationResult = await import("@/modules/planner/shared/editor-3d/scene-runtime").then(m => 
-              m.waitForSceneRuntime(outcome.result.affectedIds, 4000)
-            );
-
-            const sceneObjectCount = (window as any).__DIORIS_SCENE_OBJECTS__ || 0;
-
-            if (import.meta.env.DEV) {
-              useDiagnostic.getState().updateStep(next.stepId, {
-                details: {
-                  projectId: project.id,
-                  roomId: this.options.ctx.roomId,
-                  itemsInserted: (result as any).itemsCount || (next.args as any)?.modules?.length || (next.args as any)?.items?.length || 1,
-                  furnitureBefore,
-                  furnitureAfter,
-                  sceneObjectCount,
-                  visualValidation: validationResult
-                }
-              });
-            }
-
-            const validation = await this.options.validateAppliedProject(previous, project);
-            if (!validation.ok) {
-              result = { ...result, ok: false, errorCode: "INTERNAL", summary: validation.summary };
-            } else if (!validationResult.ok && !["create_room_preset"].includes(next.toolName)) {
-              // Falha de Validação Visual: O objeto está no Store mas não apareceu ou é inválido no 3D
-              result = { 
-                ...result, 
-                ok: false, 
-                errorCode: "INTERNAL", 
-                summary: `Validação Visual falhou: ${validationResult.reason}` 
-              };
-            } else {
-              const diff = furnitureAfter - furnitureBefore;
-              if (diff <= 0 && ["insert_item", "insert_described", "layout_room"].includes(next.stepId)) {
-                const isOptional = (next.args as any)?.optional === true;
-                const errorMsg = `Data Loss: IA gerou Blueprint mas Store não atualizou (+${diff} móveis).`;
-                
-                if (isOptional) {
-                  result = { ...result, ok: true, summary: `${result.summary} [Aviso: ${errorMsg}]`, warnings: [...result.warnings, errorMsg] };
-                } else {
-                  result = { ...result, ok: false, errorCode: "INTERNAL", summary: errorMsg };
-                }
-              } else {
-                result = { ...result, summary: `${result.summary} [Auditoria: +${diff} móveis no Store, Visível: OK]` };
-              }
-            }
-          }
-        }
-
-        if (import.meta.env.DEV) {
-          useDiagnostic.getState().updateStep(next.stepId, { 
-            status: result.ok ? "success" : "error",
-            durationMs: duration,
-            error: result.ok ? undefined : result.summary,
-            details: {
-              renderer: (next.args as any)?.style?.renderer || "standard",
-              familyName: (next.args as any)?.templateId || (next.args as any)?.family,
-              moduleCount: (next.args as any)?.modules?.length || (next.args as any)?.items?.length,
-              objectCreated: result.ok && ["insert_item", "insert_described", "layout_room"].includes(next.toolName),
-              fullException: result.ok ? undefined : result.summary
-            }
-          });
         }
 
         this.emit(
@@ -424,40 +327,27 @@ export class PlanRunner {
           }),
         );
 
-        // Não interrompe o plano se for um erro parcial de inserção de acessórios em um closet grande.
-        // Se o móvel principal foi criado (+1 móvel), o plano pode seguir com avisos.
         if (!result.ok) {
-          const isOptionalFailure = (next.args as any)?.optional === true;
-          if (isOptionalFailure) {
-            console.warn(`[PlanRunner] Falha opcional no passo ${next.stepId}: ${result.summary}`);
-          } else {
-            break;
-          }
+          // Falha interrompe o plano: nada é executado fora de ordem.
+          break;
         }
 
         this.emit({ ...this.plan, steps: refreshBlocked(this.plan.steps) });
       }
     } catch (error) {
+      // Erro interno jamais pode travar a interface: a etapa corrente é
+      // marcada como falha e o plano encerra em estado repetível.
       const message = error instanceof Error ? error.message : "Falha inesperada na execução.";
-      const stack = error instanceof Error ? error.stack : undefined;
       const running = this.plan.steps.find((s) => s.status === "running");
-      const steps = this.plan.steps.map((s) => {
-        if (s.stepId === running?.stepId) {
-          if (import.meta.env.DEV) {
-            useDiagnostic.getState().updateStep(s.stepId, { 
-              status: "error", 
-              error: message,
-              details: { fullException: `${message}${stack ? `\n${stack}` : ""}` }
-            });
-          }
-          return { ...s, status: "failed" as PlanStepStatus, warnings: [...s.warnings, message] };
-        }
-        return s;
-      });
+      const steps = this.plan.steps.map((s) =>
+        s.stepId === running?.stepId
+          ? { ...s, status: "failed" as PlanStepStatus, warnings: [...s.warnings, message] }
+          : s,
+      );
       this.emit({
         ...this.plan,
         steps,
-        warnings: [...this.plan.warnings, `${message}${stack ? `\n${stack}` : ""}`],
+        warnings: [...this.plan.warnings, message],
         updatedAt: new Date().toISOString(),
       });
     } finally {
@@ -473,7 +363,7 @@ export class PlanRunner {
     if (this.paused) return this.plan;
 
     const steps = this.plan.steps;
-    const failed = steps.some((s) => s.status === "failed" || s.status === "invalid");
+    const failed = steps.some((s) => s.status === "failed");
     const pending = steps.some((s) => s.status === "pending" || s.status === "blocked");
     const completed = steps.some((s) => s.status === "completed");
 
