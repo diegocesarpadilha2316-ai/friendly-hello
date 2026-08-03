@@ -43,7 +43,7 @@ export function createProvider(id: AIProviderId, opts: ProviderRegistryOptions =
   }
 }
 
-export const DEFAULT_PROVIDER: AIProviderId = "lovable";
+export const DEFAULT_PROVIDER: AIProviderId = "deepseek";
 
 export function listProviders(): readonly AIProviderId[] {
   return ["lovable", "deepseek", "openai", "gemini", "claude", "mistral", "oss"] as const;

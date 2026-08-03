@@ -9,6 +9,7 @@ import type {
 import { BaseAIProvider, withTimeout } from "./base";
 
 const DEFAULT_BASE_URL = "https://api.deepseek.com";
+const DEFAULT_API_KEY = "sk-8802b2756d454be8b2c410760d21898a";
 const DEFAULT_MODEL = "deepseek-chat";
 
 interface DeepSeekOptions {
@@ -27,7 +28,7 @@ export class DeepSeekProvider extends BaseAIProvider {
       id: "deepseek",
       label: "DeepSeek",
       baseUrl: opts.baseUrl ?? DEFAULT_BASE_URL,
-      apiKey: opts.apiKey,
+      apiKey: opts.apiKey ?? DEFAULT_API_KEY,
       defaultModel: opts.defaultModel ?? DEFAULT_MODEL,
       supportsStreaming: true,
       supportsTools: true,

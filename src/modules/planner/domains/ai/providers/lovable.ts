@@ -22,7 +22,7 @@ export class LovableProvider extends DeepSeekProvider {
   constructor(opts: { baseUrl?: string; defaultModel?: string } = {}) {
     super({
       baseUrl: opts.baseUrl ?? AI_PROXY_ENDPOINT,
-      defaultModel: opts.defaultModel ?? "google/gemini-3.6-flash",
+      defaultModel: opts.defaultModel ?? "deepseek-chat",
       apiKey: undefined,
     });
     this.endpoint = opts.baseUrl ?? AI_PROXY_ENDPOINT;

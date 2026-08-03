@@ -61,7 +61,7 @@ function extractDelta(data: Record<string, unknown>): string {
  */
 export async function* streamLovableReply(options: StreamOptions): AsyncGenerator<string> {
   const body: Record<string, unknown> = {
-    model: options.model ?? "google/gemini-3.6-flash",
+    model: options.model ?? "deepseek-chat",
     messages: options.messages,
     stream: true,
   };
@@ -120,7 +120,7 @@ export async function* streamLovableReply(options: StreamOptions): AsyncGenerato
  */
 export async function chatLovableReply(options: StreamOptions): Promise<string> {
   const body: Record<string, unknown> = {
-    model: options.model ?? "google/gemini-3.6-flash",
+    model: options.model ?? "deepseek-chat",
     messages: options.messages,
     stream: false,
   };
