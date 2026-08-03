@@ -44,7 +44,13 @@ export interface WardrobeLayout extends Record<string, number> {
 export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildResult<WardrobeSpec> & {
   layout: WardrobeLayout;
   interior: WardrobeInteriorResult;
+  requirements: FamilyRequirementSpec;
 } {
+  const requirements: FamilyRequirementSpec = {
+    mandatory: ["lateral-e", "lateral-d", "base", "tampo"],
+    important: ["fundo", "divisoria"],
+    optional: ["gaveta", "cabideiro", "sapateira", "nicho"]
+  };
   const spec = normalizeWardrobeSpec(input);
   const { widthMm: W, heightMm: H, depthMm: D, thicknessMm: t, backThicknessMm: bt } = spec;
   const P = spec.plinthHeightMm;
@@ -262,5 +268,5 @@ export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildRes
     caseDepthMm: caseD,
   };
 
-  return { spec, assembly, layout, interior };
+  return { spec, assembly, layout, interior, requirements };
 }

@@ -15,7 +15,14 @@ export type FamilyPieceRole =
   | "interno"
   | "acessorio"
   | "rodape"
-  | "espelho";
+  | "espelho"
+  | "tecnico";
+
+export interface FamilyRequirementSpec {
+  readonly mandatory: readonly string[];
+  readonly important: readonly string[];
+  readonly optional: readonly string[];
+}
 
 export interface FamilyBuildResult<TSpec> {
   /** Ficha normalizada efetivamente usada (auditável). */

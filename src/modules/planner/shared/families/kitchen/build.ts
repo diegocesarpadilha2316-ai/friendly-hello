@@ -62,7 +62,14 @@ export interface KitchenBuildResult extends FamilyBuildResult<KitchenModuleSpec>
   readonly layout: KitchenGeometry;
   /** Volumes técnicos que nenhuma peça pode invadir. */
   readonly reservations: readonly KitchenModuleReservation[];
+  readonly requirements: FamilyRequirementSpec;
 }
+
+const KITCHEN_REQUIREMENTS: FamilyRequirementSpec = {
+  mandatory: ["base", "lateral-e", "lateral-d"],
+  important: ["tampo", "fundo", "frente"],
+  optional: ["gaveta", "prateleira", "led", "acessorio"]
+};
 
 /** Monta UM módulo de cozinha. Puro e determinístico. */
 export function buildKitchenModule(input: KitchenModuleInput = {}): KitchenBuildResult {
@@ -93,7 +100,7 @@ export function buildKitchenModule(input: KitchenModuleInput = {}): KitchenBuild
       }
     : base;
 
-  return { spec, assembly, layout: g, reservations: kitchenReservedVolumes(spec, g) };
+  return { spec, assembly, layout: g, reservations: kitchenReservedVolumes(spec, g), requirements: KITCHEN_REQUIREMENTS };
 }
 
 /** A peça invade algum volume técnico reservado? Usado na auditoria. */

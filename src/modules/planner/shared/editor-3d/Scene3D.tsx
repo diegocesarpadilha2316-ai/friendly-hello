@@ -343,13 +343,21 @@ function FurnitureRuntimeEvidence({
         if (viewport.sectionHeight != null) {
           if (worldPos.y > (viewport.sectionHeight / 1000)) visible = false;
         }
+        // Verifica se é apenas volume técnico
+        if (f.subtype === "volume-tecnico" || (f.params as any)?.role === "validation" || (f.params as any)?.role === "auxiliary") {
+          visible = false;
+        }
       }
+
+      // Validação de Peças Físicas Reais (evita "caixa vazia")
+      const physicalPieces = pieces;
+      const physicalValid = physicalPieces > 0;
 
       reportSceneRuntime({ 
         itemId: f.id, 
         renderer, 
-        pieces, 
-        visible, 
+        pieces: physicalPieces, 
+        visible: visible && physicalValid, 
         framed, 
         scaleValid,
         withinBounds,

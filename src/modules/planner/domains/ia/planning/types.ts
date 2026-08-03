@@ -44,7 +44,8 @@ export type PlanStepStatus =
   | "skipped"
   | "cancelled"
   | "failed"
-  | "rolled_back";
+  | "rolled_back"
+  | "invalid";
 
 /** Escopo aproximado do que a etapa toca — usado no preview e nos limites. */
 export type PlanAffectedScope = "projeto" | "ambiente" | "comodo" | "modulo" | "selecao" | "cena";

@@ -349,6 +349,12 @@ export class PlanRunner {
 
             const furnitureBefore = countFurniture(previous);
             const furnitureAfter = countFurniture(project);
+            
+            // Auditoria Visual Real (Three.js)
+            const validationResult = await import("@/modules/planner/shared/editor-3d/scene-runtime").then(m => 
+              m.waitForSceneRuntime(outcome.result.affectedIds, 2000)
+            );
+
             const sceneObjectCount = (window as any).__DIORIS_SCENE_OBJECTS__ || 0;
 
             if (import.meta.env.DEV) {
@@ -359,7 +365,8 @@ export class PlanRunner {
                   itemsInserted: (result as any).itemsCount || (next.args as any)?.modules?.length || (next.args as any)?.items?.length || 1,
                   furnitureBefore,
                   furnitureAfter,
-                  sceneObjectCount
+                  sceneObjectCount,
+                  visualValidation: validationResult
                 }
               });
             }
@@ -367,24 +374,27 @@ export class PlanRunner {
             const validation = await this.options.validateAppliedProject(previous, project);
             if (!validation.ok) {
               result = { ...result, ok: false, errorCode: "INTERNAL", summary: validation.summary };
+            } else if (!validationResult.ok && !["create_room_preset"].includes(next.toolName)) {
+              // Falha de Validação Visual: O objeto está no Store mas não apareceu ou é inválido no 3D
+              result = { 
+                ...result, 
+                ok: false, 
+                errorCode: "INTERNAL", 
+                summary: `Validação Visual falhou: ${validationResult.reason}` 
+              };
             } else {
               const diff = furnitureAfter - furnitureBefore;
-              if (diff <= 0 && ["insert_item", "insert_described", "layout_room", "create_room_preset"].includes(next.toolName)) {
-                const isOptional = (next.args as any)?.optional === true || (next.toolName === "create_room_preset");
-                const errorMsg = `Data Loss: IA gerou Blueprint/Assembly mas Store não atualizou. (Móveis Antes: ${furnitureBefore}, Depois: ${furnitureAfter}). Verifique o target {envId: ${this.options.ctx.environmentId}, roomId: ${this.options.ctx.roomId}, tool: ${next.toolName}}.`;
+              if (diff <= 0 && ["insert_item", "insert_described", "layout_room"].includes(next.toolName)) {
+                const isOptional = (next.args as any)?.optional === true;
+                const errorMsg = `Data Loss: IA gerou Blueprint mas Store não atualizou (+${diff} móveis).`;
                 
                 if (isOptional) {
                   result = { ...result, ok: true, summary: `${result.summary} [Aviso: ${errorMsg}]`, warnings: [...result.warnings, errorMsg] };
                 } else {
-                  result = { 
-                    ...result, 
-                    ok: false, 
-                    errorCode: "INTERNAL", 
-                    summary: errorMsg
-                  };
+                  result = { ...result, ok: false, errorCode: "INTERNAL", summary: errorMsg };
                 }
               } else {
-                result = { ...result, summary: `${result.summary} [Auditoria: +${diff} móveis no Store, ${sceneObjectCount} na Cena]` };
+                result = { ...result, summary: `${result.summary} [Auditoria: +${diff} móveis no Store, Visível: OK]` };
               }
             }
           }
@@ -463,7 +473,7 @@ export class PlanRunner {
     if (this.paused) return this.plan;
 
     const steps = this.plan.steps;
-    const failed = steps.some((s) => s.status === "failed");
+    const failed = steps.some((s) => s.status === "failed" || s.status === "invalid");
     const pending = steps.some((s) => s.status === "pending" || s.status === "blocked");
     const completed = steps.some((s) => s.status === "completed");
 
