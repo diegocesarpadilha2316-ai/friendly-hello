@@ -887,7 +887,23 @@ export function usePlannerChat() {
                 toolCalls.push(call);
               }
             } else {
-              toolCalls.push({
+            const callDuration = Date.now() - callStartTime;
+            if (import.meta.env.DEV) {
+              useDiagnostic.getState().updateStep(chunk.toolCall.id, { 
+                status: res.status === "ok" ? "success" : "error",
+                durationMs: callDuration,
+                error: res.status === "error" ? res.message : undefined,
+                details: {
+                  renderer: (chunk.toolCall.args as any)?.style?.renderer || "standard",
+                  familyName: (chunk.toolCall.args as any)?.templateId || (chunk.toolCall.args as any)?.family,
+                  moduleCount: (chunk.toolCall.args as any)?.modules?.length || (chunk.toolCall.args as any)?.items?.length,
+                  objectCreated: res.status === "ok" && ["insert_item", "insert_described", "layout_room"].includes(chunk.toolCall.name),
+                  fullException: res.status === "error" ? res.message : undefined
+                }
+              });
+            }
+
+            toolCalls.push({
                 id: uid(),
                 name: chunk.toolName,
                 args: chunk.toolArgs ?? {},
@@ -1035,6 +1051,15 @@ export function usePlannerChat() {
         sendingRef.current = false;
       } catch (err) {
         console.warn("[planner-chat] falha ao processar envio", err);
+        if (import.meta.env.DEV) {
+          const message = err instanceof Error ? err.message : String(err);
+          useDiagnostic.getState().updateStep("global-error", { 
+            name: "Erro de Orquestração", 
+            status: "error", 
+            error: message,
+            details: { fullException: message }
+          });
+        }
         patchMessage(assistantId, (m) => ({
           ...m,
           status: "error",
