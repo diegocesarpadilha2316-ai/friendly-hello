@@ -1364,7 +1364,7 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
       }}
       onPointerMissed={() => onSelect(null)}
     >
-      <SceneDebugBridge />
+      <SceneDebugBridge furnitureCount={model.furniture.length} />
       {viewport.render === "material" ? (
         <color attach="background" args={[dayPreset.bgFallback]} />
       ) : (
