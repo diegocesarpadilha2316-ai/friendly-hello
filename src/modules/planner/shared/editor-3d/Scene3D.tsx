@@ -1,15 +1,16 @@
-import { memo, useMemo, useRef, useEffect, useState } from "react";
+import { memo, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { buildScene3D, wallPieces, baseboardRuns, type FurnitureDescriptor } from "./extrusion";
+import { buildScene3D, wallPieces, baseboardRuns, type FurnitureDescriptor, type Scene3DModel } from "./extrusion";
 import type { PlannerRoom } from "../types/project";
 import { MM } from "./AssemblyMesh";
 import { WardrobeMesh } from "./WardrobeMesh";
 import { KitchenMesh } from "./KitchenMesh";
 import { BathroomMesh } from "./BathroomMesh";
 import { LaundryMesh } from "./LaundryMesh";
-import { ApplianceMesh } from "./ApplianceMesh";
+import { ApplianceMesh, isApplianceSubtype } from "./ApplianceMesh";
 import { reportSceneRuntime } from "./scene-runtime";
+import type { Viewport3DState } from "./types";
 
 /**
  * MOTOR DE EVIDÊNCIA FÍSICA
@@ -76,12 +77,25 @@ function FurnitureRuntimeEvidence({ item }: { item: FurnitureDescriptor }) {
   return null;
 }
 
+export interface Scene3DProps {
+  room: PlannerRoom;
+  wallHeight?: number;
+  model: Scene3DModel;
+  viewport: Viewport3DState;
+  selectedId: string | null;
+  onSelect: (nodeId: string | null) => void;
+  gizmoMode: "rotate" | "translate";
+  onCommitTransform: (id: string, patch: any) => void;
+}
+
 /**
  * COMPONENTE DE CENA 3D — O CORAÇÃO DO VIEWPORT.
  * Orquestra paredes, pisos, aberturas e todas as famílias de móveis.
  */
-function Scene3DComponent({ room, wallHeight = 2600 }: { room: PlannerRoom; wallHeight?: number }) {
-  const model = useMemo(() => buildScene3D(room, wallHeight), [room, wallHeight]);
+function Scene3DComponent({ room, wallHeight = 2600, model, selectedId }: Scene3DProps) {
+  // Nota: Viewport3D passa 'model' pré-calculado. 
+  // Se 'model' for fornecido, usamos ele. Caso contrário, calculamos (fallback).
+  const activeModel = useMemo(() => model || buildScene3D(room, wallHeight), [model, room, wallHeight]);
 
   return (
     <group>
@@ -91,7 +105,7 @@ function Scene3DComponent({ room, wallHeight = 2600 }: { room: PlannerRoom; wall
       <directionalLight position={[-5, 8, 4]} intensity={1.2} castShadow />
 
       {/* 2. PISOS E TETOS */}
-      {model.floors.map((f) => (
+      {activeModel.floors.map((f) => (
         <mesh key={f.id} position={[f.cx, f.y, f.cz]} receiveShadow>
           <boxGeometry args={[f.width, f.thickness, f.depth]} />
           <meshStandardMaterial color={f.overrideColor ?? "#f0f0f0"} roughness={0.8} />
@@ -99,7 +113,7 @@ function Scene3DComponent({ room, wallHeight = 2600 }: { room: PlannerRoom; wall
       ))}
 
       {/* 3. PAREDES REAIS (SEM CSG) */}
-      {model.walls.map((w) => (
+      {activeModel.walls.map((w) => (
         <group key={w.id} position={[w.cx, w.height / 2, w.cz]} rotation={[0, w.rotationY, 0]}>
           {wallPieces(w).map((p) => (
             <mesh key={p.key} position={[p.offset, p.y, 0]} castShadow receiveShadow>
@@ -118,7 +132,8 @@ function Scene3DComponent({ room, wallHeight = 2600 }: { room: PlannerRoom; wall
       ))}
 
       {/* 4. MÓVEIS E AMBIENTAÇÃO */}
-      {model.furniture.map((item) => {
+      {activeModel.furniture.map((item) => {
+        const selected = selectedId === item.id;
         const commonProps = {
           width: item.width,
           height: item.height,
@@ -132,6 +147,7 @@ function Scene3DComponent({ room, wallHeight = 2600 }: { room: PlannerRoom; wall
           doorsCount: item.doorsCount,
           drawersCount: item.drawersCount,
           shelvesCount: item.shelvesCount,
+          selected,
         };
 
         return (
@@ -150,12 +166,13 @@ function Scene3DComponent({ room, wallHeight = 2600 }: { room: PlannerRoom; wall
               <BathroomMesh {...commonProps} />
             ) : item.subtype === "laundry" || /(?:modulo-lavanderia|tanque)/i.test(item.subtype) ? (
               <LaundryMesh {...commonProps} />
-            ) : /(?:geladeira|fogao|forno|microondas|maquina|cooktop)/i.test(item.catalogItemId) ? (
+            ) : isApplianceSubtype(item.subtype) || /(?:geladeira|fogao|forno|microondas|maquina|cooktop)/i.test(item.catalogItemId) ? (
               <ApplianceMesh 
-                catalogItemId={item.catalogItemId} 
+                subtype={(isApplianceSubtype(item.subtype) ? item.subtype : "geladeira") as any} 
                 width={item.width} 
                 height={item.height} 
                 depth={item.depth} 
+                selected={selected}
               />
             ) : (
               // Fallback para itens genéricos (volumes técnicos visíveis em DEV)
