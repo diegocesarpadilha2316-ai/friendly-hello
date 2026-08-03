@@ -54,6 +54,10 @@ export interface WallGeometry {
     width: number;
     height: number;
   };
+  baseboards: {
+    points: [number, number, number][];
+    wallId: WallId;
+  }[];
 }
 
 export interface RoomResult {

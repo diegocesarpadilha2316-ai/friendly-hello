@@ -10,7 +10,7 @@ import { AlertCircle, Box, Info } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export const PropertiesPanel: React.FC = () => {
-  const { roomSpec, setRoomSpec, applyPreset, errors, debug, toggleDebug } = usePlannerV2Store();
+  const { roomSpec, setRoomSpec, applyPreset, errors, viewMode, setViewMode } = usePlannerV2Store();
 
   const updateSpec = (key: string, value: any) => {
     setRoomSpec({ [key]: value });
@@ -117,11 +117,11 @@ export const PropertiesPanel: React.FC = () => {
             </div>
 
             <div className="flex items-center justify-between">
-              <Label className="text-xs cursor-pointer" htmlFor="debug-mode">Modo Debug</Label>
+              <Label className="text-xs cursor-pointer" htmlFor="technical-mode">Modo Técnico</Label>
               <Switch 
-                id="debug-mode"
-                checked={debug} 
-                onCheckedChange={toggleDebug}
+                id="technical-mode"
+                checked={viewMode === 'technical'} 
+                onCheckedChange={(val) => setViewMode(val ? 'technical' : 'presentation')}
               />
             </div>
           </div>
