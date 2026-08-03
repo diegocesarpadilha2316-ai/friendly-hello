@@ -1270,11 +1270,11 @@ function AutoFitCamera({
 export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCommitTransform }: Scene3DProps) {
   const { cx, cz } = centerOffset(model);
 
-  useFrame((state) => {
+  useFrame(() => {
     if (import.meta.env.DEV) {
-      const furnitureGroup = state.scene.children.find(c => c.name === "furniture-layer");
-      (window as any).__DIORIS_SCENE_OBJECTS__ = furnitureGroup ? furnitureGroup.children.length : 
-        state.scene.children.filter(c => c.name?.startsWith("furniture-")).length;
+      // Auditoria: O Store do Three.js reflete o 'model.furniture' que vem do React.
+      // Se model.furniture.length > 0 mas a tela está vazia, o problema é no renderizador local.
+      (window as any).__DIORIS_SCENE_OBJECTS__ = model.furniture.length;
     }
   });
 
