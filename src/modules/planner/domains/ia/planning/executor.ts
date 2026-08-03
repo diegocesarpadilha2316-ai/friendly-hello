@@ -407,8 +407,15 @@ export class PlanRunner {
           }),
         );
 
+        // Não interrompe o plano se for um erro parcial de inserção de acessórios em um closet grande.
+        // Se o móvel principal foi criado (+1 móvel), o plano pode seguir com avisos.
         if (!result.ok) {
-          break;
+          const isOptionalFailure = (next.args as any)?.optional === true;
+          if (isOptionalFailure) {
+            console.warn(`[PlanRunner] Falha opcional no passo ${next.stepId}: ${result.summary}`);
+          } else {
+            break;
+          }
         }
 
         this.emit({ ...this.plan, steps: refreshBlocked(this.plan.steps) });
