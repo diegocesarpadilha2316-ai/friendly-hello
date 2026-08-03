@@ -1225,11 +1225,9 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
     () => new THREE.Vector3(cx, Math.max(0.6, viewport.wallHeight / 3000), cz),
     [cx, cz, viewport.wallHeight],
   );
-  const diag = Math.hypot(model.bounds.maxX - model.bounds.minX, model.bounds.maxZ - model.bounds.minZ) || 8;
-  const camDist = Math.max(6, diag * 1.2);
-  // Altura da câmera: um pouco acima da linha do olho (1.6 m) sem
-  // exagerar — piso sempre visível na base do frame.
-  const camHeight = Math.max(1.6, camDist * 0.5);
+  const diag = useMemo(() => Math.hypot(model.bounds.maxX - model.bounds.minX, model.bounds.maxZ - model.bounds.minZ) || 8, [model.bounds]);
+  const camDist = useMemo(() => Math.max(6, diag * 1.2), [diag]);
+  const camHeight = useMemo(() => Math.max(1.6, camDist * 0.5), [camDist]);
   const daytime = viewport.daytime ?? "noon";
   // Presets de horário — sol (posição/cor/intensidade), fill e ambiente.
   const dayPreset = useMemo(() => {
