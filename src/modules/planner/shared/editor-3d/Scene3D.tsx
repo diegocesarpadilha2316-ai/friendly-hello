@@ -267,10 +267,12 @@ function FurnitureRuntimeEvidence({
   f,
   renderer,
   autoFitVersion,
+  viewport,
 }: {
   f: FurnitureDescriptor;
   renderer: string;
   autoFitVersion: number;
+  viewport: Viewport3DState;
 }) {
   const { camera } = useThree();
   useEffect(() => {
@@ -621,7 +623,7 @@ function Furniture({
           onSelect(f.id);
         }}
       >
-        <FurnitureRuntimeEvidence f={f} renderer="decor" autoFitVersion={viewport.autoFitVersion ?? 0} />
+        <FurnitureRuntimeEvidence f={f} renderer="decor" autoFitVersion={viewport.autoFitVersion ?? 0} viewport={viewport} />
         <DecorMesh
           subtype={f.subtype as never}
           width={f.width}
@@ -645,7 +647,7 @@ function Furniture({
           onSelect(f.id);
         }}
       >
-        <FurnitureRuntimeEvidence f={f} renderer="appliance" autoFitVersion={viewport.autoFitVersion ?? 0} />
+        <FurnitureRuntimeEvidence f={f} renderer="appliance" autoFitVersion={viewport.autoFitVersion ?? 0} viewport={viewport} />
         <ApplianceMesh
           subtype={f.subtype as never}
           width={f.width}
@@ -673,6 +675,7 @@ function Furniture({
       f={f}
       renderer={decision.renderer}
       autoFitVersion={viewport.autoFitVersion ?? 0}
+      viewport={viewport}
     />
   );
   const wardrobe = viewport.render !== "wireframe" && decision.renderer === "wardrobe";
