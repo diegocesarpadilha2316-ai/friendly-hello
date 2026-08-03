@@ -372,6 +372,23 @@ export class PlanRunner {
           }),
         );
 
+        if (import.meta.env.DEV) {
+          useDiagnostic.getState().updateStep(next.stepId, { 
+            status: result.ok ? "success" : "error",
+            durationMs: duration,
+            error: result.ok ? undefined : result.summary,
+            details: {
+              pieceCount: (result as any).pieceCount,
+              renderer: (next.args as any)?.style?.renderer || "standard",
+              familyName: (next.args as any)?.templateId || (next.args as any)?.family,
+              moduleCount: (next.args as any)?.modules?.length || (next.args as any)?.items?.length,
+              objectCreated: result.ok && ["insert_item", "insert_described", "layout_room"].includes(next.toolName),
+              fullException: result.ok ? undefined : result.summary,
+              interruptionReason: result.ok ? undefined : "Falha na etapa crítica"
+            }
+          });
+        }
+
         if (!result.ok) {
           // Falha interrompe o plano: nada é executado fora de ordem.
           break;
