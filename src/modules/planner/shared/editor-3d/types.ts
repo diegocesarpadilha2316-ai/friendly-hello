@@ -52,6 +52,11 @@ export interface Viewport3DState {
    * câmera "apresente" o ambiente completo sem entrar em parede/teto.
    */
   autoFitVersion?: number;
+  /**
+   * Gatilho para reenquadrar especificamente o item selecionado.
+   * Usado pela IA após criar um móvel para garantir que ele está visível.
+   */
+  focusTick?: number;
 }
 
 export const DEFAULT_VIEWPORT_3D: Viewport3DState = {
@@ -72,4 +77,5 @@ export const DEFAULT_VIEWPORT_3D: Viewport3DState = {
   autoHideCeiling: true,
   autoFadeNearWalls: true,
   autoFitVersion: 0,
+  focusTick: 0,
 };
