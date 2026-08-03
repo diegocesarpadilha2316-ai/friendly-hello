@@ -338,16 +338,17 @@ export class PlanRunner {
           const previous = project;
           project = outcome.project;
           this.options.applyProject(project);
+
           if (this.options.validateAppliedProject && ["insert_item", "insert_described", "layout_room", "create_room_preset"].includes(next.toolName)) {
-            const countFurniture = (p: PlannerProject) => 
-              p.environments.flatMap(e => e.rooms).flatMap(r => 
-                Object.values(r.nodes).filter(n => n.kind === "module" && n.params.role === "furniture")
+            const countFurniture = (p: PlannerProject) => {
+              const rooms = p.environments.flatMap(e => e.rooms);
+              return rooms.flatMap(r => 
+                Object.values(r.nodes).filter(n => n.kind === "module" && n.params.role === "furniture" && r.nodeOrder.includes(n.id))
               ).length;
+            };
 
             const furnitureBefore = countFurniture(previous);
             const furnitureAfter = countFurniture(project);
-            
-            // Bridge para Scene3D obter Object3D count via window (instrumentação temporária)
             const sceneObjectCount = (window as any).__DIORIS_SCENE_OBJECTS__ || 0;
 
             if (import.meta.env.DEV) {
@@ -355,7 +356,7 @@ export class PlanRunner {
                 details: {
                   projectId: project.id,
                   roomId: this.options.ctx.roomId,
-                  itemsInserted: (result as any).itemsCount || (next.args as any)?.modules?.length || 1,
+                  itemsInserted: (result as any).itemsCount || (next.args as any)?.modules?.length || (next.args as any)?.items?.length || 1,
                   furnitureBefore,
                   furnitureAfter,
                   sceneObjectCount
@@ -367,16 +368,16 @@ export class PlanRunner {
             if (!validation.ok) {
               result = { ...result, ok: false, errorCode: "INTERNAL", summary: validation.summary };
             } else {
-              // Se o projeto não mudou o número de móveis mas deveria, falha
-              if (furnitureAfter <= furnitureBefore && ["insert_item", "insert_described", "layout_room"].includes(next.toolName)) {
+              const diff = furnitureAfter - furnitureBefore;
+              if (diff <= 0 && ["insert_item", "insert_described", "layout_room"].includes(next.toolName)) {
                 result = { 
                   ...result, 
                   ok: false, 
                   errorCode: "INTERNAL", 
-                  summary: `Data Loss Detected: O motor Assembly gerou dados mas o Store do projeto não foi atualizado. (Antes: ${furnitureBefore}, Depois: ${furnitureAfter})` 
+                  summary: `Data Loss: IA gerou Assembly mas Store não atualizou. (Móveis Antes: ${furnitureBefore}, Depois: ${furnitureAfter}).` 
                 };
               } else {
-                result = { ...result, summary: `${result.summary} ${validation.summary}` };
+                result = { ...result, summary: `${result.summary} [Auditoria: +${diff} móveis no Store, ${sceneObjectCount} na Cena]` };
               }
             }
           }
@@ -406,33 +407,13 @@ export class PlanRunner {
           }),
         );
 
-        if (import.meta.env.DEV) {
-          useDiagnostic.getState().updateStep(next.stepId, { 
-            status: result.ok ? "success" : "error",
-            durationMs: duration,
-            error: result.ok ? undefined : result.summary,
-            details: {
-              pieceCount: (result as any).pieceCount,
-              renderer: (next.args as any)?.style?.renderer || "standard",
-              familyName: (next.args as any)?.templateId || (next.args as any)?.family,
-              moduleCount: (next.args as any)?.modules?.length || (next.args as any)?.items?.length,
-              objectCreated: result.ok && ["insert_item", "insert_described", "layout_room"].includes(next.toolName),
-              fullException: result.ok ? undefined : result.summary,
-              interruptionReason: result.ok ? undefined : "Falha na etapa crítica"
-            }
-          });
-        }
-
         if (!result.ok) {
-          // Falha interrompe o plano: nada é executado fora de ordem.
           break;
         }
 
         this.emit({ ...this.plan, steps: refreshBlocked(this.plan.steps) });
       }
     } catch (error) {
-      // Erro interno jamais pode travar a interface: a etapa corrente é
-      // marcada como falha e o plano encerra em estado repetível.
       const message = error instanceof Error ? error.message : "Falha inesperada na execução.";
       const running = this.plan.steps.find((s) => s.status === "running");
       const steps = this.plan.steps.map((s) => {
