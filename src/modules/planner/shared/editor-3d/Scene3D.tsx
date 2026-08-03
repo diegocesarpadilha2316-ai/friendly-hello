@@ -1283,7 +1283,7 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
         };
     }
   }, [daytime, diag]);
-  const useSky = viewport.render === "material" && dayPreset.showSky;
+  const useSky = useMemo(() => viewport.render === "material" && dayPreset.showSky, [viewport.render, dayPreset.showSky]);
 
   return (
     <Canvas
