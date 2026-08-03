@@ -604,6 +604,11 @@ export function usePlannerChat() {
     async (text: string) => {
       const trimmed = text.trim();
       if (!trimmed || state.status === "streaming" || state.status === "thinking") return;
+      
+      // Limpar diagnóstico anterior ao iniciar nova conversa/comando
+      if (import.meta.env.DEV) {
+        useDiagnostic.getState().reset();
+      }
       // Trava síncrona — evita duplicação por duplo clique/Enter repetido.
       if (sendingRef.current) return;
       sendingRef.current = true;
