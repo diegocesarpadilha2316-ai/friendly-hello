@@ -1270,13 +1270,9 @@ function AutoFitCamera({
 export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCommitTransform }: Scene3DProps) {
   const { cx, cz } = centerOffset(model);
 
-  useFrame(() => {
-    if (import.meta.env.DEV) {
-      // Auditoria: O Store do Three.js reflete o 'model.furniture' que vem do React.
-      // Se model.furniture.length > 0 mas a tela está vazia, o problema é no renderizador local.
-      (window as any).__DIORIS_SCENE_OBJECTS__ = model.furniture.length;
-    }
-  });
+  // Ponte de auditoria (apenas DEV): O Store do Three.js reflete o 'model.furniture' que vem do React.
+  // Movemos a lógica do useFrame para dentro de um componente filho do Canvas
+  // para evitar o erro "Hooks can only be used within the Canvas component".
 
   // Alvo da câmera: 1/3 da altura da parede (~olho baixo). Isso ancora o
   // piso (y=0) no terço inferior da tela e reforça a percepção de escala.
