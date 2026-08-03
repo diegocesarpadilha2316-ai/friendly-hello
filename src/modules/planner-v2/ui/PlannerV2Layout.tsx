@@ -17,10 +17,13 @@ import {
   Info
 } from "lucide-react";
 import { V2Viewport } from '../viewport/V2Viewport';
+import { PropertiesPanel } from './PropertiesPanel';
+import { usePlannerV2Store } from '../core/store';
 
 export const PlannerV2Layout: React.FC = () => {
   const [showTree, setShowTree] = useState(true);
-  const [showChat, setShowChat] = useState(true);
+  const [showProps, setShowProps] = useState(true);
+  const { roomSpec } = usePlannerV2Store();
   const [focusMode, setFocusMode] = useState(false);
 
   return (
@@ -68,7 +71,7 @@ export const PlannerV2Layout: React.FC = () => {
           )}
 
           {/* Viewport */}
-          <ResizablePanel defaultSize={showTree && showChat ? 60 : showTree || showChat ? 80 : 100}>
+          <ResizablePanel defaultSize={showTree && showProps ? 60 : showTree || showProps ? 80 : 100}>
             <div className="h-full w-full relative group">
               {!showTree && !focusMode && (
                 <Button 
@@ -83,12 +86,12 @@ export const PlannerV2Layout: React.FC = () => {
               
               <V2Viewport />
 
-              {!showChat && !focusMode && (
+              {!showProps && !focusMode && (
                 <Button 
                   variant="secondary" 
                   size="icon" 
                   className="absolute right-2 top-2 z-10 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => setShowChat(true)}
+                  onClick={() => setShowProps(true)}
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
@@ -107,25 +110,20 @@ export const PlannerV2Layout: React.FC = () => {
             </div>
           </ResizablePanel>
 
-          {/* Chat */}
-          {showChat && !focusMode && (
+          {/* Properties */}
+          {showProps && !focusMode && (
             <>
               <ResizableHandle withHandle />
               <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
                 <div className="h-full border-l bg-card flex flex-col">
                   <div className="p-3 border-b flex items-center justify-between">
-                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowChat(false)}>
+                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowProps(false)}>
                       <ChevronRight className="w-4 h-4" />
                     </Button>
-                    <span className="text-sm font-semibold text-right">IA Assistant</span>
+                    <span className="text-sm font-semibold text-right">Propriedades</span>
                   </div>
-                  <div className="flex-1 flex flex-col justify-end p-4">
-                     <div className="bg-muted p-3 rounded-lg text-sm mb-4">
-                       Olá! Este é o novo motor do Planner V2. Como posso ajudar?
-                     </div>
-                     <div className="h-10 border rounded px-3 flex items-center text-sm text-muted-foreground bg-background">
-                       Digite sua mensagem...
-                     </div>
+                  <div className="flex-1 overflow-hidden">
+                    <PropertiesPanel />
                   </div>
                 </div>
               </ResizablePanel>
@@ -143,7 +141,7 @@ export const PlannerV2Layout: React.FC = () => {
           </div>
           <div className="flex items-center gap-4">
             <span>Grid: 100mm</span>
-            <span>Objects: 0</span>
+            <span>Room: {roomSpec.widthMm} x {roomSpec.depthMm} x {roomSpec.heightMm}mm</span>
           </div>
         </footer>
       )}
