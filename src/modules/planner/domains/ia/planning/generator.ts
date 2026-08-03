@@ -48,17 +48,6 @@ function argsForStage(
       return facts.style ? { style: facts.style } : null;
     case "insert_described":
       return { description: `${stage.description} ${message}`.slice(0, 300) };
-    case "create_room_preset": {
-      const normalized = message.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      const preset = normalized.includes("lavanderia")
-        ? "lavanderia"
-        : normalized.includes("banheiro") || normalized.includes("lavabo")
-          ? "banheiro"
-          : normalized.includes("closet")
-            ? "closet"
-            : "cozinha";
-      return { preset, ...(facts.style ? { style: facts.style } : {}) };
-    }
     case "layout_room":
       return {
         shape: "linear",

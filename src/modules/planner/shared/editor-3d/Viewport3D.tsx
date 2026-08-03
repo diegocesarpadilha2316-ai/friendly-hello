@@ -22,25 +22,15 @@ import {
   Sparkles,
   ZapOff,
   ArrowDownToLine,
-  Terminal,
 } from "lucide-react";
 import { Button } from "@/core/components/ui-kit";
 import { cn } from "@/lib/utils";
 import { usePlannerEditor } from "../state/editor-context";
 import { buildScene3D } from "./extrusion";
-import {
-  buildRoomArchitecture,
-  publishRoomDiagnostics,
-  roomArchitectureSpecFrom,
-  roomFurnitureBoxesFrom,
-} from "../room";
 import { DEFAULT_VIEWPORT_3D, type Camera3DMode, type Camera3DView, type Render3DMode, type Viewport3DState } from "./types";
 import { Scene3D } from "./Scene3D";
-import { PlannerDiagnosticPanel } from "../../domains/ia/components/PlannerDiagnosticPanel";
-import { useDiagnostic } from "../../domains/ia/services/diagnostics";
 import type { PlannerProject, PlannerRoom } from "../types/project";
 import { RotateCw, Trash2, Copy } from "lucide-react";
-import { plannerDiagnosticsEnabled } from "./runtime-diagnostics";
 
 const CAM_LABEL: Record<Camera3DMode, string> = {
   orbit: "Orbit",
@@ -200,14 +190,6 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
   ]);
 
   const model = useMemo(() => (room ? buildScene3D(room, viewport.wallHeight) : null), [room, viewport.wallHeight]);
-
-  // Room Architecture Engine — diagnóstico DEV (`window.__DIORIS_ROOM__`).
-  // Nenhuma mutação: apenas fotografa a arquitetura e os móveis do cômodo.
-  useEffect(() => {
-    if (!room || !plannerDiagnosticsEnabled()) return;
-    const arch = buildRoomArchitecture(roomArchitectureSpecFrom(room));
-    publishRoomDiagnostics(arch, roomFurnitureBoxesFrom(room));
-  }, [room]);
 
   // ---------------------------------------------------------------
   // Mutação do cômodo a partir do 3D — mesmo pipeline do Editor2D.
@@ -412,15 +394,6 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
             ))}
           </div>
           <div className="flex shrink-0 items-center gap-1">
-            {import.meta.env.DEV && (
-              <ToolbarButton
-                active={useDiagnostic.getState().isOpen}
-                onClick={() => useDiagnostic.getState().setOpen(!useDiagnostic.getState().isOpen)}
-                title="Diagnóstico de IA"
-              >
-                <Terminal className="h-3.5 w-3.5" /> IA
-              </ToolbarButton>
-            )}
             <ToolbarButton
               active={viewport.showGrid}
               onClick={() => setViewport((v) => ({ ...v, showGrid: !v.showGrid }))}
@@ -510,18 +483,14 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
         </div>
 
         <div className="relative min-h-0 flex-1">
-          {room && model && (
-            <Scene3D
-              room={room}
-              model={model}
-              viewport={viewport}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-              gizmoMode={gizmoMode}
-              onCommitTransform={commitTransform}
-            />
-          )}
-          <PlannerDiagnosticPanel />
+          <Scene3D
+            model={model}
+            viewport={viewport}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+            gizmoMode={gizmoMode}
+            onCommitTransform={commitTransform}
+          />
         </div>
 
         {/* Barra de gizmos — flutuante, canto superior direito. */}
