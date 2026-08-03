@@ -23,7 +23,7 @@ import { usePlannerV2Store } from '../core/store';
 export const PlannerV2Layout: React.FC = () => {
   const [showTree, setShowTree] = useState(true);
   const [showProps, setShowProps] = useState(true);
-  const { roomSpec } = usePlannerV2Store();
+  const { roomSpec, viewMode, setViewMode } = usePlannerV2Store();
   const [focusMode, setFocusMode] = useState(false);
 
   return (
@@ -32,15 +32,31 @@ export const PlannerV2Layout: React.FC = () => {
       {!focusMode && (
         <header className="h-12 border-b flex items-center justify-between px-4 bg-card shrink-0">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-primary">Planner V2 — Protótipo</span>
-            <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">BETA</span>
+            <span className="font-bold text-primary">Dioris Planner V2</span>
+            <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded uppercase tracking-tighter">Etapa 3</span>
           </div>
-          <div className="flex items-center gap-4 text-xs text-muted-foreground italic">
-            <Info className="w-3 h-3" />
-            Este módulo está isolado do Planner atual e não altera seus projetos.
+          
+          <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-md border">
+            <Button 
+              variant={viewMode === 'presentation' ? "secondary" : "ghost"} 
+              size="sm" 
+              className="h-7 text-[10px] px-3"
+              onClick={() => setViewMode('presentation')}
+            >
+              Apresentação
+            </Button>
+            <Button 
+              variant={viewMode === 'technical' ? "secondary" : "ghost"} 
+              size="sm" 
+              className="h-7 text-[10px] px-3"
+              onClick={() => setViewMode('technical')}
+            >
+              Técnico
+            </Button>
           </div>
+
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => setFocusMode(!focusMode)}>
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setFocusMode(!focusMode)}>
               <Maximize2 className="w-4 h-4" />
             </Button>
           </div>
@@ -56,13 +72,22 @@ export const PlannerV2Layout: React.FC = () => {
               <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
                 <div className="h-full border-r bg-card flex flex-col">
                   <div className="p-3 border-b flex items-center justify-between">
-                    <span className="text-sm font-semibold">Árvore do Projeto</span>
+                    <span className="text-sm font-semibold flex items-center gap-2">
+                      <MessageSquare className="w-4 h-4 text-primary" />
+                      Assistente Dioris
+                    </span>
                     <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowTree(false)}>
                       <ChevronLeft className="w-4 h-4" />
                     </Button>
                   </div>
-                  <div className="flex-1 p-4 text-sm text-muted-foreground">
-                    Ambiente Vazio
+                  <div className="flex-1 flex flex-col items-center justify-center p-8 text-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                      <Box className="w-6 h-6 text-muted-foreground opacity-20" />
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Descreva o ambiente que deseja criar.<br/>
+                      <span className="opacity-50 text-[10px]">A IA será conectada em uma etapa futura.</span>
+                    </p>
                   </div>
                 </div>
               </ResizablePanel>
@@ -156,7 +181,7 @@ export const PlannerV2Layout: React.FC = () => {
           <Layers className="w-5 h-5" />
           <span className="text-[10px]">3D</span>
         </Button>
-        <Button variant="ghost" className="flex flex-col gap-1 h-auto py-2">
+        <Button variant="ghost" className="flex flex-col gap-1 h-auto py-2" onClick={() => setShowTree(true)}>
           <MessageSquare className="w-5 h-5" />
           <span className="text-[10px]">IA</span>
         </Button>

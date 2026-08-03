@@ -5,19 +5,19 @@ interface PlannerV2State {
   roomSpec: RoomSpec;
   roomResult: RoomResult;
   errors: string[];
-  debug: boolean;
+  viewMode: 'technical' | 'presentation';
   
   // Actions
   setRoomSpec: (spec: Partial<RoomSpec>) => void;
   applyPreset: (name: string) => void;
-  toggleDebug: () => void;
+  setViewMode: (mode: 'technical' | 'presentation') => void;
 }
 
 export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
   roomSpec: DEFAULT_ROOM,
   roomResult: generateRoomGeometry(DEFAULT_ROOM),
   errors: [],
-  debug: process.env.NODE_ENV === 'development',
+  viewMode: 'presentation',
 
   setRoomSpec: (updates) => {
     const newSpec = { ...get().roomSpec, ...updates };
@@ -37,5 +37,5 @@ export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
     }
   },
 
-  toggleDebug: () => set((state) => ({ debug: !state.debug })),
+  setViewMode: (mode) => set({ viewMode: mode }),
 }));
