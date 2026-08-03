@@ -1391,7 +1391,7 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
         <ContactShadows
           position={[cx, 0.002, cz]}
           scale={Math.max(diag * 2, 20)}
-          resolution={2048}
+          resolution={viewport.cinematic ? 2048 : 1024}
           blur={1.8}
           far={4}
           opacity={0.72}
