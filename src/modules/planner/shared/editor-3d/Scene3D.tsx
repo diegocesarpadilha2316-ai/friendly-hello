@@ -800,6 +800,7 @@ function Furniture({
   if (dresser) {
     return (
       <group
+        name={`furniture-${f.id}`}
         position={[pos.x, safeCenterY, pos.z]}
         rotation={[0, f.rotationY, 0]}
         onClick={(e: ThreeEvent<MouseEvent>) => {
