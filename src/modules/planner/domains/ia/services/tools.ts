@@ -139,15 +139,9 @@ export function toolInsertItem(
 
   let next = project;
   for (let i = 0; i < count; i++) {
-    const updated = insertItemIntoProject(next, ctx, item, {
+    next = insertItemIntoProject(next, ctx, item, {
       at: { x: startX + i * step, y: startY },
     });
-    // Verificação de segurança: Se o objeto retornado é referencialmente idêntico ao anterior,
-    // a inserção falhou silenciosamente (provavelmente ambiente/cômodo inválido no target).
-    if (updated === next) {
-      console.warn(`[IA Tool] Falha na inserção do item ${item.id}: Store não alterado.`);
-    }
-    next = updated;
   }
   return {
     project: next,
@@ -311,17 +305,6 @@ const ROOM_BLUEPRINTS: Readonly<Record<string, RoomBlueprint>> = {
       { catalogItemId: "planta-suculenta", xRatio: 0.15, yRatio: 0.35 },
     ],
   },
-  lavanderia: {
-    label: "Lavanderia completa",
-    shape: "linear",
-    pieces: [
-      { description: "máquina de lavar frontal 700mm", count: 1, wall: "bottom" },
-      { description: "balcão com tanque 800mm", count: 1, wall: "bottom" },
-      { description: "vassoureiro 600mm", count: 1, wall: "bottom" },
-      { description: "aéreo lavanderia 800mm", count: 2, wall: "bottom" },
-    ],
-    style: "moderno",
-  },
 };
 
 export function toolCreateRoomPreset(
@@ -356,7 +339,7 @@ export function toolCreateRoomPreset(
   if (!blueprint) {
     return {
       project,
-      summary: `Não conheço o ambiente "${args.preset}". Tente cozinha, closet, dormitório, sala, escritório, banheiro ou lavanderia.`,
+      summary: `Não conheço o ambiente "${args.preset}". Tente cozinha, closet, dormitório, sala, escritório ou banheiro.`,
       affectedIds: [],
     };
   }
@@ -528,11 +511,6 @@ export function toolCreateRoomPreset(
   if (decorPlaced > 0) parts.push(`${decorPlaced} itens de decoração`);
   if (res.skipped > 0) parts.push(`${res.skipped} ignoradas`);
   const audit = auditLines.length > 0 ? ` ${auditLines.join(" ")}` : "";
-  const beforeIds = new Set(furnitureInRoom(room).map((item) => item.id));
-  const afterRoom = getRoom(next, ctx);
-  const affectedIds = afterRoom
-    ? furnitureInRoom(afterRoom).filter((item) => !beforeIds.has(item.id)).map((item) => item.id)
-    : [];
   return {
     project: next,
     summary:
@@ -540,7 +518,7 @@ export function toolCreateRoomPreset(
       `${describeAnalysis(analysis)}\n` +
       `${composition.notes.join(" · ")}.` +
       (qualityLine ? `\n${qualityLine}` : ""),
-    affectedIds,
+    affectedIds: [],
   };
 }
 
@@ -983,7 +961,6 @@ export function toolInsertDescribed(
   const stepBase = overrides.width ?? match.item.parametric.defaults.width;
   const step = stepBase + 40;
 
-  const beforeIds = new Set(furnitureInRoom(room).map((item) => item.id));
   let next = project;
   for (let i = 0; i < count; i++) {
     next = insertItemIntoProject(next, ctx, match.item, {
@@ -993,13 +970,10 @@ export function toolInsertDescribed(
       materialId: match.materialId,
     });
   }
-  const afterRoom = getRoom(next, ctx);
   return {
     project: next,
     summary: `${count}× ${match.item.name} inserido (${match.reasons.join(", ")}).`,
-    affectedIds: afterRoom
-      ? furnitureInRoom(afterRoom).filter((item) => !beforeIds.has(item.id)).map((item) => item.id)
-      : [],
+    affectedIds: [],
   };
 }
 
