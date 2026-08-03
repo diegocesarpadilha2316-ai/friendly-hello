@@ -72,7 +72,10 @@ export const PlannerV2Layout: React.FC = () => {
               <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
                 <div className="h-full border-r bg-card flex flex-col">
                   <div className="p-3 border-b flex items-center justify-between">
-                    <span className="text-sm font-semibold">Árvore do Projeto</span>
+                    <span className="text-sm font-semibold flex items-center gap-2">
+                      <MessageSquare className="w-4 h-4 text-primary" />
+                      Assistente Dioris
+                    </span>
                     <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowTree(false)}>
                       <ChevronLeft className="w-4 h-4" />
                     </Button>
@@ -178,7 +181,7 @@ export const PlannerV2Layout: React.FC = () => {
           <Layers className="w-5 h-5" />
           <span className="text-[10px]">3D</span>
         </Button>
-        <Button variant="ghost" className="flex flex-col gap-1 h-auto py-2">
+        <Button variant="ghost" className="flex flex-col gap-1 h-auto py-2" onClick={() => setShowTree(true)}>
           <MessageSquare className="w-5 h-5" />
           <span className="text-[10px]">IA</span>
         </Button>
