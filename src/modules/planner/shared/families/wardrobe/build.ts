@@ -11,7 +11,7 @@ import {
   type AssemblySlot,
   type ConstructionPiece,
 } from "../../construction";
-import type { FamilyBuildResult } from "../types";
+import type { FamilyBuildResult, FamilyRequirementSpec } from "../types";
 import { handleType } from "../handles";
 import { normalizeWardrobeSpec, type WardrobeSpec } from "./spec";
 import { resolveWardrobeInterior, type WardrobeInteriorResult } from "./interior";
@@ -40,10 +40,17 @@ export interface WardrobeLayout extends Record<string, number> {
   caseDepthMm: number;
 }
 
+export const WARDROBE_REQUIREMENTS: FamilyRequirementSpec = {
+  mandatory: ["lateral-e", "lateral-d", "base", "tampo"],
+  important: ["fundo", "divisoria"],
+  optional: ["gaveta", "cabideiro", "sapateira", "nicho"]
+};
+
 /** Monta o roupeiro. Puro e determinístico. */
 export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildResult<WardrobeSpec> & {
   layout: WardrobeLayout;
   interior: WardrobeInteriorResult;
+  requirements: FamilyRequirementSpec;
 } {
   const spec = normalizeWardrobeSpec(input);
   const { widthMm: W, heightMm: H, depthMm: D, thicknessMm: t, backThicknessMm: bt } = spec;
@@ -262,5 +269,5 @@ export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildRes
     caseDepthMm: caseD,
   };
 
-  return { spec, assembly, layout, interior };
+  return { spec, assembly, layout, interior, requirements: WARDROBE_REQUIREMENTS };
 }

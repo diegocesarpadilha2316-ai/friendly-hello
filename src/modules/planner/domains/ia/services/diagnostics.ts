@@ -21,6 +21,7 @@ export interface DiagnosticStep {
     furnitureBefore?: number;
     furnitureAfter?: number;
     sceneObjectCount?: number;
+    visualValidation?: any;
   };
 }
 

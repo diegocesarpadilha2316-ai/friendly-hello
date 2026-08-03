@@ -10,7 +10,7 @@ import {
   type AssemblyResult,
   type ConstructionHardwareRef,
 } from "../../construction";
-import type { FamilyBuildResult } from "../types";
+import type { FamilyBuildResult, FamilyRequirementSpec } from "../types";
 import {
   normalizeBathroomModule,
   type BathroomModuleInput,
@@ -70,7 +70,14 @@ export interface BathroomBuildResult extends FamilyBuildResult<BathroomModuleSpe
   readonly fillers: readonly string[];
   /** Mecanismos conjuntos (gaveta em U). */
   readonly mechanisms: readonly string[];
+  readonly requirements: FamilyRequirementSpec;
 }
+
+export const BATHROOM_REQUIREMENTS: FamilyRequirementSpec = {
+  mandatory: ["base", "lateral-e", "lateral-d"],
+  important: ["tampo", "fundo", "frente"],
+  optional: ["gaveta", "prateleira", "acessorio"]
+};
 
 /** Monta UM módulo de banheiro. Puro e determinístico. */
 export function buildBathroomModule(input: BathroomModuleInput = {}): BathroomBuildResult {
@@ -114,6 +121,7 @@ export function buildBathroomModule(input: BathroomModuleInput = {}): BathroomBu
     warnings: recipe.warnings,
     fillers: recipe.fillers,
     mechanisms: recipe.mechanisms.map((m) => m.groupId),
+    requirements: BATHROOM_REQUIREMENTS,
   };
 }
 
