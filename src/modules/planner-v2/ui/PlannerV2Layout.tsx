@@ -46,7 +46,7 @@ export const PlannerV2Layout: React.FC = () => {
 
       {/* Main Content */}
       <main className="flex-1 overflow-hidden relative">
-        <ResizablePanelGroup direction="horizontal">
+        <ResizablePanelGroup direction="horizontal" className="h-full w-full">
           {/* Project Tree */}
           {showTree && !focusMode && (
             <>
