@@ -369,9 +369,9 @@ export class PlanRunner {
               result = { ...result, ok: false, errorCode: "INTERNAL", summary: validation.summary };
             } else {
               const diff = furnitureAfter - furnitureBefore;
-              if (diff <= 0 && ["insert_item", "insert_described", "layout_room"].includes(next.toolName)) {
-                const isOptional = (next.args as any)?.optional === true;
-                const errorMsg = `Data Loss: IA gerou Assembly mas Store não atualizou. (Móveis Antes: ${furnitureBefore}, Depois: ${furnitureAfter}). Verifique o target {envId: ${this.options.ctx.environmentId}, roomId: ${this.options.ctx.roomId}}.`;
+              if (diff <= 0 && ["insert_item", "insert_described", "layout_room", "create_room_preset"].includes(next.toolName)) {
+                const isOptional = (next.args as any)?.optional === true || (next.toolName === "create_room_preset");
+                const errorMsg = `Data Loss: IA gerou Blueprint/Assembly mas Store não atualizou. (Móveis Antes: ${furnitureBefore}, Depois: ${furnitureAfter}). Verifique o target {envId: ${this.options.ctx.environmentId}, roomId: ${this.options.ctx.roomId}, tool: ${next.toolName}}.`;
                 
                 if (isOptional) {
                   result = { ...result, ok: true, summary: `${result.summary} [Aviso: ${errorMsg}]`, warnings: [...result.warnings, errorMsg] };
