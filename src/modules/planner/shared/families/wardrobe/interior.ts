@@ -290,6 +290,7 @@ export function resolveWardrobeInterior(
         recipeId: c.plan.id,
         validation: { ok: true, errors: [], warnings: [] }, // Confia no plano explícito se tiver slots
         warnings: validation.warnings,
+        errors: validation.errors,
         requested: c.plan.placements.map((p) => p.moduleId),
         dropped: [],
         slots: interiorPlanToSlots(c.plan),
