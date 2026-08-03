@@ -1331,8 +1331,8 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
             intensity={dayPreset.sunIntensity}
             color={dayPreset.sunColor}
             castShadow
-            shadow-mapSize-width={4096}
-            shadow-mapSize-height={4096}
+            shadow-mapSize-width={viewport.cinematic ? 4096 : 2048}
+            shadow-mapSize-height={viewport.cinematic ? 4096 : 2048}
             shadow-bias={-0.00015}
             shadow-normalBias={0.04}
             shadow-camera-far={60}
