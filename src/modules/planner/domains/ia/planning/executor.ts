@@ -415,6 +415,7 @@ export class PlanRunner {
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Falha inesperada na execução.";
+      const stack = error instanceof Error ? error.stack : undefined;
       const running = this.plan.steps.find((s) => s.status === "running");
       const steps = this.plan.steps.map((s) => {
         if (s.stepId === running?.stepId) {
@@ -422,7 +423,7 @@ export class PlanRunner {
             useDiagnostic.getState().updateStep(s.stepId, { 
               status: "error", 
               error: message,
-              details: { fullException: message }
+              details: { fullException: message, stack }
             });
           }
           return { ...s, status: "failed" as PlanStepStatus, warnings: [...s.warnings, message] };
@@ -432,7 +433,7 @@ export class PlanRunner {
       this.emit({
         ...this.plan,
         steps,
-        warnings: [...this.plan.warnings, message],
+        warnings: [...this.plan.warnings, `${message}${stack ? `\n${stack}` : ""}`],
         updatedAt: new Date().toISOString(),
       });
     } finally {

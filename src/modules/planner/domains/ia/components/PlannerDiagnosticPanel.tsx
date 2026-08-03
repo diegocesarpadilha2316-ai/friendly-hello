@@ -20,7 +20,7 @@ export function PlannerDiagnosticPanel() {
   const { isOpen, steps, setOpen, reset } = useDiagnostic();
   const [expandedId, setExpandedId] = React.useState<string | null>(null);
 
-  if (!isOpen || import.meta.env.PROD) return null;
+  if (!isOpen) return null;
 
   const copyReport = () => {
     const report = steps.map(s => {
