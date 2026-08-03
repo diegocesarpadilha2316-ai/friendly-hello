@@ -1226,8 +1226,15 @@ function ApplyViewPreset({
  * projeto inteiro imediatamente.
  */
 /** Ponte de depuração (apenas DEV): expõe a cena para validação no viewport. */
-function SceneDebugBridge() {
+function SceneDebugBridge({ furnitureCount }: { furnitureCount?: number }) {
   const { scene } = useThree();
+  
+  useFrame(() => {
+    if (import.meta.env.DEV && furnitureCount !== undefined) {
+      (window as any).__DIORIS_SCENE_OBJECTS__ = furnitureCount;
+    }
+  });
+
   useEffect(() => {
     if (!import.meta.env?.DEV) return;
     (window as unknown as { __diorisScene?: THREE.Scene }).__diorisScene = scene;
