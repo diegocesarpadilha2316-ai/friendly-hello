@@ -25,7 +25,7 @@ const MAX_MESSAGES = 80;
 const MAX_TOTAL_CHARS = 200_000;
 
 const ALLOWED_MODELS = new Set(AI_MODEL_CATALOG.filter((m) => m.enabled).map((m) => m.id));
-const DEFAULT_MODEL = "google/gemini-3.6-flash";
+const DEFAULT_MODEL = "deepseek-chat";
 
 const messageSchema = z.object({
   role: z.enum(["system", "user", "assistant", "tool"]),

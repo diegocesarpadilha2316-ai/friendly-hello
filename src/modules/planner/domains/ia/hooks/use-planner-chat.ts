@@ -406,7 +406,7 @@ export function usePlannerChat() {
           data: {
             projectId: pid,
             title: title.slice(0, 120) || "Nova conversa",
-            modelId: "google/gemini-3.6-flash",
+            modelId: "deepseek-chat",
           },
         })) as { id: string };
         sessionRef.current = { id: row.id, projectId };
@@ -841,7 +841,7 @@ export function usePlannerChat() {
             ];
             yield* streamLovableReply({
               messages,
-              model: "google/gemini-3.6-flash",
+              model: "deepseek-chat",
               temperature: 0.4,
               maxTokens: 800,
               clientMessageId: pendingKeyRef.current?.assistant,
