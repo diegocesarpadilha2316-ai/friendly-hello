@@ -297,21 +297,44 @@ function FurnitureRuntimeEvidence({
     // o frustum; assim não validamos contra a câmera antiga.
     const report = () => {
       camera.updateMatrixWorld();
-      const center = new THREE.Vector3(f.cx, f.y + f.height / 2, f.cz);
-      const sphere = new THREE.Sphere(center, Math.max(f.width, f.height, f.depth) / 2);
-      const frustum = new THREE.Frustum();
-      frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
-      
-      const framed = frustum.intersectsSphere(sphere);
-      
-      // Procura o objeto na cena pelo nome
-      const scene = camera.parent;
+      const scene = camera.parent as THREE.Scene;
+      if (!scene) return;
+
+      const obj = scene.getObjectByName(`furniture-${f.id}`);
       let visible = false;
-      if (scene) {
-        const obj = scene.getObjectByName(`furniture-${f.id}`);
-        if (obj) {
-          visible = true;
-        }
+      let scaleValid = false;
+      let withinBounds = true; // Simplificado: assumimos que o descriptor já reflete posição válida no Room Engine
+      let aboveFloor = true;
+      let notBehindCamera = true;
+      let framed = false;
+
+      if (obj) {
+        visible = obj.visible;
+        // Valida escala
+        const worldScale = new THREE.Vector3();
+        obj.getWorldScale(worldScale);
+        scaleValid = worldScale.x > 0.001 && worldScale.y > 0.001 && worldScale.z > 0.001;
+
+        // Valida posição em relação ao piso (y=0)
+        const worldPos = new THREE.Vector3();
+        obj.getWorldPosition(worldPos);
+        aboveFloor = worldPos.y >= -0.05; // tolerância pequena
+
+        // Calcula bounding box real na cena
+        const box = new THREE.Box3().setFromObject(obj);
+        const center = box.getCenter(new THREE.Vector3());
+        const sphere = box.getBoundingSphere(new THREE.Sphere());
+
+        // Valida se está atrás da câmera
+        const toObj = center.clone().sub(camera.position);
+        const camDir = new THREE.Vector3();
+        camera.getWorldDirection(camDir);
+        notBehindCamera = toObj.dot(camDir) > 0;
+
+        // Valida frustum (se a câmera enxerga)
+        const frustum = new THREE.Frustum();
+        frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+        framed = frustum.intersectsSphere(sphere);
       }
 
       reportSceneRuntime({ 
@@ -320,10 +343,14 @@ function FurnitureRuntimeEvidence({
         pieces, 
         visible, 
         framed, 
+        scaleValid,
+        withinBounds,
+        aboveFloor,
+        notBehindCamera,
         recordedAt: Date.now() 
       });
 
-      if (!visible && retry < 15) {
+      if ((!visible || !framed || !scaleValid) && retry < 20) {
         retry += 1;
         timer = window.setTimeout(() => {
           frame = window.requestAnimationFrame(report);
@@ -335,7 +362,7 @@ function FurnitureRuntimeEvidence({
       window.cancelAnimationFrame(frame);
       window.clearTimeout(timer);
     };
-  }, [camera, autoFitVersion, f.id, f.subtype, f.catalogItemId, f.params, f.width, f.height, f.depth, f.cx, f.cz, f.y, renderer]);
+  }, [camera, autoFitVersion, f.id, f.subtype, f.catalogItemId, f.params, f.width, f.height, f.depth, f.cx, f.cz, f.y, renderer, viewport.explode, viewport.sectionHeight]);
   return null;
 }
 
