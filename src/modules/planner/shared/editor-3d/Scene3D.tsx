@@ -1226,8 +1226,15 @@ function ApplyViewPreset({
  * projeto inteiro imediatamente.
  */
 /** Ponte de depuração (apenas DEV): expõe a cena para validação no viewport. */
-function SceneDebugBridge() {
+function SceneDebugBridge({ furnitureCount }: { furnitureCount?: number }) {
   const { scene } = useThree();
+  
+  useFrame(() => {
+    if (import.meta.env.DEV && furnitureCount !== undefined) {
+      (window as any).__DIORIS_SCENE_OBJECTS__ = furnitureCount;
+    }
+  });
+
   useEffect(() => {
     if (!import.meta.env?.DEV) return;
     (window as unknown as { __diorisScene?: THREE.Scene }).__diorisScene = scene;
@@ -1270,13 +1277,9 @@ function AutoFitCamera({
 export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCommitTransform }: Scene3DProps) {
   const { cx, cz } = centerOffset(model);
 
-  useFrame(() => {
-    if (import.meta.env.DEV) {
-      // Auditoria: O Store do Three.js reflete o 'model.furniture' que vem do React.
-      // Se model.furniture.length > 0 mas a tela está vazia, o problema é no renderizador local.
-      (window as any).__DIORIS_SCENE_OBJECTS__ = model.furniture.length;
-    }
-  });
+  // Ponte de auditoria (apenas DEV): O Store do Three.js reflete o 'model.furniture' que vem do React.
+  // Movemos a lógica do useFrame para dentro de um componente filho do Canvas
+  // para evitar o erro "Hooks can only be used within the Canvas component".
 
   // Alvo da câmera: 1/3 da altura da parede (~olho baixo). Isso ancora o
   // piso (y=0) no terço inferior da tela e reforça a percepção de escala.
@@ -1361,7 +1364,7 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
       }}
       onPointerMissed={() => onSelect(null)}
     >
-      <SceneDebugBridge />
+      <SceneDebugBridge furnitureCount={model.furniture.length} />
       {viewport.render === "material" ? (
         <color attach="background" args={[dayPreset.bgFallback]} />
       ) : (
