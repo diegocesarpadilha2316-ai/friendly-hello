@@ -279,7 +279,10 @@ export function resolveWardrobeInterior(
   let last: WardrobeInteriorResult | undefined;
 
   for (const c of candidates) {
-    if (cavity.widthMm <= 0 || cavity.heightMm <= 0 || cavity.depthMm <= 0) break;
+    if (cavity.widthMm < 150 || cavity.heightMm < 150 || cavity.depthMm < 150) {
+      console.warn(`[resolveWardrobeInterior] Vão insuficiente (${cavity.widthMm}x${cavity.heightMm}x${cavity.depthMm}), pulando candidato ${c.source}`);
+      continue;
+    }
 
     if (c.plan) {
       const validation = validateInteriorPlan(c.plan);

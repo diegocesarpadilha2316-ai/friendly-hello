@@ -104,11 +104,12 @@ export function autoLayout(input: AutoLayoutInput): AutoLayoutResult {
       widthMm: colWidth,
     };
 
-    if (colWidth <= 0) {
+    // Permitir colunas pequenas para evitar crash, mas registrar aviso
+    if (colWidth < 50) {
       warnings.push({
         level: "warn",
-        code: "coluna-sem-espaco",
-        message: `${colCavity.label}: não há largura disponível.`,
+        code: "coluna-muito-pequena",
+        message: `${colCavity.label}: largura de ${colWidth}mm é insuficiente para módulos internos.`,
       });
     } else {
       placements.push(...layoutColumn(colCavity, col, ci, gap, dropped, warnings));
