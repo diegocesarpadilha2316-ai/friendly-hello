@@ -25,6 +25,8 @@ const SceneContent: React.FC = () => {
         mode={viewMode}
         showCeiling={roomSpec.showCeiling}
         showBaseboard={roomSpec.showBaseboard}
+        baseboardHeight={roomSpec.baseboardHeightMm}
+        baseboardThickness={roomSpec.baseboardThicknessMm}
       />
 
       <ContactShadows 

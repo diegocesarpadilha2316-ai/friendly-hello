@@ -54,10 +54,6 @@ export interface WallGeometry {
     width: number;
     height: number;
   };
-  baseboards: {
-    points: [number, number, number][];
-    wallId: WallId;
-  }[];
 }
 
 export interface RoomResult {
@@ -72,6 +68,10 @@ export interface RoomResult {
     thickness: number;
   };
   walls: WallGeometry[];
+  baseboards: {
+    points: [number, number, number][];
+    wallId: WallId;
+  }[];
   bounds: {
     min: [number, number, number];
     max: [number, number, number];
