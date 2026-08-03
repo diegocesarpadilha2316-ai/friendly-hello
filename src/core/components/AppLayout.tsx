@@ -47,6 +47,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         { title: "Dashboard", url: "/", icon: LayoutDashboard },
         { title: "Workspace", url: "/workspace", icon: Rocket },
         { title: "Admin Center", url: "/admin", icon: Command },
+        { title: "Planner V2 — Em desenvolvimento", url: "/planner-v2", icon: Rocket },
       ],
     },
     {
@@ -76,6 +77,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
       ],
     },
   ];
+
 
   return (
     <AppShell
