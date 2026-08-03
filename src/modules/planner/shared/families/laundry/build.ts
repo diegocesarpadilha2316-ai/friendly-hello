@@ -12,7 +12,7 @@ import {
   type AssemblyResult,
   type ConstructionHardwareRef,
 } from "../../construction";
-import type { FamilyBuildResult } from "../types";
+import type { FamilyBuildResult, FamilyRequirementSpec } from "../types";
 import {
   laundryModuleLabel,
   normalizeLaundryModule,
@@ -92,7 +92,14 @@ export interface LaundryBuildResult extends FamilyBuildResult<LaundryModuleSpec>
   readonly fillers: readonly string[];
   /** Mecanismos conjuntos (gaveta em U, cesto, tábua). */
   readonly mechanisms: readonly string[];
+  readonly requirements: FamilyRequirementSpec;
 }
+
+const LAUNDRY_REQUIREMENTS: FamilyRequirementSpec = {
+  mandatory: ["base", "lateral-e", "lateral-d"],
+  important: ["tampo", "fundo", "frente"],
+  optional: ["gaveta", "prateleira", "acessorio"]
+};
 
 /** Monta UM módulo de lavanderia. Puro e determinístico. */
 export function buildLaundryModule(input: LaundryModuleInput = {}): LaundryBuildResult {
@@ -136,6 +143,7 @@ export function buildLaundryModule(input: LaundryModuleInput = {}): LaundryBuild
     warnings: recipe.warnings,
     fillers: recipe.fillers,
     mechanisms: recipe.mechanisms.map((m) => m.groupId),
+    requirements: LAUNDRY_REQUIREMENTS,
   };
 }
 
