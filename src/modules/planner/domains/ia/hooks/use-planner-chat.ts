@@ -861,8 +861,7 @@ export function usePlannerChat() {
             );
             if (chunk.toolResult) {
               const callDuration = startedAt ? Date.now() - startedAt : 0;
-                });
-              }
+
               // resultado — atualiza projeto e marca a tool como ok
               mutatedProject = chunk.toolResult.project;
               // Etapa 9 — o resultado padronizado dita status e avisos.
