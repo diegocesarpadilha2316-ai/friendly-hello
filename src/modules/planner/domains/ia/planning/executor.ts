@@ -16,6 +16,7 @@
 import type { PlannerProject } from "@/modules/planner/shared";
 import type { ToolContext } from "../services/tools";
 import { runPlannerTool } from "../tools/runner";
+import { useDiagnostic } from "../services/diagnostics";
 import { isStepUnlocked, refreshBlocked } from "./graph";
 import { buildFinalReport } from "./report";
 import {
