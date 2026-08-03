@@ -423,7 +423,7 @@ export class PlanRunner {
             useDiagnostic.getState().updateStep(s.stepId, { 
               status: "error", 
               error: message,
-              details: { fullException: message, stack }
+              details: { fullException: `${message}${stack ? `\n${stack}` : ""}` }
             });
           }
           return { ...s, status: "failed" as PlanStepStatus, warnings: [...s.warnings, message] };

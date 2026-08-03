@@ -288,12 +288,11 @@ export function resolveWardrobeInterior(
         cavity,
         source: c.source,
         recipeId: c.plan.id,
-        validation,
+        validation: { ok: true, errors: [], warnings: [] }, // Confia no plano explícito se tiver slots
         warnings: validation.warnings,
         requested: c.plan.placements.map((p) => p.moduleId),
         dropped: [],
         slots: interiorPlanToSlots(c.plan),
-        validation: { ok: true, errors: [], warnings: [] } // Confia no plano explícito se tiver slots
       };
       if (validation.ok || result.slots.length > 0) return result;
       last = result;
