@@ -323,7 +323,7 @@ function FurnitureRuntimeEvidence({
         recordedAt: Date.now() 
       });
 
-      if ((!visible || !framed) && retry < 15) {
+      if (!visible && retry < 15) {
         retry += 1;
         timer = window.setTimeout(() => {
           frame = window.requestAnimationFrame(report);
