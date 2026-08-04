@@ -59,6 +59,7 @@ export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
   },
 
   setViewMode: (mode) => set({ viewMode: mode }),
+  setUseViewportNext: (use) => set({ useViewportNext: use }),
 
   addItem: (family = 'kitchen-base-cabinet', variant = 'one-door') => {
     const id = `item-${Math.random().toString(36).substr(2, 9)}`;
