@@ -19,6 +19,7 @@ interface PlannerV2State {
   setRoomSpec: (spec: Partial<RoomSpec>) => void;
   applyPreset: (name: string) => void;
   setViewMode: (mode: 'technical' | 'presentation') => void;
+  setUseViewportNext: (use: boolean) => void;
   
   // Furniture Actions
   addItem: (family?: FurnitureFamily, variant?: string) => void;
