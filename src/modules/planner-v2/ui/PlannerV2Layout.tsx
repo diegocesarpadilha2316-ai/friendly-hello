@@ -23,7 +23,7 @@ export const PlannerV2Layout: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen w-full bg-[#0a0a0c] overflow-hidden text-foreground antialiased font-sans">
+    <div className="flex flex-col h-screen w-full bg-[#070709] overflow-hidden text-foreground antialiased font-sans selection:bg-primary/30">
       <TopBar />
 
       <main className="flex-1 overflow-hidden relative">
@@ -36,7 +36,7 @@ export const PlannerV2Layout: React.FC = () => {
             maxSize={30}
             collapsible 
             onResize={setLeftPanelWidth}
-            className={cn("bg-[#12141C] border-r border-[#2A2D3A] transition-all duration-300 ease-in-out")}
+            className={cn("bg-[#0D0D12] border-r border-white/5 transition-all duration-300 ease-in-out shadow-xl z-20")}
           >
             <SideNav />
           </Panel>
@@ -58,7 +58,7 @@ export const PlannerV2Layout: React.FC = () => {
             maxSize={40}
             collapsible
             onResize={setRightPanelWidth}
-            className={cn("bg-[#12141C] border-l border-[#2A2D3A] transition-all duration-300 ease-in-out")}
+            className={cn("bg-[#0D0D12] border-l border-white/5 transition-all duration-300 ease-in-out shadow-xl z-20")}
           >
             <InspectorPanel />
           </Panel>

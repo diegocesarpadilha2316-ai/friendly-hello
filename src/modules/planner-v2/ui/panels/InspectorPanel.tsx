@@ -27,7 +27,7 @@ export const InspectorPanel: React.FC = () => {
   return (
     <div className="h-full flex flex-col bg-[#0f0f12] select-none border-l border-border/50">
       {/* Tabs */}
-      <div className="flex border-b border-border/30 bg-black/20 h-10 overflow-x-auto no-scrollbar">
+      <div className="flex border-b border-white/5 bg-black/40 h-10 overflow-x-auto no-scrollbar">
         {[
           { id: 'ia', icon: MessageSquare, label: 'IA Copiloto' },
           { id: 'props', icon: Info, label: 'Inspetor' },
@@ -39,9 +39,9 @@ export const InspectorPanel: React.FC = () => {
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
             className={cn(
-              "flex items-center gap-2 px-4 whitespace-nowrap text-[10px] font-bold uppercase tracking-wider transition-all border-b-2 h-full",
+              "flex items-center gap-2 px-4 whitespace-nowrap text-[9px] font-bold uppercase tracking-widest transition-all border-b border-transparent h-full",
               activeTab === tab.id 
-                ? "border-primary text-primary bg-primary/10 shadow-[0_0_20px_-5px_rgba(99,102,241,0.4)]" 
+                ? "border-primary text-primary bg-primary/[0.03] shadow-[inset_0_-1px_0_0_#8B5CF6]" 
                 : "border-transparent text-muted-foreground hover:text-foreground hover:bg-white/5"
             )}
           >
@@ -119,7 +119,7 @@ export const InspectorPanel: React.FC = () => {
               <div className="relative group">
                 <textarea 
                   placeholder="Peça algo ao IA Copiloto..."
-                  className="w-full bg-[#1c1c24] border border-[#2A2D3A] rounded-xl p-4 pr-12 text-[11px] min-h-[100px] focus:outline-none focus:ring-1 focus:ring-primary/40 transition-all resize-none placeholder:text-muted-foreground/30 text-[#F8FAFC]"
+                  className="w-full bg-[#12121a] border border-white/[0.03] rounded-lg p-3 pr-10 text-[10px] min-h-[80px] focus:outline-none focus:border-primary/40 transition-all resize-none placeholder:text-muted-foreground/20 text-slate-200"
 
                 />
                 <button className="absolute bottom-4 right-4 p-2 rounded-lg bg-primary text-white shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
