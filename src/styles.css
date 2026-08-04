@@ -1,7 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
-@import "@/modules/planner-v2/ui/dioris-planner-v2.css";
+@import "@/modules/planner-v2/ui/ready-kit/dioris-planner-v2-ready.css";
 
 @custom-variant dark (&:is(.dark *));
 
