@@ -30,9 +30,8 @@ export const DiorisEnvironment: React.FC = () => {
       />
       
       {/* Lighting Rig */}
-      <Environment preset="apartment" intensity={0.5} />
-      
-      <ambientLight intensity={0.4} />
+      <Environment preset="apartment" />
+      <ambientLight intensity={0.5} />
       
       {/* Main Directional Light (Sunlight from a window) */}
       <directionalLight
