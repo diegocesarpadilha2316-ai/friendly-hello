@@ -106,17 +106,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
   }),
   loader: async () => {
-    try {
-      const config = await getPublicSupabaseConfig();
-      return { supabaseConfig: config };
-    } catch (err) {
-      return { 
-        supabaseConfig: { 
-          url: "https://placeholder-project.supabase.co", 
-          publishableKey: "placeholder-key" 
-        } 
-      };
-    }
+    // Configuração estática segura para evitar 502/Internal Server Error
+    return { 
+      supabaseConfig: { 
+        url: "https://placeholder-project.supabase.co", 
+        publishableKey: "placeholder-key" 
+      } 
+    };
   },
   shellComponent: RootShell,
   component: RootComponent,
@@ -142,28 +138,30 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const { supabaseConfig } = Route.useLoaderData();
 
+  const content = (
+    <AuthProvider config={supabaseConfig}>
+      <TenantProvider>
+        <Outlet />
+        <ClientOnly>
+          <Toaster position="top-right" />
+        </ClientOnly>
+      </TenantProvider>
+    </AuthProvider>
+  );
+
   if (typeof window === "undefined") {
     return (
       <QueryClientProvider client={queryClient}>
-        <AuthProvider config={supabaseConfig}>
-          <TenantProvider>
-            <Outlet />
-          </TenantProvider>
-        </AuthProvider>
+        {content}
       </QueryClientProvider>
     );
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider config={supabaseConfig}>
-        <TenantProvider>
-          <Outlet />
-          <ClientOnly>
-            <Toaster position="top-right" />
-          </ClientOnly>
-        </TenantProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        {content}
+      </QueryClientProvider>
+    </React.StrictMode>
   );
 }
