@@ -101,6 +101,13 @@ export function PlannerV2Shell({
               >
                 Ambientes
               </button>
+              <button
+                type="button"
+                className={state.leftTab === "project" ? "is-active" : ""}
+                onClick={() => patch({ leftTab: "project" })}
+              >
+                Projeto
+              </button>
             </div>
           )}
 
