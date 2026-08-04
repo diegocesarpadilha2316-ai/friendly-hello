@@ -5,6 +5,7 @@ import { FurnitureItem, FurnitureMaterial } from '../types';
 import { buildCabinet } from './build';
 import { MATERIALS } from '../defaults';
 import { PartBox } from './types';
+import { getMaterial } from '../../scene/Materials';
 
 interface BaseCabinetMeshProps {
   item: FurnitureItem;
@@ -17,13 +18,11 @@ export const BaseCabinetMesh: React.FC<BaseCabinetMeshProps> = ({ item, onSelect
 
   // Reusable materials
   const bodyMaterial = useMemo(() => {
-    const config = (MATERIALS.find(m => m.id === item.parameters.bodyMaterialId) || MATERIALS[0]) as FurnitureMaterial;
-    return new THREE.MeshStandardMaterial({ color: config.color, roughness: 0.7 });
+    return getMaterial(item.parameters.bodyMaterialId === 'white-matte' ? 'mdf_white' : item.parameters.bodyMaterialId === 'graphite' ? 'mdf_graphite' : 'mdf_taupe');
   }, [item.parameters.bodyMaterialId]);
 
   const frontMaterial = useMemo(() => {
-    const config = (MATERIALS.find(m => m.id === item.parameters.frontMaterialId) || MATERIALS[0]) as FurnitureMaterial;
-    return new THREE.MeshStandardMaterial({ color: config.color, roughness: 0.5 });
+    return getMaterial(item.parameters.frontMaterialId === 'white-matte' ? 'mdf_white' : item.parameters.frontMaterialId === 'graphite' ? 'mdf_graphite' : 'mdf_taupe');
   }, [item.parameters.frontMaterialId]);
 
   const selectedMaterial = useMemo(() => 

@@ -41,6 +41,12 @@ export const usePlannerStore = create<any>((set, get) => ({
   setToolMode: (mode: ToolMode) => set({ toolMode: mode }),
   setGridVisible: (value: boolean) => set({ gridVisible: value }),
   setLightsEnabled: (value: boolean) => set({ lightsEnabled: value }),
+  setViewMode: (mode: 'technical' | 'presentation') => {
+    usePlannerV2Store.getState().setViewMode(mode);
+  },
+  setCameraAction: (action: string) => {
+    usePlannerV2Store.getState().setCameraAction(action);
+  },
 
   selectFurniture: (id: string | null) => {
     usePlannerV2Store.getState().selectItem(id);
@@ -108,11 +114,13 @@ const syncFromV2 = () => {
   const currentStore = usePlannerStore.getState();
   if (
     JSON.stringify(currentStore.furniture) !== JSON.stringify(mappedFurniture) ||
-    currentStore.selectedId !== v2State.selectedId
+    currentStore.selectedId !== v2State.selectedId ||
+    currentStore.viewMode !== v2State.viewMode
   ) {
     usePlannerStore.setState({ 
       furniture: mappedFurniture,
-      selectedId: v2State.selectedId
+      selectedId: v2State.selectedId,
+      viewMode: v2State.viewMode
     });
   }
 };

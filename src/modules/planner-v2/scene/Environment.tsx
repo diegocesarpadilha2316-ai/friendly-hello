@@ -1,22 +1,42 @@
-import React, { useRef } from 'react';
-import { useThree } from '@react-three/fiber';
-import { ContactShadows, Environment, PerspectiveCamera, OrbitControls } from '@react-three/drei';
+import React, { useRef, useEffect } from 'react';
+import { useThree, useFrame } from '@react-three/fiber';
+import { 
+  ContactShadows, 
+  Environment, 
+  PerspectiveCamera, 
+  OrbitControls,
+  BakeShadows,
+  SoftShadows
+} from '@react-three/drei';
 import * as THREE from 'three';
+import { usePlannerV2Store } from '../core/store';
 
 export const DiorisEnvironment: React.FC = () => {
-  const { scene } = useThree();
+  const { scene, camera } = useThree();
+  const viewMode = usePlannerV2Store(state => state.viewMode);
+  const controlsRef = useRef<any>(null);
 
+  // Focus camera on furniture when needed
+  // This can be expanded with specific actions from the store
+  
   return (
     <>
-      <PerspectiveCamera makeDefault position={[6, 4, 8]} fov={35} />
+      <PerspectiveCamera 
+        makeDefault 
+        position={[4, 2, 6]} 
+        fov={40} 
+        near={0.1}
+        far={50}
+      />
       
-      {/* Luz Natural/Ambiente */}
-      <Environment preset="city" />
+      {/* Lighting Rig */}
+      <Environment preset="apartment" />
+      <ambientLight intensity={0.5} />
       
-      {/* Luz Direcional para Sombras Suaves (Sol/Janela) */}
+      {/* Main Directional Light (Sunlight from a window) */}
       <directionalLight
-        position={[8, 12, 8]}
-        intensity={1.2}
+        position={[10, 8, 5]}
+        intensity={1.5}
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-camera-far={50}
@@ -26,29 +46,46 @@ export const DiorisEnvironment: React.FC = () => {
         shadow-camera-bottom={-10}
         shadow-bias={-0.0001}
       />
+
+      {/* Warm accent lights (Spots) */}
+      <pointLight position={[2, 2.8, 2]} intensity={0.5} color="#fff4e0" distance={5} />
+      <pointLight position={[-2, 2.8, 2]} intensity={0.5} color="#fff4e0" distance={5} />
       
-      {/* Luz de Preenchimento */}
-      <ambientLight intensity={0.4} />
-      
-      {/* Sombras de Contato Realistas */}
+      {/* LED strips under cabinets (Demo positions) */}
+      <rectAreaLight 
+        position={[0, 1.4, -2.4]} 
+        rotation={[Math.PI / 2, 0, 0]}
+        width={4} 
+        height={0.1} 
+        intensity={2} 
+        color="#ffccaa" 
+      />
+
+      {/* Realistic Contact Shadows */}
       <ContactShadows 
-        opacity={0.4} 
+        opacity={0.5} 
         scale={20} 
-        blur={2.5} 
-        far={1.6} 
+        blur={2.4} 
+        far={2} 
         resolution={1024}
         color="#000000" 
       />
 
       <OrbitControls 
+        ref={controlsRef}
         makeDefault 
         minPolarAngle={Math.PI / 6} 
         maxPolarAngle={Math.PI / 1.8}
-        minDistance={2}
-        maxDistance={20}
+        minDistance={1}
+        maxDistance={15}
         enableDamping
         dampingFactor={0.05}
+        target={[0, 0.8, 0]} 
       />
+
+      {/* Global shadows optimization */}
+      <SoftShadows size={2.5} samples={16} focus={0} />
+      <BakeShadows />
     </>
   );
 };
