@@ -1,127 +1,127 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import React from 'react';
 import { 
-  Plus, Layers, Map, Library, ChevronLeft, ChevronRight, Search, 
-  Package, LayoutPanelLeft, MousePointer2, Palette 
+  ChevronRight, 
+  ChevronDown, 
+  Eye, 
+  EyeOff, 
+  MoreVertical, 
+  Box, 
+  Layout, 
+  Palette, 
+  Zap, 
+  Wrench,
+  WallTower,
+  Home,
+  Package,
+  Cpu
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { usePlannerV2Store } from '../../core/store';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/input';
 
-export const SideNav: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'library' | 'structure' | 'rooms' | 'materials'>('library');
-  const { addItem } = usePlannerV2Store();
+interface ExplorerItemProps {
+  level?: number;
+  label: string;
+  icon?: any;
+  hasChildren?: boolean;
+  isExpanded?: boolean;
+  isVisible?: boolean;
+}
 
+const ExplorerItem: React.FC<ExplorerItemProps> = ({ 
+  level = 0, 
+  label, 
+  icon: Icon, 
+  hasChildren = false, 
+  isExpanded = false,
+  isVisible = true 
+}) => {
   return (
-    <div className="w-80 h-full border-r bg-card/80 backdrop-blur-md flex flex-col shrink-0 select-none">
-      <div className="flex border-b">
-        {[
-          { id: 'library', icon: Library, label: 'Biblioteca' },
-          { id: 'structure', icon: Layers, label: 'Estrutura' },
-          { id: 'rooms', icon: Map, label: 'Ambiente' },
-          { id: 'materials', icon: Palette, label: 'Materiais' },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
-            className={`flex-1 py-3 text-[10px] font-semibold uppercase tracking-wider transition-colors border-b-2 ${
-              activeTab === tab.id ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-muted-foreground hover:bg-muted/50'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+    <div 
+      className={cn(
+        "group flex items-center h-8 px-2 hover:bg-primary/10 cursor-pointer text-[11px] text-muted-foreground hover:text-foreground transition-colors",
+        level > 0 && "ml-3 border-l border-border/30"
+      )}
+      style={{ paddingLeft: `${level * 8 + 8}px` }}
+    >
+      <div className="flex items-center gap-1.5 flex-1 min-w-0">
+        {hasChildren ? (
+          isExpanded ? <ChevronDown className="w-3 h-3 shrink-0" /> : <ChevronRight className="w-3 h-3 shrink-0" />
+        ) : (
+          <div className="w-3" />
+        )}
+        
+        {Icon && <Icon className="w-3.5 h-3.5 shrink-0 text-primary/70" />}
+        <span className="truncate font-medium tracking-tight uppercase">{label}</span>
       </div>
 
-      <div className="p-4 flex-1 overflow-hidden flex flex-col gap-4">
-        {activeTab === 'library' && (
-          <>
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-              <Input placeholder="Buscar módulos..." className="pl-8 h-9 text-xs bg-muted/30 border-none" />
-            </div>
+      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity pr-1">
+        <button className="p-1 hover:text-primary transition-colors">
+          {isVisible ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+        </button>
+        <button className="p-1 hover:text-primary transition-colors">
+          <MoreVertical className="w-3 h-3" />
+        </button>
+      </div>
+    </div>
+  );
+};
 
-            <ScrollArea className="flex-1 -mx-1 px-1">
-              <div className="space-y-6 pb-6">
-                <div>
-                  <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 px-1">Cozinha V2 (Beta)</h4>
-                  <div className="grid grid-cols-1 gap-2">
-                    <Button 
-                      variant="outline" 
-                      className="justify-start h-12 gap-3 bg-muted/20 border-border/50 hover:bg-muted/40"
-                      onClick={() => addItem('kitchen-base-cabinet', 'one-door' as any)}
-                    >
-                      <div className="w-8 h-8 rounded bg-primary/10 flex items-center justify-center">
-                        <Package className="w-4 h-4 text-primary" />
-                      </div>
-                      <span className="text-xs font-medium">Gabinete Inferior</span>
-                    </Button>
-                  </div>
-                </div>
+export const SideNav: React.FC = () => {
+  const { items } = usePlannerV2Store();
 
-                <div>
-                  <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 px-1">Móveis Paramétricos V1</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { id: 'wardrobe', label: 'Closet' },
-                      { id: 'kitchen', label: 'Cozinha' },
-                      { id: 'bathroom', label: 'Banheiro' },
-                      { id: 'laundry', label: 'Lavanderia' },
-                      { id: 'dresser', label: 'Gaveteiro' },
-                    ].map((item) => (
-                      <Button 
-                        key={item.id}
-                        variant="outline" 
-                        size="sm"
-                        className="flex-col h-16 text-[9px] gap-1 bg-muted/20 border-border/50 hover:bg-muted/40"
-                        onClick={() => addItem(item.id as any)}
-                      >
-                        <Plus className="w-3 h-3 text-primary" />
-                        {item.label}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </ScrollArea>
-          </>
-        )}
+  return (
+    <div className="h-full flex flex-col bg-[#0f0f12] select-none border-r border-border/50">
+      {/* Header */}
+      <div className="h-10 px-4 flex items-center justify-between border-b border-border/30 bg-black/20">
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/80">Projeto</span>
+        <div className="flex items-center gap-1">
+          <button className="p-1.5 hover:bg-white/5 rounded transition-colors">
+            <Layout className="w-3.5 h-3.5 text-muted-foreground" />
+          </button>
+        </div>
+      </div>
 
-        {activeTab === 'structure' && (
-          <div className="flex flex-col items-center justify-center h-full text-muted-foreground gap-2">
-            <Layers className="w-8 h-8 opacity-20 mb-2" />
-            <span className="text-[10px] uppercase tracking-widest font-bold">Estrutura do Projeto</span>
-            <div className="w-full mt-4 space-y-1">
-              {usePlannerV2Store.getState().items.map(item => (
-                <div key={item.id} className="flex items-center gap-2 px-2 py-1.5 rounded bg-muted/20 text-[10px]">
-                   <Package className="w-3 h-3 text-primary" />
-                   <span className="flex-1 truncate uppercase">{item.family} - {item.variant || 'Padrão'}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+      {/* Explorer Content */}
+      <div className="flex-1 overflow-y-auto py-2">
+        <ExplorerItem label="Ambiente Principal" icon={Home} hasChildren isExpanded />
+        
+        <div className="mb-2">
+          <ExplorerItem level={1} label="Paredes" icon={WallTower} hasChildren />
+          <ExplorerItem level={1} label="Piso" icon={Layout} />
+          <ExplorerItem level={1} label="Teto" icon={Box} />
+        </div>
 
-        {activeTab === 'rooms' && (
-          <div className="space-y-4">
-             <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Ambientes Ativos</h4>
-             <Button variant="outline" className="w-full justify-start h-10 bg-primary/10 border-primary/20 text-primary">
-                <Map className="w-4 h-4 mr-2" />
-                Cozinha Moderna
-             </Button>
-          </div>
-        )}
+        <ExplorerItem label="Mobiliário" icon={Package} hasChildren isExpanded />
+        
+        <div className="mb-2">
+          {items.length === 0 ? (
+             <div className="px-8 py-2 text-[10px] text-muted-foreground italic opacity-50 uppercase tracking-tighter">
+                Nenhum móvel inserido
+             </div>
+          ) : (
+            items.map(item => (
+              <ExplorerItem 
+                key={item.id} 
+                level={1} 
+                label={`${item.family} ${item.variant || ''}`} 
+                icon={Box} 
+              />
+            ))
+          )}
+        </div>
 
-        {activeTab === 'materials' && (
-          <div className="grid grid-cols-2 gap-2">
-            {['MDF Branco', 'MDF Grafite', 'Madeira Louro', 'Laca Areia'].map(m => (
-              <div key={m} className="aspect-square rounded border bg-muted/30 flex flex-col items-center justify-center gap-2 p-2 text-center">
-                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-white/10 to-white/5 border" />
-                 <span className="text-[9px] uppercase font-bold">{m}</span>
-              </div>
-            ))}
-          </div>
-        )}
+        <ExplorerItem label="Acabamentos" icon={Palette} hasChildren />
+        <ExplorerItem label="Iluminação" icon={Zap} hasChildren />
+        <ExplorerItem label="Engenharia" icon={Wrench} hasChildren />
+        <ExplorerItem label="Automação" icon={Cpu} hasChildren />
+      </div>
+
+      {/* Footer Info */}
+      <div className="p-3 border-t border-border/30 bg-black/10">
+        <div className="flex items-center justify-between text-[9px] text-muted-foreground font-bold uppercase tracking-widest">
+          <span>Itens: {items.length}</span>
+          <span>V2.4.0</span>
+        </div>
       </div>
     </div>
   );
