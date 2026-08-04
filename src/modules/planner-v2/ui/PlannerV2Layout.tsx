@@ -1,5 +1,6 @@
 import React from 'react';
 import { V2Viewport } from '../viewport/V2Viewport';
+import { V2ViewportNext } from '../viewport-next';
 import { usePlannerV2Store } from '../core/store';
 import { TopBar } from '../components/TopBar';
 import { BottomBar } from '../components/BottomBar';
