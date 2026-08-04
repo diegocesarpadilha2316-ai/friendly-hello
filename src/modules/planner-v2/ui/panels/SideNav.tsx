@@ -38,10 +38,10 @@ const ExplorerItem: React.FC<ExplorerItemProps> = ({
   return (
     <div 
       className={cn(
-        "group flex items-center h-7 px-2 hover:bg-white/[0.03] cursor-pointer text-[10px] text-muted-foreground/80 hover:text-white transition-all duration-150 border-l-2 border-transparent",
-        level > 0 && "ml-4 border-l border-white/5"
+        "group flex items-center h-9 px-2 hover:bg-[#1b1f2a] cursor-pointer text-[13px] text-[#F8FAFC] transition-all duration-150 rounded-[7px] mx-2 my-0.5",
+        level > 0 && "child"
       )}
-      style={{ paddingLeft: `${level * 6 + 6}px` }}
+      style={{ paddingLeft: level > 0 ? '28px' : '8px' }}
     >
       <div className="flex items-center gap-1.5 flex-1 min-w-0">
         {hasChildren ? (
@@ -72,7 +72,7 @@ export const SideNav: React.FC = () => {
   return (
     <div className="h-full flex flex-col bg-[#12141C] select-none border-r border-[#2A2D3A]">
       {/* Header */}
-      <div className="h-10 px-4 flex items-center justify-between border-b border-border/30 bg-black/20">
+      <div className="h-12 px-4 flex items-center justify-between border-b border-[#2A2D3A] bg-[#171A24]">
         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/80">Projeto</span>
         <div className="flex items-center gap-1">
           <button className="p-1.5 hover:bg-white/5 rounded transition-colors">

@@ -25,9 +25,9 @@ export const InspectorPanel: React.FC = () => {
   const selectedItem = items.find(i => i.id === selectedId);
 
   return (
-    <div className="h-full flex flex-col bg-[#0f0f12] select-none border-l border-border/50">
+    <div className="h-full flex flex-col bg-[#12141C] select-none border-l border-[#2A2D3A]">
       {/* Tabs */}
-      <div className="flex border-b border-white/5 bg-black/40 h-10 overflow-x-auto no-scrollbar">
+      <div className="flex border-b border-[#2A2D3A] bg-[#171A24] h-[48px] overflow-x-auto no-scrollbar">
         {[
           { id: 'ia', icon: MessageSquare, label: 'IA Copiloto' },
           { id: 'props', icon: Info, label: 'Inspetor' },
@@ -39,9 +39,10 @@ export const InspectorPanel: React.FC = () => {
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
             className={cn(
-              "flex items-center gap-2 px-4 whitespace-nowrap text-[9px] font-bold uppercase tracking-widest transition-all border-b border-transparent h-full",
+              "flex items-center gap-2 px-4 whitespace-nowrap text-[11px] font-bold uppercase tracking-widest transition-all border-b-2 h-full",
               activeTab === tab.id 
-                ? "border-primary text-primary bg-primary/[0.03] shadow-[inset_0_-1px_0_0_#8B5CF6]" 
+                ? "border-[#6366F1] text-[#F8FAFC] bg-[#6366F1]/10" 
+
                 : "border-transparent text-muted-foreground hover:text-foreground hover:bg-white/5"
             )}
           >
@@ -119,7 +120,7 @@ export const InspectorPanel: React.FC = () => {
               <div className="relative group">
                 <textarea 
                   placeholder="Peça algo ao IA Copiloto..."
-                  className="w-full bg-[#12121a] border border-white/[0.03] rounded-lg p-3 pr-10 text-[10px] min-h-[80px] focus:outline-none focus:border-primary/40 transition-all resize-none placeholder:text-muted-foreground/20 text-slate-200"
+                  className="w-full bg-[#0A0B10] border border-[#2A2D3A] rounded-lg p-3 pr-10 text-[13px] min-h-[80px] focus:outline-none focus:border-[#6366F1]/50 transition-all resize-none placeholder:text-[#94A3B8]/30 text-[#F8FAFC]"
 
                 />
                 <button className="absolute bottom-4 right-4 p-2 rounded-lg bg-primary text-white shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
