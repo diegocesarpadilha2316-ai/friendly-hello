@@ -32,78 +32,100 @@ export const LegacyAssemblyRenderer: React.FC<LegacyAssemblyRendererProps> = ({ 
     };
 
     try {
+      let result: any = null;
       switch (family) {
         case 'wardrobe':
-          return wardrobeFamily.build({
+          result = wardrobeFamily.build({
             ...commonSpec,
             opening: 'abrir',
             doors: Math.max(1, Math.round(widthMm / 500)),
             finishId: 'branco-tx',
           });
+          break;
         case 'kitchen':
-          return kitchenFamily.build({
+          result = kitchenFamily.build({
             ...commonSpec,
-            kind: parameters.kind || 'balcao',
+            kind: (parameters as any).kind || 'balcao',
             finishId: 'branco-tx',
           } as any);
+          break;
         case 'kitchen-tower':
-          return wardrobeFamily.build({
+          result = wardrobeFamily.build({
             ...commonSpec,
             opening: 'abrir',
             doors: 1,
             finishId: 'grafite-tx',
           });
+          break;
         case 'kitchen-wall-cabinet':
-          return kitchenFamily.build({
+          result = kitchenFamily.build({
             ...commonSpec,
             kind: 'aereo',
             finishId: 'branco-tx',
           } as any);
+          break;
         case 'kitchen-counter':
-          return {
+          result = {
             assembly: {
               id: 'counter-' + id,
+              label: 'Bancada',
+              envelope: { width: widthMm, height: heightMm, depth: depthMm },
               pieces: [{
                 id: 'counter-stone',
+                label: 'Pedra',
                 box: { x: 0, y: 0, z: 0, width: widthMm, height: heightMm, depth: depthMm },
                 partKind: 'tampo',
-                substrate: 'pedra'
+                substrate: 'pedra',
+                thicknessMm: heightMm,
+                grain: 'none'
               }],
               motions: [],
+              hardware: [],
+              warnings: [],
+              totals: { weight: 0, area: 0 }
             }
           };
+          break;
         case 'kitchen-stool':
-          return {
+          result = {
             assembly: {
               id: 'stool-' + id,
+              label: 'Banqueta',
+              envelope: { width: widthMm, height: heightMm, depth: depthMm },
               pieces: [
-                { id: 'seat', box: { x: 0, y: heightMm - 40, z: 0, width: widthMm, height: 40, depth: depthMm }, partKind: 'tampo', substrate: 'madeira' },
-                { id: 'leg-1', box: { x: 0, y: 0, z: 0, width: 40, height: heightMm - 40, depth: 40 }, partKind: 'travessa', substrate: 'metal' },
-                { id: 'leg-2', box: { x: widthMm - 40, y: 0, z: 0, width: 40, height: heightMm - 40, depth: 40 }, partKind: 'travessa', substrate: 'metal' },
-                { id: 'leg-3', box: { x: 0, y: 0, z: depthMm - 40, width: 40, height: heightMm - 40, depth: 40 }, partKind: 'travessa', substrate: 'metal' },
-                { id: 'leg-4', box: { x: widthMm - 40, y: 0, z: depthMm - 40, width: 40, height: heightMm - 40, depth: 40 }, partKind: 'travessa', substrate: 'metal' },
+                { id: 'seat', label: 'Assento', box: { x: 0, y: heightMm - 40, z: 0, width: widthMm, height: 40, depth: depthMm }, partKind: 'tampo', substrate: 'madeira', thicknessMm: 40, grain: 'horizontal' },
+                { id: 'leg-1', label: 'Pé 1', box: { x: 0, y: 0, z: 0, width: 40, height: heightMm - 40, depth: 40 }, partKind: 'travessa', substrate: 'metal', thicknessMm: 40, grain: 'vertical' },
+                { id: 'leg-2', label: 'Pé 2', box: { x: widthMm - 40, y: 0, z: 0, width: 40, height: heightMm - 40, depth: 40 }, partKind: 'travessa', substrate: 'metal', thicknessMm: 40, grain: 'vertical' },
+                { id: 'leg-3', label: 'Pé 3', box: { x: 0, y: 0, z: depthMm - 40, width: 40, height: heightMm - 40, depth: 40 }, partKind: 'travessa', substrate: 'metal', thicknessMm: 40, grain: 'vertical' },
+                { id: 'leg-4', label: 'Pé 4', box: { x: widthMm - 40, y: 0, z: depthMm - 40, width: 40, height: heightMm - 40, depth: 40 }, partKind: 'travessa', substrate: 'metal', thicknessMm: 40, grain: 'vertical' },
               ],
               motions: [],
+              hardware: [],
+              warnings: [],
+              totals: { weight: 0, area: 0 }
             }
           };
+          break;
         case 'bathroom':
-          return bathroomFamily.build({
+          result = bathroomFamily.build({
             ...commonSpec,
             finishId: 'branco-tx',
           });
+          break;
         case 'laundry':
-          return laundryFamily.build({
+          result = laundryFamily.build({
             ...commonSpec,
             finishId: 'branco-tx',
           });
+          break;
         case 'dresser':
-          return dresserFamily.build({
+          result = dresserFamily.build({
             ...commonSpec,
             finishId: 'branco-tx',
           });
-        default:
-          return null;
+          break;
       }
+      return result;
     } catch (err) {
       console.error(`Error building legacy family ${family}:`, err);
       return null;
