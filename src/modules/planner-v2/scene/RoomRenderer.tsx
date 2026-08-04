@@ -8,7 +8,7 @@ interface WallMeshProps {
   mode: 'technical' | 'presentation';
 }
 
-const WallMesh: React.FC<WallMeshProps> = ({ wall, mode }) => {
+const WallMesh: React.FC<WallMeshProps & { visible?: boolean }> = ({ wall, mode, visible = true }) => {
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
     shape.moveTo(-wall.width / 2, -wall.height / 2);
@@ -35,6 +35,8 @@ const WallMesh: React.FC<WallMeshProps> = ({ wall, mode }) => {
       bevelEnabled: false,
     });
   }, [wall]);
+
+  if (!visible) return null;
 
   return (
     <group position={wall.position} rotation={wall.rotation}>
