@@ -38,16 +38,16 @@ export const TopBar: React.FC = () => {
         </div>
 
         {/* Global Actions */}
-        <div className="flex items-center gap-1 bg-white/5 p-1 rounded-md border border-white/5">
-           <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-white/10" title="Novo">
-             <Box className="w-3.5 h-3.5" />
-           </Button>
-           <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-white/10" title="Desfazer">
-             <RotateCcw className="w-3.5 h-3.5" />
-           </Button>
-           <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-white/10" title="Refazer">
-             <RotateCw className="w-3.5 h-3.5" />
-           </Button>
+        <div className="flex items-center gap-1 bg-white/[0.03] p-1 rounded-lg border border-white/5">
+           <button className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-white/5 text-[#94A3B8] hover:text-[#F8FAFC] transition-all" title="Novo">
+             <Box className="w-4 h-4" />
+           </button>
+           <button className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-white/5 text-[#94A3B8] hover:text-[#F8FAFC] transition-all" title="Desfazer">
+             <RotateCcw className="w-4 h-4" />
+           </button>
+           <button className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-white/5 text-[#94A3B8] hover:text-[#F8FAFC] transition-all" title="Refazer">
+             <RotateCw className="w-4 h-4" />
+           </button>
         </div>
 
         {/* Viewport Tools */}
@@ -59,18 +59,18 @@ export const TopBar: React.FC = () => {
             { icon: Ruler, label: 'Medir' },
             { icon: MousePointer2, label: 'Selecionar' },
           ].map((item) => (
-            <Button 
+            <button 
               key={item.label} 
-              variant={item.active ? "secondary" : "ghost"} 
-              size="sm" 
               className={cn(
-                "h-7 px-3 gap-2 text-[9px] uppercase font-bold tracking-widest",
-                item.active && "bg-primary/20 text-primary border border-primary/30"
+                "h-[38px] px-3 flex items-center gap-2 rounded-lg text-[10px] uppercase font-bold tracking-widest transition-all border border-transparent",
+                item.active 
+                  ? "bg-[#171A24] border-[#2A2D3A] text-[#F8FAFC]" 
+                  : "text-[#94A3B8] hover:bg-white/5 hover:text-[#F8FAFC]"
               )}
             >
-              <item.icon className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">{item.label}</span>
-            </Button>
+              <item.icon className={cn("w-4 h-4", item.active ? "text-[#6366F1]" : "text-[#94A3B8]")} />
+              <span className="hidden lg:inline">{item.label}</span>
+            </button>
           ))}
         </div>
       </div>
