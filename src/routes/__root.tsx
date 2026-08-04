@@ -14,8 +14,9 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/core/providers/AuthProvider";
 import { TenantProvider } from "@/core/providers/TenantProvider";
 import { getPublicSupabaseConfig } from "@/core/lib/supabase/config.functions";
-import { Toaster } from "@/components/ui/sonner";
+// Toaster e ClientOnly movidos para importação dinâmica ou isolados
 import { ClientOnly } from "@/components/ui/client-only";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
