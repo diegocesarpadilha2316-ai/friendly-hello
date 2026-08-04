@@ -20,8 +20,9 @@ export function Explorer() {
   const toggleLeft = usePlannerStore((s) => s.toggleLeft);
   const furniture = usePlannerStore((s) => s.furniture);
   const selectedId = usePlannerStore((s) => s.selectedId);
-  const selectFurniture = usePlannerStore((s) => s.selectFurniture);
-  const toggleVisibility = usePlannerStore((s) => s.toggleVisibility);
+  const selectFurniture = (id: string | null) => usePlannerStore.getState().selectFurniture(id);
+  const toggleVisibility = (id: string) => usePlannerStore.getState().toggleVisibility(id);
+
 
   return (
     <aside className={`explorer ${collapsed ? "collapsed" : ""}`}>

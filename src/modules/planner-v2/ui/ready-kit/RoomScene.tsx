@@ -78,60 +78,11 @@ function Stools() {
 }
 
 export function RoomScene() {
-  const furniture = usePlannerStore((s) => s.furniture);
-  const gridVisible = usePlannerStore((s) => s.gridVisible);
-  const lightsEnabled = usePlannerStore((s) => s.lightsEnabled);
-  const selectFurniture = usePlannerStore((s) => s.selectFurniture);
+  const selectFurniture = (id: string | null) => usePlannerStore.getState().selectFurniture(id);
 
   return (
-    <Canvas
-      shadows
-      camera={{ position: [5.7, 3.3, 5.9], fov: 40, near: 0.1, far: 100 }}
-      onPointerMissed={() => selectFurniture(null)}
-      dpr={[1, 1.6]}
-    >
-      <color attach="background" args={["#101217"]} />
-      <Suspense fallback={null}>
-        <Environment preset="apartment" />
-        <ambientLight intensity={lightsEnabled ? 0.65 : 0.2} />
-        <directionalLight
-          position={[3, 7, 4]}
-          intensity={lightsEnabled ? 2.2 : 0.35}
-          castShadow
-          shadow-mapSize-width={1024}
-          shadow-mapSize-height={1024}
-        />
-        <pointLight position={[-1, 2.45, -1.4]} intensity={lightsEnabled ? 8 : 0} color="#ffd7a1" />
-        <pointLight position={[1.2, 2.45, -1.2]} intensity={lightsEnabled ? 8 : 0} color="#ffd7a1" />
-
-        <Room />
-        {furniture.map((item) => (
-          <FurnitureMesh key={item.id} item={item} />
-        ))}
-        <Stools />
-
-        {gridVisible && (
-          <gridHelper args={[10, 20, "#6366f1", "#30354a"]} position={[0, 0.005, 0]} />
-        )}
-
-        <ContactShadows
-          position={[0, 0.01, 0]}
-          opacity={0.42}
-          scale={12}
-          blur={2.5}
-          far={4.5}
-        />
-
-        <OrbitControls
-          makeDefault
-          target={[0, 1.05, -0.4]}
-          minDistance={2.5}
-          maxDistance={14}
-          minPolarAngle={0.35}
-          maxPolarAngle={Math.PI / 2.05}
-          enableDamping
-        />
-      </Suspense>
-    </Canvas>
+    <div className="w-full h-full relative" onPointerMissed={() => selectFurniture(null)}>
+      <V2Viewport />
+    </div>
   );
 }

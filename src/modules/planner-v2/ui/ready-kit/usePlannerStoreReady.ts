@@ -1,117 +1,12 @@
 import { create } from "zustand";
 import type { ChatMessage, FurnitureItem, RightTab, SheetHeight, ToolMode } from "./types";
+import { usePlannerV2Store } from "../../core/store";
 
-interface PlannerState {
-  leftCollapsed: boolean;
-  rightCollapsed: boolean;
-  mobileDrawerOpen: boolean;
-  mobileSheetOpen: boolean;
-  mobileSheetHeight: SheetHeight;
-  rightTab: RightTab;
-  toolMode: ToolMode;
-  gridVisible: boolean;
-  lightsEnabled: boolean;
-  selectedId: string | null;
-  furniture: FurnitureItem[];
-  messages: ChatMessage[];
+// O Store real do V2 e o Store da interface do pacote são unificados aqui.
+// Seguindo a ETAPA B, o objetivo é que a interface use os dados reais.
 
-  toggleLeft: () => void;
-  toggleRight: () => void;
-  setMobileDrawer: (open: boolean) => void;
-  setMobileSheet: (open: boolean) => void;
-  setMobileSheetHeight: (height: SheetHeight) => void;
-  setRightTab: (tab: RightTab) => void;
-  setToolMode: (mode: ToolMode) => void;
-  setGridVisible: (value: boolean) => void;
-  setLightsEnabled: (value: boolean) => void;
-  selectFurniture: (id: string | null) => void;
-  updateSelected: (patch: Partial<FurnitureItem>) => void;
-  duplicateSelected: () => void;
-  deleteSelected: () => void;
-  toggleVisibility: (id: string) => void;
-  sendMessage: (content: string) => void;
-}
-
-const initialFurniture: FurnitureItem[] = [
-  {
-    id: "base-1",
-    name: "Armário Base",
-    kind: "base",
-    visible: true,
-    selected: true,
-    position: [-2.2, 0.36, -1.7],
-    rotationY: 0,
-    size: [1.5, 0.72, 0.56],
-    material: "taupe"
-  },
-  {
-    id: "base-2",
-    name: "Balcão",
-    kind: "base",
-    visible: true,
-    selected: false,
-    position: [-0.65, 0.36, -1.7],
-    rotationY: 0,
-    size: [1.35, 0.72, 0.56],
-    material: "taupe"
-  },
-  {
-    id: "tower-1",
-    name: "Torre Quente",
-    kind: "tower",
-    visible: true,
-    selected: false,
-    position: [2.3, 1.15, -1.7],
-    rotationY: 0,
-    size: [0.72, 2.3, 0.62],
-    material: "wood"
-  },
-  {
-    id: "upper-1",
-    name: "Armário Aéreo",
-    kind: "upper",
-    visible: true,
-    selected: false,
-    position: [-0.6, 2.0, -1.75],
-    rotationY: 0,
-    size: [2.6, 0.78, 0.38],
-    material: "taupe"
-  },
-  {
-    id: "island-1",
-    name: "Ilha Central",
-    kind: "island",
-    visible: true,
-    selected: false,
-    position: [0.4, 0.46, 0.25],
-    rotationY: 0,
-    size: [2.25, 0.92, 0.95],
-    material: "stone"
-  }
-];
-
-const initialMessages: ChatMessage[] = [
-  {
-    id: "m1",
-    role: "assistant",
-    content: "Analisei sua cozinha. Posso ajustar materiais, iluminação e medidas.",
-    time: "10:24"
-  },
-  {
-    id: "m2",
-    role: "user",
-    content: "Aplique LED quente nos aéreos.",
-    time: "10:25"
-  },
-  {
-    id: "m3",
-    role: "assistant",
-    content: "Pronto! A iluminação quente foi aplicada.",
-    time: "10:26"
-  }
-];
-
-export const usePlannerStore = create<PlannerState>((set, get) => ({
+export const usePlannerStore = create<any>((set, get) => ({
+  // UI State (Sincronizado com PlannerV2Store quando possível)
   leftCollapsed: false,
   rightCollapsed: false,
   mobileDrawerOpen: false,
@@ -121,92 +16,95 @@ export const usePlannerStore = create<PlannerState>((set, get) => ({
   toolMode: "orbit",
   gridVisible: false,
   lightsEnabled: true,
-  selectedId: "base-1",
-  furniture: initialFurniture,
-  messages: initialMessages,
-
-  toggleLeft: () => set((s) => ({ leftCollapsed: !s.leftCollapsed })),
-  toggleRight: () => set((s) => ({ rightCollapsed: !s.rightCollapsed })),
-  setMobileDrawer: (open) => set({ mobileDrawerOpen: open }),
-  setMobileSheet: (open) => set({ mobileSheetOpen: open }),
-  setMobileSheetHeight: (height) => set({ mobileSheetHeight: height }),
-  setRightTab: (tab) => set({ rightTab: tab }),
-  setToolMode: (mode) => set({ toolMode: mode }),
-  setGridVisible: (value) => set({ gridVisible: value }),
-  setLightsEnabled: (value) => set({ lightsEnabled: value }),
-
-  selectFurniture: (id) =>
-    set((s) => ({
-      selectedId: id,
-      furniture: s.furniture.map((item) => ({
-        ...item,
-        selected: item.id === id
-      }))
-    })),
-
-  updateSelected: (patch) =>
-    set((s) => ({
-      furniture: s.furniture.map((item) =>
-        item.id === s.selectedId ? { ...item, ...patch } : item
-      )
-    })),
-
-  duplicateSelected: () => {
-    const s = get();
-    const selected = s.furniture.find((item) => item.id === s.selectedId);
-    if (!selected) return;
-    const clone = {
-      ...selected,
-      id: `${selected.id}-copy-${Date.now()}`,
-      name: `${selected.name} (cópia)`,
-      position: [
-        selected.position[0] + 0.35,
-        selected.position[1],
-        selected.position[2] + 0.35
-      ] as [number, number, number],
-      selected: true
-    };
-    set({
-      selectedId: clone.id,
-      furniture: [
-        ...s.furniture.map((item) => ({ ...item, selected: false })),
-        clone
-      ]
-    });
+  
+  // Reais do V2
+  get furniture() { 
+    // Mapeia do FurnitureItem real para o FurnitureItem da UI
+    return usePlannerV2Store.getState().items.map(item => ({
+      id: item.id,
+      name: item.name,
+      kind: item.family === 'kitchen-base-cabinet' ? 'base' : 'tower', // mapeamento aproximado para a UI demo
+      visible: item.visible,
+      selected: item.selected,
+      position: [item.position.x / 1000, item.position.y / 1000, item.position.z / 1000],
+      rotationY: item.rotation,
+      size: [item.widthMm / 1000, item.heightMm / 1000, item.depthMm / 1000],
+      material: item.parameters.bodyMaterialId || 'taupe'
+    }));
   },
 
-  deleteSelected: () =>
-    set((s) => ({
-      selectedId: null,
-      furniture: s.furniture.filter((item) => item.id !== s.selectedId)
-    })),
+  get selectedId() { return usePlannerV2Store.getState().selectedId; },
 
-  toggleVisibility: (id) =>
-    set((s) => ({
-      furniture: s.furniture.map((item) =>
-        item.id === id ? { ...item, visible: !item.visible } : item
-      )
-    })),
-
-  sendMessage: (content) => {
-    const clean = content.trim();
-    if (!clean) return;
-    const now = new Date().toLocaleTimeString("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-    const user: ChatMessage = {
-      id: `user-${Date.now()}`,
-      role: "user",
-      content: clean,
-      time: now
-    };
-    const assistant: ChatMessage = {
-      id: `assistant-${Date.now()}`,
+  messages: [
+    {
+      id: "m1",
       role: "assistant",
-      content: "Comando recebido. Esta área deve ser conectada ao agente real do Dioris.",
-      time: now
-    };
-    set((s) => ({ messages: [...s.messages, user, assistant] }));
+      content: "Planner V2 Conectado. Como posso ajudar com seu projeto real?",
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }
+  ],
+
+  // Actions
+  toggleLeft: () => set((s: any) => ({ leftCollapsed: !s.leftCollapsed })),
+  toggleRight: () => set((s: any) => ({ rightCollapsed: !s.rightCollapsed })),
+  setMobileDrawer: (open: boolean) => set({ mobileDrawerOpen: open }),
+  setMobileSheet: (open: boolean) => set({ mobileSheetOpen: open }),
+  setMobileSheetHeight: (height: SheetHeight) => set({ mobileSheetHeight: height }),
+  setRightTab: (tab: RightTab) => set({ rightTab: tab }),
+  setToolMode: (mode: ToolMode) => set({ toolMode: mode }),
+  setGridVisible: (value: boolean) => set({ gridVisible: value }),
+  setLightsEnabled: (value: boolean) => set({ lightsEnabled: value }),
+
+  selectFurniture: (id: string | null) => {
+    usePlannerV2Store.getState().selectItem(id);
+    set({ selectedId: id }); // Force update UI store
+  },
+
+  updateSelected: (patch: any) => {
+    const selectedId = usePlannerV2Store.getState().selectedId;
+    if (selectedId) {
+      // Converte de volta para mm se necessário (ex: size)
+      const updates: any = { ...patch };
+      if (patch.size) {
+        updates.widthMm = patch.size[0] * 1000;
+        updates.heightMm = patch.size[1] * 1000;
+        updates.depthMm = patch.size[2] * 1000;
+      }
+      if (patch.rotationY !== undefined) updates.rotation = patch.rotationY;
+      
+      usePlannerV2Store.getState().updateItem(selectedId, updates);
+    }
+  },
+
+  duplicateSelected: () => {
+    const selectedId = usePlannerV2Store.getState().selectedId;
+    if (selectedId) usePlannerV2Store.getState().duplicateItem(selectedId);
+  },
+
+  deleteSelected: () => {
+    const selectedId = usePlannerV2Store.getState().selectedId;
+    if (selectedId) usePlannerV2Store.getState().removeItem(selectedId);
+  },
+
+  toggleVisibility: (id: string) => {
+    const item = usePlannerV2Store.getState().items.find(i => i.id === id);
+    if (item) usePlannerV2Store.getState().updateItem(id, { visible: !item.visible });
+  },
+
+  sendMessage: (content: string) => {
+    // Integração futura com o agente real
+    const now = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    set((s: any) => ({ 
+      messages: [...s.messages, { id: Date.now().toString(), role: 'user', content, time: now }] 
+    }));
   }
 }));
+
+// Sincronização reativa para garantir que mudanças no Store V2 reflitam na UI
+usePlannerV2Store.subscribe((state) => {
+  usePlannerStore.setState({ 
+    // Trigger re-render by updating a dummy value if needed, 
+    // or rely on the fact that 'get' property will be re-evaluated
+    _furnitureUpdateToken: Date.now() 
+  });
+});
