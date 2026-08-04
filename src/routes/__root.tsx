@@ -14,9 +14,8 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/core/providers/AuthProvider";
 import { TenantProvider } from "@/core/providers/TenantProvider";
 import { getPublicSupabaseConfig } from "@/core/lib/supabase/config.functions";
-// Toaster e ClientOnly movidos para importação dinâmica ou isolados
-import { ClientOnly } from "@/components/ui/client-only";
 import { Toaster } from "@/components/ui/sonner";
+import { ClientOnly } from "@/components/ui/client-only";
 
 function NotFoundComponent() {
   return (
@@ -105,7 +104,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", href: "/dioris-favicon.png", type: "image/png" },
       { rel: "apple-touch-icon", href: "/dioris-favicon.png" },
     ],
-  loader: async () => ({ supabaseConfig: { url: "https://placeholder.supabase.co", publishableKey: "key" } }),
+  }),
+  loader: async () => {
+    try {
+      const config = await getPublicSupabaseConfig();
+      return { supabaseConfig: config };
+    } catch (err) {
+      console.error("BOOTSTRAP_LOADER_ERROR:", err);
+      return { 
+        supabaseConfig: { 
+          url: "https://placeholder-project.supabase.co", 
+          publishableKey: "placeholder-key" 
+        } 
+      };
     }
   },
   shellComponent: RootShell,
