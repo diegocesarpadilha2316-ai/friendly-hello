@@ -10,7 +10,7 @@ import {
   Rotate3D,
   ZoomIn
 } from "lucide-react";
-import { usePlannerStore } from "../state/usePlannerStore";
+import { usePlannerStore } from "./usePlannerStoreReady";
 
 export function ViewportControls() {
   const toolMode = usePlannerStore((s) => s.toolMode);

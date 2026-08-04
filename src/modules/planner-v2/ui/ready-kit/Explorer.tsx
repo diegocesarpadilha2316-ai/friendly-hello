@@ -13,7 +13,7 @@ import {
   Square,
   Wrench
 } from "lucide-react";
-import { usePlannerStore } from "../state/usePlannerStore";
+import { usePlannerStore } from "./usePlannerStoreReady";
 
 export function Explorer() {
   const collapsed = usePlannerStore((s) => s.leftCollapsed);

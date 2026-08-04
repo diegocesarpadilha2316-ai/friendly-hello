@@ -14,8 +14,8 @@ import {
   Undo2,
   ZoomIn
 } from "lucide-react";
-import { usePlannerStore } from "../state/usePlannerStore";
-import type { ToolMode } from "../types";
+import { usePlannerStore } from "./usePlannerStoreReady";
+import type { ToolMode } from "./types";
 
 const toolList: { label: string; icon: React.ReactNode; mode?: ToolMode }[] = [
   { label: "Novo", icon: <Box size={17} /> },

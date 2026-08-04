@@ -1,6 +1,6 @@
 import { Edges } from "@react-three/drei";
 import type { FurnitureItem } from "../types";
-import { usePlannerStore } from "../state/usePlannerStore";
+import { usePlannerStore } from "./usePlannerStoreReady";
 
 const colors: Record<string, string> = {
   taupe: "#8b7564",

@@ -1,5 +1,5 @@
 import { Bot, Box, Menu, Settings2, X } from "lucide-react";
-import { usePlannerStore } from "../state/usePlannerStore";
+import { usePlannerStore } from "./usePlannerStoreReady";
 import { Explorer } from "./Explorer";
 import { RightPanel } from "./RightPanel";
 

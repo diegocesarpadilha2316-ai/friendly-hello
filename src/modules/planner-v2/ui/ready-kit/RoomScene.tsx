@@ -1,7 +1,7 @@
 import { ContactShadows, Environment, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
-import { usePlannerStore } from "../state/usePlannerStore";
+import { usePlannerStore } from "./usePlannerStoreReady";
 import { FurnitureMesh } from "./FurnitureMesh";
 
 function Room() {

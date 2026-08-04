@@ -1,7 +1,7 @@
 import { Bot, ChevronLeft, ChevronRight, Send } from "lucide-react";
 import { useState } from "react";
-import { usePlannerStore } from "../state/usePlannerStore";
-import type { RightTab } from "../types";
+import { usePlannerStore } from "./usePlannerStoreReady";
+import type { RightTab } from "./types";
 
 const tabs: { id: RightTab; label: string }[] = [
   { id: "chat", label: "IA" },
