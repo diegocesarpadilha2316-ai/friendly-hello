@@ -2,23 +2,24 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   Plus, Layers, Map, Library, ChevronLeft, ChevronRight, Search, 
-  Package, LayoutPanelLeft, MousePointer2 
+  Package, LayoutPanelLeft, MousePointer2, Palette 
 } from 'lucide-react';
 import { usePlannerV2Store } from '../../core/store';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 
 export const SideNav: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'library' | 'structure' | 'rooms' | 'layers'>('library');
+  const [activeTab, setActiveTab] = useState<'library' | 'structure' | 'rooms' | 'materials'>('library');
   const { addItem } = usePlannerV2Store();
 
   return (
-    <div className="w-80 h-full border-r bg-card flex flex-col shrink-0 select-none">
+    <div className="w-80 h-full border-r bg-card/80 backdrop-blur-md flex flex-col shrink-0 select-none">
       <div className="flex border-b">
         {[
           { id: 'library', icon: Library, label: 'Biblioteca' },
           { id: 'structure', icon: Layers, label: 'Estrutura' },
-          { id: 'rooms', icon: Map, label: 'Ambientes' },
+          { id: 'rooms', icon: Map, label: 'Ambiente' },
+          { id: 'materials', icon: Palette, label: 'Materiais' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -88,8 +89,37 @@ export const SideNav: React.FC = () => {
 
         {activeTab === 'structure' && (
           <div className="flex flex-col items-center justify-center h-full text-muted-foreground gap-2">
-            <Layers className="w-8 h-8 opacity-20" />
-            <span className="text-[10px] uppercase tracking-widest">Árvore Vazia</span>
+            <Layers className="w-8 h-8 opacity-20 mb-2" />
+            <span className="text-[10px] uppercase tracking-widest font-bold">Estrutura do Projeto</span>
+            <div className="w-full mt-4 space-y-1">
+              {usePlannerV2Store.getState().items.map(item => (
+                <div key={item.id} className="flex items-center gap-2 px-2 py-1.5 rounded bg-muted/20 text-[10px]">
+                   <Package className="w-3 h-3 text-primary" />
+                   <span className="flex-1 truncate uppercase">{item.family} - {item.variant || 'Padrão'}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'rooms' && (
+          <div className="space-y-4">
+             <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Ambientes Ativos</h4>
+             <Button variant="outline" className="w-full justify-start h-10 bg-primary/10 border-primary/20 text-primary">
+                <Map className="w-4 h-4 mr-2" />
+                Cozinha Moderna
+             </Button>
+          </div>
+        )}
+
+        {activeTab === 'materials' && (
+          <div className="grid grid-cols-2 gap-2">
+            {['MDF Branco', 'MDF Grafite', 'Madeira Louro', 'Laca Areia'].map(m => (
+              <div key={m} className="aspect-square rounded border bg-muted/30 flex flex-col items-center justify-center gap-2 p-2 text-center">
+                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-white/10 to-white/5 border" />
+                 <span className="text-[9px] uppercase font-bold">{m}</span>
+              </div>
+            ))}
           </div>
         )}
       </div>

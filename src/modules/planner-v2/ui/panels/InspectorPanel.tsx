@@ -10,13 +10,13 @@ export const InspectorPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'ia' | 'props' | 'materials' | 'hardware' | 'light'>('ia');
 
   return (
-    <div className="w-80 h-full border-l bg-card flex flex-col shrink-0 select-none">
+    <div className="w-96 h-full border-l bg-card/80 backdrop-blur-md flex flex-col shrink-0 select-none">
       <div className="flex border-b">
         {[
-          { id: 'ia', icon: MessageSquare, label: 'IA' },
-          { id: 'props', icon: Info, label: 'Info' },
-          { id: 'materials', icon: Palette, label: 'MAT' },
-          { id: 'hardware', icon: Wrench, label: 'ENG' },
+          { id: 'ia', icon: MessageSquare, label: 'IA Copiloto' },
+          { id: 'props', icon: Info, label: 'Inspetor' },
+          { id: 'materials', icon: Palette, label: 'Acabamentos' },
+          { id: 'hardware', icon: Wrench, label: 'Engenharia' },
           { id: 'light', icon: Sun, label: 'Luz' },
         ].map((tab) => (
           <button

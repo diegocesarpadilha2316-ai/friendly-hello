@@ -32,7 +32,7 @@ export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
   roomSpec: DEFAULT_ROOM,
   roomResult: generateRoomGeometry(DEFAULT_ROOM),
   errors: [],
-  viewMode: 'presentation',
+  viewMode: 'technical',
   
   items: [],
   selectedId: null,
