@@ -80,7 +80,7 @@ export function Explorer() {
               <>
                 <span
                   className="inline-action"
-                  onClick={(event) => {
+                  onClick={(event: any) => {
                     event.stopPropagation();
                     toggleVisibility(item.id);
                   }}

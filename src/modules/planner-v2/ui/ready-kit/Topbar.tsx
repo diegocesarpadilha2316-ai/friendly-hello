@@ -63,8 +63,8 @@ export function Topbar() {
       </nav>
 
       <div className="top-actions">
-        <button type="button" className="primary"><Save size={16} /> Salvar</button>
-        <button type="button" className="secondary"><Share2 size={16} /> Compartilhar</button>
+        <button type="button" className="primary" onClick={() => {}}><Save size={16} /> Salvar</button>
+        <button type="button" className="secondary" onClick={() => {}}><Share2 size={16} /> Compartilhar</button>
       </div>
     </header>
   );

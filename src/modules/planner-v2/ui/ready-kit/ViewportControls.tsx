@@ -46,8 +46,8 @@ export function ViewportControls() {
 
       <div className="viewport-status">
         <span>Vista: Perspectiva</span>
-        <label><Grid3X3 size={14} /><input type="checkbox" checked={gridVisible} onChange={(e) => setGridVisible(e.target.checked)} /> Grade</label>
-        <label><Lightbulb size={14} /><input type="checkbox" checked={lightsEnabled} onChange={(e) => setLightsEnabled(e.target.checked)} /> Iluminação</label>
+        <label><Grid3X3 size={14} /><input type="checkbox" checked={gridVisible} onChange={(e: any) => setGridVisible(e.target.checked)} /> Grade</label>
+        <label><Lightbulb size={14} /><input type="checkbox" checked={lightsEnabled} onChange={(e: any) => setLightsEnabled(e.target.checked)} /> Iluminação</label>
         <button className="active">Apresentação</button>
         <button>Técnico</button>
         <Maximize2 size={15} />

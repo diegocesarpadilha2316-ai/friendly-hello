@@ -72,8 +72,8 @@ export function RightPanel() {
                 <div className="composer">
                   <input
                     value={draft}
-                    onChange={(event) => setDraft(event.target.value)}
-                    onKeyDown={(event) => {
+                    onChange={(event: any) => setDraft(event.target.value)}
+                    onKeyDown={(event: any) => {
                       if (event.key === "Enter") {
                         sendMessage(draft);
                         setDraft("");
@@ -110,7 +110,7 @@ export function RightPanel() {
                       selected &&
                       updateSelected({
                         size: [
-                          Number(event.target.value),
+                          Number((event.target as HTMLInputElement).value),
                           selected.size[1],
                           selected.size[2]
                         ]
@@ -129,7 +129,7 @@ export function RightPanel() {
                       updateSelected({
                         size: [
                           selected.size[0],
-                          Number(event.target.value),
+                          Number((event.target as HTMLInputElement).value),
                           selected.size[2]
                         ]
                       })
@@ -148,7 +148,7 @@ export function RightPanel() {
                         size: [
                           selected.size[0],
                           selected.size[1],
-                          Number(event.target.value)
+                          Number((event.target as HTMLInputElement).value)
                         ]
                       })
                     }
@@ -160,7 +160,7 @@ export function RightPanel() {
                     type="number"
                     step="0.1"
                     value={selected?.rotationY ?? 0}
-                    onChange={(event) => updateSelected({ rotationY: Number(event.target.value) })}
+                    onChange={(event: any) => updateSelected({ rotationY: Number(event.target.value) })}
                   />
                 </label>
               </div>
