@@ -25,7 +25,7 @@ export const InspectorPanel: React.FC = () => {
   const selectedItem = items.find(i => i.id === selectedId);
 
   return (
-    <div className="h-full flex flex-col bg-[#0f0f12] select-none border-l border-border/50">
+    <div className="h-full flex flex-col bg-[#12141C] select-none border-l border-[#2A2D3A]">
       {/* Tabs */}
       <div className="flex border-b border-white/5 bg-black/40 h-10 overflow-x-auto no-scrollbar">
         {[

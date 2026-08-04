@@ -15,7 +15,7 @@ export const BottomBar: React.FC = () => {
   const { roomSpec, viewMode, items } = usePlannerV2Store();
   
   return (
-    <footer className="h-7 bg-[#0a0a0c] border-t border-border/40 flex items-center justify-between px-4 text-[9px] text-muted-foreground/60 shrink-0 select-none uppercase font-bold tracking-[0.15em] z-50">
+    <footer className="h-[42px] bg-[#0A0B10] border-t border-[#2A2D3A] flex items-center justify-between px-4 text-[11px] text-[#94A3B8] shrink-0 select-none uppercase font-bold tracking-[0.15em] z-50">
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-2 text-primary/80">
           <div className="relative">

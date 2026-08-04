@@ -24,14 +24,14 @@ export const TopBar: React.FC = () => {
   const { viewMode, setViewMode } = usePlannerV2Store();
 
   return (
-    <header className="h-10 bg-[#0D0D12] border-b border-white/5 flex items-center px-4 justify-between shrink-0 select-none z-50">
+    <header className="h-[60px] bg-[#0d0f15] border-b border-[#2A2D3A] flex items-center px-[14px] justify-between shrink-0 select-none z-50">
       <div className="flex items-center gap-6">
         {/* Brand */}
-        <div className="flex items-center gap-3">
-          <div className="flex flex-col leading-none">
-            <span className="font-black text-white tracking-tighter text-xs uppercase">DIORIS</span>
-            <span className="text-[8px] text-primary/80 font-bold uppercase tracking-widest">PLANNER V2</span>
+        <div className="flex items-center gap-[10px] min-w-[200px]">
+          <div className="w-[34px] h-[34px] rounded-[10px] bg-gradient-to-br from-[#7C3AED] to-[#22d3ee] flex items-center justify-center font-extrabold text-white text-lg shadow-[0_4px_12px_rgba(124,58,237,0.3)]">
+            D
           </div>
+          <strong className="text-[15px] font-bold text-[#F8FAFC] tracking-[0.04em] uppercase">DIORIS PLANNER V2</strong>
         </div>
 
         {/* Global Actions */}
