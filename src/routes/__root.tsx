@@ -15,6 +15,7 @@ import { AuthProvider } from "@/core/providers/AuthProvider";
 import { TenantProvider } from "@/core/providers/TenantProvider";
 import { getPublicSupabaseConfig } from "@/core/lib/supabase/config.functions";
 import { Toaster } from "@/components/ui/sonner";
+import { ClientOnly } from "@/components/ui/client-only";
 
 function NotFoundComponent() {
   return (
@@ -139,7 +140,9 @@ function RootComponent() {
         <TenantProvider>
           {/* Required: nested routes render here. Layout (AppShell) lives under _authenticated. */}
           <Outlet />
-          <Toaster position="top-right" />
+          <ClientOnly>
+            <Toaster position="top-right" />
+          </ClientOnly>
         </TenantProvider>
       </AuthProvider>
     </QueryClientProvider>

@@ -2,6 +2,7 @@ import React, { Suspense, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Environment, ContactShadows } from '@react-three/drei';
 import { RoomRenderer } from '../scene/RoomRenderer';
+import { FurnitureRenderer } from '../scene/FurnitureRenderer';
 import { usePlannerV2Store } from '../core/store';
 
 const SceneContent: React.FC = () => {
@@ -28,6 +29,8 @@ const SceneContent: React.FC = () => {
         baseboardHeight={roomSpec.baseboardHeightMm}
         baseboardThickness={roomSpec.baseboardThicknessMm}
       />
+
+      <FurnitureRenderer />
 
       <ContactShadows 
         opacity={0.3} 
