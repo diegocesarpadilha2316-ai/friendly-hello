@@ -19,7 +19,7 @@ export const getPublicSupabaseConfig = createServerFn({ method: "GET" }).handler
       throw new Error(`Configuração do Supabase incompleta. Variáveis ausentes: ${missing.join(", ")}. Por favor, configure as variáveis de ambiente no painel de controle.`);
     }
 
-    console.log(`[Supabase Config] Returning URL: ${url}`);
+    
     return { url, publishableKey };
   },
 );
