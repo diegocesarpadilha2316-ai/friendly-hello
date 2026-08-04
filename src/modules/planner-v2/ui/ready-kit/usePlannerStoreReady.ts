@@ -34,8 +34,9 @@ export const usePlannerStore = create<any>((set, get) => ({
   toggleLeft: () => set((s: any) => ({ leftCollapsed: !s.leftCollapsed })),
   toggleRight: () => set((s: any) => ({ rightCollapsed: !s.rightCollapsed })),
   setMobileDrawer: (open: boolean) => set({ mobileDrawerOpen: open }),
-  setMobileSheet: (open: boolean) => set({ mobileSheetOpen: open }),
+  setMobileSheet: (open: boolean) => set({ mobileSheetOpen: open, mobileDrawerOpen: false }), // Fechar um ao abrir outro
   setMobileSheetHeight: (height: SheetHeight) => set({ mobileSheetHeight: height }),
+
   setRightTab: (tab: RightTab) => set({ rightTab: tab }),
   setToolMode: (mode: ToolMode) => set({ toolMode: mode }),
   setGridVisible: (value: boolean) => set({ gridVisible: value }),

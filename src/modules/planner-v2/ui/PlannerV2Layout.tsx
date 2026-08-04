@@ -16,11 +16,13 @@ export function PlannerV2Layout() {
         <section className="viewport">
           <RoomScene />
           <ViewportControls />
-          <MobileUI />
         </section>
 
         <RightPanel />
       </main>
+
+      <MobileUI />
+
 
       <footer className="statusbar">
         <span className="ready">● READY</span>
