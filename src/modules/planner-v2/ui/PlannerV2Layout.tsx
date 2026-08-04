@@ -27,38 +27,42 @@ export const PlannerV2Layout: React.FC = () => {
       <TopBar />
 
       <main className="flex-1 overflow-hidden relative">
-        <PanelGroup direction="horizontal">
+        <PanelGroup direction="horizontal" id="planner-v2-main-group">
           {/* Explorer */}
           <Panel 
+            id="explorer-panel"
+            order={1}
             defaultSize={20} 
             minSize={15} 
             maxSize={30}
             collapsible 
             onCollapse={() => setLeftPanelCollapsed(true)}
             onExpand={() => setLeftPanelCollapsed(false)}
-            className={cn("bg-[#0f0f12] border-r border-border/50", leftPanelCollapsed && "hidden")}
+            className={cn("bg-[#0f0f12] border-r border-border/50 transition-all duration-300 ease-in-out")}
           >
             <SideNav />
           </Panel>
           
-          <PanelResizeHandle className="w-1 bg-border/50 hover:bg-primary/50 transition-colors" />
+          <PanelResizeHandle id="explorer-resizer" className="w-1 bg-border/50 hover:bg-primary/50 transition-colors" />
 
           {/* Viewport */}
-          <Panel className="bg-[#0d0d0f] relative shadow-inner">
+          <Panel id="viewport-panel" order={2} className="bg-[#0d0d0f] relative shadow-inner">
             <V2Viewport />
           </Panel>
 
-          <PanelResizeHandle className="w-1 bg-border/50 hover:bg-primary/50 transition-colors" />
+          <PanelResizeHandle id="inspector-resizer" className="w-1 bg-border/50 hover:bg-primary/50 transition-colors" />
 
           {/* AI Inspector */}
           <Panel 
+            id="inspector-panel"
+            order={3}
             defaultSize={25} 
             minSize={20} 
             maxSize={40}
             collapsible
             onCollapse={() => setRightPanelCollapsed(true)}
             onExpand={() => setRightPanelCollapsed(false)}
-            className={cn("bg-[#0f0f12] border-l border-border/50", rightPanelCollapsed && "hidden")}
+            className={cn("bg-[#0f0f12] border-l border-border/50 transition-all duration-300 ease-in-out")}
           >
             <InspectorPanel />
           </Panel>
