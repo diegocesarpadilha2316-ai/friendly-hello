@@ -34,6 +34,7 @@ export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
   roomResult: generateRoomGeometry(DEFAULT_ROOM),
   errors: [],
   viewMode: 'technical',
+  useViewportNext: false, // Default to false until validated
   
   items: [],
   selectedId: null,
