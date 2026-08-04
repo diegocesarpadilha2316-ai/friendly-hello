@@ -15,7 +15,6 @@ import { AuthProvider } from "@/core/providers/AuthProvider";
 import { TenantProvider } from "@/core/providers/TenantProvider";
 import { getPublicSupabaseConfig } from "@/core/lib/supabase/config.functions";
 import { Toaster } from "@/components/ui/sonner";
-import { ClientOnly } from "@/components/ui/client-only";
 
 function NotFoundComponent() {
   return (
@@ -106,12 +105,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
   }),
   loader: async () => {
-    return { 
-      supabaseConfig: { 
-        url: "https://placeholder-project.supabase.co", 
-        publishableKey: "placeholder-key" 
-      } 
-    };
+    // Bootstrap: fetch publishable Supabase config from server (SSR + client).
+    const config = await getPublicSupabaseConfig();
+    return { supabaseConfig: config };
   },
   shellComponent: RootShell,
   component: RootComponent,
@@ -143,9 +139,7 @@ function RootComponent() {
         <TenantProvider>
           {/* Required: nested routes render here. Layout (AppShell) lives under _authenticated. */}
           <Outlet />
-          <ClientOnly>
-            <Toaster position="top-right" />
-          </ClientOnly>
+          <Toaster position="top-right" />
         </TenantProvider>
       </AuthProvider>
     </QueryClientProvider>
