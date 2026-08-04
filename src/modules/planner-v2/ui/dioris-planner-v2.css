@@ -575,18 +575,28 @@
 }
 
 .dioris-statusbar {
+  height: var(--dioris-status-height);
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding: 0 13px;
-  color: var(--dioris-muted);
-  background: #0c0e14;
+  gap: 16px;
+  padding: 0 10px;
+  background: #06070a;
   border-top: 1px solid var(--dioris-line);
-  font-size: 11px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--dioris-muted);
+}
+
+.dioris-statusbar span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .dioris-statusbar .is-ready {
   color: var(--dioris-success);
+  font-weight: 600;
 }
 
 .dioris-status-spacer {
