@@ -92,11 +92,18 @@
 .dioris-toolbar {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
   flex: 1;
   overflow-x: auto;
   scrollbar-width: none;
+}
+
+.dioris-divider {
+  width: 1px;
+  height: 24px;
+  margin: 0 4px;
+  background: var(--dioris-line);
 }
 
 .dioris-toolbar::-webkit-scrollbar {
@@ -136,31 +143,40 @@
 .dioris-top-actions {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
 }
 
 .dioris-primary-button,
 .dioris-secondary-button {
+  height: 32px;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 9px 12px;
-  color: var(--dioris-text);
-  border-radius: 8px;
+  gap: 8px;
+  padding: 0 12px;
+  color: white;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .dioris-primary-button {
   border: 0;
-  background: linear-gradient(
-    135deg,
-    var(--dioris-accent-2),
-    var(--dioris-accent)
-  );
+  background: var(--dioris-accent);
 }
 
 .dioris-secondary-button {
   border: 1px solid var(--dioris-line);
-  background: var(--dioris-panel-2);
+  background: #1e212b;
+  color: var(--dioris-text);
+}
+
+.dioris-primary-button:hover {
+  background: #4f46e5;
+}
+
+.dioris-secondary-button:hover {
+  background: #252936;
 }
 
 .dioris-workspace {
@@ -282,20 +298,27 @@
 
 .dioris-tree-row {
   width: 100%;
-  height: 36px;
+  height: 30px;
   display: flex;
   align-items: center;
-  gap: 7px;
-  color: var(--dioris-text);
+  gap: 8px;
+  padding: 0 8px;
+  color: var(--dioris-muted);
   background: transparent;
   border: 0;
-  border-radius: 7px;
+  border-radius: 4px;
   text-align: left;
+  transition: all 0.2s;
 }
 
-.dioris-tree-row:hover,
+.dioris-tree-row:hover {
+  background: rgba(255,255,255,0.03);
+  color: var(--dioris-text);
+}
+
 .dioris-tree-row.is-selected {
-  background: #1b1f2a;
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--dioris-accent);
 }
 
 .dioris-tree-chevron {
