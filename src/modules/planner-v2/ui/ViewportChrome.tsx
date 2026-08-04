@@ -10,7 +10,7 @@ import {
   Rotate3D,
   ZoomIn
 } from "lucide-react";
-import type { ToolMode, ViewMode } from "../types/planner-ui";
+import type { ToolMode, ViewMode } from "./planner-ui";
 
 interface Props {
   toolMode: ToolMode;

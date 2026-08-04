@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { usePlannerV2Store } from '../core/store';
 import { V2Viewport } from '../viewport/V2Viewport';
 import { PlannerV2Shell } from './PlannerV2Shell';
-import type { ProjectTreeItem, FurnitureSelection, ChatMessage } from './planner-ui';
+import type { ProjectTreeItem, FurnitureSelection, ChatMessage } from './planner-ui.ts';
 
 export const PlannerV2Layout: React.FC = () => {
   const store = usePlannerV2Store();

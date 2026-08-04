@@ -7,8 +7,8 @@ import {
   Settings2
 } from "lucide-react";
 import { useMemo } from "react";
-import { usePlannerUIState } from "../hooks/use-planner-ui-state";
-import type { PlannerV2ShellProps } from "../types/planner-ui";
+import { usePlannerUIState } from "./use-planner-ui-state";
+import type { PlannerV2ShellProps } from "./planner-ui";
 import { CopilotPanel } from "./CopilotPanel";
 import { MobilePanels } from "./MobilePanels";
 import { ProjectExplorer } from "./ProjectExplorer";

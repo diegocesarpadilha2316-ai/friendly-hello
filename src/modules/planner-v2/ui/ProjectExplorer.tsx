@@ -13,7 +13,7 @@ import {
   Palette,
   Armchair
 } from "lucide-react";
-import type { ProjectTreeItem } from "../types/planner-ui";
+import type { ProjectTreeItem } from "./planner-ui";
 
 const icons = {
   room: Box,

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { PlannerUIState } from "../types/planner-ui";
+import type { PlannerUIState } from "./planner-ui";
 
 const DEFAULT_STATE: PlannerUIState = {
   leftCollapsed: false,

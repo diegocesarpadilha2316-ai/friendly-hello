@@ -4,7 +4,7 @@ import type {
   FurnitureSelection,
   ProjectTreeItem,
   RightPanelTab
-} from "../types/planner-ui";
+} from "./planner-ui";
 import { CopilotPanel } from "./CopilotPanel";
 import { ProjectExplorer } from "./ProjectExplorer";
 

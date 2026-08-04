@@ -4,7 +4,7 @@ import type {
   ChatMessage,
   FurnitureSelection,
   RightPanelTab
-} from "../types/planner-ui";
+} from "./planner-ui";
 
 interface Props {
   activeTab: RightPanelTab;

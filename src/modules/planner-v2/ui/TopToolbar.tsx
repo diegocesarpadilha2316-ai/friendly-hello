@@ -15,7 +15,7 @@ import {
   Calculator,
   Share2
 } from "lucide-react";
-import type { ToolMode } from "../types/planner-ui";
+import type { ToolMode } from "./planner-ui";
 
 interface Props {
   toolMode: ToolMode;
