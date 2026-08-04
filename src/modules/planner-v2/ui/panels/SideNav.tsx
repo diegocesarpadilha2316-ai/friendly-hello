@@ -38,10 +38,10 @@ const ExplorerItem: React.FC<ExplorerItemProps> = ({
   return (
     <div 
       className={cn(
-        "group flex items-center h-9 px-2 hover:bg-[#1b1f2a] cursor-pointer text-[13px] text-[#F8FAFC] transition-all duration-150 rounded-[7px] mx-2 my-0.5",
+        "group flex items-center h-[36px] hover:bg-[#1b1f2a] cursor-pointer text-[12px] text-[#F8FAFC] transition-all duration-150 border-b border-white/[0.02]",
         level > 0 && "child"
       )}
-      style={{ paddingLeft: level > 0 ? '28px' : '8px' }}
+      style={{ paddingLeft: level > 0 ? '32px' : '16px' }}
     >
       <div className="flex items-center gap-1.5 flex-1 min-w-0">
         {hasChildren ? (
@@ -70,13 +70,13 @@ export const SideNav: React.FC = () => {
   const { items } = usePlannerV2Store();
 
   return (
-    <div className="h-full flex flex-col bg-[#12141C] select-none border-r border-[#2A2D3A]">
+    <div className="h-full flex flex-col bg-[#12141C] select-none">
       {/* Header */}
-      <div className="h-12 px-4 flex items-center justify-between border-b border-[#2A2D3A] bg-[#171A24]">
-        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/80">Projeto</span>
+      <div className="h-12 px-4 flex items-center justify-between border-b border-[#2A2D3A] bg-[#171A24] shrink-0">
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#6366F1]">Explorer</span>
         <div className="flex items-center gap-1">
           <button className="p-1.5 hover:bg-white/5 rounded transition-colors">
-            <Layout className="w-3.5 h-3.5 text-muted-foreground" />
+            <Layout className="w-3.5 h-3.5 text-[#94A3B8]" />
           </button>
         </div>
       </div>

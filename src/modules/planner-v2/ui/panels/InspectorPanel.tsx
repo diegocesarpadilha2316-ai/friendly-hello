@@ -25,9 +25,9 @@ export const InspectorPanel: React.FC = () => {
   const selectedItem = items.find(i => i.id === selectedId);
 
   return (
-    <div className="h-full flex flex-col bg-[#12141C] select-none border-l border-[#2A2D3A]">
+    <div className="h-full flex flex-col bg-[#12141C] select-none">
       {/* Tabs */}
-      <div className="flex border-b border-[#2A2D3A] bg-[#171A24] h-[48px] overflow-x-auto no-scrollbar">
+      <div className="flex border-b border-[#2A2D3A] bg-[#171A24] h-[48px] overflow-x-auto no-scrollbar shrink-0">
         {[
           { id: 'ia', icon: MessageSquare, label: 'IA Copiloto' },
           { id: 'props', icon: Info, label: 'Inspetor' },
@@ -56,12 +56,12 @@ export const InspectorPanel: React.FC = () => {
         {activeTab === 'ia' && (
           <div className="flex flex-col h-full">
             {/* IA Context Info */}
-            <div className="px-4 py-2 bg-primary/5 border-b border-primary/10 flex items-center justify-between">
+            <div className="px-4 py-2 bg-[#6366F1]/5 border-b border-[#6366F1]/10 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(139,92,246,0.8)]" />
-                <span className="text-[10px] font-bold text-primary/80 uppercase tracking-widest">IA Analisando Projeto</span>
+                <div className="w-2 h-2 rounded-full bg-[#6366F1] animate-pulse shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
+                <span className="text-[10px] font-bold text-[#6366F1] uppercase tracking-widest">IA Analisando Projeto</span>
               </div>
-              <span className="text-[9px] text-muted-foreground uppercase font-bold tracking-tighter">GPT-4 Vision</span>
+              <span className="text-[9px] text-[#94A3B8] uppercase font-bold tracking-tighter">DeepSeek V3</span>
             </div>
 
             <ScrollArea className="flex-1">
