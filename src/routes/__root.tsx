@@ -106,13 +106,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
   }),
   loader: async () => {
-    return { 
-      supabaseConfig: { 
-        url: "https://placeholder-project.supabase.co", 
-        publishableKey: "placeholder-key" 
-      } 
-    };
+    const supabaseConfig = await getPublicSupabaseConfig();
+    return { supabaseConfig };
   },
+
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
