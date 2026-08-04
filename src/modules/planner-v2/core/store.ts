@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { RoomSpec, DEFAULT_ROOM, PRESETS, generateRoomGeometry, RoomResult, validateRoomSpec } from '../room';
+import { FurnitureItem } from '../furniture/types';
+import { createDefaultCabinet } from '../furniture/defaults';
 
 interface PlannerV2State {
   roomSpec: RoomSpec;
@@ -7,10 +9,22 @@ interface PlannerV2State {
   errors: string[];
   viewMode: 'technical' | 'presentation';
   
+  // Furniture State
+  items: FurnitureItem[];
+  selectedId: string | null;
+  
   // Actions
   setRoomSpec: (spec: Partial<RoomSpec>) => void;
   applyPreset: (name: string) => void;
   setViewMode: (mode: 'technical' | 'presentation') => void;
+  
+  // Furniture Actions
+  addItem: (variant?: string) => void;
+  removeItem: (id: string) => void;
+  updateItem: (id: string, updates: Partial<FurnitureItem>) => void;
+  selectItem: (id: string | null) => void;
+  duplicateItem: (id: string) => void;
+  toggleAnimation: () => void;
 }
 
 export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
@@ -18,6 +32,9 @@ export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
   roomResult: generateRoomGeometry(DEFAULT_ROOM),
   errors: [],
   viewMode: 'presentation',
+  
+  items: [],
+  selectedId: null,
 
   setRoomSpec: (updates) => {
     const newSpec = { ...get().roomSpec, ...updates };
@@ -38,4 +55,71 @@ export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
   },
 
   setViewMode: (mode) => set({ viewMode: mode }),
+
+  addItem: (variant = 'one-door') => {
+    const id = `item-${Math.random().toString(36).substr(2, 9)}`;
+    const newItem = createDefaultCabinet(id, variant);
+    
+    // Position it at the center of the room for now
+    newItem.position = { 
+      x: get().roomSpec.width / 2, 
+      y: 0, 
+      z: -get().roomSpec.depth / 2 + newItem.depthMm / 2 
+    };
+
+    set((state) => ({
+      items: [...state.items, newItem.id === state.selectedId ? { ...newItem, selected: true } : newItem],
+      selectedId: id
+    }));
+    
+    // Make sure we update selection state in the items list too
+    set((state) => ({
+      items: state.items.map(i => ({ ...i, selected: i.id === id }))
+    }));
+  },
+
+  removeItem: (id) => set((state) => ({
+    items: state.items.filter(i => i.id !== id),
+    selectedId: state.selectedId === id ? null : state.selectedId
+  })),
+
+  updateItem: (id, updates) => set((state) => ({
+    items: state.items.map(i => i.id === id ? { ...i, ...updates } : i)
+  })),
+
+  selectItem: (id) => set((state) => ({ 
+    selectedId: id,
+    items: state.items.map(i => ({ ...i, selected: i.id === id }))
+  })),
+
+  duplicateItem: (id) => {
+    const original = get().items.find(i => i.id === id);
+    if (!original) return;
+    
+    const newId = `item-${Math.random().toString(36).substr(2, 9)}`;
+    const newItem = { 
+      ...JSON.parse(JSON.stringify(original)), 
+      id: newId,
+      position: { ...original.position, x: original.position.x + original.widthMm + 10 },
+      selected: true 
+    };
+    
+    set((state) => ({
+      items: [...state.items.map(i => ({ ...i, selected: false })), newItem],
+      selectedId: newId
+    }));
+  },
+
+  toggleAnimation: () => {
+    const { selectedId, items } = get();
+    if (!selectedId) return;
+    
+    set({
+      items: items.map(item => 
+        item.id === selectedId 
+          ? { ...item, isOpen: !item.isOpen, openAmount: item.isOpen ? 0 : 1 } 
+          : item
+      )
+    });
+  }
 }));
