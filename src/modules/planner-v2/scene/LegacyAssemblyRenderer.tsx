@@ -69,7 +69,7 @@ export const LegacyAssemblyRenderer: React.FC<LegacyAssemblyRendererProps> = ({ 
             assembly: {
               id: 'counter-' + id,
               label: 'Bancada',
-              envelope: { width: widthMm, height: heightMm, depth: depthMm },
+              envelope: { x: 0, y: 0, z: 0, width: widthMm, height: heightMm, depth: depthMm },
               pieces: [{
                 id: 'counter-stone',
                 label: 'Pedra',
@@ -82,7 +82,7 @@ export const LegacyAssemblyRenderer: React.FC<LegacyAssemblyRendererProps> = ({ 
               motions: [],
               hardware: [],
               warnings: [],
-              totals: { weight: 0, area: 0 }
+              totals: { slotCount: 1, pieceCount: 1, boardAreaM2: 0, hardwareCount: 0 }
             }
           };
           break;
@@ -91,7 +91,7 @@ export const LegacyAssemblyRenderer: React.FC<LegacyAssemblyRendererProps> = ({ 
             assembly: {
               id: 'stool-' + id,
               label: 'Banqueta',
-              envelope: { width: widthMm, height: heightMm, depth: depthMm },
+              envelope: { x: 0, y: 0, z: 0, width: widthMm, height: heightMm, depth: depthMm },
               pieces: [
                 { id: 'seat', label: 'Assento', box: { x: 0, y: heightMm - 40, z: 0, width: widthMm, height: 40, depth: depthMm }, partKind: 'tampo', substrate: 'madeira', thicknessMm: 40, grain: 'horizontal' },
                 { id: 'leg-1', label: 'Pé 1', box: { x: 0, y: 0, z: 0, width: 40, height: heightMm - 40, depth: 40 }, partKind: 'travessa', substrate: 'metal', thicknessMm: 40, grain: 'vertical' },
@@ -102,7 +102,7 @@ export const LegacyAssemblyRenderer: React.FC<LegacyAssemblyRendererProps> = ({ 
               motions: [],
               hardware: [],
               warnings: [],
-              totals: { weight: 0, area: 0 }
+              totals: { slotCount: 1, pieceCount: 5, boardAreaM2: 0, hardwareCount: 0 }
             }
           };
           break;
