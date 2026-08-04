@@ -38,10 +38,10 @@ const ExplorerItem: React.FC<ExplorerItemProps> = ({
   return (
     <div 
       className={cn(
-        "group flex items-center h-8 px-2 hover:bg-primary/10 cursor-pointer text-[11px] text-muted-foreground hover:text-foreground transition-colors",
-        level > 0 && "ml-3 border-l border-border/30"
+        "group flex items-center h-7 px-2 hover:bg-white/[0.03] cursor-pointer text-[10px] text-muted-foreground/80 hover:text-white transition-all duration-150 border-l-2 border-transparent",
+        level > 0 && "ml-4 border-l border-white/5"
       )}
-      style={{ paddingLeft: `${level * 8 + 8}px` }}
+      style={{ paddingLeft: `${level * 6 + 6}px` }}
     >
       <div className="flex items-center gap-1.5 flex-1 min-w-0">
         {hasChildren ? (
