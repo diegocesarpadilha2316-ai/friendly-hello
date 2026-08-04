@@ -59,12 +59,14 @@ export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
   addItem: (variant = 'one-door') => {
     const id = `item-${Math.random().toString(36).substr(2, 9)}`;
     const newItem = createDefaultCabinet(id, variant);
+    const { roomSpec } = get();
     
-    // Position it at the center of the room for now (in mm)
+    // Position it against the back wall (z = -depth/2)
+    // and centered (x = width/2)
     newItem.position = { 
-      x: get().roomSpec.widthMm / 2, 
+      x: roomSpec.widthMm / 2, 
       y: 0, 
-      z: -get().roomSpec.depthMm / 2 + newItem.depthMm / 2 
+      z: -roomSpec.depthMm / 2 + newItem.depthMm / 2 
     };
 
     set((state) => ({
@@ -72,9 +74,9 @@ export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
       selectedId: id
     }));
     
-    // Update selection state
     get().selectItem(id);
   },
+
 
   removeItem: (id) => set((state) => ({
     items: state.items.filter(i => i.id !== id),
