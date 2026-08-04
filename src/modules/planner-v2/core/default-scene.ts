@@ -52,7 +52,7 @@ export const generateKitchenFurniture = (): FurnitureItem[] => {
   tower.widthMm = 600;
   tower.heightMm = 2200;
   tower.depthMm = 600;
-  tower.position = { x: backWallXStart + 300, y: 0, z: backWallZ - 300 };
+  tower.position = { x: 300, y: 0, z: backWallZ - 300 };
   tower.parameters.bodyMaterialId = 'graphite';
   tower.parameters.frontMaterialId = 'graphite';
   items.push(tower);
@@ -115,7 +115,7 @@ export const generateKitchenFurniture = (): FurnitureItem[] => {
   island.widthMm = 1800;
   island.heightMm = 820;
   island.depthMm = 900;
-  island.position = { x: 2250, y: 0, z: 1500 };
+  island.position = { x: 2250, y: 0, z: 1200 };
   island.parameters.bodyMaterialId = 'white-matte';
   island.parameters.frontMaterialId = 'graphite';
   items.push(island);
@@ -125,7 +125,7 @@ export const generateKitchenFurniture = (): FurnitureItem[] => {
   islandTop.widthMm = 2000;
   islandTop.heightMm = 40;
   islandTop.depthMm = 1000;
-  islandTop.position = { x: 2250, y: 820, z: 1500 };
+  islandTop.position = { x: 2250, y: 820, z: 1200 };
   islandTop.parameters.bodyMaterialId = 'stone';
   islandTop.parameters.frontMaterialId = 'stone';
   items.push(islandTop);
@@ -136,7 +136,7 @@ export const generateKitchenFurniture = (): FurnitureItem[] => {
   stool1.widthMm = 400;
   stool1.heightMm = 650;
   stool1.depthMm = 400;
-  stool1.position = { x: 1800, y: 0, z: 800 };
+  stool1.position = { x: 1800, y: 0, z: 600 };
   items.push(stool1);
   
   const stool2 = createFurnitureItem('f-stool-2', 'kitchen-stool' as any, 'stool');
@@ -144,7 +144,7 @@ export const generateKitchenFurniture = (): FurnitureItem[] => {
   stool2.widthMm = 400;
   stool2.heightMm = 650;
   stool2.depthMm = 400;
-  stool2.position = { x: 2700, y: 0, z: 800 };
+  stool2.position = { x: 2700, y: 0, z: 600 };
   items.push(stool2);
   
   return items;

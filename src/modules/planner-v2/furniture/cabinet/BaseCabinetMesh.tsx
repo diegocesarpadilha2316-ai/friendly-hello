@@ -6,6 +6,7 @@ import { buildCabinet } from './build';
 import { MATERIALS } from '../defaults';
 import { PartBox } from './types';
 import { getMaterial } from '../../scene/Materials';
+import { mmToScene } from '../../core/units';
 
 interface BaseCabinetMeshProps {
   item: FurnitureItem;
@@ -44,16 +45,16 @@ export const BaseCabinetMesh: React.FC<BaseCabinetMeshProps> = ({ item, onSelect
         mesh.rotation.y = THREE.MathUtils.lerp(mesh.rotation.y, targetAngle, 0.1);
       } else if (part.animationType === 'slide') {
         const targetZ = item.isOpen ? (item.depthMm * 0.7) : 0;
-        const currentZ = mesh.position.z * 1000; // back to mm for easier comparison
+        const currentZ = mesh.position.z * 1000;
         const newZ = THREE.MathUtils.lerp(currentZ, part.position.z + targetZ, 0.1);
-        mesh.position.z = newZ / 1000;
+        mesh.position.z = mmToScene(newZ);
       }
     });
   });
 
   return (
     <group 
-      position={[item.position.x / 1000, item.position.y / 1000, item.position.z / 1000]}
+      position={[mmToScene(item.position.x), mmToScene(item.position.y), mmToScene(item.position.z)]}
       rotation={[0, item.rotation, 0]}
       onClick={(e) => {
         e.stopPropagation();
@@ -66,9 +67,9 @@ export const BaseCabinetMesh: React.FC<BaseCabinetMeshProps> = ({ item, onSelect
           part.materialType === 'body' && (
             <mesh 
               key={part.id}
-              position={[part.position.x / 1000 - item.widthMm / 2000, part.position.y / 1000, part.position.z / 1000]}
+              position={[mmToScene(part.position.x) - mmToScene(item.widthMm) / 2, mmToScene(part.position.y), mmToScene(part.position.z)]}
             >
-              <boxGeometry args={[part.width / 1000, part.height / 1000, part.depth / 1000]} />
+              <boxGeometry args={[mmToScene(part.width), mmToScene(part.height), mmToScene(part.depth)]} />
               <primitive object={bodyMaterial} attach="material" />
             </mesh>
           )
@@ -81,14 +82,14 @@ export const BaseCabinetMesh: React.FC<BaseCabinetMeshProps> = ({ item, onSelect
           part.materialType === 'front' && (
             <mesh 
               key={part.id}
-              position={[part.position.x / 1000 - item.widthMm / 2000, part.position.y / 1000, part.position.z / 1000]}
+              position={[mmToScene(part.position.x) - mmToScene(item.widthMm) / 2, mmToScene(part.position.y), mmToScene(part.position.z)]}
             >
-              <boxGeometry args={[part.width / 1000, part.height / 1000, part.depth / 1000]} />
+              <boxGeometry args={[mmToScene(part.width), mmToScene(part.height), mmToScene(part.depth)]} />
               <primitive object={frontMaterial} attach="material" />
               
               {/* Simple Handle Placeholder */}
               {item.parameters.handleType === 'simple' && (
-                <mesh position={[0, part.height / 4000, part.depth / 2000 + 0.01]}>
+                <mesh position={[0, mmToScene(part.height) / 4, mmToScene(part.depth) / 2 + 0.01]}>
                   <boxGeometry args={[0.1, 0.02, 0.02]} />
                   <meshStandardMaterial color="silver" />
                 </mesh>
@@ -100,8 +101,8 @@ export const BaseCabinetMesh: React.FC<BaseCabinetMeshProps> = ({ item, onSelect
 
       {/* Selection Highlight */}
       {item.selected && (
-        <mesh position={[0, (item.heightMm + item.parameters.kickplateHeightMm) / 2000, 0]}>
-          <boxGeometry args={[item.widthMm / 1000 + 0.02, (item.heightMm + item.parameters.kickplateHeightMm) / 1000 + 0.02, item.depthMm / 1000 + 0.02]} />
+        <mesh position={[0, mmToScene(item.heightMm + item.parameters.kickplateHeightMm) / 2, 0]}>
+          <boxGeometry args={[mmToScene(item.widthMm) + 0.02, mmToScene(item.heightMm + item.parameters.kickplateHeightMm) + 0.02, mmToScene(item.depthMm) + 0.02]} />
           <primitive object={selectedMaterial} attach="material" />
         </mesh>
       )}

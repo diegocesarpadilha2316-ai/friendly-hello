@@ -36,19 +36,22 @@ export function generateRoomGeometry(spec: RoomSpec): RoomResult {
     };
   };
 
+  const floorW = w + wt * 2;
+  const floorD = d + wt * 2;
+
   return {
-    floor: { width: w, depth: d, thickness: spec.floorThicknessMm / 1000 },
-    ceiling: { width: w, depth: d, thickness: spec.ceilingThicknessMm / 1000 },
+    floor: { width: floorW, depth: floorD, thickness: spec.floorThicknessMm / 1000 },
+    ceiling: { width: floorW, depth: floorD, thickness: spec.ceilingThicknessMm / 1000 },
     walls: [
-      createWall('front', w, [w / 2, h / 2, 0], [0, 0, 0]),
-      createWall('back', w, [w / 2, h / 2, d], [0, Math.PI, 0]),
-      createWall('left', d, [0, h / 2, d / 2], [0, Math.PI / 2, 0]),
-      createWall('right', d, [w, h / 2, d / 2], [0, -Math.PI / 2, 0])
+      createWall('front', w, [w / 2, h / 2, -wt], [0, 0, 0]),
+      createWall('back', w, [w / 2, h / 2, d + wt], [0, Math.PI, 0]),
+      createWall('left', d, [-wt, h / 2, d / 2], [0, Math.PI / 2, 0]),
+      createWall('right', d, [w + wt, h / 2, d / 2], [0, -Math.PI / 2, 0])
     ],
     baseboards: calculateBaseboards(spec),
     bounds: {
-      min: [0, 0, 0],
-      max: [w, h, d],
+      min: [-wt, 0, -wt],
+      max: [w + wt, h, d + wt],
     },
   };
 }
