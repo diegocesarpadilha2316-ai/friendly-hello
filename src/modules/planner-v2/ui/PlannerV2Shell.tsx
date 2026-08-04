@@ -74,7 +74,7 @@ export function PlannerV2Shell({
           </div>
 
           {!state.leftCollapsed && (
-            <div className="dioris-left-tabs">
+            <nav className="dioris-left-tabs" aria-label="Abas do Explorer">
               <button
                 type="button"
                 className={state.leftTab === "structure" ? "is-active" : ""}
@@ -103,18 +103,13 @@ export function PlannerV2Shell({
               >
                 Projeto
               </button>
-            </div>
+            </nav>
           )}
 
-          {state.leftCollapsed ? (
-            <div className="dioris-collapsed-icons">
-              <Box size={18} />
-              <Settings2 size={18} />
-            </div>
-          ) : (
+          {state.leftCollapsed ? null : (
             <ProjectExplorer
               items={tree}
-              collapsed={true}
+              collapsed={false}
               selectedId={selectedId}
               onSelect={(id) => {
                 patch({ selectedFurnitureId: id });
@@ -183,11 +178,7 @@ export function PlannerV2Shell({
             </button>
           </div>
 
-          {state.rightCollapsed ? (
-            <div className="dioris-collapsed-icons">
-              <Bot size={18} />
-            </div>
-          ) : (
+          {state.rightCollapsed ? null : (
             <CopilotPanel
               activeTab={state.rightTab}
               messages={messages}
