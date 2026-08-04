@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import type { ProjectTreeItem } from "./planner-ui";
 
-const icons = {
+const icons: Record<ProjectTreeItem['kind'], any> = {
   room: Box,
   wall: Square,
   floor: Layers3,
