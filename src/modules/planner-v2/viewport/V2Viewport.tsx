@@ -30,7 +30,7 @@ const SceneContent: React.FC = () => {
         baseboardThickness={roomSpec.baseboardThicknessMm}
       />
 
-      <FurnitureRenderer />
+      
 
       <ContactShadows 
         opacity={0.3} 

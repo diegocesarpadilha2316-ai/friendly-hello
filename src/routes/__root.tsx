@@ -105,21 +105,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", href: "/dioris-favicon.png", type: "image/png" },
       { rel: "apple-touch-icon", href: "/dioris-favicon.png" },
     ],
-  }),
-  loader: async () => {
-    // Bootstrap: fetch publishable Supabase config from server (SSR + client).
-    // Usamos um try/catch para evitar que falhas no bootstrap derrubem o shell.
-    try {
-      const config = await getPublicSupabaseConfig();
-      return { supabaseConfig: config };
-    } catch (err) {
-      console.error("BOOTSTRAP_LOADER_ERROR:", err);
-      return { 
-        supabaseConfig: { 
-          url: "https://placeholder-project.supabase.co", 
-          publishableKey: "placeholder-key" 
-        } 
-      };
+  loader: async () => ({ supabaseConfig: { url: "https://placeholder.supabase.co", publishableKey: "key" } }),
     }
   },
   shellComponent: RootShell,
