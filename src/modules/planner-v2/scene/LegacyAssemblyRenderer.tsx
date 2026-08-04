@@ -136,7 +136,7 @@ export const LegacyAssemblyRenderer: React.FC<LegacyAssemblyRendererProps> = ({ 
 
   return (
     <group 
-      position={[position.x / 1000, position.y / 1000, position.z / 1000]}
+      position={[item.position.x / 1000, item.position.y / 1000, item.position.z / 1000]}
       rotation={[0, rotation, 0]}
       onClick={(e) => {
         e.stopPropagation();

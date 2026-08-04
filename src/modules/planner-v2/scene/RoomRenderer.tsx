@@ -125,20 +125,48 @@ export const RoomRenderer: React.FC<RoomRendererProps> = ({
     return MATERIALS.floor_porcelain;
   }, [mode]);
 
+  const { camera } = useThree();
+  
+  // Logic to hide the wall between camera and center
+  const visibleWallIds = useMemo(() => {
+    if (mode !== 'presentation') return walls.map(w => w.id);
+    
+    const center = new THREE.Vector3(result.floor.width / 2, result.bounds.max[1] / 2, result.floor.depth / 2);
+    const camPos = camera.position.clone();
+    
+    // Simple heuristic: hide wall if camera is "outside" its plane looking in
+    // For presentation, we usually want to see the back wall and one side wall.
+    // If we're at Z > depth, hide 'back' wall. If Z < 0, hide 'front' wall.
+    // However, the user wants a "CAD/BIM" feel, so let's hide walls based on camera direction.
+    
+    const ids: string[] = ['back', 'left', 'right', 'front'];
+    
+    // In our coordinate system:
+    // front is at Z=0, back is at Z=depth
+    // left is at X=0, right is at X=width
+    
+    if (camPos.z < 0) ids.splice(ids.indexOf('front'), 1);
+    if (camPos.z > result.floor.depth) ids.splice(ids.indexOf('back'), 1);
+    if (camPos.x < 0) ids.splice(ids.indexOf('left'), 1);
+    if (camPos.x > result.floor.width) ids.splice(ids.indexOf('right'), 1);
+    
+    return ids;
+  }, [camera.position, walls, mode, result]);
+
   return (
     <group>
-      {/* Floor */}
+      {/* Floor - Positioned so top is at Y=0 */}
       <mesh 
-        position={[floor.width / 2, -floor.thickness / 2, floor.depth / 2]}
+        position={[result.floor.width / 2, -result.floor.thickness / 2, result.floor.depth / 2]}
         receiveShadow
       >
-        <boxGeometry args={[floor.width, floor.thickness, floor.depth]} />
+        <boxGeometry args={[result.floor.width, result.floor.thickness, result.floor.depth]} />
         <primitive object={floorMaterial} attach="material" />
       </mesh>
 
       {/* Ceiling */}
-      {showCeiling && (
-        <mesh position={[ceiling.width / 2, result.bounds.max[1] + ceiling.thickness / 2, ceiling.depth / 2]}>
+      {showCeiling && mode === 'presentation' && camera.position.y < result.bounds.max[1] && (
+        <mesh position={[result.floor.width / 2, result.bounds.max[1] + ceiling.thickness / 2, result.floor.depth / 2]}>
           <boxGeometry args={[ceiling.width, ceiling.thickness, ceiling.depth]} />
           <primitive object={MATERIALS.ceiling} attach="material" />
           
@@ -165,20 +193,23 @@ export const RoomRenderer: React.FC<RoomRendererProps> = ({
       )}
 
       {/* Walls */}
-      {walls.map((wall) => (
-        <React.Fragment key={wall.id}>
-          <WallMesh wall={wall} mode={mode} />
-          {/* Architectural elements */}
-          {wall.openings.map((op, idx) => {
-            const isDoor = op.y === 0;
-            return isDoor ? (
-              <DoorMesh key={`door-${idx}`} wall={wall} opening={op} />
-            ) : (
-              <WindowMesh key={`win-${idx}`} wall={wall} opening={op} />
-            );
-          })}
-        </React.Fragment>
-      ))}
+      {walls.map((wall) => {
+        const isVisible = visibleWallIds.includes(wall.id);
+        return (
+          <React.Fragment key={wall.id}>
+            <WallMesh wall={wall} mode={mode} visible={isVisible} />
+            {/* Architectural elements only visible if wall is visible */}
+            {isVisible && wall.openings.map((op, idx) => {
+              const isDoor = op.y === 0;
+              return isDoor ? (
+                <DoorMesh key={`door-${idx}`} wall={wall} opening={op} />
+              ) : (
+                <WindowMesh key={`win-${idx}`} wall={wall} opening={op} />
+              );
+            })}
+          </React.Fragment>
+        );
+      })}
 
       {/* Baseboards */}
       {showBaseboard && baseboards.map((bb, idx) => {

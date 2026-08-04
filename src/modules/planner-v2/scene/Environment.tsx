@@ -10,23 +10,60 @@ import {
 } from '@react-three/drei';
 import * as THREE from 'three';
 import { usePlannerV2Store } from '../core/store';
+import { mmToScene } from '../core/units';
 
 export const DiorisEnvironment: React.FC = () => {
   const { scene, camera } = useThree();
   const viewMode = usePlannerV2Store(state => state.viewMode);
   const controlsRef = useRef<any>(null);
 
-  // Focus camera on furniture when needed
-  // This can be expanded with specific actions from the store
+  const roomSpec = usePlannerV2Store(state => state.roomSpec);
+  const cameraAction = usePlannerV2Store(state => state.cameraAction);
+  const setCameraAction = usePlannerV2Store(state => state.setCameraAction);
+
+  useEffect(() => {
+    if (!cameraAction || !controlsRef.current) return;
+
+    const w = mmToScene(roomSpec.widthMm);
+    const d = mmToScene(roomSpec.depthMm);
+    const h = mmToScene(roomSpec.heightMm);
+    const center = new THREE.Vector3(w / 2, 0.8, d / 2);
+
+    switch (cameraAction) {
+      case 'room':
+        camera.position.set(w * 1.5, h * 0.8, d * 1.5);
+        controlsRef.current.target.copy(center);
+        break;
+      case 'perspective':
+        camera.position.set(w * 1.2, h * 0.6, d * 1.2);
+        controlsRef.current.target.copy(center);
+        break;
+      case 'front':
+        camera.position.set(w / 2, h * 0.6, d * 1.8);
+        controlsRef.current.target.copy(center);
+        break;
+      case 'top':
+        camera.position.set(w / 2, h * 2.5, d / 2);
+        controlsRef.current.target.set(w / 2, 0, d / 2);
+        break;
+      case 'side':
+        camera.position.set(w * 1.8, h * 0.6, d / 2);
+        controlsRef.current.target.copy(center);
+        break;
+    }
+    
+    controlsRef.current.update();
+    setCameraAction(null);
+  }, [cameraAction, roomSpec, camera, setCameraAction]);
   
   return (
     <>
       <PerspectiveCamera 
         makeDefault 
-        position={[4, 2, 6]} 
+        position={[mmToScene(roomSpec.widthMm) * 1.2, 1.6, mmToScene(roomSpec.depthMm) * 1.2]} 
         fov={40} 
-        near={0.1}
-        far={50}
+        near={0.05}
+        far={100}
       />
       
       {/* Lighting Rig */}
@@ -80,7 +117,7 @@ export const DiorisEnvironment: React.FC = () => {
         maxDistance={15}
         enableDamping
         dampingFactor={0.05}
-        target={[0, 0.8, 0]} 
+        target={[mmToScene(roomSpec.widthMm) / 2, 0.8, mmToScene(roomSpec.depthMm) / 2]} 
       />
 
       {/* Global shadows optimization */}
