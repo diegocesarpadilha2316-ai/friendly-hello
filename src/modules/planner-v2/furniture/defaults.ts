@@ -1,4 +1,4 @@
-import { FurnitureItem, CabinetParameters } from './types';
+import { FurnitureItem, CabinetParameters, FurnitureFamily } from './types';
 
 export const DEFAULT_CABINET_PARAMS: CabinetParameters = {
   thicknessMm: 18,
@@ -41,6 +41,32 @@ export const createDefaultCabinet = (id: string, variant: string = 'one-door'): 
     widthMm: 800,
     heightMm: 720, // height without kickplate
     depthMm: 560,
+    parameters: params,
+    visible: true,
+    selected: false,
+    isOpen: false,
+    openAmount: 0,
+  };
+};
+
+export const createFurnitureItem = (id: string, family: FurnitureFamily, variant: string = 'default'): FurnitureItem => {
+  if (family === 'kitchen-base-cabinet') {
+    return createDefaultCabinet(id, variant);
+  }
+
+  // Fallback for other families (we will map these to legacy parametric families)
+  const params = { ...DEFAULT_CABINET_PARAMS };
+  
+  return {
+    id,
+    family,
+    variant,
+    name: `${family} ${variant}`,
+    position: { x: 0, y: 0, z: 0 },
+    rotation: 0,
+    widthMm: 1200,
+    heightMm: 2100,
+    depthMm: 600,
     parameters: params,
     visible: true,
     selected: false,
