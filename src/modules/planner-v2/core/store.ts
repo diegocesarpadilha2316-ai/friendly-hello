@@ -37,6 +37,8 @@ interface PlannerV2State {
   selectItem: (id: string | null) => void;
   duplicateItem: (id: string) => void;
   toggleAnimation: () => void;
+  setCameraAction: (action: string | null) => void;
+  cameraAction: string | null;
 }
 
 export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
@@ -52,6 +54,9 @@ export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
   
   items: generateKitchenFurniture(),
   selectedId: null,
+  cameraAction: null,
+  
+  setCameraAction: (action) => set({ cameraAction: action }),
 
   setRoomSpec: (updates) => {
     const newSpec = { ...get().roomSpec, ...updates };
