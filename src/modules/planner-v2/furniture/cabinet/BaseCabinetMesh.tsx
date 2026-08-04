@@ -30,7 +30,8 @@ export const BaseCabinetMesh: React.FC<BaseCabinetMeshProps> = ({ item, onSelect
     new THREE.MeshStandardMaterial({ color: '#8B5CF6', transparent: true, opacity: 0.3 }), []);
 
   // Smooth animation for doors/drawers
-  useFrame(() => {
+  const useFrameSafe = typeof window !== "undefined" ? useFrame : () => {};
+  useFrameSafe(() => {
     if (!frontsRef.current) return;
     
     assembly.parts.forEach((part: PartBox, index: number) => {
