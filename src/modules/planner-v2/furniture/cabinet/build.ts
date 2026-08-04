@@ -14,8 +14,7 @@ export const buildCabinet = (item: FurnitureItem): CabinetAssembly => {
 
   const parts: PartBox[] = [];
 
-  // 1. Sides (Laterais) - Inside the top/bottom usually, but here we'll do sides full height and base/tops between them
-  // Correction: Sides are heightMm - kh, base is between them.
+  // 1. Sides (Laterais)
   const sideHeight = heightMm - kh;
   
   // Left Side
@@ -92,7 +91,7 @@ export const buildCabinet = (item: FurnitureItem): CabinetAssembly => {
     type: 'panel'
   });
 
-  // 5. Back (Fundo) - recessed into sides/base or just applied? Let's apply inside.
+  // 5. Back (Fundo)
   parts.push({
     id: `${item.id}-back`,
     name: 'Fundo',
@@ -106,11 +105,11 @@ export const buildCabinet = (item: FurnitureItem): CabinetAssembly => {
 
   // 6. Shelf (Prateleira)
   if (shelfCount > 0) {
-    const shelfDepth = depthMm - 20; // set back a bit
+    const shelfDepth = depthMm - 20;
     parts.push({
       id: `${item.id}-shelf`,
       name: 'Prateleira',
-      width: baseWidth - 2, // 1mm clearance each side
+      width: baseWidth - 2,
       height: t,
       depth: shelfDepth,
       position: { x: widthMm/2, y: kh + sideHeight/2, z: -10 },
@@ -121,7 +120,7 @@ export const buildCabinet = (item: FurnitureItem): CabinetAssembly => {
 
   // 7. Doors and Drawers
   const frontDepth = depthMm/2 + t/2;
-  const gap = 2; // gap between fronts
+  const gap = 2;
 
   if (doorCount > 0 && drawerCount === 0) {
     const doorWidth = (widthMm - (doorCount + 1) * gap) / doorCount;
@@ -129,7 +128,6 @@ export const buildCabinet = (item: FurnitureItem): CabinetAssembly => {
     
     for (let i = 0; i < doorCount; i++) {
       const xPos = gap + doorWidth/2 + i * (doorWidth + gap);
-      
       parts.push({
         id: `${item.id}-door-${i}`,
         name: `Porta ${i+1}`,
@@ -141,21 +139,14 @@ export const buildCabinet = (item: FurnitureItem): CabinetAssembly => {
         type: 'door',
         isAnimated: true,
         animationType: 'hinge',
-        animationAxis: 'y',
-        animationOrigin: { 
-          x: xPos - (i === 0 ? doorWidth/2 : -doorWidth/2), 
-          y: kh + sideHeight/2, 
-          z: frontDepth 
-        }
+        animationAxis: 'y'
       });
     }
   } else if (drawerCount > 0 && doorCount === 0) {
     const availableHeight = sideHeight - gap * (drawerCount + 1);
     const drHeight = availableHeight / drawerCount;
-    
     for (let i = 0; i < drawerCount; i++) {
       const yPos = kh + gap + drHeight/2 + i * (drHeight + gap);
-      
       parts.push({
         id: `${item.id}-drawer-${i}`,
         name: `Gaveta ${i+1}`,
@@ -172,7 +163,7 @@ export const buildCabinet = (item: FurnitureItem): CabinetAssembly => {
     }
   } else if (drawerCount > 0 && doorCount > 0) {
     // Top drawer, Bottom door
-    const drHeight = 150; // Standard top drawer height
+    const drHeight = 150;
     const doorHeight = sideHeight - drHeight - 3 * gap;
     
     // Drawer
@@ -204,31 +195,6 @@ export const buildCabinet = (item: FurnitureItem): CabinetAssembly => {
       animationType: 'hinge',
       animationAxis: 'y'
     });
-  }
-
-
-  if (drawerCount > 0) {
-    // Basic logic for drawers
-    const availableHeight = sideHeight - gap * (drawerCount + 1);
-    const drHeight = availableHeight / drawerCount;
-    
-    for (let i = 0; i < drawerCount; i++) {
-      const yPos = kh + gap + drHeight/2 + i * (drHeight + gap);
-      
-      parts.push({
-        id: `${item.id}-drawer-${i}`,
-        name: `Gaveta ${i+1}`,
-        width: widthMm - 2*gap,
-        height: drHeight,
-        depth: t,
-        position: { x: widthMm/2, y: yPos, z: frontDepth },
-        materialType: 'front',
-        type: 'drawer-front',
-        isAnimated: true,
-        animationType: 'slide',
-        animationAxis: 'z'
-      });
-    }
   }
 
   return { parts };
