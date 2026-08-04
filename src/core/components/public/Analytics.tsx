@@ -11,6 +11,7 @@ const STORAGE_KEY = "dioris.cookie-consent.v1";
 const SCRIPT_ID = "plausible-analytics";
 
 function readChoice(): string | null {
+  if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;

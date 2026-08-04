@@ -106,9 +106,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
   }),
   loader: async () => {
-    // Bootstrap: fetch publishable Supabase config from server (SSR + client).
-    const config = await getPublicSupabaseConfig();
-    return { supabaseConfig: config };
+    try {
+      const config = await getPublicSupabaseConfig();
+      return { supabaseConfig: config };
+    } catch (err) {
+      console.error("BOOTSTRAP_LOADER_ERROR:", err);
+      return { 
+        supabaseConfig: { 
+          url: "https://placeholder-project.supabase.co", 
+          publishableKey: "placeholder-key" 
+        } 
+      };
+    }
   },
   shellComponent: RootShell,
   component: RootComponent,

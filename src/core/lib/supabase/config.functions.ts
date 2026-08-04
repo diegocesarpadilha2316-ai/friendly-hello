@@ -7,17 +7,17 @@ import { createServerFn } from "@tanstack/react-start";
  */
 export const getPublicSupabaseConfig = createServerFn({ method: "GET" }).handler(
   async () => {
-    const url = process.env.EXTERNAL_SUPABASE_URL;
-    const publishableKey = process.env.EXTERNAL_SUPABASE_PUBLISHABLE_KEY;
+    const url = process.env.EXTERNAL_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const publishableKey = process.env.EXTERNAL_SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 
     if (!url || !publishableKey) {
-      console.error("Supabase config missing:", { url: !!url, key: !!publishableKey });
-      // Fallback para desenvolvimento local ou falha de injecção
-      return { 
-        url: url || "http://localhost:54321", 
-        publishableKey: publishableKey || "placeholder-key" 
-      };
+      console.warn("Supabase config partially missing, checking fallback logic...");
     }
-    return { url, publishableKey };
+
+    // Retornar objeto explícito para evitar erros de desestruturação
+    return { 
+      url: url || "https://placeholder-project.supabase.co", 
+      publishableKey: publishableKey || "placeholder-key" 
+    };
   },
 );

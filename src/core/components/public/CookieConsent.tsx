@@ -11,6 +11,7 @@ export function CookieConsent() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
     try {
       const v = localStorage.getItem(STORAGE_KEY);
       if (!v) setVisible(true);
