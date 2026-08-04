@@ -8,7 +8,7 @@ import { InspectorPanel } from './panels/InspectorPanel';
 
 export const PlannerV2Layout: React.FC = () => {
   return (
-    <div className="flex flex-col h-screen w-full bg-background overflow-hidden text-foreground selection:bg-primary/30 antialiased">
+    <div className="flex flex-col h-screen w-full bg-[#0a0a0c] overflow-hidden text-foreground selection:bg-primary/30 antialiased font-sans">
       {/* Top Navigation */}
       <TopBar />
 
@@ -17,7 +17,7 @@ export const PlannerV2Layout: React.FC = () => {
         <SideNav />
 
         {/* Center Viewport: The "Big" Working Area */}
-        <div className="flex-1 relative bg-muted/5">
+        <div className="flex-1 relative bg-[#0d0d0f] shadow-inner">
           <V2Viewport />
         </div>
 

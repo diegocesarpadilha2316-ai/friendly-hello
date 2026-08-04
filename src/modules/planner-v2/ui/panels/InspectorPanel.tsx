@@ -10,7 +10,7 @@ export const InspectorPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'ia' | 'props' | 'materials' | 'hardware' | 'light'>('ia');
 
   return (
-    <div className="w-80 h-full border-l bg-card flex flex-col shrink-0 select-none">
+    <div className="w-96 h-full border-l bg-card/80 backdrop-blur-md flex flex-col shrink-0 select-none">
       <div className="flex border-b">
         {[
           { id: 'ia', icon: MessageSquare, label: 'IA' },

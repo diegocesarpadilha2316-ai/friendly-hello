@@ -5,11 +5,14 @@ import {
 } from 'lucide-react';
 
 export const TopBar: React.FC = () => (
-  <header className="h-12 bg-card border-b flex items-center px-4 justify-between shrink-0 select-none">
+  <header className="h-14 bg-card/90 backdrop-blur-md border-b flex items-center px-6 justify-between shrink-0 select-none z-10 shadow-sm">
     <div className="flex items-center gap-4">
       <div className="flex items-center gap-2">
-        <span className="font-bold text-primary">DIORIS</span>
-        <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Planner V2</span>
+        <span className="font-black text-primary tracking-tighter text-lg uppercase">DIORIS</span>
+        <div className="flex flex-col -gap-1">
+          <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest">Enterprise</span>
+          <span className="text-[9px] text-primary/70 font-bold uppercase tracking-widest">Planner V2</span>
+        </div>
       </div>
       <div className="h-4 w-[1px] bg-border mx-2" />
       <div className="flex items-center gap-1">
