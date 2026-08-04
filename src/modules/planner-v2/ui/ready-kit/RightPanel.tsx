@@ -22,7 +22,7 @@ export function RightPanel() {
   const updateSelected = usePlannerStore((s) => s.updateSelected);
   const [draft, setDraft] = useState("");
 
-  const selected = furniture.find((item) => item.id === selectedId);
+  const selected = furniture.find((item: any) => item.id === selectedId);
 
   return (
     <aside className={`right-panel ${collapsed ? "collapsed" : ""}`}>
@@ -54,7 +54,7 @@ export function RightPanel() {
             {rightTab === "chat" && (
               <div className="chat">
                 <div className="messages">
-                  {messages.map((message) => (
+                  {messages.map((message: any) => (
                     <article key={message.id} className={`message ${message.role}`}>
                       <p>{message.content}</p>
                       <time>{message.time}</time>

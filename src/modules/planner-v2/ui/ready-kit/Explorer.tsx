@@ -65,7 +65,7 @@ export function Explorer() {
           {!collapsed && <span className="grow" />}
         </div>
 
-        {furniture.map((item) => (
+        {furniture.map((item: any) => (
           <button
             type="button"
             className={`tree-row furniture child ${selectedId === item.id ? "selected" : ""}`}
