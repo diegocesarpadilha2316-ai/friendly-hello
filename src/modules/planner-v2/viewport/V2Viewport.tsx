@@ -30,7 +30,8 @@ const SceneContent: React.FC = () => {
         baseboardThickness={roomSpec.baseboardThicknessMm}
       />
 
-      
+      <FurnitureRenderer />
+
 
       <ContactShadows 
         opacity={0.3} 
@@ -51,7 +52,7 @@ const SceneContent: React.FC = () => {
 
 export const V2Viewport: React.FC = () => {
   return (
-    <div className="w-full h-full bg-[#f4f4f4]">
+    <div className="w-full h-full bg-[#121214]">
       <Suspense fallback={<div className="flex items-center justify-center h-full text-muted-foreground">CARREGANDO...</div>}>
         <Canvas shadows gl={{ antialias: true }}>
           <SceneContent />
