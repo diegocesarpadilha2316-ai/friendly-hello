@@ -6,7 +6,7 @@ import { usePlannerV2Store } from "../../core/store";
 // Seguindo a ETAPA B, o objetivo é que a interface use os dados reais.
 
 export const usePlannerStore = create<any>((set, get) => ({
-  // UI State (Sincronizado com PlannerV2Store quando possível)
+  // UI State
   leftCollapsed: false,
   rightCollapsed: false,
   mobileDrawerOpen: false,
@@ -17,23 +17,9 @@ export const usePlannerStore = create<any>((set, get) => ({
   gridVisible: false,
   lightsEnabled: true,
   
-  // Reais do V2
-  get furniture() { 
-    // Mapeia do FurnitureItem real para o FurnitureItem da UI
-    return usePlannerV2Store.getState().items.map(item => ({
-      id: item.id,
-      name: item.name,
-      kind: item.family === 'kitchen-base-cabinet' ? 'base' : 'tower', // mapeamento aproximado para a UI demo
-      visible: item.visible,
-      selected: item.selected,
-      position: [item.position.x / 1000, item.position.y / 1000, item.position.z / 1000],
-      rotationY: item.rotation,
-      size: [item.widthMm / 1000, item.heightMm / 1000, item.depthMm / 1000],
-      material: item.parameters.bodyMaterialId || 'taupe'
-    }));
-  },
-
-  get selectedId() { return usePlannerV2Store.getState().selectedId; },
+  // Reais do V2 - transformados em estado plano para evitar getters circulares/loops
+  furniture: [],
+  selectedId: null,
 
   messages: [
     {
@@ -100,11 +86,36 @@ export const usePlannerStore = create<any>((set, get) => ({
   }
 }));
 
-// Sincronização reativa para garantir que mudanças no Store V2 reflitam na UI
-usePlannerV2Store.subscribe((state) => {
-  usePlannerStore.setState({ 
-    // Trigger re-render by updating a dummy value if needed, 
-    // or rely on the fact that 'get' property will be re-evaluated
-    _furnitureUpdateToken: Date.now() 
-  });
-});
+// Sincronização reativa otimizada
+const syncFromV2 = () => {
+  const v2State = usePlannerV2Store.getState();
+  
+  // Mapeia apenas o necessário para a UI
+  const mappedFurniture = v2State.items.map(item => ({
+    id: item.id,
+    name: item.name,
+    kind: item.family === 'kitchen-base-cabinet' ? 'base' : 'tower',
+    visible: item.visible,
+    selected: item.selected,
+    position: [item.position.x / 1000, item.position.y / 1000, item.position.z / 1000],
+    rotationY: item.rotation,
+    size: [item.widthMm / 1000, item.heightMm / 1000, item.depthMm / 1000],
+    material: item.parameters.bodyMaterialId || 'taupe'
+  }));
+
+  // Compara para evitar atualizações idênticas (evita loops se houver algum subscribe circular)
+  const currentStore = usePlannerStore.getState();
+  if (
+    JSON.stringify(currentStore.furniture) !== JSON.stringify(mappedFurniture) ||
+    currentStore.selectedId !== v2State.selectedId
+  ) {
+    usePlannerStore.setState({ 
+      furniture: mappedFurniture,
+      selectedId: v2State.selectedId
+    });
+  }
+};
+
+// Inicialização e Inscrição
+syncFromV2();
+usePlannerV2Store.subscribe(syncFromV2);
