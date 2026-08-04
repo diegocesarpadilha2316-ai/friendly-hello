@@ -41,7 +41,7 @@ export const InspectorPanel: React.FC = () => {
             className={cn(
               "flex items-center gap-2 px-4 whitespace-nowrap text-[10px] font-bold uppercase tracking-wider transition-all border-b-2 h-full",
               activeTab === tab.id 
-                ? "border-primary text-primary bg-primary/5 shadow-[0_0_15px_-5px_rgba(139,92,246,0.3)]" 
+                ? "border-primary text-primary bg-primary/10 shadow-[0_0_20px_-5px_rgba(99,102,241,0.4)]" 
                 : "border-transparent text-muted-foreground hover:text-foreground hover:bg-white/5"
             )}
           >
@@ -119,7 +119,8 @@ export const InspectorPanel: React.FC = () => {
               <div className="relative group">
                 <textarea 
                   placeholder="Peça algo ao IA Copiloto..."
-                  className="w-full bg-[#1c1c24] border border-white/5 rounded-xl p-4 pr-12 text-[11px] min-h-[100px] focus:outline-none focus:ring-1 focus:ring-primary/40 transition-all resize-none placeholder:text-muted-foreground/30"
+                  className="w-full bg-[#1c1c24] border border-[#2A2D3A] rounded-xl p-4 pr-12 text-[11px] min-h-[100px] focus:outline-none focus:ring-1 focus:ring-primary/40 transition-all resize-none placeholder:text-muted-foreground/30 text-[#F8FAFC]"
+
                 />
                 <button className="absolute bottom-4 right-4 p-2 rounded-lg bg-primary text-white shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
                   <Send className="w-3.5 h-3.5" />

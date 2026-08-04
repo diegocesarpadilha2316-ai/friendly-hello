@@ -26,8 +26,8 @@ interface PlannerV2State {
   setUseViewportNext: (use: boolean) => void;
   setLeftPanelCollapsed: (collapsed: boolean) => void;
   setRightPanelCollapsed: (collapsed: boolean) => void;
-  setLeftPanelWidth: (width: number) => void;
-  setRightPanelWidth: (width: number) => void;
+  setLeftPanelWidth: (width: any) => void;
+  setRightPanelWidth: (width: any) => void;
   
   // Furniture Actions
   addItem: (family?: FurnitureFamily, variant?: string) => void;
