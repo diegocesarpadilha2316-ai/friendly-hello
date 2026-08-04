@@ -10,7 +10,7 @@ import {
   Palette, 
   Zap, 
   Wrench,
-  WallTower,
+  Square as WallTower,
   Home,
   Package,
   Cpu

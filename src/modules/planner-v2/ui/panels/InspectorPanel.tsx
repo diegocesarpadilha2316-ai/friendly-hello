@@ -1,66 +1,136 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { 
-  MessageSquare, Info, Palette, Wrench, Sun, Settings2, Send, Zap
+  MessageSquare, 
+  Info, 
+  Palette, 
+  Wrench, 
+  Sun, 
+  Send, 
+  Zap,
+  Maximize2,
+  ChevronRight,
+  Sparkles,
+  History,
+  Settings2
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { PropertiesPanel } from '../PropertiesPanel';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Button } from '@/components/ui/button';
+import { usePlannerV2Store } from '../../core/store';
 
 export const InspectorPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'ia' | 'props' | 'materials' | 'hardware' | 'light'>('ia');
+  const { items, selectedId } = usePlannerV2Store();
+  const selectedItem = items.find(i => i.id === selectedId);
 
   return (
-    <div className="w-96 h-full border-l bg-card/80 backdrop-blur-md flex flex-col shrink-0 select-none">
-      <div className="flex border-b">
+    <div className="h-full flex flex-col bg-[#0f0f12] select-none border-l border-border/50">
+      {/* Tabs */}
+      <div className="flex border-b border-border/30 bg-black/20 h-10 overflow-x-auto no-scrollbar">
         {[
           { id: 'ia', icon: MessageSquare, label: 'IA Copiloto' },
           { id: 'props', icon: Info, label: 'Inspetor' },
-          { id: 'materials', icon: Palette, label: 'Acabamentos' },
-          { id: 'hardware', icon: Wrench, label: 'Engenharia' },
+          { id: 'materials', icon: Palette, label: 'Materiais' },
+          { id: 'hardware', icon: Wrench, label: 'Ferragens' },
           { id: 'light', icon: Sun, label: 'Luz' },
         ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
-            className={`flex-1 py-3 text-[9px] font-bold uppercase tracking-tighter transition-colors border-b-2 ${
-              activeTab === tab.id ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-muted-foreground hover:bg-muted/50'
-            }`}
+            className={cn(
+              "flex items-center gap-2 px-4 whitespace-nowrap text-[10px] font-bold uppercase tracking-wider transition-all border-b-2 h-full",
+              activeTab === tab.id 
+                ? "border-primary text-primary bg-primary/5 shadow-[0_0_15px_-5px_rgba(139,92,246,0.3)]" 
+                : "border-transparent text-muted-foreground hover:text-foreground hover:bg-white/5"
+            )}
           >
-            {tab.label}
+            <tab.icon className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">{tab.label}</span>
           </button>
         ))}
       </div>
 
-      <div className="flex-1 overflow-hidden flex flex-col">
+      <div className="flex-1 overflow-hidden flex flex-col relative">
         {activeTab === 'ia' && (
-          <div className="flex flex-col h-full bg-black/10">
-            <div className="p-4 border-b bg-muted/20">
-              <div className="flex items-center gap-2 mb-1">
-                <Zap className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Dioris AI Assistant</span>
+          <div className="flex flex-col h-full">
+            {/* IA Context Info */}
+            <div className="px-4 py-2 bg-primary/5 border-b border-primary/10 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(139,92,246,0.8)]" />
+                <span className="text-[10px] font-bold text-primary/80 uppercase tracking-widest">IA Analisando Projeto</span>
               </div>
-              <p className="text-[9px] text-muted-foreground leading-tight">
-                Assistente profissional de projeto e marcenaria.
-              </p>
+              <span className="text-[9px] text-muted-foreground uppercase font-bold tracking-tighter">GPT-4 Vision</span>
             </div>
-            
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4">
-                <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 text-[11px] leading-relaxed text-primary-foreground/90">
-                  Olá! Sou o especialista Dioris. Posso ajudar você a planejar o ambiente, calcular peças ou sugerir materiais. Como posso auxiliar hoje?
+
+            <ScrollArea className="flex-1">
+              <div className="p-4 space-y-6">
+                {/* AI Suggestion Card */}
+                <div className="relative group">
+                   <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/30 to-blue-500/30 rounded-lg blur opacity-30 group-hover:opacity-50 transition duration-1000"></div>
+                   <div className="relative bg-[#16161d] border border-white/5 rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Sparkles className="w-4 h-4 text-primary" />
+                        <span className="text-[11px] font-bold uppercase text-white/90">Sugestão de Layout</span>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground leading-relaxed mb-4">
+                        Analisei sua cozinha. Sugiro adicionar iluminação embutida no balcão superior para realçar a bancada de quartzo. Posso aplicar agora?
+                      </p>
+                      <div className="flex gap-2">
+                        <Button size="sm" className="h-7 text-[10px] font-bold uppercase tracking-wider bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30">
+                          Sim, Aplicar
+                        </Button>
+                        <Button size="sm" variant="ghost" className="h-7 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          Ignorar
+                        </Button>
+                      </div>
+                   </div>
+                </div>
+
+                {/* Chat History Placeholder */}
+                <div className="flex flex-col gap-4 opacity-50">
+                   <div className="flex items-start gap-3 justify-end">
+                      <div className="bg-primary/10 border border-primary/20 rounded-2xl rounded-tr-none px-4 py-2 max-w-[80%]">
+                         <p className="text-[11px] text-primary-foreground/90">O orçamento subiu muito com o LED?</p>
+                      </div>
+                   </div>
+                   <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                        <Zap className="w-3 h-3 text-primary" />
+                      </div>
+                      <div className="bg-white/5 border border-white/5 rounded-2xl rounded-tl-none px-4 py-2 max-w-[80%]">
+                         <p className="text-[11px] text-muted-foreground">Apenas R$ 340. O valor agregado visual é excelente para este projeto.</p>
+                      </div>
+                   </div>
                 </div>
               </div>
             </ScrollArea>
 
-            <div className="p-4 border-t bg-muted/20">
-              <div className="relative">
+            {/* Input Area */}
+            <div className="p-4 border-t border-border/30 bg-black/20">
+              <div className="flex flex-wrap gap-2 mb-3">
+                <button className="px-3 py-1 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold uppercase text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all flex items-center gap-1.5">
+                  <Sun className="w-3 h-3" /> Iluminação
+                </button>
+                <button className="px-3 py-1 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold uppercase text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all flex items-center gap-1.5">
+                   + Prateleira
+                </button>
+              </div>
+              <div className="relative group">
                 <textarea 
-                  placeholder="Descreva sua intenção..."
-                  className="w-full bg-background border border-border/50 rounded-md p-3 text-xs min-h-[80px] focus:outline-none focus:ring-1 focus:ring-primary/50 resize-none"
+                  placeholder="Peça algo ao IA Copiloto..."
+                  className="w-full bg-[#1c1c24] border border-white/5 rounded-xl p-4 pr-12 text-[11px] min-h-[100px] focus:outline-none focus:ring-1 focus:ring-primary/40 transition-all resize-none placeholder:text-muted-foreground/30"
                 />
-                <Button size="icon" className="absolute bottom-2 right-2 h-7 w-7 rounded-full">
-                  <Send className="w-3 h-3" />
-                </Button>
+                <button className="absolute bottom-4 right-4 p-2 rounded-lg bg-primary text-white shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                  <Send className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div className="mt-3 flex items-center justify-between px-1">
+                <div className="flex items-center gap-1.5">
+                   <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
+                   <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Copilot Ativo</span>
+                </div>
+                <span className="text-[9px] font-bold text-primary uppercase tracking-widest">182 créditos restantes</span>
               </div>
             </div>
           </div>
@@ -68,14 +138,28 @@ export const InspectorPanel: React.FC = () => {
 
         {activeTab === 'props' && (
           <ScrollArea className="h-full">
+            <div className="p-4 border-b border-border/30 bg-black/10 flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase tracking-widest text-white/70">Propriedades</span>
+              {selectedItem && (
+                <div className="flex items-center gap-1 text-[9px] font-bold uppercase text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
+                  <Zap className="w-3 h-3" />
+                  Paramétrico
+                </div>
+              )}
+            </div>
             <PropertiesPanel />
           </ScrollArea>
         )}
 
         {activeTab !== 'ia' && activeTab !== 'props' && (
-          <div className="flex flex-col items-center justify-center h-full text-muted-foreground gap-2 opacity-30">
-            <Settings2 className="w-8 h-8" />
-            <span className="text-[9px] uppercase tracking-widest">Painel em Desenvolvimento</span>
+          <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-8 text-center">
+            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 border border-white/5">
+               <Settings2 className="w-8 h-8 opacity-40" />
+            </div>
+            <span className="text-[10px] uppercase tracking-[0.2em] font-black mb-2">Painel Técnico</span>
+            <p className="text-[11px] opacity-40 leading-relaxed uppercase tracking-tighter">
+               Este módulo de configuração de {activeTab} está sendo carregado da engine de engenharia Dioris.
+            </p>
           </div>
         )}
       </div>
