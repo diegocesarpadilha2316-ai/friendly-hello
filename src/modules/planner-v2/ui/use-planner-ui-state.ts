@@ -25,7 +25,7 @@ export function usePlannerUIState(initial?: Partial<PlannerUIState>) {
   });
 
   const patch = (next: Partial<PlannerUIState>) =>
-    setState((current) => ({ ...current, ...next }));
+    setState((current: PlannerUIState) => ({ ...current, ...next }));
 
   return { state, patch };
 }
