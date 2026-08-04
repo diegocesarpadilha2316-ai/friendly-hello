@@ -1,0 +1,110 @@
+import { create } from "zustand";
+import type { ChatMessage, FurnitureItem, RightTab, SheetHeight, ToolMode } from "./types";
+import { usePlannerV2Store } from "../../core/store";
+
+// O Store real do V2 e o Store da interface do pacote são unificados aqui.
+// Seguindo a ETAPA B, o objetivo é que a interface use os dados reais.
+
+export const usePlannerStore = create<any>((set, get) => ({
+  // UI State (Sincronizado com PlannerV2Store quando possível)
+  leftCollapsed: false,
+  rightCollapsed: false,
+  mobileDrawerOpen: false,
+  mobileSheetOpen: false,
+  mobileSheetHeight: 50,
+  rightTab: "chat",
+  toolMode: "orbit",
+  gridVisible: false,
+  lightsEnabled: true,
+  
+  // Reais do V2
+  get furniture() { 
+    // Mapeia do FurnitureItem real para o FurnitureItem da UI
+    return usePlannerV2Store.getState().items.map(item => ({
+      id: item.id,
+      name: item.name,
+      kind: item.family === 'kitchen-base-cabinet' ? 'base' : 'tower', // mapeamento aproximado para a UI demo
+      visible: item.visible,
+      selected: item.selected,
+      position: [item.position.x / 1000, item.position.y / 1000, item.position.z / 1000],
+      rotationY: item.rotation,
+      size: [item.widthMm / 1000, item.heightMm / 1000, item.depthMm / 1000],
+      material: item.parameters.bodyMaterialId || 'taupe'
+    }));
+  },
+
+  get selectedId() { return usePlannerV2Store.getState().selectedId; },
+
+  messages: [
+    {
+      id: "m1",
+      role: "assistant",
+      content: "Planner V2 Conectado. Como posso ajudar com seu projeto real?",
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }
+  ],
+
+  // Actions
+  toggleLeft: () => set((s: any) => ({ leftCollapsed: !s.leftCollapsed })),
+  toggleRight: () => set((s: any) => ({ rightCollapsed: !s.rightCollapsed })),
+  setMobileDrawer: (open: boolean) => set({ mobileDrawerOpen: open }),
+  setMobileSheet: (open: boolean) => set({ mobileSheetOpen: open }),
+  setMobileSheetHeight: (height: SheetHeight) => set({ mobileSheetHeight: height }),
+  setRightTab: (tab: RightTab) => set({ rightTab: tab }),
+  setToolMode: (mode: ToolMode) => set({ toolMode: mode }),
+  setGridVisible: (value: boolean) => set({ gridVisible: value }),
+  setLightsEnabled: (value: boolean) => set({ lightsEnabled: value }),
+
+  selectFurniture: (id: string | null) => {
+    usePlannerV2Store.getState().selectItem(id);
+    set({ selectedId: id }); // Force update UI store
+  },
+
+  updateSelected: (patch: any) => {
+    const selectedId = usePlannerV2Store.getState().selectedId;
+    if (selectedId) {
+      // Converte de volta para mm se necessário (ex: size)
+      const updates: any = { ...patch };
+      if (patch.size) {
+        updates.widthMm = patch.size[0] * 1000;
+        updates.heightMm = patch.size[1] * 1000;
+        updates.depthMm = patch.size[2] * 1000;
+      }
+      if (patch.rotationY !== undefined) updates.rotation = patch.rotationY;
+      
+      usePlannerV2Store.getState().updateItem(selectedId, updates);
+    }
+  },
+
+  duplicateSelected: () => {
+    const selectedId = usePlannerV2Store.getState().selectedId;
+    if (selectedId) usePlannerV2Store.getState().duplicateItem(selectedId);
+  },
+
+  deleteSelected: () => {
+    const selectedId = usePlannerV2Store.getState().selectedId;
+    if (selectedId) usePlannerV2Store.getState().removeItem(selectedId);
+  },
+
+  toggleVisibility: (id: string) => {
+    const item = usePlannerV2Store.getState().items.find(i => i.id === id);
+    if (item) usePlannerV2Store.getState().updateItem(id, { visible: !item.visible });
+  },
+
+  sendMessage: (content: string) => {
+    // Integração futura com o agente real
+    const now = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    set((s: any) => ({ 
+      messages: [...s.messages, { id: Date.now().toString(), role: 'user', content, time: now }] 
+    }));
+  }
+}));
+
+// Sincronização reativa para garantir que mudanças no Store V2 reflitam na UI
+usePlannerV2Store.subscribe((state) => {
+  usePlannerStore.setState({ 
+    // Trigger re-render by updating a dummy value if needed, 
+    // or rely on the fact that 'get' property will be re-evaluated
+    _furnitureUpdateToken: Date.now() 
+  });
+});
