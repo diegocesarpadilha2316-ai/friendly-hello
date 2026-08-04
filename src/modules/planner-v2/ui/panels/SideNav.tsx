@@ -38,10 +38,10 @@ const ExplorerItem: React.FC<ExplorerItemProps> = ({
   return (
     <div 
       className={cn(
-        "group flex items-center h-9 px-2 hover:bg-[#1b1f2a] cursor-pointer text-[13px] text-[#F8FAFC] transition-all duration-150 rounded-[7px] mx-2 my-0.5",
+        "group flex items-center h-[36px] hover:bg-[#1b1f2a] cursor-pointer text-[12px] text-[#F8FAFC] transition-all duration-150 border-b border-white/[0.02]",
         level > 0 && "child"
       )}
-      style={{ paddingLeft: level > 0 ? '28px' : '8px' }}
+      style={{ paddingLeft: level > 0 ? '32px' : '16px' }}
     >
       <div className="flex items-center gap-1.5 flex-1 min-w-0">
         {hasChildren ? (
@@ -70,22 +70,22 @@ export const SideNav: React.FC = () => {
   const { items } = usePlannerV2Store();
 
   return (
-    <div className="h-full flex flex-col bg-[#12141C] select-none border-r border-[#2A2D3A]">
+    <div className="h-full flex flex-col bg-[#12141C] select-none">
       {/* Header */}
-      <div className="h-12 px-4 flex items-center justify-between border-b border-[#2A2D3A] bg-[#171A24]">
-        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/80">Projeto</span>
+      <div className="h-12 px-4 flex items-center justify-between border-b border-[#2A2D3A] bg-[#171A24] shrink-0">
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#6366F1]">Explorer</span>
         <div className="flex items-center gap-1">
           <button className="p-1.5 hover:bg-white/5 rounded transition-colors">
-            <Layout className="w-3.5 h-3.5 text-muted-foreground" />
+            <Layout className="w-3.5 h-3.5 text-[#94A3B8]" />
           </button>
         </div>
       </div>
 
       {/* Explorer Content */}
-      <div className="flex-1 overflow-y-auto py-2">
-        <ExplorerItem label="Ambiente Principal" icon={Home} hasChildren isExpanded />
+      <div className="flex-1 overflow-y-auto custom-scrollbar py-0">
+        <ExplorerItem label="Projeto Atual" icon={Home} hasChildren isExpanded />
         
-        <div className="mb-2">
+        <div className="border-b border-white/[0.03] mb-1">
           <ExplorerItem level={1} label="Paredes" icon={WallTower} hasChildren />
           <ExplorerItem level={1} label="Piso" icon={Layout} />
           <ExplorerItem level={1} label="Teto" icon={Box} />
@@ -93,24 +93,24 @@ export const SideNav: React.FC = () => {
 
         <ExplorerItem label="Mobiliário" icon={Package} hasChildren isExpanded />
         
-        <div className="mb-2">
+        <div className="border-b border-white/[0.03] mb-1">
           {items.length === 0 ? (
-             <div className="px-8 py-2 text-[10px] text-muted-foreground italic opacity-50 uppercase tracking-tighter">
-                Nenhum móvel inserido
+             <div className="px-10 py-3 text-[10px] text-[#94A3B8]/40 italic uppercase tracking-widest font-bold">
+                Cena vazia
              </div>
           ) : (
             items.map(item => (
               <ExplorerItem 
                 key={item.id} 
                 level={1} 
-                label={`${item.family} ${item.variant || ''}`} 
+                label={`${item.family}`} 
                 icon={Box} 
               />
             ))
           )}
         </div>
 
-        <ExplorerItem label="Acabamentos" icon={Palette} hasChildren />
+        <ExplorerItem label="Materiais" icon={Palette} hasChildren />
         <ExplorerItem label="Iluminação" icon={Zap} hasChildren />
         <ExplorerItem label="Engenharia" icon={Wrench} hasChildren />
         <ExplorerItem label="Automação" icon={Cpu} hasChildren />
