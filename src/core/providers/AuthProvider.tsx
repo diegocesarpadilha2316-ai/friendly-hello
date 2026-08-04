@@ -25,11 +25,10 @@ export interface AuthProviderProps {
 }
 
 export function AuthProvider({ config, children }: AuthProviderProps) {
-  const supabase = React.useMemo(() => {
-    const url = config?.url || import.meta.env.VITE_SUPABASE_URL;
-    const key = config?.publishableKey || import.meta.env.VITE_SUPABASE_ANON_KEY;
-    return initSupabaseBrowser(url, key);
-  }, [config.url, config.publishableKey]);
+  const supabase = React.useMemo(
+    () => initSupabaseBrowser(config.url, config.publishableKey),
+    [config.url, config.publishableKey],
+  );
   const [session, setSession] = React.useState<Session | null>(null);
   const [user, setUser] = React.useState<User | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -38,25 +37,13 @@ export function AuthProvider({ config, children }: AuthProviderProps) {
 
   React.useEffect(() => {
     let mounted = true;
-    
-    // Safety check for supabase initialization
-    if (!supabase || !supabase.auth) {
-      setLoading(false);
-      return;
-    }
-
     supabase.auth.getSession().then(({ data }) => {
       if (!mounted) return;
       setSession(data.session);
       setUser(data.session?.user ?? null);
       setLoading(false);
-    }).catch(err => {
-      console.error("Auth session fetch error:", err);
-      if (mounted) setLoading(false);
     });
-
     const { data: sub } = supabase.auth.onAuthStateChange((event, next) => {
-      if (!mounted) return;
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED" && event !== "TOKEN_REFRESHED") return;
       setSession(next);
       setUser(next?.user ?? null);
@@ -65,12 +52,9 @@ export function AuthProvider({ config, children }: AuthProviderProps) {
         if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
       }
     });
-
     return () => {
       mounted = false;
-      if (sub && sub.subscription) {
-        sub.subscription.unsubscribe();
-      }
+      sub.subscription.unsubscribe();
     };
   }, [supabase, router, queryClient]);
 
