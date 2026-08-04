@@ -5,7 +5,7 @@ export const LightingRig: React.FC = () => {
   return (
     <>
       {/* Iluminação Global Realista */}
-      <Environment preset="city" intensity={0.6} />
+      <Environment preset="city" />
       
       <ambientLight intensity={0.4} />
       

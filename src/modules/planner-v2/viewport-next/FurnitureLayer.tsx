@@ -1,5 +1,5 @@
 import React from 'react';
-import { FurnitureRenderer } from '../../scene/FurnitureRenderer';
+import { FurnitureRenderer } from '../scene/FurnitureRenderer';
 
 export const FurnitureLayer: React.FC = () => {
   return (

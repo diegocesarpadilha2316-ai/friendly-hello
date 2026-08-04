@@ -23,7 +23,7 @@ export const V2ViewportNext: React.FC = () => {
           <CameraRig />
           <LightingRig />
           
-          <RoomLayer room={roomResult} showCeiling={roomSpec.showCeiling} />
+          <RoomLayer room={roomResult} showCeiling={!!roomSpec.showCeiling} />
           
           <FurnitureLayer />
           

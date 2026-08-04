@@ -1,5 +1,5 @@
 import React from 'react';
-import { RoomResult } from '../../room/types';
+import { RoomResult } from '../room/types';
 import { DiorisMaterials } from './materials';
 
 interface RoomLayerProps {
@@ -22,7 +22,7 @@ export const RoomLayer: React.FC<RoomLayerProps> = ({ room, showCeiling }) => {
       </mesh>
 
       {/* Walls */}
-      {walls.map((wall) => (
+      {walls.map((wall: any) => (
         <group key={wall.id} position={wall.position} rotation={wall.rotation}>
           <mesh castShadow receiveShadow material={DiorisMaterials.room.wall}>
             <boxGeometry args={[wall.width, wall.height, wall.thickness]} />
