@@ -8,8 +8,12 @@
   --dioris-text: #f8fafc;
   --dioris-muted: #94a3b8;
   --dioris-success: #10b981;
-  --dioris-top-height: 60px;
-  --dioris-status-height: 40px;
+  --dioris-top-height: 56px;
+  --dioris-status-height: 42px;
+  --dioris-left-width-open: 320px;
+  --dioris-left-width-collapsed: 64px;
+  --dioris-right-width-open: 360px;
+  --dioris-right-width-collapsed: 64px;
 }
 
 .dioris-shell,
