@@ -10,6 +10,10 @@ interface PlannerV2State {
   errors: string[];
   viewMode: 'technical' | 'presentation';
   useViewportNext: boolean;
+  leftPanelCollapsed: boolean;
+  rightPanelCollapsed: boolean;
+  leftPanelWidth: number;
+  rightPanelWidth: number;
   
   // Furniture State
   items: FurnitureItem[];
@@ -20,6 +24,10 @@ interface PlannerV2State {
   applyPreset: (name: string) => void;
   setViewMode: (mode: 'technical' | 'presentation') => void;
   setUseViewportNext: (use: boolean) => void;
+  setLeftPanelCollapsed: (collapsed: boolean) => void;
+  setRightPanelCollapsed: (collapsed: boolean) => void;
+  setLeftPanelWidth: (width: number) => void;
+  setRightPanelWidth: (width: number) => void;
   
   // Furniture Actions
   addItem: (family?: FurnitureFamily, variant?: string) => void;
@@ -35,7 +43,11 @@ export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
   roomResult: generateRoomGeometry(DEFAULT_ROOM),
   errors: [],
   viewMode: 'technical',
-  useViewportNext: false, // Desabilitado para restauração segura
+  useViewportNext: false,
+  leftPanelCollapsed: false,
+  rightPanelCollapsed: false,
+  leftPanelWidth: 20,
+  rightPanelWidth: 25,
   
   items: [],
   selectedId: null,
@@ -60,6 +72,10 @@ export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
 
   setViewMode: (mode) => set({ viewMode: mode }),
   setUseViewportNext: (use) => set({ useViewportNext: use }),
+  setLeftPanelCollapsed: (collapsed) => set({ leftPanelCollapsed: collapsed }),
+  setRightPanelCollapsed: (collapsed) => set({ rightPanelCollapsed: collapsed }),
+  setLeftPanelWidth: (width) => set({ leftPanelWidth: width }),
+  setRightPanelWidth: (width) => set({ rightPanelWidth: width }),
 
   addItem: (family = 'kitchen-base-cabinet', variant = 'one-door') => {
     const id = `item-${Math.random().toString(36).substr(2, 9)}`;
