@@ -39,14 +39,13 @@ export const InspectorPanel: React.FC = () => {
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
             className={cn(
-              "flex items-center gap-2 px-4 whitespace-nowrap text-[11px] font-bold uppercase tracking-widest transition-all border-b-2 h-full",
+              "flex items-center gap-2 px-4 whitespace-nowrap text-[12px] font-bold transition-all border-b-2 h-full",
               activeTab === tab.id 
-                ? "border-[#6366F1] text-[#F8FAFC] bg-[#6366F1]/10" 
-
-                : "border-transparent text-muted-foreground hover:text-foreground hover:bg-white/5"
+                ? "border-[#6366F1] text-[#F8FAFC] bg-[#6366F1]/5" 
+                : "border-transparent text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5"
             )}
           >
-            <tab.icon className="w-3.5 h-3.5" />
+            <tab.icon className={cn("w-4 h-4", activeTab === tab.id ? "text-[#6366F1]" : "text-[#94A3B8]")} />
             <span className="hidden sm:inline">{tab.label}</span>
           </button>
         ))}
