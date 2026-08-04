@@ -9,10 +9,20 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
     if (error != null && typeof error === "object" && "statusCode" in error) {
       throw error;
     }
-    console.error(error);
+    
+    // Log detalhado para identificar o erro real no ambiente de produção
+    console.error("CRITICAL_BOOTSTRAP_ERROR:", {
+      message: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString()
+    });
+
     return new Response(renderErrorPage(), {
       status: 500,
-      headers: { "content-type": "text/html; charset=utf-8" },
+      headers: { 
+        "content-type": "text/html; charset=utf-8",
+        "x-dioris-debug-error": error instanceof Error ? error.message.substring(0, 100) : "unknown"
+      },
     });
   }
 });
