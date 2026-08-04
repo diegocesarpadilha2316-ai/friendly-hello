@@ -125,10 +125,9 @@ export const buildCabinet = (item: FurnitureItem): CabinetAssembly => {
 
   if (doorCount > 0 && drawerCount === 0) {
     const doorWidth = (widthMm - (doorCount + 1) * gap) / doorCount;
-    const doorHeight = sideHeight - gap;
+    const doorHeight = sideHeight - gap * 2;
     
     for (let i = 0; i < doorCount; i++) {
-      const isLeft = i === 0 && doorCount > 1;
       const xPos = gap + doorWidth/2 + i * (doorWidth + gap);
       
       parts.push({
@@ -150,7 +149,63 @@ export const buildCabinet = (item: FurnitureItem): CabinetAssembly => {
         }
       });
     }
+  } else if (drawerCount > 0 && doorCount === 0) {
+    const availableHeight = sideHeight - gap * (drawerCount + 1);
+    const drHeight = availableHeight / drawerCount;
+    
+    for (let i = 0; i < drawerCount; i++) {
+      const yPos = kh + gap + drHeight/2 + i * (drHeight + gap);
+      
+      parts.push({
+        id: `${item.id}-drawer-${i}`,
+        name: `Gaveta ${i+1}`,
+        width: widthMm - 2*gap,
+        height: drHeight,
+        depth: t,
+        position: { x: widthMm/2, y: yPos, z: frontDepth },
+        materialType: 'front',
+        type: 'drawer-front',
+        isAnimated: true,
+        animationType: 'slide',
+        animationAxis: 'z'
+      });
+    }
+  } else if (drawerCount > 0 && doorCount > 0) {
+    // Top drawer, Bottom door
+    const drHeight = 150; // Standard top drawer height
+    const doorHeight = sideHeight - drHeight - 3 * gap;
+    
+    // Drawer
+    parts.push({
+      id: `${item.id}-drawer-0`,
+      name: 'Gaveta Superior',
+      width: widthMm - 2*gap,
+      height: drHeight,
+      depth: t,
+      position: { x: widthMm/2, y: heightMm - drHeight/2 - gap, z: frontDepth },
+      materialType: 'front',
+      type: 'drawer-front',
+      isAnimated: true,
+      animationType: 'slide',
+      animationAxis: 'z'
+    });
+
+    // Door
+    parts.push({
+      id: `${item.id}-door-0`,
+      name: 'Porta Inferior',
+      width: widthMm - 2*gap,
+      height: doorHeight,
+      depth: t,
+      position: { x: widthMm/2, y: kh + doorHeight/2 + gap, z: frontDepth },
+      materialType: 'front',
+      type: 'door',
+      isAnimated: true,
+      animationType: 'hinge',
+      animationAxis: 'y'
+    });
   }
+
 
   if (drawerCount > 0) {
     // Basic logic for drawers
