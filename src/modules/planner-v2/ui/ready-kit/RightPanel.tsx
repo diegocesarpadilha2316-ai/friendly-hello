@@ -36,21 +36,24 @@ export function RightPanel() {
       {collapsed ? (
         <div className="collapsed-icons"><Bot size={19} /></div>
       ) : (
-        <>
-          <div className="right-tabs">
-            {tabs.map((tab) => (
-              <button
-                type="button"
-                key={tab.id}
-                className={rightTab === tab.id ? "active" : ""}
-                onClick={() => setRightTab(tab.id)}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+        <div className="right-tabs">
+          {tabs.map((tab) => (
+            <button
+              type="button"
+              key={tab.id}
+              className={rightTab === tab.id ? "active" : ""}
+              onClick={() => setRightTab(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      )}
 
+      {!collapsed && (
+        <>
           <div className="right-content">
+
             {rightTab === "chat" && (
               <div className="chat">
                 <div className="messages">
@@ -195,6 +198,7 @@ export function RightPanel() {
                 <label>Puxador<select><option>Gola</option><option>Cava</option><option>Perfil</option></select></label>
               </div>
             )}
+          </div>
           </div>
         </>
       )}
