@@ -1,0 +1,774 @@
+:root {
+  --dioris-bg: #080a10;
+  --dioris-panel: #11141c;
+  --dioris-panel-2: #181c27;
+  --dioris-line: #2a2e3b;
+  --dioris-accent: #6366f1;
+  --dioris-accent-2: #7c3aed;
+  --dioris-text: #f8fafc;
+  --dioris-muted: #94a3b8;
+  --dioris-success: #10b981;
+  --dioris-top-height: 60px;
+  --dioris-status-height: 40px;
+}
+
+.dioris-shell,
+.dioris-shell * {
+  box-sizing: border-box;
+}
+
+.dioris-shell {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows:
+    var(--dioris-top-height)
+    minmax(0, 1fr)
+    var(--dioris-status-height);
+  color: var(--dioris-text);
+  background: var(--dioris-bg);
+  overflow: hidden;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+.dioris-shell button,
+.dioris-shell input,
+.dioris-shell select {
+  font: inherit;
+}
+
+.dioris-topbar {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  background: #0c0e14;
+  border-bottom: 1px solid var(--dioris-line);
+}
+
+.dioris-brand {
+  min-width: 210px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.dioris-brand-mark {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--dioris-accent-2), #22d3ee);
+  font-weight: 800;
+}
+
+.dioris-brand strong {
+  display: block;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+}
+
+.dioris-brand small {
+  display: block;
+  max-width: 170px;
+  color: var(--dioris-muted);
+  font-size: 9px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dioris-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.dioris-toolbar::-webkit-scrollbar {
+  display: none;
+}
+
+.dioris-tool {
+  min-width: 54px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 7px 8px;
+  color: var(--dioris-text);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.dioris-tool:hover,
+.dioris-tool.is-active {
+  background: var(--dioris-panel-2);
+  border-color: var(--dioris-line);
+}
+
+.dioris-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.dioris-primary-button,
+.dioris-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px;
+  color: var(--dioris-text);
+  border-radius: 8px;
+}
+
+.dioris-primary-button {
+  border: 0;
+  background: linear-gradient(
+    135deg,
+    var(--dioris-accent-2),
+    var(--dioris-accent)
+  );
+}
+
+.dioris-secondary-button {
+  border: 1px solid var(--dioris-line);
+  background: var(--dioris-panel-2);
+}
+
+.dioris-workspace {
+  min-height: 0;
+  display: grid;
+  grid-template-columns:
+    var(--dioris-left-width, 284px)
+    minmax(0, 1fr)
+    var(--dioris-right-width, 364px);
+}
+
+.dioris-left-panel,
+.dioris-right-panel {
+  min-width: 0;
+  overflow: hidden;
+  background: var(--dioris-panel);
+}
+
+.dioris-left-panel {
+  border-right: 1px solid var(--dioris-line);
+}
+
+.dioris-right-panel {
+  border-left: 1px solid var(--dioris-line);
+}
+
+.dioris-panel-head {
+  height: 47px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 11px;
+  border-bottom: 1px solid var(--dioris-line);
+  font-size: 13px;
+}
+
+.dioris-panel-head button,
+.dioris-mobile-panel-head button {
+  width: 31px;
+  height: 31px;
+  display: inline-grid;
+  place-items: center;
+  color: var(--dioris-text);
+  background: var(--dioris-panel-2);
+  border: 1px solid var(--dioris-line);
+  border-radius: 8px;
+}
+
+.dioris-left-tabs,
+.dioris-right-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--dioris-line);
+}
+
+.dioris-left-tabs button,
+.dioris-right-tabs button {
+  flex: 1;
+  padding: 10px 4px;
+  color: var(--dioris-muted);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  font-size: 11px;
+}
+
+.dioris-left-tabs button.is-active,
+.dioris-right-tabs button.is-active {
+  color: var(--dioris-text);
+  border-bottom-color: var(--dioris-accent);
+}
+
+.dioris-tree {
+  height: calc(100% - 47px);
+  overflow: auto;
+  padding: 6px 7px 12px;
+}
+
+.dioris-left-tabs + .dioris-tree {
+  height: calc(100% - 86px);
+}
+
+.dioris-tree-row {
+  width: 100%;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--dioris-text);
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  text-align: left;
+}
+
+.dioris-tree-row:hover,
+.dioris-tree-row.is-selected {
+  background: #1b1f2a;
+}
+
+.dioris-tree-chevron {
+  width: 14px;
+  display: inline-flex;
+}
+
+.dioris-tree-name {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+}
+
+.dioris-tree-spacer {
+  flex: 1;
+}
+
+.dioris-tree-action {
+  display: inline-flex;
+  color: var(--dioris-muted);
+}
+
+.dioris-tree-color {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+.dioris-tree-more {
+  color: var(--dioris-muted);
+}
+
+.dioris-collapsed-icons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding-top: 18px;
+  color: var(--dioris-muted);
+}
+
+.dioris-viewport {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: #101217;
+}
+
+.dioris-viewport-content {
+  position: absolute;
+  inset: 0;
+}
+
+.dioris-viewport.has-grid::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(99, 102, 241, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.08) 1px, transparent 1px);
+  background-size: 34px 34px;
+}
+
+.dioris-viewport.is-dimmed .dioris-viewport-content {
+  filter: brightness(0.52);
+}
+
+.dioris-floating-toolbar {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  z-index: 8;
+  display: flex;
+  gap: 4px;
+  padding: 5px;
+  transform: translateX(-50%);
+  background: rgba(10, 12, 18, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.dioris-floating-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 9px;
+  color: var(--dioris-text);
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  font-size: 11px;
+}
+
+.dioris-floating-toolbar button:hover,
+.dioris-floating-toolbar button.is-active {
+  background: #202431;
+}
+
+.dioris-object-toolbar {
+  position: absolute;
+  top: 74px;
+  right: 12px;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.dioris-object-toolbar button {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  color: var(--dioris-text);
+  background: rgba(12, 14, 20, 0.88);
+  border: 1px solid var(--dioris-line);
+  border-radius: 9px;
+}
+
+.dioris-minimap {
+  position: absolute;
+  left: 13px;
+  bottom: 13px;
+  width: 132px;
+  height: 88px;
+  z-index: 8;
+  overflow: hidden;
+  background: rgba(10, 12, 18, 0.88);
+  border: 1px solid var(--dioris-line);
+  border-radius: 10px;
+}
+
+.dioris-minimap-room {
+  position: absolute;
+  inset: 10px;
+  border: 2px solid #4b5563;
+  box-shadow:
+    inset 35px 0 #232936,
+    inset -28px 0 #232936;
+}
+
+.dioris-viewport-status {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 11px;
+  transform: translateX(-50%);
+  background: rgba(10, 12, 18, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 0;
+  border-radius: 9px 9px 0 0;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.dioris-viewport-status label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dioris-viewport-status input {
+  accent-color: var(--dioris-accent);
+}
+
+.dioris-viewport-status button {
+  padding: 5px 7px;
+  color: var(--dioris-muted);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+}
+
+.dioris-viewport-status button.is-active {
+  color: var(--dioris-text);
+  background: var(--dioris-accent);
+}
+
+.dioris-right-content {
+  height: calc(100% - 88px);
+  min-height: 0;
+}
+
+.dioris-chat {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dioris-chat-messages {
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+  padding: 13px;
+}
+
+.dioris-message {
+  max-width: 88%;
+  display: flex;
+  gap: 7px;
+  padding: 11px;
+  margin-bottom: 9px;
+  background: #1d212c;
+  border-radius: 11px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.dioris-message.is-user {
+  margin-left: auto;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+}
+
+.dioris-message p {
+  margin: 0;
+}
+
+.dioris-message time {
+  display: block;
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 9px;
+}
+
+.dioris-quick-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  padding: 0 12px 10px;
+}
+
+.dioris-quick-actions button {
+  padding: 8px;
+  color: #bac4d8;
+  background: transparent;
+  border: 1px solid #39415b;
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+.dioris-composer {
+  display: flex;
+  gap: 7px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--dioris-line);
+}
+
+.dioris-composer input {
+  min-width: 0;
+  flex: 1;
+  padding: 9px;
+  color: var(--dioris-text);
+  background: #171a24;
+  border: 1px solid var(--dioris-line);
+  border-radius: 8px;
+}
+
+.dioris-composer button {
+  width: 40px;
+  display: grid;
+  place-items: center;
+  color: var(--dioris-text);
+  background: var(--dioris-accent);
+  border: 0;
+  border-radius: 8px;
+}
+
+.dioris-form {
+  height: 100%;
+  overflow: auto;
+  padding: 12px;
+}
+
+.dioris-form label {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--dioris-muted);
+  font-size: 11px;
+}
+
+.dioris-form input,
+.dioris-form select {
+  width: 100%;
+  margin-top: 5px;
+  padding: 9px;
+  color: var(--dioris-text);
+  background: #171a24;
+  border: 1px solid var(--dioris-line);
+  border-radius: 8px;
+}
+
+.dioris-swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 12px;
+}
+
+.dioris-swatch {
+  position: relative;
+  height: 68px;
+  overflow: hidden;
+  border: 1px solid var(--dioris-line);
+  border-radius: 9px;
+}
+
+.dioris-swatch span {
+  position: absolute;
+  left: 7px;
+  bottom: 5px;
+  color: white;
+  font-size: 10px;
+  text-shadow: 0 1px 3px black;
+}
+
+.dioris-statusbar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 13px;
+  color: var(--dioris-muted);
+  background: #0c0e14;
+  border-top: 1px solid var(--dioris-line);
+  font-size: 11px;
+}
+
+.dioris-statusbar .is-ready {
+  color: var(--dioris-success);
+}
+
+.dioris-status-spacer {
+  flex: 1;
+}
+
+.dioris-mobile-nav,
+.dioris-mobile-drawer,
+.dioris-mobile-sheet,
+.dioris-mobile-backdrop {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .dioris-shell {
+    grid-template-rows: 54px minmax(0, 1fr) 58px;
+  }
+
+  .dioris-topbar {
+    padding: 0 9px;
+  }
+
+  .dioris-brand {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .dioris-brand strong {
+    font-size: 12px;
+  }
+
+  .dioris-toolbar,
+  .dioris-top-actions,
+  .dioris-statusbar {
+    display: none;
+  }
+
+  .dioris-workspace {
+    display: block;
+    position: relative;
+  }
+
+  .dioris-left-panel,
+  .dioris-right-panel {
+    display: none;
+  }
+
+  .dioris-viewport {
+    position: absolute;
+    inset: 0;
+  }
+
+  .dioris-floating-toolbar {
+    top: 9px;
+    left: 9px;
+    right: 9px;
+    transform: none;
+    justify-content: space-between;
+    overflow-x: auto;
+  }
+
+  .dioris-floating-toolbar button {
+    padding: 8px;
+    font-size: 10px;
+  }
+
+  .dioris-object-toolbar {
+    top: 66px;
+    right: 8px;
+  }
+
+  .dioris-object-toolbar button {
+    width: 43px;
+    height: 43px;
+  }
+
+  .dioris-minimap {
+    width: 104px;
+    height: 69px;
+    bottom: 10px;
+  }
+
+  .dioris-viewport-status {
+    display: none;
+  }
+
+  .dioris-mobile-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 50;
+    background: #0c0e14;
+    border-top: 1px solid var(--dioris-line);
+  }
+
+  .dioris-mobile-nav button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    color: var(--dioris-muted);
+    background: transparent;
+    border: 0;
+    font-size: 10px;
+  }
+
+  .dioris-mobile-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    background: rgba(0, 0, 0, 0.52);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .dioris-mobile-backdrop.is-visible {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .dioris-mobile-drawer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 35;
+    width: min(86vw, 340px);
+    display: block;
+    background: var(--dioris-panel);
+    border-right: 1px solid var(--dioris-line);
+    box-shadow: 0 0 45px black;
+    transform: translateX(-102%);
+    transition: transform 0.25s ease;
+  }
+
+  .dioris-mobile-drawer.is-open {
+    transform: translateX(0);
+  }
+
+  .dioris-mobile-sheet {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    background: var(--dioris-panel);
+    border-top: 1px solid var(--dioris-line);
+    border-radius: 18px 18px 0 0;
+    transform: translateY(104%);
+    transition:
+      transform 0.25s ease,
+      height 0.25s ease;
+  }
+
+  .dioris-mobile-sheet.is-open {
+    transform: translateY(0);
+  }
+
+  .dioris-sheet-handle {
+    width: 44px;
+    height: 5px;
+    margin: 8px auto;
+    background: #52586a;
+    border-radius: 9px;
+  }
+
+  .dioris-mobile-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 12px 8px;
+  }
+
+  .dioris-mobile-panel-head > div {
+    display: flex;
+    gap: 5px;
+  }
+
+  .dioris-mobile-panel-head button {
+    color: var(--dioris-text);
+  }
+
+  .dioris-mobile-sheet .dioris-right-content {
+    height: calc(100% - 77px);
+  }
+}
