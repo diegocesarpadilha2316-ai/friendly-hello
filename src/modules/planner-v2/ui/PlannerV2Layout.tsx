@@ -69,14 +69,14 @@ export const PlannerV2Layout: React.FC = () => {
       fps={60}
       autosaveStatus="saved"
       
-      onSelectTreeItem={(id) => store.selectItem(id)}
-      onToggleTreeVisibility={(id) => {
+      onSelectTreeItem={(id: string) => store.selectItem(id)}
+      onToggleTreeVisibility={(id: string) => {
         // Implementation for visibility toggle in store if needed
         console.log('Toggle visibility', id);
       }}
       onDeleteSelected={() => store.selectedId && store.removeItem(store.selectedId)}
       onDuplicateSelected={() => store.selectedId && store.duplicateItem(store.selectedId)}
-      onUpdateSelected={(patch) => {
+      onUpdateSelected={(patch: Partial<FurnitureSelection>) => {
         if (!store.selectedId) return;
         const itemPatch: any = {};
         if (patch.widthMm !== undefined) itemPatch.widthMm = patch.widthMm;
