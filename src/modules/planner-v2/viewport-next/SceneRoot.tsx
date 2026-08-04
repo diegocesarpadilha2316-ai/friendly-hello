@@ -6,6 +6,7 @@ import { LightingRig } from './LightingRig';
 import { CameraRig } from './CameraRig';
 import { createDemoScene } from './demo';
 import { SelectionLayer } from './SelectionLayer';
+import { Select } from '@react-three/postprocessing';
 
 export const SceneRoot: React.FC = () => {
   const { roomResult, roomSpec, items, itemsCount } = usePlannerV2Store((state: any) => ({

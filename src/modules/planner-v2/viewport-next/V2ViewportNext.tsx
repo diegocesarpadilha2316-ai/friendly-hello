@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { usePlannerV2Store } from '../core/store';
 import { SceneRoot } from './SceneRoot';
+import { PostProcessingLayer } from './PostProcessingLayer';
 import { ViewportControls } from './ViewportControls';
 import { Stats } from '@react-three/drei';
 
@@ -18,8 +19,10 @@ export const V2ViewportNext: React.FC = () => {
           INICIALIZANDO AMBIENTE RESIDENCIAL...
         </div>
       }>
-        <Canvas shadows gl={{ antialias: true, preserveDrawingBuffer: true }}>
-          <SceneRoot />
+        <Canvas shadows gl={{ antialias: false, preserveDrawingBuffer: true }}>
+          <PostProcessingLayer>
+            <SceneRoot />
+          </PostProcessingLayer>
           {isDev && <Stats className="!left-4 !top-4" />}
         </Canvas>
       </Suspense>
