@@ -6,7 +6,6 @@ import {
 } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-// Remove all complex providers and Supabase during bootstrap stabilization
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
 }>()({
@@ -26,6 +25,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <div id="root-render-check" style={{ display: 'none' }}>RENDER_OK</div>
       <Outlet />
       <ScrollRestoration />
     </QueryClientProvider>
