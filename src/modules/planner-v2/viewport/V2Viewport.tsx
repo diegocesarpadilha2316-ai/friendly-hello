@@ -1,9 +1,11 @@
-import React, { Suspense, useRef } from 'react';
+import React, { Suspense, useRef, lazy } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Environment, ContactShadows } from '@react-three/drei';
 import { RoomRenderer } from '../scene/RoomRenderer';
-import { FurnitureRenderer } from '../scene/FurnitureRenderer';
 import { usePlannerV2Store } from '../core/store';
+
+// Lazy load the furniture renderer to prevent potential SSR/Worker crashes
+const FurnitureRenderer = lazy(() => import('../scene/FurnitureRenderer').then(m => ({ default: m.FurnitureRenderer })));
 
 const SceneContent: React.FC = () => {
   const { roomResult, roomSpec, viewMode } = usePlannerV2Store();
@@ -30,7 +32,9 @@ const SceneContent: React.FC = () => {
         baseboardThickness={roomSpec.baseboardThicknessMm}
       />
 
-      
+      <Suspense fallback={null}>
+        <FurnitureRenderer />
+      </Suspense>
 
       <ContactShadows 
         opacity={0.3} 

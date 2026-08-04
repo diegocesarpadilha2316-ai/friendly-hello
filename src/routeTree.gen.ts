@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PlannerV2RouteImport } from './routes/planner-v2'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -106,11 +105,6 @@ import { Route as ApiPublicV1WorkersRenderRouteImport } from './routes/api/publi
 import { Route as ApiPublicV1WorkersEmailRouteImport } from './routes/api/public/v1/workers/email'
 import { Route as ApiPublicV1WebhooksMercadopagoRouteImport } from './routes/api/public/v1/webhooks/mercadopago'
 
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -635,7 +629,6 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/planner-v2': typeof PlannerV2Route
   '/reset-password': typeof ResetPasswordRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/automacao': typeof AuthenticatedAutomacaoRoute
@@ -731,7 +724,6 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/planner-v2': typeof PlannerV2Route
   '/reset-password': typeof ResetPasswordRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/automacao': typeof AuthenticatedAutomacaoRoute
@@ -826,7 +818,6 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/planner-v2': typeof PlannerV2Route
   '/reset-password': typeof ResetPasswordRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/api-gateway': typeof AuthenticatedApiGatewayRoute
   '/_authenticated/automacao': typeof AuthenticatedAutomacaoRoute
@@ -925,7 +916,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/planner-v2'
     | '/reset-password'
-    | '/sitemap.xml'
     | '/admin'
     | '/api-gateway'
     | '/automacao'
@@ -1021,7 +1011,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/planner-v2'
     | '/reset-password'
-    | '/sitemap.xml'
     | '/admin'
     | '/api-gateway'
     | '/automacao'
@@ -1115,7 +1104,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/planner-v2'
     | '/reset-password'
-    | '/sitemap.xml'
     | '/_authenticated/admin'
     | '/_authenticated/api-gateway'
     | '/_authenticated/automacao'
@@ -1214,7 +1202,6 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   PlannerV2Route: typeof PlannerV2Route
   ResetPasswordRoute: typeof ResetPasswordRoute
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiAiChatRoute: typeof ApiAiChatRoute
   ApiPublicV1OpenapiRoute: typeof ApiPublicV1OpenapiRoute
   ApiPublicV1PingRoute: typeof ApiPublicV1PingRoute
@@ -1226,13 +1213,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -2166,7 +2146,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   PlannerV2Route: PlannerV2Route,
   ResetPasswordRoute: ResetPasswordRoute,
-  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiAiChatRoute: ApiAiChatRoute,
   ApiPublicV1OpenapiRoute: ApiPublicV1OpenapiRoute,
   ApiPublicV1PingRoute: ApiPublicV1PingRoute,

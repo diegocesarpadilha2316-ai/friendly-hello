@@ -7,17 +7,9 @@ import { createServerFn } from "@tanstack/react-start";
  */
 export const getPublicSupabaseConfig = createServerFn({ method: "GET" }).handler(
   async () => {
-    const url = process.env.EXTERNAL_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-    const publishableKey = process.env.EXTERNAL_SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-
-    if (!url || !publishableKey) {
-      console.warn("Supabase config partially missing, checking fallback logic...");
-    }
-
-    // Retornar objeto explícito para evitar erros de desestruturação
     return { 
-      url: url || "https://placeholder-project.supabase.co", 
-      publishableKey: publishableKey || "placeholder-key" 
+      url: process.env.VITE_SUPABASE_URL || "https://placeholder-project.supabase.co", 
+      publishableKey: process.env.VITE_SUPABASE_ANON_KEY || "placeholder-key" 
     };
   },
 );
