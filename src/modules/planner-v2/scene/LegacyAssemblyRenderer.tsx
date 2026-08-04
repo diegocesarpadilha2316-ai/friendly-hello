@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { FurnitureItem } from '../furniture/types';
 import { AssemblyMesh } from '../../planner/shared/editor-3d/AssemblyMesh';
+import { mmToScene } from '../core/units';
 import { 
   wardrobeFamily, 
   kitchenFamily, 
@@ -136,7 +137,7 @@ export const LegacyAssemblyRenderer: React.FC<LegacyAssemblyRendererProps> = ({ 
 
   return (
     <group 
-      position={[item.position.x / 1000, item.position.y / 1000, item.position.z / 1000]}
+      position={[mmToScene(item.position.x), mmToScene(item.position.y), mmToScene(item.position.z)]}
       rotation={[0, rotation, 0]}
       onClick={(e) => {
         e.stopPropagation();
