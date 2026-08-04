@@ -1,6 +1,7 @@
 import React from 'react';
-import { RoomResult } from '../room/types';
+import { RoomResult, WallGeometry } from '../room/types';
 import { DiorisMaterials } from './materials';
+import * as THREE from 'three';
 
 interface RoomLayerProps {
   room: RoomResult;
