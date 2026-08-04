@@ -20,7 +20,11 @@ export function Explorer() {
   const toggleLeft = usePlannerStore((s) => s.toggleLeft);
   const furniture = usePlannerStore((s) => s.furniture);
   const selectedId = usePlannerStore((s) => s.selectedId);
-  const selectFurniture = (id: string | null) => usePlannerStore.getState().selectFurniture(id);
+  const selectFurniture = (id: string | null) => {
+    usePlannerStore.getState().selectFurniture(id);
+    usePlannerStore.getState().setMobileDrawer(false);
+  };
+
   const toggleVisibility = (id: string) => usePlannerStore.getState().toggleVisibility(id);
 
 
