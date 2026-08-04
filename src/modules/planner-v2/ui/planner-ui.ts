@@ -1,5 +1,5 @@
-export type RightPanelTab = "chat" | "inspector" | "materials" | "hardware";
-export type LeftPanelTab = "structure" | "library" | "rooms";
+export type RightPanelTab = "chat" | "inspector" | "materials" | "hardware" | "lighting";
+export type LeftPanelTab = "structure" | "library" | "rooms" | "project";
 export type ViewMode = "presentation" | "technical";
 export type ToolMode = "orbit" | "pan" | "zoom" | "measure" | "select";
 

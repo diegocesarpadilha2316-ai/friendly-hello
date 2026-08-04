@@ -8,8 +8,12 @@
   --dioris-text: #f8fafc;
   --dioris-muted: #94a3b8;
   --dioris-success: #10b981;
-  --dioris-top-height: 60px;
-  --dioris-status-height: 40px;
+  --dioris-top-height: 56px;
+  --dioris-status-height: 42px;
+  --dioris-left-width-open: 320px;
+  --dioris-left-width-collapsed: 64px;
+  --dioris-right-width-open: 360px;
+  --dioris-right-width-collapsed: 64px;
 }
 
 .dioris-shell,
@@ -46,6 +50,8 @@
   padding: 0 12px;
   background: #0c0e14;
   border-bottom: 1px solid var(--dioris-line);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  z-index: 10;
 }
 
 .dioris-brand {
@@ -151,9 +157,9 @@
   min-height: 0;
   display: grid;
   grid-template-columns:
-    var(--dioris-left-width, 284px)
-    minmax(0, 1fr)
-    var(--dioris-right-width, 364px);
+    var(--dioris-left-panel-width, var(--dioris-left-width-open))
+    1fr
+    var(--dioris-right-panel-width, var(--dioris-right-width-open));
 }
 
 .dioris-left-panel,
@@ -317,17 +323,17 @@
 
 .dioris-floating-toolbar {
   position: absolute;
-  top: 12px;
+  bottom: 64px;
   left: 50%;
   z-index: 8;
   display: flex;
   gap: 4px;
   padding: 5px;
   transform: translateX(-50%);
-  background: rgba(10, 12, 18, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  backdrop-filter: blur(10px);
+  background: rgba(10, 12, 18, 0.95);
+  border: 1px solid var(--dioris-line);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
 }
 
 .dioris-floating-toolbar button {
@@ -400,8 +406,8 @@
   gap: 12px;
   padding: 7px 11px;
   transform: translateX(-50%);
-  background: rgba(10, 12, 18, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--dioris-panel);
+  border: 1px solid var(--dioris-line);
   border-bottom: 0;
   border-radius: 9px 9px 0 0;
   font-size: 11px;

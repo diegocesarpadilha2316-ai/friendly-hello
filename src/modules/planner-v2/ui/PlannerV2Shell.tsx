@@ -34,8 +34,8 @@ export function PlannerV2Shell({
   const shellStyle = useMemo(
     () =>
       ({
-        "--dioris-left-width": `${state.leftCollapsed ? 54 : state.leftWidth}px`,
-        "--dioris-right-width": `${state.rightCollapsed ? 54 : state.rightWidth}px`
+        "--dioris-left-panel-width": `${state.leftCollapsed ? 64 : 320}px`,
+        "--dioris-right-panel-width": `${state.rightCollapsed ? 64 : 360}px`
       }) as React.CSSProperties,
     [
       state.leftCollapsed,
@@ -101,6 +101,13 @@ export function PlannerV2Shell({
               >
                 Ambientes
               </button>
+              <button
+                type="button"
+                className={state.leftTab === "project" ? "is-active" : ""}
+                onClick={() => patch({ leftTab: "project" })}
+              >
+                Projeto
+              </button>
             </div>
           )}
 
@@ -112,7 +119,7 @@ export function PlannerV2Shell({
           ) : (
             <ProjectExplorer
               items={tree}
-              collapsed={false}
+              collapsed={true}
               selectedId={selectedId}
               onSelect={(id) => {
                 patch({ selectedFurnitureId: id });
