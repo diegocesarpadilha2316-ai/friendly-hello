@@ -16,8 +16,8 @@ import { TopToolbar } from "./TopToolbar";
 import { ViewportChrome } from "./ViewportChrome";
 
 export function PlannerV2Shell({
-  projectName = "Cozinha Moderna",
-  clientName = "Cliente",
+  projectName = "Projeto Dioris",
+  clientName = "CAD Studio",
   tree,
   selectedFurniture,
   messages,
@@ -61,20 +61,15 @@ export function PlannerV2Shell({
       />
 
       <main className="dioris-workspace">
-        <aside className="dioris-left-panel">
+        <aside className={`dioris-left-panel ${state.leftCollapsed ? 'is-collapsed' : ''}`}>
           <div className="dioris-panel-head">
-            {!state.leftCollapsed && <strong>Estrutura do Projeto</strong>}
+            {!state.leftCollapsed && <strong>PROJETO</strong>}
             <button
               type="button"
-              onClick={() =>
-                patch({ leftCollapsed: !state.leftCollapsed })
-              }
+              className="dioris-panel-toggle"
+              onClick={() => patch({ leftCollapsed: !state.leftCollapsed })}
             >
-              {state.leftCollapsed ? (
-                <ChevronRight size={16} />
-              ) : (
-                <ChevronLeft size={16} />
-              )}
+              {state.leftCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
             </button>
           </div>
 
@@ -176,20 +171,15 @@ export function PlannerV2Shell({
           />
         </section>
 
-        <aside className="dioris-right-panel">
+        <aside className={`dioris-right-panel ${state.rightCollapsed ? 'is-collapsed' : ''}`}>
           <div className="dioris-panel-head">
-            {!state.rightCollapsed && <strong>IA Copiloto / Inspetor</strong>}
+            {!state.rightCollapsed && <strong>INSPETOR</strong>}
             <button
               type="button"
-              onClick={() =>
-                patch({ rightCollapsed: !state.rightCollapsed })
-              }
+              className="dioris-panel-toggle"
+              onClick={() => patch({ rightCollapsed: !state.rightCollapsed })}
             >
-              {state.rightCollapsed ? (
-                <ChevronLeft size={16} />
-              ) : (
-                <ChevronRight size={16} />
-              )}
+              {state.rightCollapsed ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
             </button>
           </div>
 
