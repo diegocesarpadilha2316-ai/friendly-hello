@@ -43,15 +43,16 @@
 }
 
 .dioris-topbar {
+  height: var(--dioris-top-height);
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 12px;
+  gap: 12px;
+  padding: 0 16px;
   background: #0c0e14;
   border-bottom: 1px solid var(--dioris-line);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  z-index: 20;
 }
 
 .dioris-brand {
@@ -103,24 +104,33 @@
 }
 
 .dioris-tool {
-  min-width: 54px;
+  height: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 2px;
-  padding: 7px 8px;
-  color: var(--dioris-text);
+  padding: 0 10px;
+  color: var(--dioris-muted);
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 8px;
-  font-size: 10px;
+  border-radius: 4px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
   white-space: nowrap;
+  transition: all 0.2s;
 }
 
-.dioris-tool:hover,
+.dioris-tool:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--dioris-text);
+}
+
 .dioris-tool.is-active {
-  background: var(--dioris-panel-2);
-  border-color: var(--dioris-line);
+  background: var(--dioris-accent);
+  color: white;
+  border-color: var(--dioris-accent);
 }
 
 .dioris-top-actions {
