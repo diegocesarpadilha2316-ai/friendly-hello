@@ -9,6 +9,7 @@ interface PlannerV2State {
   roomResult: RoomResult;
   errors: string[];
   viewMode: 'technical' | 'presentation';
+  useViewportNext: boolean;
   
   // Furniture State
   items: FurnitureItem[];
