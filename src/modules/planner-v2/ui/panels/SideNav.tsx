@@ -38,20 +38,20 @@ const ExplorerItem: React.FC<ExplorerItemProps> = ({
   return (
     <div 
       className={cn(
-        "group flex items-center h-[36px] hover:bg-[#1b1f2a] cursor-pointer text-[12px] text-[#F8FAFC] transition-all duration-150 border-b border-white/[0.02]",
-        level > 0 && "child"
+        "group flex items-center h-[36px] hover:bg-[#1b1f2a] cursor-pointer text-[13px] text-[#F8FAFC] transition-all duration-150",
+        level > 0 && "selected"
       )}
-      style={{ paddingLeft: level > 0 ? '32px' : '16px' }}
+      style={{ paddingLeft: level > 0 ? '28px' : '8px' }}
     >
-      <div className="flex items-center gap-1.5 flex-1 min-w-0">
+      <div className="flex items-center gap-2 flex-1 min-w-0">
         {hasChildren ? (
-          isExpanded ? <ChevronDown className="w-3 h-3 shrink-0" /> : <ChevronRight className="w-3 h-3 shrink-0" />
+          isExpanded ? <ChevronDown className="w-3.5 h-3.5 shrink-0 opacity-40" /> : <ChevronRight className="w-3.5 h-3.5 shrink-0 opacity-40" />
         ) : (
-          <div className="w-3" />
+          <div className="w-3.5" />
         )}
         
-        {Icon && <Icon className="w-3.5 h-3.5 shrink-0 text-primary/70" />}
-        <span className="truncate font-medium tracking-tight uppercase">{label}</span>
+        {Icon && <Icon className="w-4 h-4 shrink-0 text-[#6366F1]" />}
+        <span className="truncate font-medium">{label}</span>
       </div>
 
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity pr-1">
@@ -72,17 +72,17 @@ export const SideNav: React.FC = () => {
   return (
     <div className="h-full flex flex-col bg-[#12141C] select-none">
       {/* Header */}
-      <div className="h-12 px-4 flex items-center justify-between border-b border-[#2A2D3A] bg-[#171A24] shrink-0">
-        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#6366F1]">Explorer</span>
+      <div className="h-[48px] px-4 flex items-center justify-between border-b border-[#2A2D3A] bg-[#171A24] shrink-0">
+        <span className="text-[13px] font-bold text-[#F8FAFC]">Explorer</span>
         <div className="flex items-center gap-1">
-          <button className="p-1.5 hover:bg-white/5 rounded transition-colors">
+          <button className="w-8 h-8 rounded-lg border border-[#2A2D3A] bg-[#171A24] flex items-center justify-center hover:bg-white/5 transition-all">
             <Layout className="w-3.5 h-3.5 text-[#94A3B8]" />
           </button>
         </div>
       </div>
 
       {/* Explorer Content */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar py-0">
+      <div className="flex-1 overflow-y-auto custom-scrollbar py-2">
         <ExplorerItem label="Projeto Atual" icon={Home} hasChildren isExpanded />
         
         <div className="border-b border-white/[0.03] mb-1">

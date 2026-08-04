@@ -39,14 +39,13 @@ export const InspectorPanel: React.FC = () => {
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
             className={cn(
-              "flex items-center gap-2 px-4 whitespace-nowrap text-[11px] font-bold uppercase tracking-widest transition-all border-b-2 h-full",
+              "flex items-center gap-2 px-4 whitespace-nowrap text-[12px] font-bold transition-all border-b-2 h-full",
               activeTab === tab.id 
-                ? "border-[#6366F1] text-[#F8FAFC] bg-[#6366F1]/10" 
-
-                : "border-transparent text-muted-foreground hover:text-foreground hover:bg-white/5"
+                ? "border-[#6366F1] text-[#F8FAFC] bg-[#6366F1]/5" 
+                : "border-transparent text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5"
             )}
           >
-            <tab.icon className="w-3.5 h-3.5" />
+            <tab.icon className={cn("w-4 h-4", activeTab === tab.id ? "text-[#6366F1]" : "text-[#94A3B8]")} />
             <span className="hidden sm:inline">{tab.label}</span>
           </button>
         ))}
@@ -56,12 +55,12 @@ export const InspectorPanel: React.FC = () => {
         {activeTab === 'ia' && (
           <div className="flex flex-col h-full">
             {/* IA Context Info */}
-            <div className="px-4 py-2 bg-[#6366F1]/5 border-b border-[#6366F1]/10 flex items-center justify-between shrink-0">
+            <div className="px-4 h-[38px] bg-[#6366F1]/5 border-b border-[#6366F1]/10 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#6366F1] animate-pulse shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
+                <div className="w-2 h-2 rounded-full bg-[#6366F1] animate-pulse" />
                 <span className="text-[10px] font-bold text-[#6366F1] uppercase tracking-widest">IA Analisando Projeto</span>
               </div>
-              <span className="text-[9px] text-[#94A3B8] uppercase font-bold tracking-tighter">DeepSeek V3</span>
+              <span className="text-[9px] text-[#94A3B8] uppercase font-bold tracking-widest">DeepSeek V3</span>
             </div>
 
             <ScrollArea className="flex-1">
@@ -108,19 +107,19 @@ export const InspectorPanel: React.FC = () => {
             </ScrollArea>
 
             {/* Input Area */}
-            <div className="p-4 border-t border-border/30 bg-black/20">
+            <div className="p-4 border-t border-[#2A2D3A] bg-[#0D0D12]">
               <div className="flex flex-wrap gap-2 mb-3">
-                <button className="px-3 py-1 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold uppercase text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all flex items-center gap-1.5">
+                <button className="px-3 py-1.5 rounded-lg bg-[#171A24] border border-[#2A2D3A] text-[10px] font-bold uppercase text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5 transition-all flex items-center gap-1.5">
                   <Sun className="w-3 h-3" /> Iluminação
                 </button>
-                <button className="px-3 py-1 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold uppercase text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all flex items-center gap-1.5">
+                <button className="px-3 py-1.5 rounded-lg bg-[#171A24] border border-[#2A2D3A] text-[10px] font-bold uppercase text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5 transition-all flex items-center gap-1.5">
                    + Prateleira
                 </button>
               </div>
               <div className="relative group">
                 <textarea 
                   placeholder="Comando de voz ou texto..."
-                  className="w-full bg-[#0D0D12] border border-[#2A2D3A] rounded-lg p-3 pr-10 text-[12px] min-h-[100px] focus:outline-none focus:border-[#6366F1]/50 transition-all resize-none placeholder:text-[#94A3B8]/20 text-[#F8FAFC] font-medium"
+                  className="w-full bg-[#0D0D12] border border-[#2A2D3A] rounded-lg p-3 pr-10 text-[13px] min-h-[100px] focus:outline-none focus:border-[#6366F1]/50 transition-all resize-none placeholder:text-[#94A3B8]/20 text-[#F8FAFC] font-medium"
                 />
                 <button className="absolute bottom-4 right-4 p-2 rounded-lg bg-[#6366F1] text-white shadow-lg shadow-[#6366F1]/20 hover:scale-105 active:scale-95 transition-all">
                   <Send className="w-3.5 h-3.5" />
