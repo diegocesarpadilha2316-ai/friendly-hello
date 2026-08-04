@@ -5,6 +5,7 @@ import { PlannerEditorProvider } from "@/modules/planner/shared";
 import { Viewport3D } from "@/modules/planner/shared/editor-3d";
 
 export const Route = createFileRoute("/_authenticated/planner/ia")({
+  ssr: false,
   head: () => ({
     meta: [
       { title: "IA de Projeto — Dioris Planner" },
