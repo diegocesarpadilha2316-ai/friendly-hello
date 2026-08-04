@@ -102,8 +102,11 @@ button{color:inherit;cursor:pointer}
   .object-tools button{width:43px;height:43px}
   .minimap{width:104px;height:69px;bottom:10px}
   .viewport-status{display:none}
-  .mobile-nav{display:flex;align-items:center;justify-content:space-around;background:#0c0e14;border-top:1px solid var(--line);z-index:100;position:relative}
-  .mobile-nav button{display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:transparent;color:var(--muted);font-size:10px;padding:8px 0}
+  .mobile-nav{display:flex;align-items:center;justify-content:space-around;background:#0c0e14;border-top:1px solid var(--line);z-index:200;position:relative}
+  .mobile-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:0;background:transparent;color:var(--muted);font-size:10px;padding:8px 0;width:25%;min-height:58px}
+  .mobile-nav button span{font-weight:500;opacity:0.8}
+  .mobile-nav button svg{opacity:0.7}
+
   .mobile-backdrop{position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.7);opacity:0;pointer-events:none;transition:opacity .2s;display:block}
   .mobile-backdrop.show{opacity:1;pointer-events:auto}
 
