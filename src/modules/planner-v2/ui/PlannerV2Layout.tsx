@@ -38,19 +38,19 @@ export const PlannerV2Layout: React.FC = () => {
             maxSize={30}
             collapsible 
             onResize={setLeftPanelWidth}
-            className={cn("bg-[#12141C] border-r border-[#2A2D3A] transition-all duration-300 ease-in-out shadow-xl z-20")}
+            className={cn("bg-[#12141C] border-r border-[#2A2D3A] transition-all duration-300 ease-in-out shadow-xl z-20 overflow-hidden flex flex-col")}
           >
             <SideNav />
           </Panel>
           
-          <PanelResizeHandle id="explorer-resizer" className="w-1 bg-border/50 hover:bg-primary/50 transition-colors" />
+          <PanelResizeHandle id="explorer-resizer" className="w-[2px] bg-[#2A2D3A] hover:bg-[#6366F1]/50 transition-colors cursor-col-resize" />
 
           {/* Viewport */}
-          <Panel id="viewport-panel" className="bg-[#0d0d0f] relative shadow-inner">
+          <Panel id="viewport-panel" className="bg-[#0A0B10] relative shadow-inner overflow-hidden flex-1">
             <V2Viewport />
           </Panel>
 
-          <PanelResizeHandle id="inspector-resizer" className="w-1 bg-border/50 hover:bg-primary/50 transition-colors" />
+          <PanelResizeHandle id="inspector-resizer" className="w-[2px] bg-[#2A2D3A] hover:bg-[#6366F1]/50 transition-colors cursor-col-resize" />
 
           {/* AI Inspector */}
           <Panel 
@@ -60,7 +60,7 @@ export const PlannerV2Layout: React.FC = () => {
             maxSize={40}
             collapsible
             onResize={setRightPanelWidth}
-            className={cn("bg-[#12141C] border-l border-[#2A2D3A] transition-all duration-300 ease-in-out shadow-xl z-20")}
+            className={cn("bg-[#12141C] border-l border-[#2A2D3A] transition-all duration-300 ease-in-out shadow-xl z-20 overflow-hidden flex flex-col")}
           >
             <InspectorPanel />
           </Panel>
