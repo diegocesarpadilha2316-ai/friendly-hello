@@ -45,9 +45,10 @@ export const LegacyAssemblyRenderer: React.FC<LegacyAssemblyRendererProps> = ({ 
         case 'kitchen':
           return kitchenFamily.build({
             ...commonSpec,
-            type: 'balcao',
+            kind: 'balcao',
             finishId: 'branco-tx',
           });
+
         case 'bathroom':
           return bathroomFamily.build({
             ...commonSpec,
