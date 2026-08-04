@@ -1,4 +1,11 @@
-export type FurnitureFamily = 'kitchen-base-cabinet';
+export type FurnitureFamily = 
+  | 'kitchen-base-cabinet'
+  | 'wardrobe'
+  | 'bathroom'
+  | 'laundry'
+  | 'dresser'
+  | 'kitchen';
+
 
 export type KitchenBaseVariant = 
   | 'one-door' 

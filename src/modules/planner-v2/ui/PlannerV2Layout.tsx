@@ -88,7 +88,7 @@ export const PlannerV2Layout: React.FC = () => {
                       <Button 
                         variant="outline" 
                         className="w-full justify-start gap-3 h-14 bg-white/5 border-white/10 hover:bg-white/10 group transition-all"
-                        onClick={() => addItem('one-door')}
+                        onClick={() => addItem('kitchen-base-cabinet', 'one-door' as any)}
                       >
                         <div className="w-10 h-10 rounded bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
                           <Plus className="w-5 h-5 text-primary" />
@@ -99,7 +99,59 @@ export const PlannerV2Layout: React.FC = () => {
                         </div>
                       </Button>
                     </div>
+                    
+                    <div className="space-y-2">
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-widest px-1 block">Móveis Paramétricos (V1 Engine)</span>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="flex-col h-16 text-[10px] gap-1"
+                          onClick={() => addItem('wardrobe')}
+                        >
+                          <Plus className="w-3 h-3" />
+                          Closet
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="flex-col h-16 text-[10px] gap-1"
+                          onClick={() => addItem('kitchen')}
+                        >
+                          <Plus className="w-3 h-3" />
+                          Cozinha
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="flex-col h-16 text-[10px] gap-1"
+                          onClick={() => addItem('bathroom')}
+                        >
+                          <Plus className="w-3 h-3" />
+                          Banheiro
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="flex-col h-16 text-[10px] gap-1"
+                          onClick={() => addItem('laundry')}
+                        >
+                          <Plus className="w-3 h-3" />
+                          Lavanderia
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="flex-col h-16 text-[10px] gap-1"
+                          onClick={() => addItem('dresser')}
+                        >
+                          <Plus className="w-3 h-3" />
+                          Gaveteiro
+                        </Button>
+                      </div>
+                    </div>
                   </div>
+
 
                   <div className="mt-auto border-t bg-black/20 p-4">
                     <div className="flex items-center gap-2 mb-2">

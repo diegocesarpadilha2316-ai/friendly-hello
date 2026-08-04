@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { RoomSpec, DEFAULT_ROOM, PRESETS, generateRoomGeometry, RoomResult, validateRoomSpec } from '../room';
-import { FurnitureItem } from '../furniture/types';
-import { createDefaultCabinet } from '../furniture/defaults';
+import { FurnitureItem, FurnitureFamily } from '../furniture/types';
+import { createFurnitureItem } from '../furniture/defaults';
+
 
 interface PlannerV2State {
   roomSpec: RoomSpec;
@@ -19,7 +20,7 @@ interface PlannerV2State {
   setViewMode: (mode: 'technical' | 'presentation') => void;
   
   // Furniture Actions
-  addItem: (variant?: string) => void;
+  addItem: (family?: FurnitureFamily, variant?: string) => void;
   removeItem: (id: string) => void;
   updateItem: (id: string, updates: Partial<FurnitureItem>) => void;
   selectItem: (id: string | null) => void;
@@ -56,9 +57,10 @@ export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
 
   setViewMode: (mode) => set({ viewMode: mode }),
 
-  addItem: (variant = 'one-door') => {
+  addItem: (family = 'kitchen-base-cabinet', variant = 'one-door') => {
     const id = `item-${Math.random().toString(36).substr(2, 9)}`;
-    const newItem = createDefaultCabinet(id, variant);
+    const newItem = createFurnitureItem(id, family as FurnitureFamily, variant);
+
     const { roomSpec } = get();
     
     // Position it against the back wall (z = -depth/2)
