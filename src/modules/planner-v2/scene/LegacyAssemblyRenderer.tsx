@@ -47,7 +47,8 @@ export const LegacyAssemblyRenderer: React.FC<LegacyAssemblyRendererProps> = ({ 
             ...commonSpec,
             kind: 'balcao',
             finishId: 'branco-tx',
-          });
+          } as any);
+
 
         case 'bathroom':
           return bathroomFamily.build({

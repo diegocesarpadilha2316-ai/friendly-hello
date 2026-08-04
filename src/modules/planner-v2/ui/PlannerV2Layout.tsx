@@ -88,7 +88,7 @@ export const PlannerV2Layout: React.FC = () => {
                       <Button 
                         variant="outline" 
                         className="w-full justify-start gap-3 h-14 bg-white/5 border-white/10 hover:bg-white/10 group transition-all"
-                        onClick={() => addItem('kitchen-base-cabinet', 'one-door')}
+                        onClick={() => addItem('kitchen-base-cabinet', 'one-door' as any)}
                       >
                         <div className="w-10 h-10 rounded bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
                           <Plus className="w-5 h-5 text-primary" />
