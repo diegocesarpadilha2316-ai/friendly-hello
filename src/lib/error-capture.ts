@@ -8,15 +8,12 @@ function record(error: unknown) {
   lastCapturedError = { error, at: Date.now() };
 }
 
-// Disabled for stabilization
-/*
 if (typeof globalThis.addEventListener === "function") {
   globalThis.addEventListener("error", (event) => record((event as ErrorEvent).error ?? event));
   globalThis.addEventListener("unhandledrejection", (event) =>
     record((event as PromiseRejectionEvent).reason),
   );
 }
-*/
 
 export function consumeLastCapturedError(): unknown {
   if (!lastCapturedError) return undefined;
