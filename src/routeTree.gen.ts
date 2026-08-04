@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as PlannerV2RouteImport } from './routes/planner-v2'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PublicRouteImport } from './routes/_public'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
@@ -102,11 +101,6 @@ import { Route as AuthenticatedPlannerProjetosProjectIdRouteImport } from './rou
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PlannerV2Route = PlannerV2RouteImport.update({
-  id: '/planner-v2',
-  path: '/planner-v2',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -589,7 +583,6 @@ const AuthenticatedPlannerProjetosProjectIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/auth': typeof AuthRoute
-  '/planner-v2': typeof PlannerV2Route
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/api-gateway': typeof AuthenticatedApiGatewayRoute
@@ -678,7 +671,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/auth': typeof AuthRoute
-  '/planner-v2': typeof PlannerV2Route
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/api-gateway': typeof AuthenticatedApiGatewayRoute
@@ -766,7 +758,6 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
   '/auth': typeof AuthRoute
-  '/planner-v2': typeof PlannerV2Route
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/api-gateway': typeof AuthenticatedApiGatewayRoute
@@ -858,7 +849,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/planner-v2'
     | '/reset-password'
     | '/admin'
     | '/api-gateway'
@@ -947,7 +937,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/planner-v2'
     | '/reset-password'
     | '/admin'
     | '/api-gateway'
@@ -1034,7 +1023,6 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/_public'
     | '/auth'
-    | '/planner-v2'
     | '/reset-password'
     | '/_authenticated/admin'
     | '/_authenticated/api-gateway'
@@ -1126,7 +1114,6 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   PublicRoute: typeof PublicRouteWithChildren
   AuthRoute: typeof AuthRoute
-  PlannerV2Route: typeof PlannerV2Route
   ResetPasswordRoute: typeof ResetPasswordRoute
   ApiAiChatRoute: typeof ApiAiChatRoute
 }
@@ -1138,13 +1125,6 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/planner-v2': {
-      id: '/planner-v2'
-      path: '/planner-v2'
-      fullPath: '/planner-v2'
-      preLoaderRoute: typeof PlannerV2RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -2022,7 +2002,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   PublicRoute: PublicRouteWithChildren,
   AuthRoute: AuthRoute,
-  PlannerV2Route: PlannerV2Route,
   ResetPasswordRoute: ResetPasswordRoute,
   ApiAiChatRoute: ApiAiChatRoute,
 }
