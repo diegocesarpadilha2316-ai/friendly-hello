@@ -48,7 +48,7 @@ export function PlannerV2Shell({
   return (
     <div className="dioris-shell" style={shellStyle}>
       <TopToolbar
-        projectName={`${projectName} — ${clientName}`}
+        projectName={projectName}
         toolMode={state.toolMode}
         onToolModeChange={(toolMode) => patch({ toolMode })}
         onSave={events.onSave}
@@ -192,17 +192,18 @@ export function PlannerV2Shell({
       </main>
 
       <footer className="dioris-statusbar">
-        <span className="is-ready">● READY</span>
-        <span>FPS {fps}</span>
-        <span>UNIDADE mm</span>
-        <span>SNAP ATIVO</span>
-        <span className="dioris-status-spacer" />
+        <span className="is-ready">● PRONTO</span>
+        <span>MÉTRICO (mm)</span>
+        <span>AUTO-SNAP</span>
+        <div className="dioris-status-spacer" />
+        <span>OBJETOS: {tree.length}</span>
+        <span>FPS: {fps}</span>
         <span>
           {autosaveStatus === "saved"
-            ? "AUTOSAVE ✓"
+            ? "SALVO ✓"
             : autosaveStatus === "saving"
               ? "SALVANDO..."
-              : "ERRO AO SALVAR"}
+              : "ERRO"}
         </span>
       </footer>
 
