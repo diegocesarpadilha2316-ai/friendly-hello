@@ -76,7 +76,10 @@ export const createFurnitureItem = (id: string, family: FurnitureFamily, variant
 };
 
 export const MATERIALS = [
-  { id: 'white-matte', name: 'Branco Fosco', color: '#f8f9fa' },
-  { id: 'graphite', name: 'Grafite', color: '#495057' },
-  { id: 'oak', name: 'Carvalho', color: '#c4a484' },
+  { id: 'white-matte', name: 'MDF Branco', color: '#ffffff' },
+  { id: 'wood', name: 'MDF Amadeirado', color: '#a68a64' },
+  { id: 'taupe', name: 'MDF Taupe', color: '#b8afa4' },
+  { id: 'graphite', name: 'MDF Grafite', color: '#3d3d3d' },
+  { id: 'stone', name: 'Pedra Clara', color: '#e8e6e3' },
+  { id: 'inox', name: 'Inox', color: '#d1d1d1' },
 ];
