@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   Plus, Layers, Map, Library, ChevronLeft, ChevronRight, Search, 
-  Package, LayoutPanelLeft, MousePointer2 
+  Package, LayoutPanelLeft, MousePointer2, Palette 
 } from 'lucide-react';
 import { usePlannerV2Store } from '../../core/store';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 
 export const SideNav: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'library' | 'structure' | 'rooms' | 'layers'>('library');
+  const [activeTab, setActiveTab] = useState<'library' | 'structure' | 'rooms' | 'materials'>('library');
   const { addItem } = usePlannerV2Store();
 
   return (
@@ -18,7 +18,7 @@ export const SideNav: React.FC = () => {
         {[
           { id: 'library', icon: Library, label: 'Biblioteca' },
           { id: 'structure', icon: Layers, label: 'Estrutura' },
-          { id: 'rooms', icon: Map, label: 'Ambientes' },
+          { id: 'rooms', icon: Map, label: 'Ambiente' },
           { id: 'materials', icon: Palette, label: 'Materiais' },
         ].map((tab) => (
           <button

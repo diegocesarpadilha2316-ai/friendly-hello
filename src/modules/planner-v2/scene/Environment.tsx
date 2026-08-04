@@ -8,10 +8,10 @@ export const DiorisEnvironment: React.FC = () => {
 
   return (
     <>
-      <PerspectiveCamera makeDefault position={[5, 4, 8]} fov={35} />
+      <PerspectiveCamera makeDefault position={[6, 4, 8]} fov={35} />
       
       {/* Luz Natural/Ambiente */}
-      <Environment preset="neutral" />
+      <Environment preset="city" />
       
       {/* Luz Direcional para Sombras Suaves (Sol/Janela) */}
       <directionalLight
