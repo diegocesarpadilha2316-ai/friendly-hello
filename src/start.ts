@@ -8,25 +8,15 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
   try {
     return await next();
   } catch (error) {
-    // Se for um erro do TanStack (como 404), deixa passar
     if (error != null && typeof error === "object" && "statusCode" in error) {
       throw error;
     }
     
-    // Log detalhado para identificar o erro real no ambiente de produção
-    console.error("CRITICAL_BOOTSTRAP_ERROR:", {
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-      timestamp: new Date().toISOString()
-    });
+    console.error("CRITICAL_BOOTSTRAP_ERROR:", error);
 
-    // Em produção, retorna uma página de erro 500 amigável com header de debug
     return new Response(renderErrorPage(), {
       status: 500,
-      headers: { 
-        "content-type": "text/html; charset=utf-8",
-        "x-dioris-error": error instanceof Error ? error.message.replace(/[^\x20-\x7E]/g, "") : "internal_error"
-      },
+      headers: { "content-type": "text/html; charset=utf-8" },
     });
   }
 });
