@@ -9,42 +9,45 @@ import { SelectionLayer } from './SelectionLayer';
 import { Select } from '@react-three/postprocessing';
 
 export const SceneRoot: React.FC = () => {
-  const { roomResult, roomSpec, items, itemsCount } = usePlannerV2Store((state: any) => ({
+  const { roomResult, roomSpec, itemsCount } = usePlannerV2Store((state: any) => ({
     roomResult: state.roomResult,
     roomSpec: state.roomSpec,
-    items: state.items,
     itemsCount: state.items.length
   }));
 
-  const addItem = usePlannerV2Store((state) => state.addItem);
-  const setItems = (items: any[]) => {
-    // We don't have a direct setItems in store yet, but we can add items one by one
-    // or better, the user asked for a "local demonstration preset".
-    // "Não persistir no banco. Não conectar IA. Não usar placeholders."
-  };
-
-  const [demoLoaded, setDemoLoaded] = useState(false);
+  // We use local state for the demo items to avoid polluting the global store 
+  // until the user actually starts editing.
+  const [localItems, setLocalItems] = useState<any[]>([]);
+  const items = usePlannerV2Store((state: any) => state.items);
 
   useEffect(() => {
-    // If scene is empty, load demo items (only locally for the viewport session)
-    if (itemsCount === 0 && !demoLoaded) {
-      const demoItems = createDemoScene(roomResult);
-      // For now, let's just populate the store if it's empty
-      demoItems.forEach(item => {
-        // addItem handles store update
-        // But createDemoScene returns full items. 
-        // We'll just push them to store manually for this demo phase.
-      });
-      setDemoLoaded(true);
+    // If global store is empty, show the demo items
+    if (itemsCount === 0) {
+      setLocalItems(createDemoScene(roomResult));
+    } else {
+      setLocalItems([]);
     }
-  }, [itemsCount, roomResult, demoLoaded]);
+  }, [itemsCount, roomResult]);
 
   return (
     <>
       <CameraRig />
       <LightingRig />
+      
       <RoomLayer room={roomResult} showCeiling={!!roomSpec.showCeiling} />
+      
+      {/* Furniture Layer will render global items from store */}
       <FurnitureLayer />
+
+      {/* Local Demo Items (not in store) */}
+      {itemsCount === 0 && (
+        <group name="demo-layer" opacity={0.8}>
+          {localItems.map((item) => (
+            <FurnitureLayer key={item.id} demoItem={item} />
+          ))}
+        </group>
+      )}
+
       <SelectionLayer />
     </>
   );
