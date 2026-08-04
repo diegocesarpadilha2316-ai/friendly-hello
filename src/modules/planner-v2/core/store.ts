@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { RoomSpec, DEFAULT_ROOM, PRESETS, generateRoomGeometry, RoomResult, validateRoomSpec } from '../room';
 import { FurnitureItem, FurnitureFamily } from '../furniture/types';
 import { createFurnitureItem } from '../furniture/defaults';
+import { MODERN_KITCHEN_ROOM, generateKitchenFurniture } from './default-scene';
 
 
 interface PlannerV2State {
@@ -39,17 +40,17 @@ interface PlannerV2State {
 }
 
 export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
-  roomSpec: DEFAULT_ROOM,
-  roomResult: generateRoomGeometry(DEFAULT_ROOM),
+  roomSpec: MODERN_KITCHEN_ROOM,
+  roomResult: generateRoomGeometry(MODERN_KITCHEN_ROOM),
   errors: [],
-  viewMode: 'technical',
+  viewMode: 'presentation',
   useViewportNext: false,
   leftPanelCollapsed: false,
   rightPanelCollapsed: false,
   leftPanelWidth: 20,
   rightPanelWidth: 25,
   
-  items: [],
+  items: generateKitchenFurniture(),
   selectedId: null,
 
   setRoomSpec: (updates) => {
