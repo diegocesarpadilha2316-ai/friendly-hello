@@ -20,7 +20,6 @@ import { Reveal, GradientText, SectionEyebrow } from "@/core/components/public/P
 import { app } from "@/core/config";
 
 export const Route = createFileRoute("/_public/")({
-  ssr: false,
   head: () => ({
     meta: [
       { title: `${app.name} — Inteligência que conecta tudo` },
