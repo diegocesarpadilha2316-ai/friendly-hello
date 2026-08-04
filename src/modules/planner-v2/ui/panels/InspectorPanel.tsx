@@ -119,11 +119,10 @@ export const InspectorPanel: React.FC = () => {
               </div>
               <div className="relative group">
                 <textarea 
-                  placeholder="Peça algo ao IA Copiloto..."
-                  className="w-full bg-[#0A0B10] border border-[#2A2D3A] rounded-lg p-3 pr-10 text-[13px] min-h-[80px] focus:outline-none focus:border-[#6366F1]/50 transition-all resize-none placeholder:text-[#94A3B8]/30 text-[#F8FAFC]"
-
+                  placeholder="Comando de voz ou texto..."
+                  className="w-full bg-[#0D0D12] border border-[#2A2D3A] rounded-lg p-3 pr-10 text-[12px] min-h-[100px] focus:outline-none focus:border-[#6366F1]/50 transition-all resize-none placeholder:text-[#94A3B8]/20 text-[#F8FAFC] font-medium"
                 />
-                <button className="absolute bottom-4 right-4 p-2 rounded-lg bg-primary text-white shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                <button className="absolute bottom-4 right-4 p-2 rounded-lg bg-[#6366F1] text-white shadow-lg shadow-[#6366F1]/20 hover:scale-105 active:scale-95 transition-all">
                   <Send className="w-3.5 h-3.5" />
                 </button>
               </div>
