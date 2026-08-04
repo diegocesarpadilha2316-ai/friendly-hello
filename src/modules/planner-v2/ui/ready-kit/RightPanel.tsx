@@ -106,7 +106,7 @@ export function RightPanel() {
                     type="number"
                     step="0.05"
                     value={selected?.size[0] ?? 0}
-                    onChange={(event) =>
+                    onChange={(event: any) =>
                       selected &&
                       updateSelected({
                         size: [
@@ -124,7 +124,7 @@ export function RightPanel() {
                     type="number"
                     step="0.05"
                     value={selected?.size[1] ?? 0}
-                    onChange={(event) =>
+                    onChange={(event: any) =>
                       selected &&
                       updateSelected({
                         size: [
@@ -142,7 +142,7 @@ export function RightPanel() {
                     type="number"
                     step="0.05"
                     value={selected?.size[2] ?? 0}
-                    onChange={(event) =>
+                    onChange={(event: any) =>
                       selected &&
                       updateSelected({
                         size: [
