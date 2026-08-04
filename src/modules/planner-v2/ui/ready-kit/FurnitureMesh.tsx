@@ -1,5 +1,5 @@
 import { Edges } from "@react-three/drei";
-import type { FurnitureItem } from "../types";
+import type { FurnitureItem } from "./types";
 import { usePlannerStore } from "./usePlannerStoreReady";
 
 const colors: Record<string, string> = {
