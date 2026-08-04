@@ -35,7 +35,7 @@ export function CopilotPanel({
   return (
     <>
       <div className="dioris-right-tabs">
-        {(["chat", "inspector", "materials", "hardware"] as const).map((tab) => (
+        {(["chat", "inspector", "materials", "hardware", "lighting"] as const).map((tab) => (
           <button
             type="button"
             key={tab}
@@ -43,12 +43,14 @@ export function CopilotPanel({
             onClick={() => onTabChange(tab)}
           >
             {tab === "chat"
-              ? "Chat"
+              ? "IA"
               : tab === "inspector"
                 ? "Inspetor"
                 : tab === "materials"
                   ? "Materiais"
-                  : "Ferragens"}
+                  : tab === "hardware"
+                    ? "Ferragens"
+                    : "Luz"}
           </button>
         ))}
       </div>
