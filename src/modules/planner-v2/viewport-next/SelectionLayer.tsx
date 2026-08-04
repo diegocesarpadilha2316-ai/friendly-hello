@@ -1,11 +1,11 @@
 import React from 'react';
-import { usePlannerV2Store } from '../../core/store';
+import { usePlannerV2Store } from '../core/store';
 import { Html } from '@react-three/drei';
 
 export const SelectionLayer: React.FC = () => {
-  const selectedId = usePlannerV2Store((state) => state.selectedId);
-  const items = usePlannerV2Store((state) => state.items);
-  const selectedItem = items.find(i => i.id === selectedId);
+  const selectedId = usePlannerV2Store((state: any) => state.selectedId);
+  const items = usePlannerV2Store((state: any) => state.items);
+  const selectedItem = items.find((i: any) => i.id === selectedId);
 
   if (!selectedItem) return null;
 

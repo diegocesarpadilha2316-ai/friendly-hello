@@ -8,7 +8,7 @@ import { createDemoScene } from './demo';
 import { SelectionLayer } from './SelectionLayer';
 
 export const SceneRoot: React.FC = () => {
-  const { roomResult, roomSpec, items, itemsCount } = usePlannerV2Store((state) => ({
+  const { roomResult, roomSpec, items, itemsCount } = usePlannerV2Store((state: any) => ({
     roomResult: state.roomResult,
     roomSpec: state.roomSpec,
     items: state.items,
