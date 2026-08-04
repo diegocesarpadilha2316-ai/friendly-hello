@@ -9,7 +9,7 @@ import { SideNav } from './panels/SideNav';
 import { InspectorPanel } from './panels/InspectorPanel';
 
 export const PlannerV2Layout: React.FC = () => {
-  const { leftPanelCollapsed, rightPanelCollapsed, setLeftPanelCollapsed, setRightPanelCollapsed } = usePlannerV2Store();
+  const { leftPanelCollapsed, rightPanelCollapsed, setLeftPanelCollapsed, setRightPanelCollapsed, leftPanelWidth, rightPanelWidth, setLeftPanelWidth, setRightPanelWidth } = usePlannerV2Store();
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   if (isMobile) {
@@ -31,9 +31,12 @@ export const PlannerV2Layout: React.FC = () => {
           {/* Explorer */}
           <Panel 
             id="explorer-panel"
-            defaultSize={20} 
-            minSize={15} 
+            defaultSize={leftPanelWidth} 
+            minSize={10} 
             maxSize={30}
+            onCollapse={() => setLeftPanelCollapsed(true)}
+            onExpand={() => setLeftPanelCollapsed(false)}
+            onResize={(size) => setLeftPanelWidth(size)}
             collapsible 
             className={cn("bg-[#0f0f12] border-r border-border/50 transition-all duration-300 ease-in-out")}
           >
@@ -52,9 +55,12 @@ export const PlannerV2Layout: React.FC = () => {
           {/* AI Inspector */}
           <Panel 
             id="inspector-panel"
-            defaultSize={25} 
-            minSize={20} 
+            defaultSize={rightPanelWidth} 
+            minSize={15} 
             maxSize={40}
+            onCollapse={() => setRightPanelCollapsed(true)}
+            onExpand={() => setRightPanelCollapsed(false)}
+            onResize={(size) => setRightPanelWidth(size)}
             collapsible
             className={cn("bg-[#0f0f12] border-l border-border/50 transition-all duration-300 ease-in-out")}
           >

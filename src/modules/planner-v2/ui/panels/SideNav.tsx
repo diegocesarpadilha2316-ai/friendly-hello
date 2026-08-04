@@ -70,7 +70,7 @@ export const SideNav: React.FC = () => {
   const { items } = usePlannerV2Store();
 
   return (
-    <div className="h-full flex flex-col bg-[#0f0f12] select-none border-r border-border/50">
+    <div className="h-full flex flex-col bg-[#12141C] select-none border-r border-[#2A2D3A]">
       {/* Header */}
       <div className="h-10 px-4 flex items-center justify-between border-b border-border/30 bg-black/20">
         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/80">Projeto</span>
@@ -117,7 +117,7 @@ export const SideNav: React.FC = () => {
       </div>
 
       {/* Footer Info */}
-      <div className="p-3 border-t border-border/30 bg-black/10">
+      <div className="p-3 border-t border-[#2A2D3A] bg-black/10">
         <div className="flex items-center justify-between text-[9px] text-muted-foreground font-bold uppercase tracking-widest">
           <span>Itens: {items.length}</span>
           <span>V2.4.0</span>
