@@ -54,7 +54,7 @@ export function ProjectExplorer({
           className={`dioris-tree-row ${
             selectedId === item.id ? "is-selected" : ""
           }`}
-          style={{ paddingLeft: collapsed ? 11 : 10 + depth * 18 }}
+          style={{ paddingLeft: collapsed ? 24 : 10 + depth * 18 }}
           onClick={() => onSelect?.(item.id)}
           title={collapsed ? item.name : undefined}
         >

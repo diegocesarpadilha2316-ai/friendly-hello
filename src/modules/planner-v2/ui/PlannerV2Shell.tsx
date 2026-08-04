@@ -112,7 +112,7 @@ export function PlannerV2Shell({
           ) : (
             <ProjectExplorer
               items={tree}
-              collapsed={false}
+              collapsed={true}
               selectedId={selectedId}
               onSelect={(id) => {
                 patch({ selectedFurnitureId: id });
