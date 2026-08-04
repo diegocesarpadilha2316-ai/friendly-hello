@@ -9,6 +9,7 @@ interface PlannerV2State {
   roomResult: RoomResult;
   errors: string[];
   viewMode: 'technical' | 'presentation';
+  useViewportNext: boolean;
   
   // Furniture State
   items: FurnitureItem[];
@@ -18,6 +19,7 @@ interface PlannerV2State {
   setRoomSpec: (spec: Partial<RoomSpec>) => void;
   applyPreset: (name: string) => void;
   setViewMode: (mode: 'technical' | 'presentation') => void;
+  setUseViewportNext: (use: boolean) => void;
   
   // Furniture Actions
   addItem: (family?: FurnitureFamily, variant?: string) => void;
@@ -33,6 +35,7 @@ export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
   roomResult: generateRoomGeometry(DEFAULT_ROOM),
   errors: [],
   viewMode: 'technical',
+  useViewportNext: true, // Habilitado para validação imediata
   
   items: [],
   selectedId: null,
@@ -56,6 +59,7 @@ export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
   },
 
   setViewMode: (mode) => set({ viewMode: mode }),
+  setUseViewportNext: (use) => set({ useViewportNext: use }),
 
   addItem: (family = 'kitchen-base-cabinet', variant = 'one-door') => {
     const id = `item-${Math.random().toString(36).substr(2, 9)}`;

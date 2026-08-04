@@ -3,8 +3,9 @@ import { usePlannerV2Store } from '../core/store';
 import { BaseCabinetMesh } from '../furniture/cabinet/BaseCabinetMesh';
 import { LegacyAssemblyRenderer } from './LegacyAssemblyRenderer';
 
-export const FurnitureRenderer: React.FC = () => {
-  const items = usePlannerV2Store((state) => state.items);
+export const FurnitureRenderer: React.FC<{ singleItemId?: string; demoItem?: any }> = ({ singleItemId, demoItem }) => {
+  const allItems = usePlannerV2Store((state) => state.items);
+  const items = demoItem ? [demoItem] : (singleItemId ? allItems.filter(i => i.id === singleItemId) : allItems);
   const selectedId = usePlannerV2Store((state) => state.selectedId);
   const selectItem = usePlannerV2Store((state) => state.selectItem);
 
