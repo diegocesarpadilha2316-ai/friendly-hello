@@ -97,21 +97,21 @@ export const TopBar: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="h-7 gap-2 text-[9px] uppercase font-bold border-white/5 bg-white/[0.03] tracking-widest">
-            <Camera className="w-3 h-3" />
+          <button className="flex items-center gap-2 h-[38px] px-3 border border-[#2A2D3A] rounded-lg text-[12px] font-bold uppercase tracking-wider text-[#F8FAFC] hover:bg-white/5 transition-all">
+            <Camera className="w-4 h-4" />
             Render
-          </Button>
-          <Button variant="outline" size="sm" className="h-7 gap-2 text-[9px] uppercase font-bold border-white/5 bg-white/[0.03] tracking-widest">
-            <Receipt className="w-3 h-3" />
+          </button>
+          <button className="flex items-center gap-2 h-[38px] px-3 border border-[#2A2D3A] rounded-lg text-[12px] font-bold uppercase tracking-wider text-[#F8FAFC] hover:bg-white/5 transition-all">
+            <Receipt className="w-4 h-4" />
             Orçamento
-          </Button>
-          <Button variant="default" size="sm" className="h-7 gap-2 text-[9px] uppercase font-bold bg-primary hover:bg-primary/90 tracking-widest">
-            <Save className="w-3 h-3" />
+          </button>
+          <button className="flex items-center gap-2 h-[38px] px-[14px] bg-gradient-to-br from-[#7C3AED] to-[#6366F1] rounded-lg text-[12px] font-bold uppercase tracking-wider text-white shadow-lg shadow-[#6366F1]/20 hover:scale-[1.02] transition-all">
+            <Save className="w-4 h-4" />
             Salvar
-          </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full border border-white/5 ml-1">
-            <Share2 className="w-3.5 h-3.5" />
-          </Button>
+          </button>
+          <button className="w-9 h-9 border border-[#2A2D3A] rounded-lg flex items-center justify-center text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5 transition-all ml-1">
+            <Share2 className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </header>
