@@ -140,7 +140,9 @@ function RootComponent() {
         <TenantProvider>
           {/* Required: nested routes render here. Layout (AppShell) lives under _authenticated. */}
           <Outlet />
-          <Toaster position="top-right" />
+          <ClientOnly>
+            <Toaster position="top-right" />
+          </ClientOnly>
         </TenantProvider>
       </AuthProvider>
     </QueryClientProvider>
