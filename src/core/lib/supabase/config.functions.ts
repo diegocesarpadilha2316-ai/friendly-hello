@@ -8,8 +8,9 @@ import { createServerFn } from "@tanstack/react-start";
 export const getPublicSupabaseConfig = createServerFn({ method: "GET" }).handler(
   async () => {
     return { 
-      url: process.env.VITE_SUPABASE_URL || "https://placeholder-project.supabase.co", 
-      publishableKey: process.env.VITE_SUPABASE_ANON_KEY || "placeholder-key" 
+      url: process.env.VITE_SUPABASE_URL!, 
+      publishableKey: process.env.VITE_SUPABASE_ANON_KEY! 
+
     };
   },
 );
