@@ -55,7 +55,7 @@ export const PlannerV2Layout: React.FC = () => {
             maxSize={30}
             collapsible 
             onResize={setLeftPanelWidth}
-            className={cn("bg-[#12141C] border-r border-[#2A2D3A] transition-all duration-300 ease-in-out shadow-xl z-20 overflow-hidden flex flex-col")}
+            className={cn("bg-[#12141C] border-r border-[#2A2D3A] transition-all duration-300 ease-in-out shadow-2xl z-20 overflow-hidden flex flex-col")}
           >
             <SideNav />
           </Panel>
@@ -77,7 +77,7 @@ export const PlannerV2Layout: React.FC = () => {
             maxSize={40}
             collapsible
             onResize={setRightPanelWidth}
-            className={cn("bg-[#12141C] border-l border-[#2A2D3A] transition-all duration-300 ease-in-out shadow-xl z-20 overflow-hidden flex flex-col")}
+            className={cn("bg-[#12141C] border-l border-[#2A2D3A] transition-all duration-300 ease-in-out shadow-2xl z-20 overflow-hidden flex flex-col")}
           >
             <InspectorPanel />
           </Panel>

@@ -55,12 +55,12 @@ export const InspectorPanel: React.FC = () => {
         {activeTab === 'ia' && (
           <div className="flex flex-col h-full">
             {/* IA Context Info */}
-            <div className="px-4 py-2 bg-[#6366F1]/5 border-b border-[#6366F1]/10 flex items-center justify-between shrink-0">
+            <div className="px-4 h-[38px] bg-[#6366F1]/5 border-b border-[#6366F1]/10 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#6366F1] animate-pulse shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
+                <div className="w-2 h-2 rounded-full bg-[#6366F1] animate-pulse" />
                 <span className="text-[10px] font-bold text-[#6366F1] uppercase tracking-widest">IA Analisando Projeto</span>
               </div>
-              <span className="text-[9px] text-[#94A3B8] uppercase font-bold tracking-tighter">DeepSeek V3</span>
+              <span className="text-[9px] text-[#94A3B8] uppercase font-bold tracking-widest">DeepSeek V3</span>
             </div>
 
             <ScrollArea className="flex-1">
@@ -107,12 +107,12 @@ export const InspectorPanel: React.FC = () => {
             </ScrollArea>
 
             {/* Input Area */}
-            <div className="p-4 border-t border-border/30 bg-black/20">
+            <div className="p-4 border-t border-[#2A2D3A] bg-[#0D0D12]">
               <div className="flex flex-wrap gap-2 mb-3">
-                <button className="px-3 py-1 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold uppercase text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all flex items-center gap-1.5">
+                <button className="px-3 py-1.5 rounded-lg bg-[#171A24] border border-[#2A2D3A] text-[10px] font-bold uppercase text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5 transition-all flex items-center gap-1.5">
                   <Sun className="w-3 h-3" /> Iluminação
                 </button>
-                <button className="px-3 py-1 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold uppercase text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all flex items-center gap-1.5">
+                <button className="px-3 py-1.5 rounded-lg bg-[#171A24] border border-[#2A2D3A] text-[10px] font-bold uppercase text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5 transition-all flex items-center gap-1.5">
                    + Prateleira
                 </button>
               </div>
