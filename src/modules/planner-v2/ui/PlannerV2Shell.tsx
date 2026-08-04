@@ -34,8 +34,8 @@ export function PlannerV2Shell({
   const shellStyle = useMemo(
     () =>
       ({
-        "--dioris-left-panel-width": `${state.leftCollapsed ? 64 : 320}px`,
-        "--dioris-right-panel-width": `${state.rightCollapsed ? 64 : 360}px`
+        "--dioris-left-panel-width": `${state.leftCollapsed ? 0 : 320}px`,
+        "--dioris-right-panel-width": `${state.rightCollapsed ? 0 : 360}px`
       }) as React.CSSProperties,
     [
       state.leftCollapsed,
