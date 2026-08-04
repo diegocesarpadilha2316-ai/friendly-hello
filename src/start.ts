@@ -5,7 +5,15 @@ import { renderErrorPage } from "./lib/error-page";
  * Middleware de erro global para capturar e logar falhas de bootstrap.
  */
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
-  return await next();
+  try {
+    return await next();
+  } catch (error) {
+    console.error("BOOTSTRAP_CRASH:", error);
+    return new Response(renderErrorPage(), {
+      status: 500,
+      headers: { "content-type": "text/html; charset=utf-8" },
+    });
+  }
 });
 
 /**

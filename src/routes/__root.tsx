@@ -106,12 +106,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
   }),
   loader: async () => {
-    return { 
-      supabaseConfig: { 
-        url: "https://placeholder-project.supabase.co", 
-        publishableKey: "placeholder-key" 
-      } 
-    };
+    try {
+      const config = await getPublicSupabaseConfig();
+      return { supabaseConfig: config };
+    } catch (err) {
+      return { 
+        supabaseConfig: { 
+          url: "https://placeholder-project.supabase.co", 
+          publishableKey: "placeholder-key" 
+        } 
+      };
+    }
   },
   shellComponent: RootShell,
   component: RootComponent,
@@ -137,11 +142,22 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const { supabaseConfig } = Route.useLoaderData();
 
+  if (typeof window === "undefined") {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider config={supabaseConfig}>
+          <TenantProvider>
+            <Outlet />
+          </TenantProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    );
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider config={supabaseConfig}>
         <TenantProvider>
-          {/* Required: nested routes render here. Layout (AppShell) lives under _authenticated. */}
           <Outlet />
           <ClientOnly>
             <Toaster position="top-right" />
