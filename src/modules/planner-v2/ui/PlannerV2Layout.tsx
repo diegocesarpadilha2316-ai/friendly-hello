@@ -1,7 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { V2Viewport } from '../viewport/V2Viewport';
-import { V2ViewportNext } from '../viewport-next';
 import { usePlannerV2Store } from '../core/store';
 import { TopBar } from '../components/TopBar';
 import { BottomBar } from '../components/BottomBar';
@@ -26,7 +25,14 @@ export const PlannerV2Layout: React.FC = () => {
           "flex-1 relative bg-[#0d0d0f] shadow-inner transition-all duration-700",
           isMobile ? "z-10" : ""
         )}>
-          {useViewportNext ? <V2ViewportNext /> : <V2Viewport />}
+          {/* Fallback para V1 se o V2 der erro ou useViewportNext estiver falso */}
+          {useViewportNext ? (
+            <div className="flex items-center justify-center h-full text-muted-foreground">
+              MODO NEXT EM MANUTENÇÃO
+            </div>
+          ) : (
+            <V2Viewport />
+          )}
         </div>
 
         {/* Right Side: Professional Inspector & AI Assistant (Fixed) */}
