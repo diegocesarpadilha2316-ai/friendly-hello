@@ -25,10 +25,11 @@ export interface AuthProviderProps {
 }
 
 export function AuthProvider({ config, children }: AuthProviderProps) {
-  const supabase = React.useMemo(
-    () => initSupabaseBrowser(config.url, config.publishableKey),
-    [config.url, config.publishableKey],
-  );
+  const supabase = React.useMemo(() => {
+    const url = config?.url || import.meta.env.VITE_SUPABASE_URL;
+    const key = config?.publishableKey || import.meta.env.VITE_SUPABASE_ANON_KEY;
+    return initSupabaseBrowser(url, key);
+  }, [config.url, config.publishableKey]);
   const [session, setSession] = React.useState<Session | null>(null);
   const [user, setUser] = React.useState<User | null>(null);
   const [loading, setLoading] = React.useState(true);

@@ -12,7 +12,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { AuthProvider } from "@/core/providers/AuthProvider";
 import { TenantProvider } from "@/core/providers/TenantProvider";
-import { getPublicSupabaseConfig } from "@/core/lib/supabase/config.functions";
+// getPublicSupabaseConfig is not imported here to avoid server-side crash during SSR
+// We'text define it in loader as a fallback or move to a safe client-side fetch if possible.
 import { Toaster } from "@/components/ui/sonner";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
@@ -28,8 +29,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
   }),
   loader: async () => {
-    const config = await getPublicSupabaseConfig();
-    return { supabaseConfig: config };
+    // Return environment variables or placeholders directly if possible.
+    // We try to avoid a server function call in the root loader during SSR if it's causing 502s.
+    return { 
+      supabaseConfig: {
+        url: import.meta.env.VITE_SUPABASE_URL || "https://placeholder-project.supabase.co",
+        publishableKey: import.meta.env.VITE_SUPABASE_ANON_KEY || "placeholder-key"
+      } 
+    };
   },
   component: RootComponent,
 });
