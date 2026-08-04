@@ -1,137 +1,182 @@
 import React from 'react';
 import { usePlannerV2Store } from '../core/store';
-import { PRESETS } from '../room/defaults';
-import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { AlertCircle, Box, Info } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Trash2, Copy, Play, Square } from 'lucide-react';
+import { MATERIALS } from '../furniture/defaults';
 
 export const PropertiesPanel: React.FC = () => {
-  const { roomSpec, setRoomSpec, applyPreset, errors, viewMode, setViewMode } = usePlannerV2Store();
+  const { 
+    roomSpec, 
+    setRoomSpec, 
+    items, 
+    selectedId, 
+    updateItem, 
+    removeItem, 
+    duplicateItem, 
+    toggleAnimation 
+  } = usePlannerV2Store();
+  
+  const selectedItem = items.find(i => i.id === selectedId);
 
-  const updateSpec = (key: string, value: any) => {
-    setRoomSpec({ [key]: value });
+  if (!selectedItem) {
+    return (
+      <div className="p-6 space-y-6">
+        <div>
+          <h3 className="text-sm font-semibold mb-4 text-white/90">Dimensões do Ambiente</h3>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-xs text-white/50">Largura (mm)</Label>
+                <Input 
+                  type="number" 
+                  value={roomSpec.widthMm} 
+                  onChange={(e) => setRoomSpec({ widthMm: Number(e.target.value) })}
+                  className="bg-white/5 bg-opacity-50 border-white/10 h-8 text-xs"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs text-white/50">Profundidade (mm)</Label>
+                <Input 
+                  type="number" 
+                  value={roomSpec.depthMm} 
+                  onChange={(e) => setRoomSpec({ depthMm: Number(e.target.value) })}
+                  className="bg-white/5 bg-opacity-50 border-white/10 h-8 text-xs"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs text-white/50">Altura (mm)</Label>
+              <Input 
+                type="number" 
+                value={roomSpec.heightMm} 
+                onChange={(e) => setRoomSpec({ heightMm: Number(e.target.value) })}
+                className="bg-white/5 bg-opacity-50 border-white/10 h-8 text-xs"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const handleUpdateParam = (key: string, value: any) => {
+    updateItem(selectedItem.id, {
+      parameters: { ...selectedItem.parameters, [key]: value }
+    });
   };
 
   return (
-    <div className="flex flex-col h-full bg-background border-l">
-      <div className="p-4 border-b flex items-center justify-between bg-muted/30">
-        <div className="flex items-center gap-2">
-          <Box className="w-4 h-4 text-primary" />
-          <h2 className="font-semibold text-sm uppercase tracking-wider">Propriedades do Ambiente</h2>
+    <div className="p-6 space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-white/90">Propriedades do Móvel</h3>
+        <div className="flex gap-2">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8 text-white/50 hover:text-white"
+            onClick={() => duplicateItem(selectedItem.id)}
+          >
+            <Copy className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8 text-red-400/50 hover:text-red-400"
+            onClick={() => removeItem(selectedItem.id)}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
-      <ScrollArea className="flex-1">
-        <div className="p-4 space-y-6">
-          {errors.length > 0 && (
-            <Alert variant="destructive" className="py-2 px-3">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle className="text-xs">Atenção</AlertTitle>
-              <AlertDescription className="text-[10px] leading-tight">
-                {errors[0]}
-              </AlertDescription>
-            </Alert>
-          )}
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label className="text-xs text-white/50">Variante</Label>
+          <Select 
+            value={selectedItem.variant} 
+            onValueChange={(v) => {
+              // Quick variant swap logic
+              const updates: any = { variant: v };
+              if (v === 'one-door') { updates.parameters = { ...selectedItem.parameters, doorCount: 1, drawerCount: 0 }; }
+              else if (v === 'two-doors') { updates.parameters = { ...selectedItem.parameters, doorCount: 2, drawerCount: 0 }; }
+              else if (v === 'three-drawers') { updates.parameters = { ...selectedItem.parameters, doorCount: 0, drawerCount: 3 }; }
+              updateItem(selectedItem.id, updates);
+            }}
+          >
+            <SelectTrigger className="bg-white/5 border-white/10 h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-slate-900 border-white/10 text-xs">
+              <SelectItem value="one-door">Uma Porta</SelectItem>
+              <SelectItem value="two-doors">Duas Portas</SelectItem>
+              <SelectItem value="three-drawers">Três Gavetas</SelectItem>
+              <SelectItem value="two-big-drawers">Duas Gavetões</SelectItem>
+              <SelectItem value="door-drawer">Porta + Gaveta</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-          {/* Presets */}
-          <div className="space-y-3">
-            <Label className="text-[10px] uppercase text-muted-foreground font-bold">Presets Rápidos</Label>
-            <div className="grid grid-cols-2 gap-2">
-              {Object.keys(PRESETS).map((name) => (
-                <Button 
-                  key={name}
-                  variant={roomSpec.name === name ? "default" : "outline"}
-                  size="sm"
-                  className="text-[10px] h-8"
-                  onClick={() => applyPreset(name)}
-                >
-                  {name}
-                </Button>
-              ))}
-            </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label className="text-xs text-white/50">Largura (mm)</Label>
+            <Input 
+              type="number" 
+              value={selectedItem.widthMm} 
+              onChange={(e) => updateItem(selectedItem.id, { widthMm: Number(e.target.value) })}
+              className="bg-white/5 border-white/10 h-8 text-xs"
+            />
           </div>
-
-          <div className="space-y-4 pt-2">
-            <Label className="text-[10px] uppercase text-muted-foreground font-bold">Dimensões (mm)</Label>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs">
-                <span>Largura</span>
-                <span className="font-mono">{roomSpec.widthMm}</span>
-              </div>
-              <Slider 
-                value={[roomSpec.widthMm]} 
-                min={500} max={10000} step={50}
-                onValueChange={([val]) => updateSpec('widthMm', val)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs">
-                <span>Profundidade</span>
-                <span className="font-mono">{roomSpec.depthMm}</span>
-              </div>
-              <Slider 
-                value={[roomSpec.depthMm]} 
-                min={500} max={10000} step={50}
-                onValueChange={([val]) => updateSpec('depthMm', val)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs">
-                <span>Altura</span>
-                <span className="font-mono">{roomSpec.heightMm}</span>
-              </div>
-              <Slider 
-                value={[roomSpec.heightMm]} 
-                min={2000} max={4000} step={50}
-                onValueChange={([val]) => updateSpec('heightMm', val)}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-4 pt-2 border-t border-dashed">
-            <Label className="text-[10px] uppercase text-muted-foreground font-bold">Configurações</Label>
-            
-            <div className="flex items-center justify-between">
-              <Label className="text-xs cursor-pointer" htmlFor="show-ceiling">Exibir Teto</Label>
-              <Switch 
-                id="show-ceiling"
-                checked={roomSpec.showCeiling} 
-                onCheckedChange={(val) => updateSpec('showCeiling', val)}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <Label className="text-xs cursor-pointer" htmlFor="show-baseboard">Exibir Rodapés</Label>
-              <Switch 
-                id="show-baseboard"
-                checked={roomSpec.showBaseboard} 
-                onCheckedChange={(val) => updateSpec('showBaseboard', val)}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <Label className="text-xs cursor-pointer" htmlFor="technical-mode">Modo Técnico</Label>
-              <Switch 
-                id="technical-mode"
-                checked={viewMode === 'technical'} 
-                onCheckedChange={(val) => setViewMode(val ? 'technical' : 'presentation')}
-              />
-            </div>
-          </div>
-          
-          <div className="pt-4 border-t opacity-50 flex items-start gap-2">
-            <Info className="w-3 h-3 mt-0.5" />
-            <p className="text-[10px]">As dimensões são nominais internas. Paredes possuem espessura de 150mm por padrão.</p>
+          <div className="space-y-2">
+            <Label className="text-xs text-white/50">Profundidade (mm)</Label>
+            <Input 
+              type="number" 
+              value={selectedItem.depthMm} 
+              onChange={(e) => updateItem(selectedItem.id, { depthMm: Number(e.target.value) })}
+              className="bg-white/5 border-white/10 h-8 text-xs"
+            />
           </div>
         </div>
-      </ScrollArea>
+
+        <div className="space-y-2">
+          <Label className="text-xs text-white/50">Posição X (mm)</Label>
+          <Input 
+            type="number" 
+            value={selectedItem.position.x} 
+            onChange={(e) => updateItem(selectedItem.id, { position: { ...selectedItem.position, x: Number(e.target.value) } })}
+            className="bg-white/5 border-white/10 h-8 text-xs"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-xs text-white/50">Material do Corpo</Label>
+          <Select 
+            value={selectedItem.parameters.bodyMaterialId} 
+            onValueChange={(v) => handleUpdateParam('bodyMaterialId', v)}
+          >
+            <SelectTrigger className="bg-white/5 border-white/10 h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-slate-900 border-white/10 text-xs">
+              {MATERIALS.map(m => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="pt-4 border-t border-white/5">
+          <Label className="text-xs text-white/50 block mb-4">Interação</Label>
+          <Button 
+            variant="secondary" 
+            className="w-full h-9 text-xs gap-2 bg-purple-600/20 hover:bg-purple-600/30 text-purple-200 border border-purple-600/30"
+            onClick={toggleAnimation}
+          >
+            {selectedItem.isOpen ? <Square className="h-3 w-3 fill-current" /> : <Play className="h-3 w-3 fill-current" />}
+            {selectedItem.isOpen ? 'Fechar Aberturas' : 'Abrir Aberturas'}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };

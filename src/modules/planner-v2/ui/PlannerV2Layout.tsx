@@ -14,7 +14,8 @@ import {
   Layout,
   ChevronLeft,
   ChevronRight,
-  Info
+  Plus,
+  Zap
 } from "lucide-react";
 import { V2Viewport } from '../viewport/V2Viewport';
 import { PropertiesPanel } from './PropertiesPanel';
@@ -23,7 +24,7 @@ import { usePlannerV2Store } from '../core/store';
 export const PlannerV2Layout: React.FC = () => {
   const [showTree, setShowTree] = useState(true);
   const [showProps, setShowProps] = useState(true);
-  const { roomSpec, viewMode, setViewMode } = usePlannerV2Store();
+  const { roomSpec, viewMode, setViewMode, addItem } = usePlannerV2Store();
   const [focusMode, setFocusMode] = useState(false);
 
   return (
@@ -33,7 +34,7 @@ export const PlannerV2Layout: React.FC = () => {
         <header className="h-12 border-b flex items-center justify-between px-4 bg-card shrink-0">
           <div className="flex items-center gap-2">
             <span className="font-bold text-primary">Dioris Planner V2</span>
-            <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded uppercase tracking-tighter">Etapa 3</span>
+            <span className="text-[10px] text-white bg-purple-600 px-2 py-0.5 rounded uppercase tracking-tighter animate-pulse">Etapa 4 - Parametric Furniture</span>
           </div>
           
           <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-md border">
@@ -73,20 +74,41 @@ export const PlannerV2Layout: React.FC = () => {
                 <div className="h-full border-r bg-card flex flex-col">
                   <div className="p-3 border-b flex items-center justify-between">
                     <span className="text-sm font-semibold flex items-center gap-2">
-                      <MessageSquare className="w-4 h-4 text-primary" />
-                      Assistente Dioris
+                      <Layers className="w-4 h-4 text-primary" />
+                      Biblioteca
                     </span>
                     <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowTree(false)}>
                       <ChevronLeft className="w-4 h-4" />
                     </Button>
                   </div>
-                  <div className="flex-1 flex flex-col items-center justify-center p-8 text-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-                      <Box className="w-6 h-6 text-muted-foreground opacity-20" />
+                  
+                  <div className="p-4 space-y-4">
+                    <div className="space-y-2">
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-widest px-1 block">Cozinha</span>
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-start gap-3 h-14 bg-white/5 border-white/10 hover:bg-white/10 group transition-all"
+                        onClick={() => addItem('one-door')}
+                      >
+                        <div className="w-10 h-10 rounded bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
+                          <Plus className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="text-left">
+                          <div className="text-xs font-semibold">Gabinete Inferior</div>
+                          <div className="text-[10px] text-muted-foreground">Cozinha V2</div>
+                        </div>
+                      </Button>
                     </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Descreva o ambiente que deseja criar.<br/>
-                      <span className="opacity-50 text-[10px]">A IA será conectada em uma etapa futura.</span>
+                  </div>
+
+                  <div className="mt-auto border-t bg-black/20 p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Zap className="w-3 h-3 text-yellow-500" />
+                      <span className="text-[10px] font-bold uppercase tracking-tight">AI Assistant</span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground leading-relaxed">
+                      Conectando IA na Etapa 5...<br/>
+                      Use os controles manuais por enquanto.
                     </p>
                   </div>
                 </div>
@@ -173,19 +195,15 @@ export const PlannerV2Layout: React.FC = () => {
 
       {/* Mobile Navigation */}
       <nav className="md:hidden h-16 border-t bg-card flex items-center justify-around shrink-0 px-2">
-        <Button variant="ghost" className="flex flex-col gap-1 h-auto py-2">
-          <Box className="w-5 h-5" />
-          <span className="text-[10px]">Projeto</span>
+        <Button variant="ghost" className="flex flex-col gap-1 h-auto py-2" onClick={() => setShowTree(true)}>
+          <Layers className="w-5 h-5" />
+          <span className="text-[10px]">Biblioteca</span>
         </Button>
         <Button variant="ghost" className="flex flex-col gap-1 h-auto py-2 text-primary">
-          <Layers className="w-5 h-5" />
-          <span className="text-[10px]">3D</span>
+          <Layout className="w-5 h-5" />
+          <span className="text-[10px]">Viewport</span>
         </Button>
-        <Button variant="ghost" className="flex flex-col gap-1 h-auto py-2" onClick={() => setShowTree(true)}>
-          <MessageSquare className="w-5 h-5" />
-          <span className="text-[10px]">IA</span>
-        </Button>
-        <Button variant="ghost" className="flex flex-col gap-1 h-auto py-2">
+        <Button variant="ghost" className="flex flex-col gap-1 h-auto py-2" onClick={() => setShowProps(true)}>
           <Settings className="w-5 h-5" />
           <span className="text-[10px]">Prop</span>
         </Button>
