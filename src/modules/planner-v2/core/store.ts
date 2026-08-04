@@ -60,22 +60,20 @@ export const usePlannerV2Store = create<PlannerV2State>((set, get) => ({
     const id = `item-${Math.random().toString(36).substr(2, 9)}`;
     const newItem = createDefaultCabinet(id, variant);
     
-    // Position it at the center of the room for now
+    // Position it at the center of the room for now (in mm)
     newItem.position = { 
-      x: get().roomSpec.width / 2, 
+      x: get().roomSpec.widthMm / 2, 
       y: 0, 
-      z: -get().roomSpec.depth / 2 + newItem.depthMm / 2 
+      z: -get().roomSpec.depthMm / 2 + newItem.depthMm / 2 
     };
 
     set((state) => ({
-      items: [...state.items, newItem.id === state.selectedId ? { ...newItem, selected: true } : newItem],
+      items: [...state.items, newItem],
       selectedId: id
     }));
     
-    // Make sure we update selection state in the items list too
-    set((state) => ({
-      items: state.items.map(i => ({ ...i, selected: i.id === id }))
-    }));
+    // Update selection state
+    get().selectItem(id);
   },
 
   removeItem: (id) => set((state) => ({
