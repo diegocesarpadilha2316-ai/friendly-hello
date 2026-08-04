@@ -8,6 +8,8 @@ import { SideNav } from './panels/SideNav';
 import { InspectorPanel } from './panels/InspectorPanel';
 
 export const PlannerV2Layout: React.FC = () => {
+  const useViewportNext = usePlannerV2Store((state) => state.useViewportNext);
+
   return (
     <div className="flex flex-col h-screen w-full bg-[#0a0a0c] overflow-hidden text-foreground selection:bg-primary/30 antialiased font-sans">
       {/* Top Navigation */}
@@ -19,7 +21,7 @@ export const PlannerV2Layout: React.FC = () => {
 
         {/* Center Viewport: The "Big" Working Area */}
         <div className="flex-1 relative bg-[#0d0d0f] shadow-inner">
-          <V2Viewport />
+          {useViewportNext ? <V2ViewportNext /> : <V2Viewport />}
         </div>
 
         {/* Right Side: Professional Inspector & AI Assistant (Fixed) */}
