@@ -14,7 +14,14 @@ export function MobileUI() {
 
   return (
     <>
-      <div className={`mobile-backdrop ${drawerOpen ? "show" : ""}`} onClick={() => setMobileDrawer(false)} />
+      <div 
+        className={`mobile-backdrop ${drawerOpen || sheetOpen ? "show" : ""}`} 
+        onClick={() => {
+          setMobileDrawer(false);
+          setMobileSheet(false);
+        }} 
+      />
+
 
       <div className={`mobile-drawer ${drawerOpen ? "open" : ""}`}>
         <Explorer />
