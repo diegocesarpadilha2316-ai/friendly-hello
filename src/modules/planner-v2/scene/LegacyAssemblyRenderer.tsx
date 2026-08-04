@@ -48,6 +48,51 @@ export const LegacyAssemblyRenderer: React.FC<LegacyAssemblyRendererProps> = ({ 
             kind: parameters.kind || 'balcao',
             finishId: 'branco-tx',
           } as any);
+        case 'kitchen-tower':
+          return wardrobeFamily.build({
+            ...commonSpec,
+            opening: 'abrir',
+            doors: 1,
+            finishId: 'grafite-tx',
+          });
+        case 'kitchen-wall-cabinet':
+          return kitchenFamily.build({
+            ...commonSpec,
+            kind: 'aereo',
+            finishId: 'branco-tx',
+          } as any);
+        case 'kitchen-counter':
+          // Generic box for stone
+          return {
+            id: 'counter-' + id,
+            label: 'Bancada',
+            envelope: { width: widthMm, height: heightMm, depth: depthMm },
+            pieces: [{
+              id: 'counter-stone',
+              box: { x: 0, y: 0, z: 0, width: widthMm, height: heightMm, depth: depthMm },
+              partKind: 'tampo',
+              substrate: 'pedra'
+            }],
+            motions: [],
+            hardware: [],
+            meta: {}
+          } as any;
+        case 'kitchen-stool':
+          return {
+            id: 'stool-' + id,
+            label: 'Banqueta',
+            envelope: { width: widthMm, height: heightMm, depth: depthMm },
+            pieces: [
+              { id: 'seat', box: { x: 0, y: heightMm - 40, z: 0, width: widthMm, height: 40, depth: depthMm }, partKind: 'tampo', substrate: 'madeira' },
+              { id: 'leg-1', box: { x: 0, y: 0, z: 0, width: 40, height: heightMm - 40, depth: 40 }, partKind: 'travessa', substrate: 'metal' },
+              { id: 'leg-2', box: { x: widthMm - 40, y: 0, z: 0, width: 40, height: heightMm - 40, depth: 40 }, partKind: 'travessa', substrate: 'metal' },
+              { id: 'leg-3', box: { x: 0, y: 0, z: depthMm - 40, width: 40, height: heightMm - 40, depth: 40 }, partKind: 'travessa', substrate: 'metal' },
+              { id: 'leg-4', box: { x: widthMm - 40, y: 0, z: depthMm - 40, width: 40, height: heightMm - 40, depth: 40 }, partKind: 'travessa', substrate: 'metal' },
+            ],
+            motions: [],
+            hardware: [],
+            meta: {}
+          } as any;
         case 'tower':
           return wardrobeFamily.build({
             ...commonSpec,

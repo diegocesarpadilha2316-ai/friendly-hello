@@ -80,7 +80,7 @@ export const DiorisEnvironment: React.FC = () => {
         maxDistance={15}
         enableDamping
         dampingFactor={0.05}
-        target={[0, 0.8, 0]} // Focus on the living area/kitchen counter height
+        target={[0, 0.8, 0]} 
       />
 
       {/* Global shadows optimization */}

@@ -47,7 +47,7 @@ export const generateKitchenFurniture = (): FurnitureItem[] => {
   const backWallXStart = 0;
   
   // Corner Tower (Fridge/Oven)
-  const tower = createFurnitureItem('f-tower-1', 'kitchen' as any, 'tower');
+  const tower = createFurnitureItem('f-tower-1', 'kitchen-tower' as any, 'tower');
   tower.name = 'Torre Quente';
   tower.widthMm = 600;
   tower.heightMm = 2200;
@@ -77,7 +77,7 @@ export const generateKitchenFurniture = (): FurnitureItem[] => {
   });
   
   // Countertop (Stone)
-  const counter = createFurnitureItem('f-counter-1', 'kitchen' as any, 'counter');
+  const counter = createFurnitureItem('f-counter-1', 'kitchen-counter' as any, 'counter');
   counter.name = 'Bancada Pedra';
   counter.widthMm = currentX - 600;
   counter.heightMm = 40;
@@ -97,7 +97,7 @@ export const generateKitchenFurniture = (): FurnitureItem[] => {
   
   currentX = 600;
   upperConfigs.forEach(config => {
-    const item = createFurnitureItem(config.id, 'kitchen' as any, 'wall-cabinet');
+    const item = createFurnitureItem(config.id, 'kitchen-wall-cabinet' as any, 'wall-cabinet');
     item.name = 'Armário Aéreo';
     item.widthMm = config.width;
     item.heightMm = 600;
@@ -131,7 +131,7 @@ export const generateKitchenFurniture = (): FurnitureItem[] => {
   items.push(islandTop);
   
   // Stools (Bancos)
-  const stool1 = createFurnitureItem('f-stool-1', 'kitchen' as any, 'stool');
+  const stool1 = createFurnitureItem('f-stool-1', 'kitchen-stool' as any, 'stool');
   stool1.name = 'Banqueta 1';
   stool1.widthMm = 400;
   stool1.heightMm = 650;
@@ -139,7 +139,7 @@ export const generateKitchenFurniture = (): FurnitureItem[] => {
   stool1.position = { x: 1800, y: 0, z: 800 };
   items.push(stool1);
   
-  const stool2 = createFurnitureItem('f-stool-2', 'kitchen' as any, 'stool');
+  const stool2 = createFurnitureItem('f-stool-2', 'kitchen-stool' as any, 'stool');
   stool2.name = 'Banqueta 2';
   stool2.widthMm = 400;
   stool2.heightMm = 650;
