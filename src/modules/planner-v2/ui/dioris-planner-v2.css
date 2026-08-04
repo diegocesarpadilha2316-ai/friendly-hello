@@ -155,9 +155,9 @@
   min-height: 0;
   display: grid;
   grid-template-columns:
-    var(--dioris-left-width, 284px)
+    var(--dioris-left-panel-width, var(--dioris-left-width-open))
     minmax(0, 1fr)
-    var(--dioris-right-width, 364px);
+    var(--dioris-right-panel-width, var(--dioris-right-width-open));
 }
 
 .dioris-left-panel,
