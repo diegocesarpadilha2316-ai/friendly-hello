@@ -106,11 +106,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
   }),
   loader: async () => {
-    // Configuração mínima e segura para evitar 502 no bootstrap global
     return { 
       supabaseConfig: { 
-        url: process.env.VITE_SUPABASE_URL || "https://placeholder-project.supabase.co", 
-        publishableKey: process.env.VITE_SUPABASE_ANON_KEY || "placeholder-key" 
+        url: "https://placeholder-project.supabase.co", 
+        publishableKey: "placeholder-key" 
       } 
     };
   },
