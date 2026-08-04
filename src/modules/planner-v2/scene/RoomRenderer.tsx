@@ -119,7 +119,14 @@ export const RoomRenderer: React.FC<RoomRendererProps> = ({
   baseboardHeight,
   baseboardThickness
 }) => {
-  const { floor, ceiling, walls, baseboards } = result;
+  const { floor, ceiling, walls, baseboards, bounds } = result;
+  
+  // Calculate interior center for positioning floor/ceiling correctly
+  const interiorW = floor.width - (walls.find(w => w.id === 'left')?.thickness || 0) * 2;
+  const interiorD = floor.depth - (walls.find(w => w.id === 'front')?.thickness || 0) * 2;
+  const centerX = interiorW / 2;
+  const centerZ = interiorD / 2;
+
 
   const floorMaterial = useMemo(() => {
     if (mode === 'technical') return new THREE.MeshStandardMaterial({ color: '#d1c7bc', roughness: 0.7 });
@@ -158,7 +165,7 @@ export const RoomRenderer: React.FC<RoomRendererProps> = ({
     <group>
       {/* Floor - Positioned so top is at Y=0 */}
       <mesh 
-        position={[result.floor.width / 2, -result.floor.thickness / 2, result.floor.depth / 2]}
+        position={[centerX, -result.floor.thickness / 2, centerZ]}
         receiveShadow
       >
         <boxGeometry args={[result.floor.width, result.floor.thickness, result.floor.depth]} />
@@ -167,7 +174,7 @@ export const RoomRenderer: React.FC<RoomRendererProps> = ({
 
       {/* Ceiling */}
       {showCeiling && mode === 'presentation' && camera.position.y < result.bounds.max[1] && (
-        <mesh position={[result.floor.width / 2, result.bounds.max[1] + ceiling.thickness / 2, result.floor.depth / 2]}>
+        <mesh position={[centerX, result.bounds.max[1] + ceiling.thickness / 2, centerZ]}>
           <boxGeometry args={[ceiling.width, ceiling.thickness, ceiling.depth]} />
           <primitive object={MATERIALS.ceiling} attach="material" />
           
