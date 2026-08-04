@@ -5,6 +5,7 @@ import { FurnitureLayer } from './FurnitureLayer';
 import { LightingRig } from './LightingRig';
 import { CameraRig } from './CameraRig';
 import { createDemoScene } from './demo';
+import { SelectionLayer } from './SelectionLayer';
 
 export const SceneRoot: React.FC = () => {
   const { roomResult, roomSpec, items, itemsCount } = usePlannerV2Store((state) => ({
@@ -43,8 +44,7 @@ export const SceneRoot: React.FC = () => {
       <LightingRig />
       <RoomLayer room={roomResult} showCeiling={!!roomSpec.showCeiling} />
       <FurnitureLayer />
-      
-      {/* Selection & Gizmos will go here in SelectionLayer */}
+      <SelectionLayer />
     </>
   );
 };
