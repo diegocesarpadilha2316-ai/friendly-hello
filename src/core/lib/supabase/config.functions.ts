@@ -7,10 +7,20 @@ import { createServerFn } from "@tanstack/react-start";
  */
 export const getPublicSupabaseConfig = createServerFn({ method: "GET" }).handler(
   async () => {
-    return { 
-      url: process.env.VITE_SUPABASE_URL!, 
-      publishableKey: process.env.VITE_SUPABASE_ANON_KEY! 
+    const url = process.env.VITE_SUPABASE_URL || process.env.EXTERNAL_SUPABASE_URL;
+    const publishableKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.EXTERNAL_SUPABASE_PUBLISHABLE_KEY;
 
-    };
+    if (!url || !publishableKey) {
+      const missing = [];
+      if (!url) missing.push("VITE_SUPABASE_URL");
+      if (!publishableKey) missing.push("VITE_SUPABASE_ANON_KEY");
+      
+      console.error(`[Supabase Config Error] Missing variables: ${missing.join(", ")}`);
+      throw new Error(`Configuração do Supabase incompleta. Variáveis ausentes: ${missing.join(", ")}. Por favor, configure as variáveis de ambiente no painel de controle.`);
+    }
+
+    
+    return { url, publishableKey };
   },
 );
+
