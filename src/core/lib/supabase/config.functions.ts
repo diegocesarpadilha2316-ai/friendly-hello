@@ -7,13 +7,9 @@ import { createServerFn } from "@tanstack/react-start";
  */
 export const getPublicSupabaseConfig = createServerFn({ method: "GET" }).handler(
   async () => {
-    const url = process.env.EXTERNAL_SUPABASE_URL;
-    const publishableKey = process.env.EXTERNAL_SUPABASE_PUBLISHABLE_KEY;
-    if (!url || !publishableKey) {
-      throw new Error(
-        "Supabase externo não configurado (EXTERNAL_SUPABASE_URL / EXTERNAL_SUPABASE_PUBLISHABLE_KEY).",
-      );
-    }
-    return { url, publishableKey };
+    return { 
+      url: process.env.VITE_SUPABASE_URL || "https://placeholder-project.supabase.co", 
+      publishableKey: process.env.VITE_SUPABASE_ANON_KEY || "placeholder-key" 
+    };
   },
 );
