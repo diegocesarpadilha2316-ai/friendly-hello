@@ -406,8 +406,8 @@
   gap: 12px;
   padding: 7px 11px;
   transform: translateX(-50%);
-  background: rgba(10, 12, 18, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--dioris-panel);
+  border: 1px solid var(--dioris-line);
   border-bottom: 0;
   border-radius: 9px 9px 0 0;
   font-size: 11px;
