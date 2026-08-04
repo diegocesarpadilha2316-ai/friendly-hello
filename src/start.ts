@@ -1,11 +1,14 @@
 import { createStart, createMiddleware } from "@tanstack/react-start";
-
 import { renderErrorPage } from "./lib/error-page";
 
+/**
+ * Middleware de erro global para capturar e logar falhas de bootstrap.
+ */
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
   try {
     return await next();
   } catch (error) {
+    // Se for um erro do TanStack (como 404), deixa passar
     if (error != null && typeof error === "object" && "statusCode" in error) {
       throw error;
     }
@@ -17,7 +20,7 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
       timestamp: new Date().toISOString()
     });
 
-    // Em produção, queremos que o erro 500 seja acompanhado de detalhes mínimos para auditoria
+    // Em produção, retorna uma página de erro 500 amigável com header de debug
     return new Response(renderErrorPage(), {
       status: 500,
       headers: { 
@@ -29,17 +32,13 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
 });
 
 /**
- * Attach the Supabase access token to every server-fn call so
- * requireAuth middleware can validate the caller.
- */
-/**
- * Anexa credenciais do usuário + tenant ativo em cada chamada de server fn.
- *  - Authorization: Bearer <access_token>   (requireAuth / requireTenant)
- *  - x-dioris-tenant: <company_id>          (requireTenant)
+ * Middleware para anexar contexto (auth/tenant) em chamadas de Server Functions.
  */
 const attachDiorisContext = createMiddleware({ type: "function" }).client(async ({ next }) => {
   const headers: Record<string, string> = {};
+  
   if (typeof window !== "undefined") {
+    // 1. Tenta anexar Token de Autenticação
     try {
       const { getSupabaseBrowser } = await import("@/core/lib/supabase/client");
       const supabase = getSupabaseBrowser();
@@ -48,8 +47,10 @@ const attachDiorisContext = createMiddleware({ type: "function" }).client(async 
         headers["Authorization"] = `Bearer ${data.session.access_token}`;
       }
     } catch {
-      /* client not ready yet — skip */
+      // Ignora falhas se o client não estiver pronto
     }
+
+    // 2. Tenta anexar ID do Tenant ativo
     try {
       const { getActiveTenantIdFromStorage } = await import(
         "@/core/providers/TenantProvider"
@@ -57,9 +58,10 @@ const attachDiorisContext = createMiddleware({ type: "function" }).client(async 
       const tenantId = getActiveTenantIdFromStorage();
       if (tenantId) headers["x-dioris-tenant"] = tenantId;
     } catch {
-      /* no tenant selected */
+      // Ignora falhas se o tenant não estiver disponível
     }
   }
+  
   return next({ headers });
 });
 
