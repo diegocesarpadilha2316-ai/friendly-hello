@@ -9,7 +9,7 @@
   --dioris-muted: #94a3b8;
   --dioris-success: #10b981;
   --dioris-top-height: 56px;
-  --dioris-status-height: 42px;
+  --dioris-status-height: 24px;
   --dioris-left-width-open: 320px;
   --dioris-left-width-collapsed: 64px;
   --dioris-right-width-open: 360px;
@@ -43,15 +43,16 @@
 }
 
 .dioris-topbar {
+  height: var(--dioris-top-height);
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 12px;
+  gap: 12px;
+  padding: 0 16px;
   background: #0c0e14;
   border-bottom: 1px solid var(--dioris-line);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  z-index: 20;
 }
 
 .dioris-brand {
@@ -91,11 +92,18 @@
 .dioris-toolbar {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
   flex: 1;
   overflow-x: auto;
   scrollbar-width: none;
+}
+
+.dioris-divider {
+  width: 1px;
+  height: 24px;
+  margin: 0 4px;
+  background: var(--dioris-line);
 }
 
 .dioris-toolbar::-webkit-scrollbar {
@@ -103,70 +111,93 @@
 }
 
 .dioris-tool {
-  min-width: 54px;
+  height: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 2px;
-  padding: 7px 8px;
-  color: var(--dioris-text);
+  padding: 0 10px;
+  color: var(--dioris-muted);
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 8px;
-  font-size: 10px;
+  border-radius: 4px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
   white-space: nowrap;
+  transition: all 0.2s;
 }
 
-.dioris-tool:hover,
+.dioris-tool:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--dioris-text);
+}
+
 .dioris-tool.is-active {
-  background: var(--dioris-panel-2);
-  border-color: var(--dioris-line);
+  background: var(--dioris-accent);
+  color: white;
+  border-color: var(--dioris-accent);
 }
 
 .dioris-top-actions {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
 }
 
 .dioris-primary-button,
 .dioris-secondary-button {
+  height: 32px;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 9px 12px;
-  color: var(--dioris-text);
-  border-radius: 8px;
+  gap: 8px;
+  padding: 0 12px;
+  color: white;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .dioris-primary-button {
   border: 0;
-  background: linear-gradient(
-    135deg,
-    var(--dioris-accent-2),
-    var(--dioris-accent)
-  );
+  background: var(--dioris-accent);
 }
 
 .dioris-secondary-button {
   border: 1px solid var(--dioris-line);
-  background: var(--dioris-panel-2);
+  background: #1e212b;
+  color: var(--dioris-text);
+}
+
+.dioris-primary-button:hover {
+  background: #4f46e5;
+}
+
+.dioris-secondary-button:hover {
+  background: #252936;
 }
 
 .dioris-workspace {
   min-height: 0;
   display: grid;
   grid-template-columns:
-    var(--dioris-left-panel-width, var(--dioris-left-width-open))
-    1fr
-    var(--dioris-right-panel-width, var(--dioris-right-width-open));
+    var(--dioris-left-panel-width, 320px)
+    minmax(0, 1fr)
+    var(--dioris-right-panel-width, 360px);
 }
 
 .dioris-left-panel,
 .dioris-right-panel {
   min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   background: var(--dioris-panel);
+  z-index: 5;
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dioris-left-panel {
@@ -177,49 +208,81 @@
   border-left: 1px solid var(--dioris-line);
 }
 
+.dioris-left-panel.is-collapsed,
+.dioris-right-panel.is-collapsed {
+  width: 0 !important;
+  border: 0;
+}
+
 .dioris-panel-head {
-  height: 47px;
+  height: 36px;
+  min-height: 36px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 0 11px;
+  padding: 0 8px;
+  background: #161923;
   border-bottom: 1px solid var(--dioris-line);
-  font-size: 13px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--dioris-muted);
+  text-transform: uppercase;
 }
 
-.dioris-panel-head button,
-.dioris-mobile-panel-head button {
-  width: 31px;
-  height: 31px;
-  display: inline-grid;
+.dioris-panel-toggle {
+  width: 24px;
+  height: 24px;
+  display: grid;
   place-items: center;
-  color: var(--dioris-text);
+  color: var(--dioris-muted);
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.dioris-panel-toggle:hover {
   background: var(--dioris-panel-2);
-  border: 1px solid var(--dioris-line);
-  border-radius: 8px;
+  color: var(--dioris-text);
 }
 
 .dioris-left-tabs,
 .dioris-right-tabs {
   display: flex;
+  background: #0f1118;
   border-bottom: 1px solid var(--dioris-line);
 }
 
 .dioris-left-tabs button,
 .dioris-right-tabs button {
   flex: 1;
-  padding: 10px 4px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
   color: var(--dioris-muted);
   background: transparent;
   border: 0;
   border-bottom: 2px solid transparent;
-  font-size: 11px;
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.dioris-left-tabs button:hover,
+.dioris-right-tabs button:hover {
+  color: var(--dioris-text);
+  background: rgba(255,255,255,0.03);
 }
 
 .dioris-left-tabs button.is-active,
 .dioris-right-tabs button.is-active {
-  color: var(--dioris-text);
+  color: var(--dioris-accent);
+  background: #161923;
   border-bottom-color: var(--dioris-accent);
 }
 
@@ -235,20 +298,27 @@
 
 .dioris-tree-row {
   width: 100%;
-  height: 36px;
+  height: 30px;
   display: flex;
   align-items: center;
-  gap: 7px;
-  color: var(--dioris-text);
+  gap: 8px;
+  padding: 0 8px;
+  color: var(--dioris-muted);
   background: transparent;
   border: 0;
-  border-radius: 7px;
+  border-radius: 4px;
   text-align: left;
+  transition: all 0.2s;
 }
 
-.dioris-tree-row:hover,
+.dioris-tree-row:hover {
+  background: rgba(255,255,255,0.03);
+  color: var(--dioris-text);
+}
+
 .dioris-tree-row.is-selected {
-  background: #1b1f2a;
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--dioris-accent);
 }
 
 .dioris-tree-chevron {
@@ -575,18 +645,28 @@
 }
 
 .dioris-statusbar {
+  height: var(--dioris-status-height);
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding: 0 13px;
-  color: var(--dioris-muted);
-  background: #0c0e14;
+  gap: 16px;
+  padding: 0 10px;
+  background: #06070a;
   border-top: 1px solid var(--dioris-line);
-  font-size: 11px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--dioris-muted);
+}
+
+.dioris-statusbar span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .dioris-statusbar .is-ready {
   color: var(--dioris-success);
+  font-weight: 600;
 }
 
 .dioris-status-spacer {

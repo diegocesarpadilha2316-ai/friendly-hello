@@ -16,8 +16,8 @@ import { TopToolbar } from "./TopToolbar";
 import { ViewportChrome } from "./ViewportChrome";
 
 export function PlannerV2Shell({
-  projectName = "Cozinha Moderna",
-  clientName = "Cliente",
+  projectName = "Projeto Dioris",
+  clientName = "CAD Studio",
   tree,
   selectedFurniture,
   messages,
@@ -34,8 +34,8 @@ export function PlannerV2Shell({
   const shellStyle = useMemo(
     () =>
       ({
-        "--dioris-left-panel-width": `${state.leftCollapsed ? 64 : 320}px`,
-        "--dioris-right-panel-width": `${state.rightCollapsed ? 64 : 360}px`
+        "--dioris-left-panel-width": `${state.leftCollapsed ? 0 : 320}px`,
+        "--dioris-right-panel-width": `${state.rightCollapsed ? 0 : 360}px`
       }) as React.CSSProperties,
     [
       state.leftCollapsed,
@@ -48,7 +48,7 @@ export function PlannerV2Shell({
   return (
     <div className="dioris-shell" style={shellStyle}>
       <TopToolbar
-        projectName={`${projectName} — ${clientName}`}
+        projectName={projectName}
         toolMode={state.toolMode}
         onToolModeChange={(toolMode) => patch({ toolMode })}
         onSave={events.onSave}
@@ -61,25 +61,20 @@ export function PlannerV2Shell({
       />
 
       <main className="dioris-workspace">
-        <aside className="dioris-left-panel">
+        <aside className={`dioris-left-panel ${state.leftCollapsed ? 'is-collapsed' : ''}`}>
           <div className="dioris-panel-head">
-            {!state.leftCollapsed && <strong>Estrutura do Projeto</strong>}
+            {!state.leftCollapsed && <strong>PROJETO</strong>}
             <button
               type="button"
-              onClick={() =>
-                patch({ leftCollapsed: !state.leftCollapsed })
-              }
+              className="dioris-panel-toggle"
+              onClick={() => patch({ leftCollapsed: !state.leftCollapsed })}
             >
-              {state.leftCollapsed ? (
-                <ChevronRight size={16} />
-              ) : (
-                <ChevronLeft size={16} />
-              )}
+              {state.leftCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
             </button>
           </div>
 
           {!state.leftCollapsed && (
-            <div className="dioris-left-tabs">
+            <nav className="dioris-left-tabs" aria-label="Abas do Explorer">
               <button
                 type="button"
                 className={state.leftTab === "structure" ? "is-active" : ""}
@@ -108,18 +103,13 @@ export function PlannerV2Shell({
               >
                 Projeto
               </button>
-            </div>
+            </nav>
           )}
 
-          {state.leftCollapsed ? (
-            <div className="dioris-collapsed-icons">
-              <Box size={18} />
-              <Settings2 size={18} />
-            </div>
-          ) : (
+          {state.leftCollapsed ? null : (
             <ProjectExplorer
               items={tree}
-              collapsed={true}
+              collapsed={false}
               selectedId={selectedId}
               onSelect={(id) => {
                 patch({ selectedFurnitureId: id });
@@ -176,28 +166,19 @@ export function PlannerV2Shell({
           />
         </section>
 
-        <aside className="dioris-right-panel">
+        <aside className={`dioris-right-panel ${state.rightCollapsed ? 'is-collapsed' : ''}`}>
           <div className="dioris-panel-head">
-            {!state.rightCollapsed && <strong>IA Copiloto / Inspetor</strong>}
+            {!state.rightCollapsed && <strong>INSPETOR</strong>}
             <button
               type="button"
-              onClick={() =>
-                patch({ rightCollapsed: !state.rightCollapsed })
-              }
+              className="dioris-panel-toggle"
+              onClick={() => patch({ rightCollapsed: !state.rightCollapsed })}
             >
-              {state.rightCollapsed ? (
-                <ChevronLeft size={16} />
-              ) : (
-                <ChevronRight size={16} />
-              )}
+              {state.rightCollapsed ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
             </button>
           </div>
 
-          {state.rightCollapsed ? (
-            <div className="dioris-collapsed-icons">
-              <Bot size={18} />
-            </div>
-          ) : (
+          {state.rightCollapsed ? null : (
             <CopilotPanel
               activeTab={state.rightTab}
               messages={messages}
@@ -211,17 +192,18 @@ export function PlannerV2Shell({
       </main>
 
       <footer className="dioris-statusbar">
-        <span className="is-ready">● READY</span>
-        <span>FPS {fps}</span>
-        <span>UNIDADE mm</span>
-        <span>SNAP ATIVO</span>
-        <span className="dioris-status-spacer" />
+        <span className="is-ready">● PRONTO</span>
+        <span>MÉTRICO (mm)</span>
+        <span>AUTO-SNAP</span>
+        <div className="dioris-status-spacer" />
+        <span>OBJETOS: {tree.length}</span>
+        <span>FPS: {fps}</span>
         <span>
           {autosaveStatus === "saved"
-            ? "AUTOSAVE ✓"
+            ? "SALVO ✓"
             : autosaveStatus === "saving"
               ? "SALVANDO..."
-              : "ERRO AO SALVAR"}
+              : "ERRO"}
         </span>
       </footer>
 
