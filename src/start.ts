@@ -12,16 +12,17 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
     
     // Log detalhado para identificar o erro real no ambiente de produção
     console.error("CRITICAL_BOOTSTRAP_ERROR:", {
-      message: error instanceof Error ? error.message : "Unknown error",
+      message: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
       timestamp: new Date().toISOString()
     });
 
+    // Em produção, queremos que o erro 500 seja acompanhado de detalhes mínimos para auditoria
     return new Response(renderErrorPage(), {
       status: 500,
       headers: { 
         "content-type": "text/html; charset=utf-8",
-        "x-dioris-debug-error": error instanceof Error ? error.message.substring(0, 100) : "unknown"
+        "x-dioris-error": error instanceof Error ? error.message.replace(/[^\x20-\x7E]/g, "") : "internal_error"
       },
     });
   }
