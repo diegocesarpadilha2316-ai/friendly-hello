@@ -427,3 +427,30 @@
   opacity: 0.3;
   cursor: not-allowed;
 }
+
+/* ===== Biblioteca Construtiva (Planner V2) ===== */
+.library-panel { display: flex; flex-direction: column; gap: 10px; padding: 10px; overflow-y: auto; }
+.library-search { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 8px;
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); }
+.library-search input { flex: 1; background: transparent; border: 0; color: inherit; font-size: 12px; outline: none; }
+.library-families { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.library-family { display: flex; justify-content: space-between; align-items: center; gap: 6px;
+  padding: 7px 8px; font-size: 11px; border-radius: 7px; cursor: pointer; color: inherit;
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07); min-height: 34px; }
+.library-family.active { border-color: #7c6cff; background: rgba(124,108,255,.16); }
+.library-family.disabled { opacity: .6; }
+.library-badge { font-size: 10px; opacity: .7; }
+.library-cards { display: flex; flex-direction: column; gap: 8px; }
+.library-card { display: grid; grid-template-columns: 52px 1fr; grid-template-rows: auto auto; gap: 8px;
+  padding: 8px; border-radius: 9px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07); }
+.library-thumb { display: flex; align-items: center; justify-content: center; width: 52px; height: 52px;
+  border-radius: 6px; background: rgba(0,0,0,.28); }
+.library-card-info { display: flex; flex-direction: column; gap: 2px; font-size: 11px; }
+.library-card-info strong { font-size: 12px; }
+.library-card-material { opacity: .65; }
+.library-add { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 34px; border-radius: 7px; cursor: pointer; font-size: 11px; color: #fff;
+  background: linear-gradient(90deg, #8b5cf6, #2563eb); border: 0; }
+.library-empty { font-size: 11px; opacity: .7; padding: 6px 2px; }
+.library-error { font-size: 11px; padding: 8px; border-radius: 7px; cursor: pointer;
+  background: rgba(239,68,68,.14); border: 1px solid rgba(239,68,68,.4); }

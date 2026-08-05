@@ -16,8 +16,9 @@ import {
 import { useState } from "react";
 import { usePlannerStore } from "../state/usePlannerStore";
 import { ImageReferencePanel, RoomBuilderPanel } from "./RoomBuilderPanel";
+import { LibraryPanel } from "../../library/ui/LibraryPanel";
 
-type ExplorerTab = "structure" | "room" | "reference";
+type ExplorerTab = "structure" | "library" | "room" | "reference";
 
 export function Explorer() {
   const [activeTab, setActiveTab] = useState<ExplorerTab>("structure");
@@ -46,6 +47,12 @@ export function Explorer() {
             Estrutura
           </button>
           <button
+            className={activeTab === "library" ? "active" : ""}
+            onClick={() => setActiveTab("library")}
+          >
+            Biblioteca
+          </button>
+          <button
             className={activeTab === "room" ? "active" : ""}
             onClick={() => setActiveTab("room")}
           >
@@ -60,7 +67,9 @@ export function Explorer() {
         </div>
       )}
 
-      {activeTab === "room" && !collapsed ? (
+      {activeTab === "library" && !collapsed ? (
+        <LibraryPanel />
+      ) : activeTab === "room" && !collapsed ? (
         <RoomBuilderPanel />
       ) : activeTab === "reference" && !collapsed ? (
         <ImageReferencePanel />

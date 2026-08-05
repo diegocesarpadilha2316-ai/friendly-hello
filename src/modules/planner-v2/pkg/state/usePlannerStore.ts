@@ -1,5 +1,10 @@
 import { create } from "zustand";
 import type { ChatMessage, FurnitureItem, RightTab, SheetHeight, ToolMode } from "../types";
+import type { FurnitureInstance } from "../../library/contracts/FurnitureInstance";
+import { buildModule } from "../../library/services/buildModule";
+import { ModuleRegistry } from "../../library/registry/ModuleRegistry";
+import { useRoomBuilderStore } from "./useRoomBuilderStore";
+import "../../library";
 
 interface PlannerState {
   leftCollapsed: boolean;
@@ -14,6 +19,8 @@ interface PlannerState {
   selectedId: string | null;
   furniture: FurnitureItem[];
   messages: ChatMessage[];
+  instances: FurnitureInstance[];
+  lastLibraryError: string | null;
 
   toggleLeft: () => void;
   toggleRight: () => void;
@@ -30,6 +37,18 @@ interface PlannerState {
   deleteSelected: () => void;
   toggleVisibility: (id: string) => void;
   sendMessage: (content: string) => void;
+
+  addFurnitureInstance: (moduleId: string) => string | null;
+  updateFurnitureInstance: (id: string, patch: Partial<FurnitureInstance>) => void;
+  removeFurnitureInstance: (id: string) => void;
+  duplicateFurnitureInstance: (id: string) => void;
+  selectFurnitureInstance: (id: string | null) => void;
+  hideFurnitureInstance: (id: string) => void;
+  showFurnitureInstance: (id: string) => void;
+  lockFurnitureInstance: (id: string) => void;
+  unlockFurnitureInstance: (id: string) => void;
+  rebuildFurnitureInstance: (id: string) => void;
+  clearLibraryError: () => void;
 }
 
 const initialFurniture: FurnitureItem[] = [
@@ -208,5 +227,168 @@ export const usePlannerStore = create<PlannerState>((set, get) => ({
       time: now
     };
     set((s) => ({ messages: [...s.messages, user, assistant] }));
-  }
+  },
+
+  instances: [],
+  lastLibraryError: null,
+  clearLibraryError: () => set({ lastLibraryError: null }),
+
+  addFurnitureInstance: (moduleId) => {
+    const definition = ModuleRegistry.get(moduleId);
+    if (!definition) {
+      set({ lastLibraryError: `Módulo não registrado: ${moduleId}` });
+      return null;
+    }
+
+    const room = useRoomBuilderStore.getState();
+    const instanceId = `${moduleId}-${Date.now().toString(36)}`;
+    const dims = definition.defaultDimensionsMm;
+    const rules = definition.placementRules;
+
+    const existing = get().instances.filter((item) => item.moduleDefinitionId === moduleId).length;
+    const stepX = (existing % 4) * (dims.width + 20) - 1200;
+    const x = Math.max(
+      -room.width / 2 + dims.width / 2 + 12,
+      Math.min(room.width / 2 - dims.width / 2 - 12, stepX)
+    );
+    const z = -room.depth / 2 + dims.depth / 2 + rules.rearGapMm;
+    const y = rules.wallMounted ? rules.minHeightFromFloorMm : 0;
+
+    const outcome = buildModule({
+      moduleId,
+      instanceId,
+      dimensionsMm: dims,
+      materialId: definition.defaultMaterialId,
+      positionMm: { x, y, z },
+      room: { widthMm: room.width, depthMm: room.depth, heightMm: room.height }
+    });
+
+    if (!outcome.ok) {
+      set({ lastLibraryError: outcome.error ?? "Falha desconhecida no build do módulo." });
+      return null;
+    }
+
+    const instance: FurnitureInstance = {
+      id: instanceId,
+      moduleDefinitionId: moduleId,
+      familyId: definition.familyId,
+      name: definition.name,
+      dimensionsMm: outcome.dimensionsMm,
+      positionMm: { x, y, z },
+      rotationDeg: { x: 0, y: 0, z: 0 },
+      materialOverrides: {},
+      hardwareOverrides: {},
+      parts: outcome.parts,
+      visible: true,
+      locked: false,
+      selected: true
+    };
+
+    set((s) => ({
+      lastLibraryError: null,
+      selectedId: instanceId,
+      furniture: s.furniture.map((item) => ({ ...item, selected: false })),
+      instances: [
+        ...s.instances.map((item) => ({ ...item, selected: false })),
+        instance
+      ]
+    }));
+
+    return instanceId;
+  },
+
+  updateFurnitureInstance: (id, patch) => {
+    set((s) => ({
+      instances: s.instances.map((item) => (item.id === id ? { ...item, ...patch } : item))
+    }));
+    if (patch.dimensionsMm || patch.materialOverrides) {
+      get().rebuildFurnitureInstance(id);
+    }
+  },
+
+  rebuildFurnitureInstance: (id) => {
+    const instance = get().instances.find((item) => item.id === id);
+    if (!instance) return;
+    const room = useRoomBuilderStore.getState();
+    const outcome = buildModule({
+      moduleId: instance.moduleDefinitionId,
+      instanceId: instance.id,
+      dimensionsMm: instance.dimensionsMm,
+      materialId: instance.materialOverrides["*"],
+      materialOverrides: instance.materialOverrides,
+      hardwareOverrides: instance.hardwareOverrides,
+      positionMm: instance.positionMm,
+      room: { widthMm: room.width, depthMm: room.depth, heightMm: room.height }
+    });
+    if (!outcome.ok) {
+      set({ lastLibraryError: outcome.error ?? "Falha ao reconstruir o módulo." });
+      return;
+    }
+    set((s) => ({
+      lastLibraryError: null,
+      instances: s.instances.map((item) =>
+        item.id === id
+          ? { ...item, parts: outcome.parts, dimensionsMm: outcome.dimensionsMm }
+          : item
+      )
+    }));
+  },
+
+  removeFurnitureInstance: (id) =>
+    set((s) => ({
+      instances: s.instances.filter((item) => item.id !== id),
+      selectedId: s.selectedId === id ? null : s.selectedId
+    })),
+
+  duplicateFurnitureInstance: (id) => {
+    const instance = get().instances.find((item) => item.id === id);
+    if (!instance) return;
+    const cloneId = `${instance.moduleDefinitionId}-${Date.now().toString(36)}`;
+    const clone: FurnitureInstance = {
+      ...instance,
+      id: cloneId,
+      selected: true,
+      positionMm: {
+        ...instance.positionMm,
+        x: instance.positionMm.x + instance.dimensionsMm.width + 20
+      },
+      parts: instance.parts.map((part) => ({
+        ...part,
+        id: part.id.replace(instance.id, cloneId),
+        moduleId: cloneId,
+        groupId: part.groupId?.replace(instance.id, cloneId)
+      }))
+    };
+    set((s) => ({
+      selectedId: cloneId,
+      instances: [...s.instances.map((item) => ({ ...item, selected: false })), clone]
+    }));
+  },
+
+  selectFurnitureInstance: (id) =>
+    set((s) => ({
+      selectedId: id,
+      instances: s.instances.map((item) => ({ ...item, selected: item.id === id })),
+      furniture: s.furniture.map((item) => ({ ...item, selected: false }))
+    })),
+
+  hideFurnitureInstance: (id) =>
+    set((s) => ({
+      instances: s.instances.map((item) => (item.id === id ? { ...item, visible: false } : item))
+    })),
+
+  showFurnitureInstance: (id) =>
+    set((s) => ({
+      instances: s.instances.map((item) => (item.id === id ? { ...item, visible: true } : item))
+    })),
+
+  lockFurnitureInstance: (id) =>
+    set((s) => ({
+      instances: s.instances.map((item) => (item.id === id ? { ...item, locked: true } : item))
+    })),
+
+  unlockFurnitureInstance: (id) =>
+    set((s) => ({
+      instances: s.instances.map((item) => (item.id === id ? { ...item, locked: false } : item))
+    }))
 }));
