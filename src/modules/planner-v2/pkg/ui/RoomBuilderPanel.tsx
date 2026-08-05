@@ -28,10 +28,10 @@ function NumberField({
   step = 0.05
 }: {
   label: string;
-  value: number;
+  value: number; // mm
   onChange: (value: number) => void;
-  min: number;
-  max: number;
+  min: number; // m
+  max: number; // m
   step?: number;
 }) {
   return (
@@ -40,11 +40,11 @@ function NumberField({
       <div>
         <input
           type="number"
-          value={value}
+          value={value / 1000}
           min={min}
           max={max}
           step={step}
-          onChange={(event) => onChange(Number(event.target.value))}
+          onChange={(event) => onChange(Number(event.target.value) * 1000)}
         />
         <small>m</small>
       </div>

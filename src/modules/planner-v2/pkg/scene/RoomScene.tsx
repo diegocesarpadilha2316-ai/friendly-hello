@@ -49,12 +49,19 @@ function CameraEventBridge() {
   return null;
 }
 
-function againstBackWall(depth: number, roomDepth: number, gap = 0.012) {
+function againstBackWall(depthMm: number, roomDepthMm: number, gapMm = 12) {
+  const depth = depthMm / 1000;
+  const roomDepth = roomDepthMm / 1000;
+  const gap = gapMm / 1000;
   const backInnerZ = -roomDepth / 2;
   return backInnerZ + depth / 2 + gap;
 }
 
-function clampX(x: number, width: number, roomWidth: number, gap = 0.012) {
+function clampX(xMm: number, widthMm: number, roomWidthMm: number, gapMm = 12) {
+  const x = xMm / 1000;
+  const width = widthMm / 1000;
+  const roomWidth = roomWidthMm / 1000;
+  const gap = gapMm / 1000;
   return THREE.MathUtils.clamp(
     x,
     -roomWidth / 2 + width / 2 + gap,
@@ -63,16 +70,19 @@ function clampX(x: number, width: number, roomWidth: number, gap = 0.012) {
 }
 
 function BackWall({
-  width,
-  height,
-  thickness,
+  widthMm,
+  heightMm,
+  thicknessMm,
   opening
 }: {
-  width: number;
-  height: number;
-  thickness: number;
+  widthMm: number;
+  heightMm: number;
+  thicknessMm: number;
   opening?: OpeningSpec;
 }) {
+  const width = widthMm / 1000;
+  const height = heightMm / 1000;
+  const thickness = thicknessMm / 1000;
   const material = <meshStandardMaterial color="#ddd5c9" roughness={0.94} />;
 
   if (!opening) {
@@ -84,24 +94,29 @@ function BackWall({
     );
   }
 
+  const offset = opening.offset / 1000;
+  const opWidth = opening.width / 1000;
+  const opHeight = opening.height / 1000;
+  const opSill = opening.sill / 1000;
+
   const leftEdge = THREE.MathUtils.clamp(
-    opening.offset - opening.width / 2,
+    offset - opWidth / 2,
     -width / 2 + 0.1,
     width / 2 - 0.2
   );
   const rightEdge = THREE.MathUtils.clamp(
-    opening.offset + opening.width / 2,
+    offset + opWidth / 2,
     -width / 2 + 0.2,
     width / 2 - 0.1
   );
-  const bottom = opening.type === "door" ? 0 : opening.sill;
-  const top = Math.min(height, bottom + opening.height);
+  const bottom = opening.type === "door" ? 0 : opSill;
+  const top = Math.min(height, bottom + opHeight);
 
   const segments = [
     { x: (-width / 2 + leftEdge) / 2, y: height / 2, w: leftEdge + width / 2, h: height },
     { x: (rightEdge + width / 2) / 2, y: height / 2, w: width / 2 - rightEdge, h: height },
-    { x: opening.offset, y: bottom / 2, w: rightEdge - leftEdge, h: bottom },
-    { x: opening.offset, y: (top + height) / 2, w: rightEdge - leftEdge, h: height - top }
+    { x: offset, y: bottom / 2, w: rightEdge - leftEdge, h: bottom },
+    { x: offset, y: (top + height) / 2, w: rightEdge - leftEdge, h: height - top }
   ].filter((segment) => segment.w > 0.01 && segment.h > 0.01);
 
   return (
@@ -247,10 +262,10 @@ function OpeningVisual({
 
 
 function Architecture() {
-  const width = useRoomBuilderStore((s) => s.width);
-  const depth = useRoomBuilderStore((s) => s.depth);
-  const height = useRoomBuilderStore((s) => s.height);
-  const thickness = useRoomBuilderStore((s) => s.wallThickness);
+  const width = useRoomBuilderStore((s) => s.width) / 1000;
+  const depth = useRoomBuilderStore((s) => s.depth) / 1000;
+  const height = useRoomBuilderStore((s) => s.height) / 1000;
+  const thickness = useRoomBuilderStore((s) => s.wallThickness) / 1000;
   const openings = useRoomBuilderStore((s) => s.openings);
   const floorMap = useMemo(() => createFloorTexture(), []);
 
