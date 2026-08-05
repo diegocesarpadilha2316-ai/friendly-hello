@@ -1,8 +1,3 @@
-import { Bot, Box, Menu, Settings2, X } from "lucide-react";
-import { usePlannerStore } from "../state/usePlannerStore";
-import { Explorer } from "./Explorer";
-import { RightPanel } from "./RightPanel";
-
 import { useState, useRef, useEffect } from "react";
 import { Bot, Box, Menu, Settings2, X, Send } from "lucide-react";
 import { usePlannerStore } from "../state/usePlannerStore";
@@ -93,7 +88,9 @@ export function MobileUI() {
               </div>
             </div>
           ) : (
-            <RightPanel />
+            <div className="mobile-panel-wrapper">
+              <RightPanel />
+            </div>
           )}
         </div>
       </div>
