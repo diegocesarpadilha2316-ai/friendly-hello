@@ -1,13 +1,19 @@
-import { Explorer } from "./ready-kit/Explorer";
-import { MobileUI } from "./ready-kit/MobileUI";
-import { RightPanel } from "./ready-kit/RightPanel";
-import { Topbar } from "./ready-kit/Topbar";
-import { ViewportControls } from "./ready-kit/ViewportControls";
-import { RoomScene } from "./ready-kit/RoomScene";
+import { useEffect } from "react";
+import { usePlannerStore } from "../pkg/state/usePlannerStore";
+import { Topbar } from "../pkg/ui/Topbar";
+import { Explorer } from "../pkg/ui/Explorer";
+import { RightPanel } from "../pkg/ui/RightPanel";
+import { MobileUI } from "../pkg/ui/MobileUI";
+import { ViewportControls } from "../pkg/ui/ViewportControls";
+import { RoomScene } from "../pkg/scene/RoomScene";
+import "../pkg/styles/package.css";
 
 export function PlannerV2Layout() {
+  const leftCollapsed = usePlannerStore((s) => s.leftCollapsed);
+  const rightCollapsed = usePlannerStore((s) => s.rightCollapsed);
+
   return (
-    <div className="app">
+    <div className={`app ${leftCollapsed ? "left-collapsed" : ""} ${rightCollapsed ? "right-collapsed" : ""}`}>
       <Topbar />
 
       <main className="workspace">
@@ -22,7 +28,6 @@ export function PlannerV2Layout() {
       </main>
 
       <MobileUI />
-
 
       <footer className="statusbar">
         <span className="ready">● READY</span>

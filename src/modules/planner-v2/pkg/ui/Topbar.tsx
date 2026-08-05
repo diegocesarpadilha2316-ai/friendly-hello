@@ -41,7 +41,7 @@ export function Topbar() {
   return (
     <header className="topbar">
       <div className="brand">
-        <img src="/dioris-logo.png" alt="Dioris" />
+        <img src="/src/assets/dioris-logo.png" alt="Dioris" />
         <div>
           <strong>DIORIS PLANNER V2</strong>
           <small>Cozinha Moderna — Dioris User</small>
