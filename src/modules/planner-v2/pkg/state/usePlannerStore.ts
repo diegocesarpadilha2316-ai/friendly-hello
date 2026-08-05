@@ -1,5 +1,10 @@
 import { create } from "zustand";
 import type { ChatMessage, FurnitureItem, RightTab, SheetHeight, ToolMode } from "../types";
+import type { FurnitureInstance } from "../../library/contracts/FurnitureInstance";
+import { buildModule } from "../../library/services/buildModule";
+import { ModuleRegistry } from "../../library/registry/ModuleRegistry";
+import { useRoomBuilderStore } from "./useRoomBuilderStore";
+import "../../library";
 
 interface PlannerState {
   leftCollapsed: boolean;
@@ -14,6 +19,8 @@ interface PlannerState {
   selectedId: string | null;
   furniture: FurnitureItem[];
   messages: ChatMessage[];
+  instances: FurnitureInstance[];
+  lastLibraryError: string | null;
 
   toggleLeft: () => void;
   toggleRight: () => void;
@@ -30,6 +37,18 @@ interface PlannerState {
   deleteSelected: () => void;
   toggleVisibility: (id: string) => void;
   sendMessage: (content: string) => void;
+
+  addFurnitureInstance: (moduleId: string) => string | null;
+  updateFurnitureInstance: (id: string, patch: Partial<FurnitureInstance>) => void;
+  removeFurnitureInstance: (id: string) => void;
+  duplicateFurnitureInstance: (id: string) => void;
+  selectFurnitureInstance: (id: string | null) => void;
+  hideFurnitureInstance: (id: string) => void;
+  showFurnitureInstance: (id: string) => void;
+  lockFurnitureInstance: (id: string) => void;
+  unlockFurnitureInstance: (id: string) => void;
+  rebuildFurnitureInstance: (id: string) => void;
+  clearLibraryError: () => void;
 }
 
 const initialFurniture: FurnitureItem[] = [
