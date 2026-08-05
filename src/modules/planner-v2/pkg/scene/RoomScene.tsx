@@ -128,7 +128,7 @@ function BackWall({
           receiveShadow
         >
           <boxGeometry args={[segment.w, segment.h, thickness]} />
-          <meshStandardMaterial color="#ddd5c9" roughness={0.94} />
+          <meshStandardMaterial color="#ddd5c9" roughness={0.94} side={THREE.DoubleSide} />
         </mesh>
       ))}
       <OpeningVisual opening={opening} orientation="back" />
@@ -162,7 +162,7 @@ function SideWall({
     return (
       <mesh position={[x, height / 2, 0]} receiveShadow>
         <boxGeometry args={[thickness, height, depth]} />
-        <meshStandardMaterial color="#e4ddd3" roughness={0.94} />
+        <meshStandardMaterial color="#e4ddd3" roughness={0.94} side={THREE.DoubleSide} />
       </mesh>
     );
   }
@@ -201,7 +201,7 @@ function SideWall({
           receiveShadow
         >
           <boxGeometry args={[thickness, segment.h, segment.d]} />
-          <meshStandardMaterial color="#e4ddd3" roughness={0.94} />
+          <meshStandardMaterial color="#e4ddd3" roughness={0.94} side={THREE.DoubleSide} />
         </mesh>
       ))}
       <group position={[x, 0, 0]}>

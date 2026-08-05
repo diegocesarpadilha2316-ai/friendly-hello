@@ -185,13 +185,13 @@ export function InteractiveCabinet(props: CabinetProps) {
 
   const carcassMaterial = useMemo(
     () =>
-      new THREE.MeshPhysicalMaterial({ map: props.woodMap, color: "#b3835c", roughness: 0.34, metalness: 0.01, clearcoat: 0.12, clearcoatRoughness: 0.3, transparent: xrayOpacity < 1, opacity: xrayOpacity, depthWrite: xrayOpacity >= 1 }),
+      new THREE.MeshPhysicalMaterial({ map: props.woodMap, color: "#b3835c", roughness: 0.34, metalness: 0.01, clearcoat: 0.12, clearcoatRoughness: 0.3, transparent: xrayOpacity < 1, opacity: xrayOpacity, depthWrite: xrayOpacity >= 1, side: THREE.DoubleSide }),
     [props.woodMap, xrayOpacity]
   );
 
   const frontMaterial = useMemo(
     () =>
-      new THREE.MeshPhysicalMaterial({ map: props.woodMap, color: props.type === "tower" ? "#956340" : "#b88b65", roughness: 0.29, metalness: 0.01, clearcoat: 0.18, clearcoatRoughness: 0.35, transparent: xrayOpacity < 1, opacity: xrayOpacity, depthWrite: xrayOpacity >= 1 }),
+      new THREE.MeshPhysicalMaterial({ map: props.woodMap, color: props.type === "tower" ? "#956340" : "#b88b65", roughness: 0.29, metalness: 0.01, clearcoat: 0.18, clearcoatRoughness: 0.35, transparent: xrayOpacity < 1, opacity: xrayOpacity, depthWrite: xrayOpacity >= 1, side: THREE.DoubleSide }),
     [props.type, props.woodMap, xrayOpacity]
   );
 

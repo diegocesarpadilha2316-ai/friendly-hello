@@ -3,6 +3,12 @@ import { usePlannerStore } from "../state/usePlannerStore";
 import { Explorer } from "./Explorer";
 import { RightPanel } from "./RightPanel";
 
+import { useState, useRef, useEffect } from "react";
+import { Bot, Box, Menu, Settings2, X, Send } from "lucide-react";
+import { usePlannerStore } from "../state/usePlannerStore";
+import { Explorer } from "./Explorer";
+import { RightPanel } from "./RightPanel";
+
 export function MobileUI() {
   const drawerOpen = usePlannerStore((s) => s.mobileDrawerOpen);
   const sheetOpen = usePlannerStore((s) => s.mobileSheetOpen);
@@ -11,6 +17,22 @@ export function MobileUI() {
   const setMobileSheet = usePlannerStore((s) => s.setMobileSheet);
   const setMobileSheetHeight = usePlannerStore((s) => s.setMobileSheetHeight);
   const setRightTab = usePlannerStore((s) => s.setRightTab);
+  const rightTab = usePlannerStore((s) => s.rightTab);
+  const messages = usePlannerStore((s) => s.messages);
+  const sendMessage = usePlannerStore((s) => s.sendMessage);
+  
+  const [draft, setDraft] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    if (sheetOpen && rightTab === "chat") {
+      scrollToBottom();
+    }
+  }, [messages, sheetOpen, rightTab]);
 
   return (
     <>
@@ -22,7 +44,7 @@ export function MobileUI() {
 
       <div
         className={`mobile-sheet ${sheetOpen ? "open" : ""}`}
-        style={{ height: `${sheetHeight}%` }}
+        style={{ height: sheetHeight === 100 ? "100dvh" : `${sheetHeight}%` }}
       >
         <div className="sheet-handle" />
         <div className="sheet-head">
@@ -36,14 +58,51 @@ export function MobileUI() {
             <button onClick={() => setMobileSheet(false)}><X size={16} /></button>
           </div>
         </div>
-        <div className="sheet-body"><RightPanel /></div>
+        <div className="sheet-body">
+          {sheetOpen && rightTab === "chat" ? (
+            <div className="mobile-chat-overlay">
+              <div className="mobile-messages">
+                {messages.map((message) => (
+                  <article key={message.id} className={`message ${message.role}`}>
+                    <p>{message.content}</p>
+                    <time>{message.time}</time>
+                  </article>
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+              <div className="mobile-composer">
+                <input
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      sendMessage(draft);
+                      setDraft("");
+                    }
+                  }}
+                  placeholder="Peça algo ao IA Copiloto..."
+                />
+                <button
+                  onClick={() => {
+                    sendMessage(draft);
+                    setDraft("");
+                  }}
+                >
+                  <Send size={17} />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <RightPanel />
+          )}
+        </div>
       </div>
 
       <nav className="mobile-nav">
-        <button onClick={() => setMobileDrawer(true)}><Menu size={19} /><span>Projeto</span></button>
-        <button><Box size={19} /><span>3D</span></button>
-        <button onClick={() => { setRightTab("chat"); setMobileSheet(true); }}><Bot size={19} /><span>IA</span></button>
-        <button onClick={() => { setRightTab("inspector"); setMobileSheet(true); }}><Settings2 size={19} /><span>Propriedades</span></button>
+        <button onClick={() => { setMobileDrawer(true); setMobileSheet(false); }}><Menu size={19} /><span>Projeto</span></button>
+        <button onClick={() => setMobileSheet(false)}><Box size={19} /><span>3D</span></button>
+        <button onClick={() => { setRightTab("chat"); setMobileSheet(true); setMobileSheetHeight(100); }}><Bot size={19} /><span>IA</span></button>
+        <button onClick={() => { setRightTab("inspector"); setMobileSheet(true); setMobileSheetHeight(50); }}><Settings2 size={19} /><span>Propriedades</span></button>
       </nav>
     </>
   );
