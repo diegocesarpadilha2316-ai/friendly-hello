@@ -138,19 +138,24 @@ function BackWall({
 
 function SideWall({
   side,
-  depth,
-  height,
-  thickness,
-  roomWidth,
+  depthMm,
+  heightMm,
+  thicknessMm,
+  roomWidthMm,
   opening
 }: {
   side: "left" | "right";
-  depth: number;
-  height: number;
-  thickness: number;
-  roomWidth: number;
+  depthMm: number;
+  heightMm: number;
+  thicknessMm: number;
+  roomWidthMm: number;
   opening?: OpeningSpec;
 }) {
+  const depth = depthMm / 1000;
+  const height = heightMm / 1000;
+  const thickness = thicknessMm / 1000;
+  const roomWidth = roomWidthMm / 1000;
+
   const x = side === "left" ? -roomWidth / 2 - thickness / 2 : roomWidth / 2 + thickness / 2;
 
   if (!opening) {
@@ -162,18 +167,23 @@ function SideWall({
     );
   }
 
+  const offset = opening.offset / 1000;
+  const opWidth = opening.width / 1000;
+  const opHeight = opening.height / 1000;
+  const opSill = opening.sill / 1000;
+
   const leftEdge = THREE.MathUtils.clamp(
-    opening.offset - opening.width / 2,
+    offset - opWidth / 2,
     -depth / 2 + 0.1,
     depth / 2 - 0.2
   );
   const rightEdge = THREE.MathUtils.clamp(
-    opening.offset + opening.width / 2,
+    offset + opWidth / 2,
     -depth / 2 + 0.2,
     depth / 2 - 0.1
   );
-  const bottom = opening.type === "door" ? 0 : opening.sill;
-  const top = Math.min(height, bottom + opening.height);
+  const bottom = opening.type === "door" ? 0 : opSill;
+  const top = Math.min(height, bottom + opHeight);
 
   const segments = [
     { z: (-depth / 2 + leftEdge) / 2, y: height / 2, d: leftEdge + depth / 2, h: height },
@@ -210,8 +220,8 @@ function OpeningVisual({
 }) {
   const isBack = orientation === "back";
   const position: [number, number, number] = isBack
-    ? [opening.offset, opening.sill + opening.height / 2, 0.055]
-    : [0, opening.sill + opening.height / 2, opening.offset];
+    ? [opening.offset / 1000, (opening.sill + opening.height / 2) / 1000, 0.055]
+    : [0, (opening.sill + opening.height / 2) / 1000, opening.offset / 1000];
 
   const rotation: [number, number, number] = isBack
     ? [0, 0, 0]
@@ -221,10 +231,10 @@ function OpeningVisual({
     return (
       <group position={position} rotation={rotation}>
         <mesh castShadow>
-          <boxGeometry args={[opening.width - 0.06, opening.height - 0.04, 0.045]} />
+          <boxGeometry args={[opening.width / 1000 - 0.06, opening.height / 1000 - 0.04, 0.045]} />
           <meshStandardMaterial color="#916946" roughness={0.58} />
         </mesh>
-        <mesh position={[opening.width * 0.32, 0, 0.04]}>
+        <mesh position={[(opening.width / 1000) * 0.32, 0, 0.04]}>
           <sphereGeometry args={[0.035, 18, 18]} />
           <meshStandardMaterial color="#c7aa72" metalness={0.78} roughness={0.2} />
         </mesh>
@@ -235,7 +245,7 @@ function OpeningVisual({
   return (
     <group position={position} rotation={rotation}>
       <mesh>
-        <boxGeometry args={[opening.width - 0.06, opening.height - 0.06, 0.025]} />
+        <boxGeometry args={[opening.width / 1000 - 0.06, opening.height / 1000 - 0.06, 0.025]} />
         <meshPhysicalMaterial
           color="#add9e7"
           transparent
@@ -245,14 +255,14 @@ function OpeningVisual({
         />
       </mesh>
       {[-1, 1].map((side) => (
-        <mesh key={side} position={[side * opening.width / 2, 0, 0.02]}>
-          <boxGeometry args={[0.055, opening.height, 0.07]} />
+        <mesh key={side} position={[(side * opening.width / 2) / 1000, 0, 0.02]}>
+          <boxGeometry args={[0.055, opening.height / 1000, 0.07]} />
           <meshStandardMaterial color="#282828" metalness={0.58} roughness={0.28} />
         </mesh>
       ))}
       {[-1, 1].map((side) => (
-        <mesh key={`h-${side}`} position={[0, side * opening.height / 2, 0.02]}>
-          <boxGeometry args={[opening.width, 0.055, 0.07]} />
+        <mesh key={`h-${side}`} position={[0, (side * opening.height / 2) / 1000, 0.02]}>
+          <boxGeometry args={[opening.width / 1000, 0.055, 0.07]} />
           <meshStandardMaterial color="#282828" metalness={0.58} roughness={0.28} />
         </mesh>
       ))}
@@ -262,16 +272,20 @@ function OpeningVisual({
 
 
 function Architecture() {
-  const width = useRoomBuilderStore((s) => s.width) / 1000;
-  const depth = useRoomBuilderStore((s) => s.depth) / 1000;
-  const height = useRoomBuilderStore((s) => s.height) / 1000;
-  const thickness = useRoomBuilderStore((s) => s.wallThickness) / 1000;
+  const widthMm = useRoomBuilderStore((s) => s.width);
+  const depthMm = useRoomBuilderStore((s) => s.depth);
+  const heightMm = useRoomBuilderStore((s) => s.height);
+  const thicknessMm = useRoomBuilderStore((s) => s.wallThickness);
   const openings = useRoomBuilderStore((s) => s.openings);
   const floorMap = useMemo(() => createFloorTexture(), []);
 
   const backOpening = openings.find((opening) => opening.wall === "back");
   const leftOpening = openings.find((opening) => opening.wall === "left");
   const rightOpening = openings.find((opening) => opening.wall === "right");
+
+  const width = widthMm / 1000;
+  const depth = depthMm / 1000;
+  const height = heightMm / 1000;
 
   return (
     <group>
@@ -282,28 +296,28 @@ function Architecture() {
 
       <group position={[0, 0, -depth / 2]}>
         <BackWall
-          width={width}
-          height={height}
-          thickness={thickness}
+          widthMm={widthMm}
+          heightMm={heightMm}
+          thicknessMm={thicknessMm}
           opening={backOpening}
         />
       </group>
 
       <SideWall
         side="left"
-        depth={depth}
-        height={height}
-        thickness={thickness}
-        roomWidth={width}
+        depthMm={depthMm}
+        heightMm={heightMm}
+        thicknessMm={thicknessMm}
+        roomWidthMm={widthMm}
         opening={leftOpening}
       />
 
       <SideWall
         side="right"
-        depth={depth}
-        height={height}
-        thickness={thickness}
-        roomWidth={width}
+        depthMm={depthMm}
+        heightMm={heightMm}
+        thicknessMm={thicknessMm}
+        roomWidthMm={widthMm}
         opening={rightOpening}
       />
 
@@ -316,8 +330,10 @@ function Architecture() {
 }
 
 function KitchenScene() {
-  const roomWidth = useRoomBuilderStore((s) => s.width);
-  const roomDepth = useRoomBuilderStore((s) => s.depth);
+  const roomWidthMm = useRoomBuilderStore((s) => s.width);
+  const roomDepthMm = useRoomBuilderStore((s) => s.depth);
+  const roomWidth = roomWidthMm / 1000;
+  const roomDepth = roomDepthMm / 1000;
   const woodMap = useMemo(() => createWoodTexture(), []);
   const marbleMap = useMemo(() => createMarbleTexture(), []);
 
@@ -326,7 +342,7 @@ function KitchenScene() {
       <InteractiveCabinet
         id="base-cabinet-left"
         name="Gaveteiro inferior"
-        position={[clampX(-1.35, 1.0, roomWidth), 0.39, againstBackWall(0.62, roomDepth)]}
+        position={[clampX(-1350, 1000, roomWidthMm), 0.39, againstBackWall(620, roomDepthMm)]}
         width={1.0}
         height={0.78}
         depth={0.62}
@@ -336,7 +352,7 @@ function KitchenScene() {
       <InteractiveCabinet
         id="base-cabinet-center"
         name="Gaveteiro central"
-        position={[clampX(-0.24, 1.08, roomWidth), 0.39, againstBackWall(0.62, roomDepth)]}
+        position={[clampX(-240, 1080, roomWidthMm), 0.39, againstBackWall(620, roomDepthMm)]}
         width={1.08}
         height={0.78}
         depth={0.62}
@@ -346,7 +362,7 @@ function KitchenScene() {
       <InteractiveCabinet
         id="base-cabinet-right"
         name="Gabinete inferior"
-        position={[clampX(0.88, 1.04, roomWidth), 0.39, againstBackWall(0.62, roomDepth)]}
+        position={[clampX(880, 1040, roomWidthMm), 0.39, againstBackWall(620, roomDepthMm)]}
         width={1.04}
         height={0.78}
         depth={0.62}
@@ -362,7 +378,7 @@ function KitchenScene() {
       <InteractiveCabinet
         id="upper-cabinet-left"
         name="Aéreo esquerdo"
-        position={[clampX(-1.18, 1.25, roomWidth), 1.85, againstBackWall(0.4, roomDepth)]}
+        position={[clampX(-1180, 1250, roomWidthMm), 1.85, againstBackWall(400, roomDepthMm)]}
         width={1.25}
         height={0.82}
         depth={0.4}
@@ -372,7 +388,7 @@ function KitchenScene() {
       <InteractiveCabinet
         id="upper-cabinet-right"
         name="Aéreo direito"
-        position={[clampX(0.18, 1.35, roomWidth), 1.85, againstBackWall(0.4, roomDepth)]}
+        position={[clampX(180, 1350, roomWidthMm), 1.85, againstBackWall(400, roomDepthMm)]}
         width={1.35}
         height={0.82}
         depth={0.4}
@@ -382,7 +398,7 @@ function KitchenScene() {
       <InteractiveCabinet
         id="tower-cabinet"
         name="Torre quente"
-        position={[clampX(1.75, 0.72, roomWidth), 1.15, againstBackWall(0.64, roomDepth)]}
+        position={[clampX(1750, 720, roomWidthMm), 1.15, againstBackWall(640, roomDepthMm)]}
         width={0.72}
         height={2.3}
         depth={0.64}
