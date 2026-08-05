@@ -10,6 +10,7 @@ import { usePlannerStore } from "../state/usePlannerStore";
 import { useImmersiveStore } from "../state/useImmersiveStore";
 import { OpeningSpec, useRoomBuilderStore } from "../state/useRoomBuilderStore";
 import { InteractiveCabinet } from "./InteractiveCabinet";
+import { LibraryPartsRenderer } from "./LibraryPartsRenderer";
 import { WalkControls } from "./WalkControls";
 import {
   createFloorTexture,
@@ -553,6 +554,7 @@ export function RoomScene() {
 
         <Architecture />
         <KitchenScene />
+        <LibraryPartsRenderer />
 
         {gridVisible && (
           <gridHelper args={[8, 16, "#6366f1", "#5b6174"]} position={[0, 0.006, 0]} />
