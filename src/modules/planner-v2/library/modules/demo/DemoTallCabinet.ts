@@ -39,7 +39,7 @@ export const DemoTallCabinet: ModuleDefinition = {
         moduleId,
         { ...dimensionsMm, height: doorZoneHeight },
         materialId,
-        { toeKickMm: drawerZoneMm, leaves: 2 }
+        { toeKickMm: 0, leaves: 2 }
       ).map((part) => ({
         ...part,
         positionMm: { ...part.positionMm, y: part.positionMm.y + drawerZoneMm },
