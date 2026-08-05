@@ -188,8 +188,8 @@ function SideWall({
   const segments = [
     { z: (-depth / 2 + leftEdge) / 2, y: height / 2, d: leftEdge + depth / 2, h: height },
     { z: (rightEdge + depth / 2) / 2, y: height / 2, d: depth / 2 - rightEdge, h: height },
-    { z: opening.offset, y: bottom / 2, d: rightEdge - leftEdge, h: bottom },
-    { z: opening.offset, y: (top + height) / 2, d: rightEdge - leftEdge, h: height - top }
+    { z: offset, y: bottom / 2, d: rightEdge - leftEdge, h: bottom },
+    { z: offset, y: (top + height) / 2, d: rightEdge - leftEdge, h: height - top }
   ].filter((segment) => segment.d > 0.01 && segment.h > 0.01);
 
   return (
