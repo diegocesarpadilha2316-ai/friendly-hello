@@ -83,7 +83,7 @@ function BackWall({
   const width = widthMm / 1000;
   const height = heightMm / 1000;
   const thickness = thicknessMm / 1000;
-  const material = <meshStandardMaterial color="#ddd5c9" roughness={0.94} />;
+  const material = <meshStandardMaterial color="#ddd5c9" roughness={0.94} side={THREE.DoubleSide} />;
 
   if (!opening) {
     return (
