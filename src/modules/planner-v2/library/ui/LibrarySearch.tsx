@@ -13,7 +13,7 @@ export function LibrarySearch({
       <input
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        placeholder="Buscar na biblioteca..."
+        placeholder="Buscar móveis, acessórios..."
       />
     </label>
   );

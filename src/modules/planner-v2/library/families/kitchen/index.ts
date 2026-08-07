@@ -3,7 +3,7 @@ import type { FamilyDefinition } from "../../contracts/FamilyDefinition";
 export const kitchenFamily: FamilyDefinition = {
   id: "kitchen",
   name: "Cozinha",
-  description: "Módulos profissionais para cozinha: inferiores, aéreos, torres e acessórios.",
+  description: "Cozinhas planejadas com balcões, aéreos e torres.",
   icon: "cooking-pot",
   categories: ["Inferiores", "Aéreos", "Torres", "Cantos", "Eletrodomésticos"],
   moduleIds: [],
