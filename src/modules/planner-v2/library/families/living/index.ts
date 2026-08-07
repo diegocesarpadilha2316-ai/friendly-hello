@@ -3,7 +3,7 @@ import type { FamilyDefinition } from "../../contracts/FamilyDefinition";
 export const livingFamily: FamilyDefinition = {
   id: "living",
   name: "Sala",
-  description: "Família será construída nas próximas etapas.",
+  description: "Mobiliário para salas de estar: racks, painéis e estantes.",
   icon: "sofa",
   categories: ["Racks", "Painéis", "Estantes"],
   moduleIds: [],

@@ -3,7 +3,7 @@ import type { FamilyDefinition } from "../../contracts/FamilyDefinition";
 export const bathroomFamily: FamilyDefinition = {
   id: "bathroom",
   name: "Banheiro",
-  description: "Família será construída nas próximas etapas.",
+  description: "Soluções para banheiros e lavabos: gabinetes, espelheiras e nichos.",
   icon: "shower-head",
   categories: ["Gabinetes", "Espelheiras", "Nichos"],
   moduleIds: [],

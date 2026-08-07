@@ -41,7 +41,7 @@ export function LibraryPanel() {
       )}
 
       {family && !family.enabled ? (
-        <p className="library-empty">Família será construída nas próximas etapas.</p>
+        <p className="library-empty">Esta família será construída nas próximas etapas.</p>
       ) : modules.length === 0 ? (
         <p className="library-empty">Nenhum módulo encontrado.</p>
       ) : (
