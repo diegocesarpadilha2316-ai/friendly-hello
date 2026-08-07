@@ -41,9 +41,9 @@ export function LibraryPanel() {
       )}
 
       {family && !family.enabled ? (
-        <p className="library-empty">Esta família será construída nas próximas etapas.</p>
+        <p className="library-empty">Em breve: módulos especializados para esta família.</p>
       ) : modules.length === 0 ? (
-        <p className="library-empty">Nenhum módulo encontrado.</p>
+        <p className="library-empty">Não encontramos módulos com este nome.</p>
       ) : (
         <div className="library-cards">
           {modules.map((definition) => (
