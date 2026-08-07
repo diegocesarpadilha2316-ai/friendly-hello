@@ -3,7 +3,7 @@ import type { FamilyDefinition } from "../../contracts/FamilyDefinition";
 export const wardrobeFamily: FamilyDefinition = {
   id: "wardrobe",
   name: "Closet / Roupeiro",
-  description: "Sistemas modulares para closets e roupeiros: corpos, internos e portas.",
+  description: "Closets e roupeiros: módulos internos, corpos e portas deslizantes.",
   icon: "shirt",
   categories: ["Corpos", "Internos", "Portas", "Acessórios"],
   moduleIds: [],

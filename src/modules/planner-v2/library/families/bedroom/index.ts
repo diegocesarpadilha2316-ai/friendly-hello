@@ -3,7 +3,7 @@ import type { FamilyDefinition } from "../../contracts/FamilyDefinition";
 export const bedroomFamily: FamilyDefinition = {
   id: "bedroom",
   name: "Quarto",
-  description: "Mobiliário para dormitórios: cabeceiras, criados-mudos e cômodas.",
+  description: "Dormitórios: cabeceiras, criados-mudos e cômodas personalizadas.",
   icon: "bed",
   categories: ["Cabeceiras", "Criados", "Cômodas", "Painéis"],
   moduleIds: [],

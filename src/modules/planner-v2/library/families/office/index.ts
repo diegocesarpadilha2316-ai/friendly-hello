@@ -3,7 +3,7 @@ import type { FamilyDefinition } from "../../contracts/FamilyDefinition";
 export const officeFamily: FamilyDefinition = {
   id: "office",
   name: "Escritório",
-  description: "Soluções para escritórios e home office: mesas, armários e estantes.",
+  description: "Home Office e Corporativo: mesas, gaveteiros e estantes para livros.",
   icon: "briefcase",
   categories: ["Mesas", "Armários", "Estantes"],
   moduleIds: [],
