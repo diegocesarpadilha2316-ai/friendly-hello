@@ -1,7 +1,7 @@
 import { FamilyRegistry } from "./registry/FamilyRegistry";
 import { ModuleRegistry } from "./registry/ModuleRegistry";
 import { genericFamily, genericModules } from "./families/generic";
-import { kitchenFamily } from "./families/kitchen";
+import { kitchenFamily, kitchenModules } from "./families/kitchen";
 import { bedroomFamily } from "./families/bedroom";
 import { wardrobeFamily } from "./families/wardrobe";
 import { bathroomFamily } from "./families/bathroom";
@@ -27,8 +27,9 @@ export function bootstrapLibrary(): void {
     genericFamily,
   ].forEach((family) => FamilyRegistry.register(family));
 
-  ModuleRegistry.registerMany(genericModules);
+  ModuleRegistry.registerMany([...genericModules, ...kitchenModules]);
 }
+
 
 bootstrapLibrary();
 
