@@ -16,4 +16,7 @@ export interface FurnitureInstance {
   visible: boolean;
   locked: boolean;
   selected: boolean;
+  // Novas propriedades para animação
+  isOpen?: boolean;
+  openAmount?: number;
 }
