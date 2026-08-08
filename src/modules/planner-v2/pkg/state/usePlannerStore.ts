@@ -154,6 +154,11 @@ export const usePlannerStore = create<PlannerState>()(
   messages: initialMessages,
   instances: [],
   lastLibraryError: null,
+  closeAllAnimations: () => {},
+  setInstanceIsolated: () => {},
+  toggleInstanceXRay: () => {},
+  showAllInstances: () => {},
+
 
   toggleLeft: () => set((s) => ({ ...s, leftCollapsed: !s.leftCollapsed })),
   toggleRight: () => set((s) => ({ ...s, rightCollapsed: !s.rightCollapsed })),
