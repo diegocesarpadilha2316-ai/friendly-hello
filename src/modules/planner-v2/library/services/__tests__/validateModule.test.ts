@@ -37,6 +37,9 @@ describe('validateModule', () => {
     };
 
     const result = validateModule(input);
+    if (!result.valid) {
+      console.log('Validation Errors:', JSON.stringify(result.errors, null, 2));
+    }
     expect(result.valid).toBe(true);
     expect(result.errors).toHaveLength(0);
   });
