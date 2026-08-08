@@ -73,11 +73,12 @@ export function RightPanel() {
               </div>
 
               <div className="quick-actions">
+                <button onClick={() => usePlannerStore.getState().closeAllAnimations()}>Fechar Tudo</button>
+                <button onClick={() => usePlannerStore.getState().showAllInstances()}>Mostrar Tudo</button>
                 <button>+ Iluminação</button>
-                <button>+ Prateleira</button>
                 <button>+ Render</button>
-                <button>+ Orçamento</button>
               </div>
+
 
               <div className="composer">
                 <input
@@ -118,7 +119,7 @@ export function RightPanel() {
                     style={{ flex: 1, padding: '8px', fontSize: '12px' }}
                     onClick={() => toggleAnim(selectedId)}
                    >
-                    {instance.isOpen ? 'Fechar' : 'Abrir'}
+                    {instance.isOpen ? 'Fechar Tudo' : 'Abrir Tudo'}
                    </button>
                    <button 
                     type="button" 
@@ -128,8 +129,37 @@ export function RightPanel() {
                    >
                     Excluir
                    </button>
+                 </div>
+              )}
+              
+              {isV2 && (
+                <div className="form-actions" style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                   <button 
+                    type="button" 
+                    className={instance.isIsolated ? "active" : ""}
+                    style={{ flex: 1, padding: '8px', fontSize: '10px' }}
+                    onClick={() => usePlannerStore.getState().setInstanceIsolated(instance.isIsolated ? null : selectedId)}
+                   >
+                    Isolar
+                   </button>
+                   <button 
+                    type="button" 
+                    className={instance.isXRay ? "active" : ""}
+                    style={{ flex: 1, padding: '8px', fontSize: '10px' }}
+                    onClick={() => usePlannerStore.getState().toggleInstanceXRay(selectedId)}
+                   >
+                    Raio-X
+                   </button>
+                   <button 
+                    type="button" 
+                    style={{ flex: 1, padding: '8px', fontSize: '10px' }}
+                    onClick={() => usePlannerStore.getState().duplicateFurnitureInstance(selectedId)}
+                   >
+                    Duplicar
+                   </button>
                 </div>
               )}
+
               <label>
                 Largura ({isV2 ? 'mm' : 'm'})
                 <input
@@ -194,61 +224,31 @@ export function RightPanel() {
                   }}
                 />
               </label>
+              {isV2 && (
+                <>
+                  <label>
+                    Posição Y (mm)
+                    <input
+                      type="number"
+                      step={50}
+                      value={instance.positionMm.y}
+                      onChange={(event: any) => updateInstance(selectedId, { positionMm: { ...instance.positionMm, y: Number(event.target.value) } })}
+                    />
+                  </label>
+                  <label>
+                    Posição Z (mm)
+                    <input
+                      type="number"
+                      step={50}
+                      value={instance.positionMm.z}
 
-              <label>
-                Largura (m)
-                <input
-                  type="number"
-                  step="0.05"
-                  value={selected?.size[0] ?? 0}
-                  onChange={(event: any) =>
-                    selected &&
-                    updateSelected({
-                      size: [
-                        Number((event.target as HTMLInputElement).value),
-                        selected.size[1],
-                        selected.size[2]
-                      ]
-                    })
-                  }
-                />
-              </label>
-              <label>
-                Altura (m)
-                <input
-                  type="number"
-                  step="0.05"
-                  value={selected?.size[1] ?? 0}
-                  onChange={(event: any) =>
-                    selected &&
-                    updateSelected({
-                      size: [
-                        selected.size[0],
-                        Number((event.target as HTMLInputElement).value),
-                        selected.size[2]
-                      ]
-                    })
-                  }
-                />
-              </label>
-              <label>
-                Profundidade (m)
-                <input
-                  type="number"
-                  step="0.05"
-                  value={selected?.size[2] ?? 0}
-                  onChange={(event: any) =>
-                    selected &&
-                    updateSelected({
-                      size: [
-                        selected.size[0],
-                        selected.size[1],
-                        Number((event.target as HTMLInputElement).value)
-                      ]
-                    })
-                  }
-                />
-              </label>
+                      onChange={(event: any) => updateInstance(selectedId, { positionMm: { ...instance.positionMm, z: Number(event.target.value) } })}
+                    />
+                  </label>
+                </>
+              )}
+
+
               <label>
                 Rotação
                 <input
@@ -272,16 +272,16 @@ export function RightPanel() {
           {rightTab === "materials" && (
             <div className="swatches">
               {[
-                ["Freijó", "wood", "#7a4f2c"],
-                ["Taupe", "taupe", "#8b7564"],
-                ["Branco", "white", "#e8e5df"],
-                ["Grafite", "graphite", "#4a4745"],
-                ["Pedra", "stone", "#cbbba6"]
+                ["Branco", "mdf-white", "#e8e5df"],
+                ["Freijó", "mdf-wood-natural", "#7a4f2c"],
+                ["Verde", "mdf-green", "#4f6f52"],
+                ["Grafite", "mdf-graphite", "#4a4745"],
+                ["Taupe", "mdf-taupe", "#8b7564"]
               ].map(([label, id, color]) => (
                 <button
                   type="button"
                   key={id}
-                  className="swatch"
+                  className={`swatch ${isV2 && instance.materialOverrides['*'] === id ? 'active' : ''}`}
                   style={{ background: color }}
                   onClick={() => {
                     if (isV2) {
@@ -290,7 +290,6 @@ export function RightPanel() {
                       updateSelected({ material: id });
                     }
                   }}
-
                 >
                   <span>{label}</span>
                 </button>
@@ -298,13 +297,15 @@ export function RightPanel() {
             </div>
           )}
 
+
           {rightTab === "hardware" && (
             <div className="form">
-              <label>Dobradiças<select><option>Blum Clip Top</option><option>FGV</option></select></label>
-              <label>Corrediças<select><option>Blum Legrabox</option><option>Telescópica</option></select></label>
-              <label>Puxador<select><option>Gola</option><option>Cava</option><option>Perfil</option></select></label>
+              <label>Puxador<select><option>Barra Alumínio</option><option>Gola</option><option>Cava</option></select></label>
+              <label>Corrediças<select><option>Telescópica</option><option>Invisível</option></select></label>
+              <label>Dobradiças<select><option>Standard</option><option>Amortecedor</option></select></label>
             </div>
           )}
+
         </div>
       )}
     </aside>

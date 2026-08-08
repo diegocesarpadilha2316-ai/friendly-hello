@@ -15,6 +15,8 @@ export interface BuildRequest {
   positionMm?: { x: number; y: number; z: number };
   rotationDeg?: { x: number; y: number; z: number };
   room?: RoomBoundsMm;
+  instances?: any[]; // Para colisão móvel x móvel
+
 
 }
 
@@ -93,6 +95,7 @@ export function buildModule(request: BuildRequest): BuildOutcome {
     positionMm: request.positionMm,
     room: request.room,
   });
+
 
   if (!validation.valid) {
     return {

@@ -171,8 +171,9 @@ export function buildDoors(
     const hingeSide: "left" | "right" = leaves === 1 ? "left" : index === 0 ? "left" : "right";
     const x =
       leaves === 1 ? 0 : index === 0 ? -(doorWidth / 2 + 1.5) : doorWidth / 2 + 1.5;
-    const doorId = `${moduleId}:door-${hingeSide}`;
+    const doorId = `${moduleId}:part-interactive-door-${index + 1}`;
     parts.push({
+
       id: doorId,
       moduleId,
       role: "door",
@@ -226,7 +227,7 @@ export function buildDrawers(
   const parts: PartDefinition[] = [];
 
   for (let index = 0; index < count; index += 1) {
-    const groupId = `${moduleId}:drawer-${index + 1}`;
+    const groupId = `${moduleId}:part-interactive-${index + 1}`;
     const centerY = toe + PANEL_MM + frontHeight / 2 + index * (frontHeight + FRONT_GAP_MM);
 
     parts.push({
@@ -265,6 +266,7 @@ export function buildDrawers(
         role: "drawer-side",
         name: `Lateral gaveta ${index + 1} (${side === "left" ? "esq." : "dir."})`,
         dimensionsMm: { width: 15, height: Math.max(80, frontHeight - 40), depth: boxDepth },
+
         positionMm: {
           x: side === "left" ? -boxWidth / 2 : boxWidth / 2,
           y: centerY,

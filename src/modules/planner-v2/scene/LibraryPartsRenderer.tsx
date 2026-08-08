@@ -11,10 +11,14 @@ interface PartProps {
   onSelect: (id: string) => void;
   isOpen: boolean;
   openAmount: number;
+  isXRay: boolean;
 }
 
-const PartMesh: React.FC<PartProps> = ({ part, isSelected, onSelect, isOpen, openAmount }) => {
+
+const PartMesh: React.FC<PartProps> = ({ part, isSelected, onSelect, isOpen, openAmount, isXRay }) => {
   const material = useMemo(() => resolveMaterial(part.materialId), [part.materialId]);
+  const toggleInstanceAnimation = usePlannerStore(s => s.toggleInstanceAnimation);
+
   
   // Calcula animação
   let finalPosition = new THREE.Vector3(
@@ -57,20 +61,28 @@ const PartMesh: React.FC<PartProps> = ({ part, isSelected, onSelect, isOpen, ope
       onClick={(e) => {
         e.stopPropagation();
         onSelect(part.moduleId);
+        if (part.interactive && part.groupId) {
+          toggleInstanceAnimation(part.moduleId, part.groupId);
+        }
+
       }}
+
       castShadow
       receiveShadow
     >
+
       <boxGeometry args={[mmToM(part.dimensionsMm.width), mmToM(part.dimensionsMm.height), mmToM(part.dimensionsMm.depth)]} />
       <meshStandardMaterial 
         color={material.baseColor} 
         roughness={material.roughness} 
         metalness={material.metalness}
-        transparent={material.transparent}
-        opacity={material.opacity ?? 1}
+        transparent={material.transparent || isXRay}
+        opacity={isXRay ? 0.4 : (material.opacity ?? 1)}
         emissive={isSelected ? '#2563EB' : '#000000'}
         emissiveIntensity={isSelected ? 0.2 : 0}
+        depthTest={!isXRay}
       />
+
     </mesh>
   );
 };
@@ -99,10 +111,14 @@ export const LibraryPartsRenderer: React.FC = () => {
               part={part} 
               isSelected={!!instance.selected}
               onSelect={selectInstance}
-              isOpen={!!instance.isOpen}
-              openAmount={instance.openAmount || 0}
+              isOpen={part.groupId && instance.openStates?.[part.groupId] !== undefined ? instance.openStates[part.groupId] > 0 : !!instance.isOpen}
+              openAmount={part.groupId && instance.openStates?.[part.groupId] !== undefined ? instance.openStates[part.groupId] : (instance.openAmount || 0)}
+
+              isXRay={!!instance.isXRay}
             />
+
           ))}
+
         </group>
       ))}
     </group>
