@@ -20,9 +20,18 @@ export function RightPanel() {
   const furniture = usePlannerStore((s) => s.furniture);
   const selectedId = usePlannerStore((s) => s.selectedId);
   const updateSelected = usePlannerStore((s) => s.updateSelected);
+  const instances = usePlannerStore((s) => s.instances || []);
+  const updateInstance = usePlannerStore((s) => s.updateFurnitureInstance);
+  const deleteInstance = usePlannerStore((s) => s.removeFurnitureInstance);
+  const toggleAnim = usePlannerStore((s) => s.toggleInstanceAnimation);
+
   const [draft, setDraft] = useState("");
 
   const selected = furniture.find((item: any) => item.id === selectedId);
+  const instance = instances.find((item: any) => item.id === selectedId);
+  const isV2 = !!instance;
+  const current = instance || selected;
+
 
   return (
     <aside className={`right-panel ${collapsed ? "collapsed" : ""}`}>
@@ -99,8 +108,93 @@ export function RightPanel() {
             <div className="form">
               <label>
                 Item
-                <input value={selected?.name ?? "Nenhum"} readOnly />
+                <input value={current?.name ?? "Nenhum"} readOnly />
               </label>
+              {isV2 && (
+                <div className="form-actions" style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                   <button 
+                    type="button" 
+                    className="secondary"
+                    style={{ flex: 1, padding: '8px', fontSize: '12px' }}
+                    onClick={() => toggleAnim(selectedId)}
+                   >
+                    {instance.isOpen ? 'Fechar' : 'Abrir'}
+                   </button>
+                   <button 
+                    type="button" 
+                    className="danger"
+                    style={{ flex: 1, padding: '8px', fontSize: '12px', background: '#ef4444', color: 'white' }}
+                    onClick={() => deleteInstance(selectedId)}
+                   >
+                    Excluir
+                   </button>
+                </div>
+              )}
+              <label>
+                Largura ({isV2 ? 'mm' : 'm'})
+                <input
+                  type="number"
+                  step={isV2 ? 10 : 0.05}
+                  value={isV2 ? instance.dimensionsMm.width : (selected?.size[0] ?? 0)}
+                  onChange={(event: any) => {
+                    const val = Number(event.target.value);
+                    if (isV2) {
+                      updateInstance(selectedId, { dimensionsMm: { ...instance.dimensionsMm, width: val } });
+                    } else if (selected) {
+                      updateSelected({ size: [val, selected.size[1], selected.size[2]] });
+                    }
+                  }}
+                />
+              </label>
+              <label>
+                Altura ({isV2 ? 'mm' : 'm'})
+                <input
+                  type="number"
+                  step={isV2 ? 10 : 0.05}
+                  value={isV2 ? instance.dimensionsMm.height : (selected?.size[1] ?? 0)}
+                  onChange={(event: any) => {
+                    const val = Number(event.target.value);
+                    if (isV2) {
+                      updateInstance(selectedId, { dimensionsMm: { ...instance.dimensionsMm, height: val } });
+                    } else if (selected) {
+                      updateSelected({ size: [selected.size[0], val, selected.size[2]] });
+                    }
+                  }}
+                />
+              </label>
+              <label>
+                Profundidade ({isV2 ? 'mm' : 'm'})
+                <input
+                  type="number"
+                  step={isV2 ? 10 : 0.05}
+                  value={isV2 ? instance.dimensionsMm.depth : (selected?.size[2] ?? 0)}
+                  onChange={(event: any) => {
+                    const val = Number(event.target.value);
+                    if (isV2) {
+                      updateInstance(selectedId, { dimensionsMm: { ...instance.dimensionsMm, depth: val } });
+                    } else if (selected) {
+                      updateSelected({ size: [selected.size[0], selected.size[1], val] });
+                    }
+                  }}
+                />
+              </label>
+              <label>
+                Posição X ({isV2 ? 'mm' : 'm'})
+                <input
+                  type="number"
+                  step={isV2 ? 50 : 0.05}
+                  value={isV2 ? instance.positionMm.x : (selected?.position[0] ?? 0)}
+                  onChange={(event: any) => {
+                    const val = Number(event.target.value);
+                    if (isV2) {
+                      updateInstance(selectedId, { positionMm: { ...instance.positionMm, x: val } });
+                    } else {
+                      updateSelected({ position: [val, selected.position[1], selected.position[2]] });
+                    }
+                  }}
+                />
+              </label>
+
               <label>
                 Largura (m)
                 <input
@@ -159,11 +253,19 @@ export function RightPanel() {
                 Rotação
                 <input
                   type="number"
-                  step="0.1"
-                  value={selected?.rotationY ?? 0}
-                  onChange={(event: any) => updateSelected({ rotationY: Number(event.target.value) })}
+                  step={1}
+                  value={isV2 ? instance.rotationDeg.y : (selected?.rotationY ?? 0)}
+                  onChange={(event: any) => {
+                    const val = Number(event.target.value);
+                    if (isV2) {
+                      updateInstance(selectedId, { rotationDeg: { ...instance.rotationDeg, y: val } });
+                    } else {
+                      updateSelected({ rotationY: val });
+                    }
+                  }}
                 />
               </label>
+
             </div>
           )}
 
@@ -181,7 +283,14 @@ export function RightPanel() {
                   key={id}
                   className="swatch"
                   style={{ background: color }}
-                  onClick={() => updateSelected({ material: id })}
+                  onClick={() => {
+                    if (isV2) {
+                      updateInstance(selectedId, { materialOverrides: { '*': id } });
+                    } else {
+                      updateSelected({ material: id });
+                    }
+                  }}
+
                 >
                   <span>{label}</span>
                 </button>

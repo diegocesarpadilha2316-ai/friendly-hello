@@ -14,9 +14,14 @@ import {
   Wrench
 } from "lucide-react";
 import { usePlannerStore } from "./usePlannerStoreReady";
+import { LibraryPanel } from "../../library/ui/LibraryPanel";
+
 
 export function Explorer() {
+  const leftTab = usePlannerStore((s) => s.leftTab || "structure");
+  const setLeftTab = (tab: any) => usePlannerStore.setState({ leftTab: tab });
   const collapsed = usePlannerStore((s) => s.leftCollapsed);
+
   const toggleLeft = usePlannerStore((s) => s.toggleLeft);
   const furniture = usePlannerStore((s) => s.furniture);
   const selectedId = usePlannerStore((s) => s.selectedId);
@@ -39,14 +44,35 @@ export function Explorer() {
 
       {!collapsed && (
         <div className="panel-tabs">
-          <button className="active">Estrutura</button>
-          <button>Biblioteca</button>
-          <button>Ambientes</button>
+          <button 
+            className={leftTab === "structure" ? "active" : ""} 
+            onClick={() => setLeftTab("structure")}
+          >
+            Estrutura
+          </button>
+          <button 
+            className={leftTab === "library" ? "active" : ""} 
+            onClick={() => setLeftTab("library")}
+          >
+            Biblioteca
+          </button>
+          <button 
+            className={leftTab === "rooms" ? "active" : ""} 
+            onClick={() => setLeftTab("rooms")}
+          >
+            Ambientes
+          </button>
         </div>
+
       )}
 
       <div className="tree">
-        <div className="tree-row root">
+        {leftTab === "library" ? (
+          <LibraryPanel />
+        ) : (
+          <>
+            <div className="tree-row root">
+
           <ChevronDown size={14} />
           <Box size={16} />
           {!collapsed && <span>Sala Cozinha</span>}
@@ -103,8 +129,10 @@ export function Explorer() {
             <div className="tree-row root"><Lightbulb size={16} /><span>Iluminação</span><span className="grow" /></div>
             <div className="tree-row root"><Wrench size={16} /><span>Ferragens</span><span className="grow" /></div>
           </>
+          </>
         )}
       </div>
+
     </aside>
   );
 }

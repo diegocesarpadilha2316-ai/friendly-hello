@@ -9,7 +9,7 @@ import { LibrarySearch } from "./LibrarySearch";
 import "../../library";
 
 export function LibraryPanel() {
-  const [activeFamily, setActiveFamily] = useState<FamilyId>("generic");
+  const [activeFamily, setActiveFamily] = useState<FamilyId>("kitchen");
   const [query, setQuery] = useState("");
   const addFurnitureInstance = usePlannerStore((s) => s.addFurnitureInstance);
   const lastLibraryError = usePlannerStore((s) => s.lastLibraryError);
