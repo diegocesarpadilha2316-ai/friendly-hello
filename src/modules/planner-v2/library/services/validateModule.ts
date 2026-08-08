@@ -128,16 +128,27 @@ export function validateModule(input: ValidateModuleInput): ValidationResult {
     if (room) {
       const halfW = room.widthMm / 2;
       const halfD = room.depthMm / 2;
+      
+      // Validação de colisão com paredes (Z posterior, X laterais) e piso
       if (Math.abs(positionMm.x) + dimensionsMm.width / 2 > halfW + 1) {
         errors.push({ code: "module-outside-room", message: "Módulo fora dos limites do cômodo (X)." });
       }
-      if (Math.abs(positionMm.z) + dimensionsMm.depth / 2 > halfD + 1) {
-        errors.push({ code: "module-through-wall", message: "Módulo atravessando a parede (Z)." });
+      
+      // Z=0 é o centro. O fundo do cômodo está em -halfD. 
+      // Se positionMm.z - dimensionsMm.depth / 2 < -halfD, o móvel atravessa a parede do fundo.
+      if (positionMm.z - dimensionsMm.depth / 2 < -halfD - 1) {
+        errors.push({ code: "module-through-wall", message: "Módulo atravessando a parede do fundo (Z)." });
       }
+      
       if (positionMm.y + dimensionsMm.height > room.heightMm + 1) {
         errors.push({ code: "module-through-ceiling", message: "Módulo atravessando o teto." });
       }
+      
+      if (positionMm.y < -1) {
+        errors.push({ code: "module-below-floor", message: "Módulo posicionado abaixo do piso." });
+      }
     }
+
   }
 
   return {

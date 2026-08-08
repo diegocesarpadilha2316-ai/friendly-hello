@@ -16,10 +16,11 @@ export function LibraryCategoryList({
           key={family.id}
           type="button"
           className={`library-family ${activeId === family.id ? "active" : ""} ${
-            family.enabled ? "" : "disabled"
+            family.enabled ? "" : "opacity-50 grayscale cursor-not-allowed"
           }`}
-          onClick={() => onSelect(family.id)}
+          onClick={() => family.enabled && onSelect(family.id)}
         >
+
           <span>{family.name}</span>
           <span className="library-badge">
             {family.enabled ? family.moduleIds.length : "—"}
