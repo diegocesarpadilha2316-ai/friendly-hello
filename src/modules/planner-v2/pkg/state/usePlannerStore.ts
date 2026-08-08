@@ -154,11 +154,6 @@ export const usePlannerStore = create<PlannerState>()(
   messages: initialMessages,
   instances: [],
   lastLibraryError: null,
-  closeAllAnimations: () => {},
-  setInstanceIsolated: () => {},
-  toggleInstanceXRay: () => {},
-  showAllInstances: () => {},
-
 
   toggleLeft: () => set((s) => ({ ...s, leftCollapsed: !s.leftCollapsed })),
   toggleRight: () => set((s) => ({ ...s, rightCollapsed: !s.rightCollapsed })),
@@ -302,12 +297,33 @@ export const usePlannerStore = create<PlannerState>()(
     const original = get().instances.find((i) => i.id === id);
     if (!original) return;
 
-    const newId = `${original.id}-copy-${Date.now()}`;
+    const newId = `furniture-${Date.now()}`;
+    const newPosition = { 
+      ...original.positionMm, 
+      x: original.positionMm.x + original.dimensionsMm.width 
+    };
+
+    const outcome = buildModule({
+      instanceId: newId,
+      moduleId: original.moduleDefinitionId,
+      dimensionsMm: original.dimensionsMm,
+      positionMm: newPosition,
+      rotationDeg: original.rotationDeg,
+      materialOverrides: original.materialOverrides,
+      hardwareOverrides: original.hardwareOverrides
+    });
+
+    if (!outcome.ok) return;
+
     const clone: FurnitureInstance = {
       ...original,
       id: newId,
-      positionMm: { ...original.positionMm, x: original.positionMm.x + 100 },
-      selected: true
+      parts: outcome.parts,
+      positionMm: newPosition,
+      selected: true,
+      isOpen: false,
+      openAmount: 0,
+      openStates: {}
     };
 
     set((s) => ({
@@ -358,12 +374,64 @@ export const usePlannerStore = create<PlannerState>()(
       instances: s.instances.map((item) => (item.id === id ? { ...item, visible: true } : item))
     })),
 
-  toggleInstanceAnimation: (id) =>
+  toggleInstanceAnimation: (id: string, partId?: string) =>
     set((s) => ({
       ...s,
-      instances: s.instances.map((item) =>
-        item.id === id ? { ...item, isOpen: !item.isOpen, openAmount: item.isOpen ? 0 : 1 } : item
-      )
+      instances: s.instances.map((item) => {
+        if (item.id !== id) return item;
+        
+        if (partId) {
+          const current = item.openStates?.[partId] || 0;
+          return {
+            ...item,
+            openStates: {
+              ...(item.openStates || {}),
+              [partId]: current > 0 ? 0 : 1
+            }
+          };
+        }
+
+        const nextOpen = !item.isOpen;
+        return { 
+          ...item, 
+          isOpen: nextOpen, 
+          openAmount: nextOpen ? 1 : 0,
+          openStates: {} 
+        };
+      })
+    })),
+
+  closeAllAnimations: () =>
+    set((s) => ({
+      ...s,
+      instances: s.instances.map(i => ({ 
+        ...i, 
+        isOpen: false, 
+        openAmount: 0, 
+        openStates: {} 
+      }))
+    })),
+
+  setInstanceIsolated: (id: string | null) =>
+    set((s) => ({
+      ...s,
+      instances: s.instances.map(i => ({
+        ...i,
+        isIsolated: id === null ? false : i.id === id,
+        visible: id === null ? true : i.id === id
+      }))
+    })),
+
+  toggleInstanceXRay: (id: string) =>
+    set((s) => ({
+      ...s,
+      instances: s.instances.map(i => (i.id === id ? { ...i, isXRay: !i.isXRay } : i))
+    })),
+
+  showAllInstances: () =>
+    set((s) => ({
+      ...s,
+      instances: s.instances.map(i => ({ ...i, visible: true, isIsolated: false, isXRay: false }))
     })),
 
   lockFurnitureInstance: (id) =>
