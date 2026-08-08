@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
+
 import type { ChatMessage, FurnitureItem, RightTab, SheetHeight, ToolMode } from "../types";
 import type { FurnitureInstance } from "../../library/contracts/FurnitureInstance";
 import { buildModule } from "../../library/services/buildModule";
@@ -401,4 +403,20 @@ export const usePlannerStore = create<PlannerState>((set, get) => ({
     set((s) => ({
       instances: s.instances.map((item) => (item.id === id ? { ...item, locked: false } : item))
     }))
-}));
+  }))
+);
+
+if (typeof window !== "undefined") {
+  (window as any).plannerV2Store = usePlannerStore;
+  
+  usePlannerStore.subscribe(
+    (s) => s.instances,
+    (instances) => {
+      const readyStore = (window as any).usePlannerStore; // Fallback to current naming
+      if (readyStore) {
+         // The sync logic is already in usePlannerStoreReady.ts
+      }
+    }
+  );
+}
+

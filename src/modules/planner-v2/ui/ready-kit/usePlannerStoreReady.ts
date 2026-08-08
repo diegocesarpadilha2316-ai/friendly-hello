@@ -20,6 +20,9 @@ export const usePlannerStore = create<any>((set, get) => ({
   // Reais do V2 - transformados em estado plano para evitar getters circulares/loops
   furniture: [],
   selectedId: null,
+  instances: [],
+  lastLibraryError: null,
+
 
   messages: [
     {
@@ -82,7 +85,44 @@ export const usePlannerStore = create<any>((set, get) => ({
   toggleVisibility: (id: string) => {
     const item = usePlannerV2Store.getState().items.find(i => i.id === id);
     if (item) usePlannerV2Store.getState().updateItem(id, { visible: !item.visible });
+    // Also check V2 state
+    const v2Store = (window as any).plannerV2Store;
+    if (v2Store) {
+      const instance = v2Store.getState().instances.find((i: any) => i.id === id);
+      if (instance) v2Store.getState().updateFurnitureInstance(id, { visible: !instance.visible });
+    }
   },
+
+  addFurnitureInstance: async (moduleId: string) => {
+    const v2Store = (window as any).plannerV2Store;
+    if (v2Store) {
+      await v2Store.getState().addFurnitureInstance(moduleId);
+    }
+  },
+
+  removeFurnitureInstance: (id: string) => {
+    const v2Store = (window as any).plannerV2Store;
+    if (v2Store) {
+      v2Store.getState().removeFurnitureInstance(id);
+    }
+  },
+
+  updateFurnitureInstance: (id: string, updates: any) => {
+    const v2Store = (window as any).plannerV2Store;
+    if (v2Store) {
+      v2Store.getState().updateFurnitureInstance(id, updates);
+    }
+  },
+
+  toggleInstanceAnimation: (id: string) => {
+    const v2Store = (window as any).plannerV2Store;
+    if (v2Store) {
+      v2Store.getState().toggleInstanceAnimation(id);
+    }
+  },
+
+  clearLibraryError: () => set({ lastLibraryError: null }),
+
 
   sendMessage: (content: string) => {
     // Integração futura com o agente real
@@ -115,14 +155,20 @@ const syncFromV2 = () => {
   if (
     JSON.stringify(currentStore.furniture) !== JSON.stringify(mappedFurniture) ||
     currentStore.selectedId !== v2State.selectedId ||
-    currentStore.viewMode !== v2State.viewMode
+    currentStore.viewMode !== v2State.viewMode ||
+    currentStore.instances?.length !== (window as any).plannerV2Store?.getState().instances.length
   ) {
+    const v2Store = (window as any).plannerV2Store;
+    const instances = v2Store ? v2Store.getState().instances : [];
+    
     usePlannerStore.setState({ 
       furniture: mappedFurniture,
       selectedId: v2State.selectedId,
-      viewMode: v2State.viewMode
+      viewMode: v2State.viewMode,
+      instances: instances
     });
   }
+
 };
 
 // Inicialização e Inscrição
