@@ -47,7 +47,11 @@ interface PlannerState {
   selectFurnitureInstance: (id: string | null) => void;
   hideFurnitureInstance: (id: string) => void;
   showFurnitureInstance: (id: string) => void;
-  toggleInstanceAnimation: (id: string) => void;
+  toggleInstanceAnimation: (id: string, partId?: string) => void;
+  closeAllAnimations: () => void;
+  setInstanceIsolated: (id: string | null) => void;
+  toggleInstanceXRay: (id: string) => void;
+  showAllInstances: () => void;
   lockFurnitureInstance: (id: string) => void;
   unlockFurnitureInstance: (id: string) => void;
   rebuildFurnitureInstance: (id: string) => void;

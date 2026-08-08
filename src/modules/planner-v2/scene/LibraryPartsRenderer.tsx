@@ -11,9 +11,11 @@ interface PartProps {
   onSelect: (id: string) => void;
   isOpen: boolean;
   openAmount: number;
+  isXRay: boolean;
 }
 
-const PartMesh: React.FC<PartProps> = ({ part, isSelected, onSelect, isOpen, openAmount }) => {
+
+const PartMesh: React.FC<PartProps> = ({ part, isSelected, onSelect, isOpen, openAmount, isXRay }) => {
   const material = useMemo(() => resolveMaterial(part.materialId), [part.materialId]);
   
   // Calcula animação
@@ -57,20 +59,25 @@ const PartMesh: React.FC<PartProps> = ({ part, isSelected, onSelect, isOpen, ope
       onClick={(e) => {
         e.stopPropagation();
         onSelect(part.moduleId);
+        // Se clicar especificamente numa porta ou gaveta já selecionada, alterna a animação dela
+        // Note: usePlannerStore should be accessible or passed down for toggling part anim
       }}
       castShadow
       receiveShadow
     >
+
       <boxGeometry args={[mmToM(part.dimensionsMm.width), mmToM(part.dimensionsMm.height), mmToM(part.dimensionsMm.depth)]} />
       <meshStandardMaterial 
         color={material.baseColor} 
         roughness={material.roughness} 
         metalness={material.metalness}
-        transparent={material.transparent}
-        opacity={material.opacity ?? 1}
+        transparent={material.transparent || isXRay}
+        opacity={isXRay ? 0.4 : (material.opacity ?? 1)}
         emissive={isSelected ? '#2563EB' : '#000000'}
         emissiveIntensity={isSelected ? 0.2 : 0}
+        depthTest={!isXRay}
       />
+
     </mesh>
   );
 };
@@ -98,11 +105,14 @@ export const LibraryPartsRenderer: React.FC = () => {
               key={part.id} 
               part={part} 
               isSelected={!!instance.selected}
-              onSelect={selectInstance}
-              isOpen={!!instance.isOpen}
-              openAmount={instance.openAmount || 0}
+              onSelect={onSelect}
+              isOpen={instance.openStates?.[part.id] !== undefined ? instance.openStates[part.id] > 0 : !!instance.isOpen}
+              openAmount={instance.openStates?.[part.id] !== undefined ? instance.openStates[part.id] : (instance.openAmount || 0)}
+              isXRay={!!instance.isXRay}
             />
+
           ))}
+
         </group>
       ))}
     </group>
