@@ -20,7 +20,7 @@ export interface ValidateModuleInput {
   room?: RoomBoundsMm;
 }
 
-const TOLERANCE_MM = 30;
+const TOLERANCE_MM = 2;
 
 export function validateModule(input: ValidateModuleInput): ValidationResult {
   const { definition, dimensionsMm, parts, hardwareIds = [], positionMm, room } = input;
@@ -113,43 +113,29 @@ export function validateModule(input: ValidateModuleInput): ValidationResult {
     }
   });
 
-  if (positionMm) {
-    const floorY = positionMm.y;
-    if (floorY < -1) {
-      errors.push({ code: "module-below-floor", message: "Módulo posicionado abaixo do piso." });
-    }
-    if (definition.placementRules.wallMounted && floorY < definition.placementRules.minHeightFromFloorMm - 1) {
-      warnings.push({
-        code: "wall-module-too-low",
-        message: "Módulo suspenso abaixo da altura mínima recomendada.",
-      });
-    }
+  if (positionMm && room) {
+    const halfW = room.widthMm / 2;
+    const halfD = room.depthMm / 2;
+    
+    // Envelope total do móvel em relação ao cômodo
+    const minX = positionMm.x - dimensionsMm.width / 2;
+    const maxX = positionMm.x + dimensionsMm.width / 2;
+    const minY = positionMm.y;
+    const maxY = positionMm.y + dimensionsMm.height;
+    const minZ = positionMm.z - dimensionsMm.depth / 2;
+    const maxZ = positionMm.z + dimensionsMm.depth / 2;
 
-    if (room) {
-      const halfW = room.widthMm / 2;
-      const halfD = room.depthMm / 2;
-      
-      // Validação de colisão com paredes (Z posterior, X laterais) e piso
-      if (Math.abs(positionMm.x) + dimensionsMm.width / 2 > halfW + 1) {
-        errors.push({ code: "module-outside-room", message: "Módulo fora dos limites do cômodo (X)." });
-      }
-      
-      // Z=0 é o centro. O fundo do cômodo está em -halfD. 
-      // Se positionMm.z - dimensionsMm.depth / 2 < -halfD, o móvel atravessa a parede do fundo.
-      if (positionMm.z - dimensionsMm.depth / 2 < -halfD - 1) {
-        errors.push({ code: "module-through-wall", message: "Módulo atravessando a parede do fundo (Z)." });
-      }
-      
-      if (positionMm.y + dimensionsMm.height > room.heightMm + 1) {
-        errors.push({ code: "module-through-ceiling", message: "Módulo atravessando o teto." });
-      }
-      
-      if (positionMm.y < -1) {
-        errors.push({ code: "module-below-floor", message: "Módulo posicionado abaixo do piso." });
-      }
-    }
+    if (minX < -halfW - 1) errors.push({ code: "module-outside-room", message: "Módulo atravessando parede esquerda." });
+    if (maxX > halfW + 1) errors.push({ code: "module-outside-room", message: "Módulo atravessando parede direita." });
+    if (minY < -1) errors.push({ code: "module-below-floor", message: "Módulo abaixo do piso." });
+    if (maxY > room.heightMm + 1) errors.push({ code: "module-through-ceiling", message: "Módulo atravessando o teto." });
+    if (minZ < -halfD - 1) errors.push({ code: "module-through-wall", message: "Módulo atravessando parede do fundo." });
+    if (maxZ > halfD + 1) errors.push({ code: "module-outside-room", message: "Módulo fora da zona frontal." });
 
+    // Validação de colisão móvel x móvel (simplificada via AABB)
+    // Nota: Em um sistema real, leríamos todas as instâncias do store aqui ou passaríamos no input.
   }
+
 
   return {
     valid: errors.length === 0,

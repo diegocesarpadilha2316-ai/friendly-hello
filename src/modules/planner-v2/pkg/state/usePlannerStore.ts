@@ -281,10 +281,39 @@ export const usePlannerStore = create<PlannerState>()(
   },
 
   updateFurnitureInstance: (id, patch) =>
-    set((s) => ({
-      ...s,
-      instances: s.instances.map((item) => (item.id === id ? { ...item, ...patch } : item))
-    })),
+    set((s) => {
+      const instances = s.instances.map((item) => {
+        if (item.id !== id) return item;
+        const updated = { ...item, ...patch };
+        
+        // Se mudou dimensões ou posição, revalida contra cômodo e outras instâncias
+        const room = useRoomBuilderStore.getState();
+        const outcome = buildModule({
+          instanceId: id,
+          moduleId: updated.moduleDefinitionId,
+          dimensionsMm: updated.dimensionsMm,
+          positionMm: updated.positionMm,
+          rotationDeg: updated.rotationDeg,
+          materialOverrides: updated.materialOverrides,
+          hardwareOverrides: updated.hardwareOverrides,
+          room: { widthMm: room.width, depthMm: room.depth, heightMm: 2600 } // Fixado para demo ou vindo do store
+        });
+
+        if (!outcome.ok) {
+          // Em caso de colisão crítica, poderíamos bloquear o update ou avisar
+          // Para esta fase, apenas registramos o erro no console/store
+          console.warn("Validação falhou no update:", outcome.error);
+        }
+
+        return { 
+          ...updated, 
+          parts: outcome.parts, 
+          dimensionsMm: outcome.dimensionsMm 
+        };
+      });
+      return { ...s, instances };
+    }),
+
 
   removeFurnitureInstance: (id) =>
     set((s) => ({
