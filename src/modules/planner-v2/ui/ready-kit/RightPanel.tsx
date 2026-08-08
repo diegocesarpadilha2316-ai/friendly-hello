@@ -73,11 +73,12 @@ export function RightPanel() {
               </div>
 
               <div className="quick-actions">
+                <button onClick={() => usePlannerStore.getState().closeAllAnimations()}>Fechar Tudo</button>
+                <button onClick={() => usePlannerStore.getState().showAllInstances()}>Mostrar Tudo</button>
                 <button>+ Iluminação</button>
-                <button>+ Prateleira</button>
                 <button>+ Render</button>
-                <button>+ Orçamento</button>
               </div>
+
 
               <div className="composer">
                 <input
