@@ -105,7 +105,7 @@ export const LibraryPartsRenderer: React.FC = () => {
               key={part.id} 
               part={part} 
               isSelected={!!instance.selected}
-              onSelect={onSelect}
+              onSelect={selectInstance}
               isOpen={instance.openStates?.[part.id] !== undefined ? instance.openStates[part.id] > 0 : !!instance.isOpen}
               openAmount={instance.openStates?.[part.id] !== undefined ? instance.openStates[part.id] : (instance.openAmount || 0)}
               isXRay={!!instance.isXRay}
