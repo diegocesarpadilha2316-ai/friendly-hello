@@ -91,20 +91,21 @@ export const LibraryPartsRenderer: React.FC = () => {
             THREE.MathUtils.degToRad(instance.rotationDeg.y),
             THREE.MathUtils.degToRad(instance.rotationDeg.z)
           ]}
-          visible={instance.visible}
+          visible={instance.visible !== false}
         >
           {instance.parts.map((part) => (
             <PartMesh 
               key={part.id} 
               part={part} 
-              isSelected={instance.selected}
+              isSelected={!!instance.selected}
               onSelect={selectInstance}
-              isOpen={instance.isOpen}
+              isOpen={!!instance.isOpen}
               openAmount={instance.openAmount || 0}
             />
           ))}
         </group>
       ))}
     </group>
+
   );
 };
