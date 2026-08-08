@@ -17,6 +17,8 @@ interface PartProps {
 
 const PartMesh: React.FC<PartProps> = ({ part, isSelected, onSelect, isOpen, openAmount, isXRay }) => {
   const material = useMemo(() => resolveMaterial(part.materialId), [part.materialId]);
+  const toggleInstanceAnimation = usePlannerStore(s => s.toggleInstanceAnimation);
+
   
   // Calcula animação
   let finalPosition = new THREE.Vector3(
@@ -59,9 +61,11 @@ const PartMesh: React.FC<PartProps> = ({ part, isSelected, onSelect, isOpen, ope
       onClick={(e) => {
         e.stopPropagation();
         onSelect(part.moduleId);
-        // Se clicar especificamente numa porta ou gaveta já selecionada, alterna a animação dela
-        // Note: usePlannerStore should be accessible or passed down for toggling part anim
+        if (part.interactive) {
+          toggleInstanceAnimation(part.moduleId, part.id);
+        }
       }}
+
       castShadow
       receiveShadow
     >

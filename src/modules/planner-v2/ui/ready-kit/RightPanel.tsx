@@ -118,7 +118,7 @@ export function RightPanel() {
                     style={{ flex: 1, padding: '8px', fontSize: '12px' }}
                     onClick={() => toggleAnim(selectedId)}
                    >
-                    {instance.isOpen ? 'Fechar' : 'Abrir'}
+                    {instance.isOpen ? 'Fechar Tudo' : 'Abrir Tudo'}
                    </button>
                    <button 
                     type="button" 
@@ -128,8 +128,37 @@ export function RightPanel() {
                    >
                     Excluir
                    </button>
+                 </div>
+              )}
+              
+              {isV2 && (
+                <div className="form-actions" style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                   <button 
+                    type="button" 
+                    className={instance.isIsolated ? "active" : ""}
+                    style={{ flex: 1, padding: '8px', fontSize: '10px' }}
+                    onClick={() => usePlannerStore.getState().setInstanceIsolated(instance.isIsolated ? null : selectedId)}
+                   >
+                    Isolar
+                   </button>
+                   <button 
+                    type="button" 
+                    className={instance.isXRay ? "active" : ""}
+                    style={{ flex: 1, padding: '8px', fontSize: '10px' }}
+                    onClick={() => usePlannerStore.getState().toggleInstanceXRay(selectedId)}
+                   >
+                    Raio-X
+                   </button>
+                   <button 
+                    type="button" 
+                    style={{ flex: 1, padding: '8px', fontSize: '10px' }}
+                    onClick={() => usePlannerStore.getState().duplicateFurnitureInstance(selectedId)}
+                   >
+                    Duplicar
+                   </button>
                 </div>
               )}
+
               <label>
                 Largura ({isV2 ? 'mm' : 'm'})
                 <input
