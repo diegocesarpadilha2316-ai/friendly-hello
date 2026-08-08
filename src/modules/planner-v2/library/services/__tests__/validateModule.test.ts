@@ -23,7 +23,7 @@ describe('validateModule', () => {
         {
           id: 'base-1',
           name: 'Base',
-          materialId: 'mdf-white-18', // Use um ID que existe no MaterialRegistry ou mock o registry
+          materialId: 'mdf-white',
           dimensionsMm: { width: 600, height: 18, depth: 580 },
           positionMm: { x: 0, y: 9, z: 0 },
           rotationDeg: { x: 0, y: 0, z: 0 },
@@ -31,15 +31,10 @@ describe('validateModule', () => {
           moduleId: 'test-instance'
         }
       ],
-      hardwareIds: ['cam-bolt'] 
+      hardwareIds: ['hinge-standard']
     };
 
     const result = validateModule(input);
-    
-    if (!result.valid) {
-      console.log('Validation Errors:', JSON.stringify(result.errors, null, 2));
-    }
-    
     expect(result.errors).toHaveLength(0);
     expect(result.valid).toBe(true);
   });
@@ -52,7 +47,7 @@ describe('validateModule', () => {
         {
           id: 'p1',
           name: 'P',
-          materialId: 'mdf-white-18',
+          materialId: 'mdf-white',
           dimensionsMm: { width: 50, height: 10, depth: 10 },
           positionMm: { x: 0, y: 5, z: 0 },
           rotationDeg: { x: 0, y: 0, z: 0 },
@@ -110,7 +105,7 @@ describe('validateModule', () => {
         {
           id: 'door-1',
           name: 'Door',
-          materialId: 'mdf-white-18',
+          materialId: 'mdf-white',
           dimensionsMm: { width: 300, height: 720, depth: 18 },
           positionMm: { x: 0, y: 360, z: 300 },
           rotationDeg: { x: 0, y: 0, z: 0 },
@@ -134,7 +129,7 @@ describe('validateModule', () => {
         {
           id: 'p1',
           name: 'Part',
-          materialId: 'mdf-white-18',
+          materialId: 'mdf-white',
           dimensionsMm: { width: 100, height: 100, depth: 100 },
           positionMm: { x: 0, y: 50, z: 0 },
           rotationDeg: { x: 0, y: 0, z: 0 },
