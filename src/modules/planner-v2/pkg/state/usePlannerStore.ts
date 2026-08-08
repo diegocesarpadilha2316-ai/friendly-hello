@@ -151,18 +151,19 @@ export const usePlannerStore = create<PlannerState>()(
   instances: [],
   lastLibraryError: null,
 
-  toggleLeft: () => set((s) => ({ leftCollapsed: !s.leftCollapsed })),
-  toggleRight: () => set((s) => ({ rightCollapsed: !s.rightCollapsed })),
-  setMobileDrawer: (open) => set({ mobileDrawerOpen: open }),
-  setMobileSheet: (open) => set({ mobileSheetOpen: open }),
-  setMobileSheetHeight: (height) => set({ mobileSheetHeight: height }),
-  setRightTab: (tab) => set({ rightTab: tab }),
-  setToolMode: (mode) => set({ toolMode: mode }),
-  setGridVisible: (value) => set({ gridVisible: value }),
-  setLightsEnabled: (value) => set({ lightsEnabled: value }),
+  toggleLeft: () => set((s) => ({ ...s, leftCollapsed: !s.leftCollapsed })),
+  toggleRight: () => set((s) => ({ ...s, rightCollapsed: !s.rightCollapsed })),
+  setMobileDrawer: (open) => set((s) => ({ ...s, mobileDrawerOpen: open })),
+  setMobileSheet: (open) => set((s) => ({ ...s, mobileSheetOpen: open })),
+  setMobileSheetHeight: (height) => set((s) => ({ ...s, mobileSheetHeight: height })),
+  setRightTab: (tab) => set((s) => ({ ...s, rightTab: tab })),
+  setToolMode: (mode) => set((s) => ({ ...s, toolMode: mode })),
+  setGridVisible: (value) => set((s) => ({ ...s, gridVisible: value })),
+  setLightsEnabled: (value) => set((s) => ({ ...s, lightsEnabled: value })),
 
   selectFurniture: (id) =>
     set((s) => ({
+      ...s,
       selectedId: id,
       furniture: s.furniture.map((item) => ({
         ...item,
@@ -172,6 +173,7 @@ export const usePlannerStore = create<PlannerState>()(
 
   updateSelected: (patch) =>
     set((s) => ({
+      ...s,
       furniture: s.furniture.map((item) =>
         item.id === s.selectedId ? { ...item, ...patch } : item
       )
@@ -192,29 +194,33 @@ export const usePlannerStore = create<PlannerState>()(
       ] as [number, number, number],
       selected: true
     };
-    set({
+    set((state) => ({
+      ...state,
       selectedId: clone.id,
       furniture: [
-        ...s.furniture.map((item) => ({ ...item, selected: false })),
+        ...state.furniture.map((item) => ({ ...item, selected: false })),
         clone
       ]
-    });
+    }));
   },
 
   deleteSelected: () =>
     set((s) => ({
+      ...s,
       furniture: s.furniture.filter((item) => item.id !== s.selectedId),
       selectedId: null
     })),
 
   toggleVisibility: (id) =>
     set((s) => ({
+      ...s,
       furniture: s.furniture.map((item) => (item.id === id ? { ...item, visible: !item.visible } : item))
     })),
 
   sendMessage: (content) => {
     const now = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
     set((s) => ({
+      ...s,
       messages: [...s.messages, { id: Date.now().toString(), role: "user", content, time: now }]
     }));
   },
@@ -225,24 +231,45 @@ export const usePlannerStore = create<PlannerState>()(
 
     const id = `furniture-${Date.now()}`;
     
-    const room = useRoomBuilderStore.getState().spec;
-    const x = room.widthMm / 2;
-    const z = -room.depthMm / 2 + definition.defaultDimensionsMm.depth / 2;
+    const room = useRoomBuilderStore.getState();
+    const x = room.width / 2;
+    const z = -room.depth / 2 + definition.defaultDimensionsMm.depth / 2;
     
     const y = definition.placementRules.wallMounted 
       ? definition.placementRules.minHeightFromFloorMm 
       : 0;
 
-    const instance = buildModule({
-      id,
+    const outcome = buildModule({
+      instanceId: id,
       moduleId,
       dimensionsMm: definition.defaultDimensionsMm,
-      positionMm: { x, y, z },
-      rotationDeg: { x: 0, y: 0, z: 0 }
+      positionMm: { x, y, z }
     });
 
+    if (!outcome.ok) {
+       set(s => ({ ...s, lastLibraryError: outcome.error || 'Erro no build' }));
+       return null;
+    }
+
+    const instance: FurnitureInstance = {
+      id,
+      moduleDefinitionId: moduleId,
+      familyId: definition.familyId,
+      name: definition.name,
+      dimensionsMm: outcome.dimensionsMm,
+      positionMm: { x, y, z },
+      rotationDeg: { x: 0, y: 0, z: 0 },
+      materialOverrides: {},
+      hardwareOverrides: {},
+      parts: outcome.parts,
+      visible: true,
+      locked: false,
+      selected: true
+    };
+
     set((s) => ({
-      instances: [...s.instances.map(i => ({ ...i, selected: false })), { ...instance, selected: true }],
+      ...s,
+      instances: [...s.instances.map(i => ({ ...i, selected: false })), instance],
       selectedId: id
     }));
 
@@ -251,11 +278,13 @@ export const usePlannerStore = create<PlannerState>()(
 
   updateFurnitureInstance: (id, patch) =>
     set((s) => ({
+      ...s,
       instances: s.instances.map((item) => (item.id === id ? { ...item, ...patch } : item))
     })),
 
   removeFurnitureInstance: (id) =>
     set((s) => ({
+      ...s,
       instances: s.instances.filter((item) => item.id !== id),
       selectedId: s.selectedId === id ? null : s.selectedId
     })),
@@ -265,7 +294,7 @@ export const usePlannerStore = create<PlannerState>()(
     if (!original) return;
 
     const newId = `${original.id}-copy-${Date.now()}`;
-    const clone = {
+    const clone: FurnitureInstance = {
       ...original,
       id: newId,
       positionMm: { ...original.positionMm, x: original.positionMm.x + 100 },
@@ -273,6 +302,7 @@ export const usePlannerStore = create<PlannerState>()(
     };
 
     set((s) => ({
+      ...s,
       instances: [...s.instances.map((i) => ({ ...i, selected: false })), clone],
       selectedId: newId
     }));
@@ -280,6 +310,7 @@ export const usePlannerStore = create<PlannerState>()(
 
   selectFurnitureInstance: (id) =>
     set((s) => ({
+      ...s,
       selectedId: id,
       instances: s.instances.map((item) => ({ ...item, selected: item.id === id }))
     })),
@@ -288,9 +319,9 @@ export const usePlannerStore = create<PlannerState>()(
     const instance = get().instances.find((i) => i.id === id);
     if (!instance) return;
 
-    const rebuilt = buildModule({
-      id: instance.id,
-      moduleId: instance.moduleId,
+    const outcome = buildModule({
+      instanceId: instance.id,
+      moduleId: instance.moduleDefinitionId,
       dimensionsMm: instance.dimensionsMm,
       positionMm: instance.positionMm,
       rotationDeg: instance.rotationDeg,
@@ -298,23 +329,29 @@ export const usePlannerStore = create<PlannerState>()(
       hardwareOverrides: instance.hardwareOverrides
     });
 
+    if (!outcome.ok) return;
+
     set((s) => ({
-      instances: s.instances.map((i) => (i.id === id ? { ...rebuilt, selected: i.selected } : i))
+      ...s,
+      instances: s.instances.map((i) => (i.id === id ? { ...i, parts: outcome.parts, dimensionsMm: outcome.dimensionsMm } : i))
     }));
   },
 
   hideFurnitureInstance: (id) =>
     set((s) => ({
+      ...s,
       instances: s.instances.map((item) => (item.id === id ? { ...item, visible: false } : item))
     })),
 
   showFurnitureInstance: (id) =>
     set((s) => ({
+      ...s,
       instances: s.instances.map((item) => (item.id === id ? { ...item, visible: true } : item))
     })),
 
   toggleInstanceAnimation: (id) =>
     set((s) => ({
+      ...s,
       instances: s.instances.map((item) =>
         item.id === id ? { ...item, isOpen: !item.isOpen, openAmount: item.isOpen ? 0 : 1 } : item
       )
@@ -322,15 +359,17 @@ export const usePlannerStore = create<PlannerState>()(
 
   lockFurnitureInstance: (id) =>
     set((s) => ({
+      ...s,
       instances: s.instances.map((item) => (item.id === id ? { ...item, locked: true } : item))
     })),
 
   unlockFurnitureInstance: (id) =>
     set((s) => ({
+      ...s,
       instances: s.instances.map((item) => (item.id === id ? { ...item, locked: false } : item))
     })),
     
-  clearLibraryError: () => set({ lastLibraryError: null })
+  clearLibraryError: () => set((s) => ({ ...s, lastLibraryError: null }))
   }))
 );
 
