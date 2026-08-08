@@ -13,6 +13,10 @@ export const FurnitureRenderer: React.FC<{ singleItemId?: string; demoItem?: any
 
   return (
     <group name="furniture-layer">
+      {/* V2 Library Parametric Items */}
+      <LibraryPartsRenderer />
+
+      {/* Legacy Items (if any still exist) */}
       {items.map((item) => {
         // Direct V2 implementation for kitchen base cabinet
         if (item.family === 'kitchen-base-cabinet') {
@@ -37,3 +41,4 @@ export const FurnitureRenderer: React.FC<{ singleItemId?: string; demoItem?: any
     </group>
   );
 };
+
