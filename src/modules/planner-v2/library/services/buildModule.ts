@@ -13,7 +13,9 @@ export interface BuildRequest {
   materialOverrides?: Record<string, string>;
   hardwareOverrides?: Record<string, string>;
   positionMm?: { x: number; y: number; z: number };
+  rotationDeg?: { x: number; y: number; z: number };
   room?: RoomBoundsMm;
+
 }
 
 export interface BuildOutcome {
