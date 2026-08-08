@@ -61,9 +61,10 @@ const PartMesh: React.FC<PartProps> = ({ part, isSelected, onSelect, isOpen, ope
       onClick={(e) => {
         e.stopPropagation();
         onSelect(part.moduleId);
-        if (part.interactive) {
-          toggleInstanceAnimation(part.moduleId, part.id);
+        if (part.interactive && part.groupId) {
+          toggleInstanceAnimation(part.moduleId, part.groupId);
         }
+
       }}
 
       castShadow
@@ -110,8 +111,9 @@ export const LibraryPartsRenderer: React.FC = () => {
               part={part} 
               isSelected={!!instance.selected}
               onSelect={selectInstance}
-              isOpen={instance.openStates?.[part.id] !== undefined ? instance.openStates[part.id] > 0 : !!instance.isOpen}
-              openAmount={instance.openStates?.[part.id] !== undefined ? instance.openStates[part.id] : (instance.openAmount || 0)}
+              isOpen={part.groupId && instance.openStates?.[part.groupId] !== undefined ? instance.openStates[part.groupId] > 0 : !!instance.isOpen}
+              openAmount={part.groupId && instance.openStates?.[part.groupId] !== undefined ? instance.openStates[part.groupId] : (instance.openAmount || 0)}
+
               isXRay={!!instance.isXRay}
             />
 
