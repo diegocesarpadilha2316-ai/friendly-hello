@@ -29,7 +29,7 @@ describe('validateModule', () => {
           dimensionsMm: { width: 600, height: 18, depth: 580 },
           positionMm: { x: 0, y: 9, z: 0 },
           rotationDeg: { x: 0, y: 0, z: 0 },
-          role: 'structure',
+          role: 'base',
           moduleId: 'test-instance'
         }
       ],
@@ -77,7 +77,7 @@ describe('validateModule', () => {
           dimensionsMm: { width: 600, height: 18, depth: 580 },
           positionMm: { x: 0, y: 9, z: 0 },
           rotationDeg: { x: 0, y: 0, z: 0 },
-          role: 'structure',
+          role: 'base',
           moduleId: 'test-instance'
         }
       ]
@@ -124,7 +124,7 @@ describe('validateModule', () => {
           dimensionsMm: { width: 100, height: 100, depth: 100 },
           positionMm: { x: 0, y: 50, z: 0 },
           rotationDeg: { x: 0, y: 0, z: 0 },
-          role: 'structure',
+          role: 'base',
           moduleId: 'test-instance'
         }
       ],
