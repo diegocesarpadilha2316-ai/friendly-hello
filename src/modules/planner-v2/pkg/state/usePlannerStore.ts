@@ -45,11 +45,13 @@ interface PlannerState {
   selectFurnitureInstance: (id: string | null) => void;
   hideFurnitureInstance: (id: string) => void;
   showFurnitureInstance: (id: string) => void;
+  toggleInstanceAnimation: (id: string) => void;
   lockFurnitureInstance: (id: string) => void;
   unlockFurnitureInstance: (id: string) => void;
   rebuildFurnitureInstance: (id: string) => void;
   clearLibraryError: () => void;
 }
+
 
 const initialFurniture: FurnitureItem[] = [
   {
