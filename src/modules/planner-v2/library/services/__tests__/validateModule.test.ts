@@ -31,7 +31,7 @@ describe('validateModule', () => {
           moduleId: 'test-instance'
         }
       ],
-      hardwareIds: [] // Removi hardwareIds para evitar dependência do registry por enquanto
+      hardwareIds: ['cam-bolt'] 
     };
 
     const result = validateModule(input);
