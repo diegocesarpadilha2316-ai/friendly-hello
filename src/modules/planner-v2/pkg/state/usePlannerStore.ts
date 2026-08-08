@@ -384,7 +384,15 @@ export const usePlannerStore = create<PlannerState>((set, get) => ({
       instances: s.instances.map((item) => (item.id === id ? { ...item, visible: true } : item))
     })),
 
+  toggleInstanceAnimation: (id) =>
+    set((s) => ({
+      instances: s.instances.map((item) =>
+        item.id === id ? { ...item, isOpen: !item.isOpen, openAmount: item.isOpen ? 0 : 1 } : item
+      )
+    })),
+
   lockFurnitureInstance: (id) =>
+
     set((s) => ({
       instances: s.instances.map((item) => (item.id === id ? { ...item, locked: true } : item))
     })),
