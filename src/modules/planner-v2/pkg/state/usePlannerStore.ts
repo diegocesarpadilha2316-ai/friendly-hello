@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
+
 import type { ChatMessage, FurnitureItem, RightTab, SheetHeight, ToolMode } from "../types";
 import type { FurnitureInstance } from "../../library/contracts/FurnitureInstance";
 import { buildModule } from "../../library/services/buildModule";
@@ -132,7 +134,8 @@ const initialMessages: ChatMessage[] = [
   }
 ];
 
-export const usePlannerStore = create<PlannerState>((set, get) => ({
+export const usePlannerStore = create<PlannerState>()(
+  subscribeWithSelector((set, get) => ({
   leftCollapsed: false,
   rightCollapsed: false,
   mobileDrawerOpen: false,
@@ -145,19 +148,22 @@ export const usePlannerStore = create<PlannerState>((set, get) => ({
   selectedId: "base-1",
   furniture: initialFurniture,
   messages: initialMessages,
+  instances: [],
+  lastLibraryError: null,
 
-  toggleLeft: () => set((s) => ({ leftCollapsed: !s.leftCollapsed })),
-  toggleRight: () => set((s) => ({ rightCollapsed: !s.rightCollapsed })),
-  setMobileDrawer: (open) => set({ mobileDrawerOpen: open }),
-  setMobileSheet: (open) => set({ mobileSheetOpen: open }),
-  setMobileSheetHeight: (height) => set({ mobileSheetHeight: height }),
-  setRightTab: (tab) => set({ rightTab: tab }),
-  setToolMode: (mode) => set({ toolMode: mode }),
-  setGridVisible: (value) => set({ gridVisible: value }),
-  setLightsEnabled: (value) => set({ lightsEnabled: value }),
+  toggleLeft: () => set((s) => ({ ...s, leftCollapsed: !s.leftCollapsed })),
+  toggleRight: () => set((s) => ({ ...s, rightCollapsed: !s.rightCollapsed })),
+  setMobileDrawer: (open) => set((s) => ({ ...s, mobileDrawerOpen: open })),
+  setMobileSheet: (open) => set((s) => ({ ...s, mobileSheetOpen: open })),
+  setMobileSheetHeight: (height) => set((s) => ({ ...s, mobileSheetHeight: height })),
+  setRightTab: (tab) => set((s) => ({ ...s, rightTab: tab })),
+  setToolMode: (mode) => set((s) => ({ ...s, toolMode: mode })),
+  setGridVisible: (value) => set((s) => ({ ...s, gridVisible: value })),
+  setLightsEnabled: (value) => set((s) => ({ ...s, lightsEnabled: value })),
 
   selectFurniture: (id) =>
     set((s) => ({
+      ...s,
       selectedId: id,
       furniture: s.furniture.map((item) => ({
         ...item,
@@ -167,6 +173,7 @@ export const usePlannerStore = create<PlannerState>((set, get) => ({
 
   updateSelected: (patch) =>
     set((s) => ({
+      ...s,
       furniture: s.furniture.map((item) =>
         item.id === s.selectedId ? { ...item, ...patch } : item
       )
@@ -187,91 +194,65 @@ export const usePlannerStore = create<PlannerState>((set, get) => ({
       ] as [number, number, number],
       selected: true
     };
-    set({
+    set((state) => ({
+      ...state,
       selectedId: clone.id,
       furniture: [
-        ...s.furniture.map((item) => ({ ...item, selected: false })),
+        ...state.furniture.map((item) => ({ ...item, selected: false })),
         clone
       ]
-    });
+    }));
   },
 
   deleteSelected: () =>
     set((s) => ({
-      selectedId: null,
-      furniture: s.furniture.filter((item) => item.id !== s.selectedId)
+      ...s,
+      furniture: s.furniture.filter((item) => item.id !== s.selectedId),
+      selectedId: null
     })),
 
   toggleVisibility: (id) =>
     set((s) => ({
-      furniture: s.furniture.map((item) =>
-        item.id === id ? { ...item, visible: !item.visible } : item
-      )
+      ...s,
+      furniture: s.furniture.map((item) => (item.id === id ? { ...item, visible: !item.visible } : item))
     })),
 
   sendMessage: (content) => {
-    const clean = content.trim();
-    if (!clean) return;
-    const now = new Date().toLocaleTimeString("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-    const user: ChatMessage = {
-      id: `user-${Date.now()}`,
-      role: "user",
-      content: clean,
-      time: now
-    };
-    const assistant: ChatMessage = {
-      id: `assistant-${Date.now()}`,
-      role: "assistant",
-      content: "Comando recebido. Esta área deve ser conectada ao agente real do Dioris.",
-      time: now
-    };
-    set((s) => ({ messages: [...s.messages, user, assistant] }));
+    const now = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    set((s) => ({
+      ...s,
+      messages: [...s.messages, { id: Date.now().toString(), role: "user", content, time: now }]
+    }));
   },
-
-  instances: [],
-  lastLibraryError: null,
-  clearLibraryError: () => set({ lastLibraryError: null }),
 
   addFurnitureInstance: (moduleId) => {
     const definition = ModuleRegistry.get(moduleId);
-    if (!definition) {
-      set({ lastLibraryError: `Módulo não registrado: ${moduleId}` });
-      return null;
-    }
+    if (!definition) return null;
 
+    const id = `furniture-${Date.now()}`;
+    
     const room = useRoomBuilderStore.getState();
-    const instanceId = `${moduleId}-${Date.now().toString(36)}`;
-    const dims = definition.defaultDimensionsMm;
-    const rules = definition.placementRules;
-
-    const existing = get().instances.filter((item) => item.moduleDefinitionId === moduleId).length;
-    const stepX = (existing % 4) * (dims.width + 20) - 1200;
-    const x = Math.max(
-      -room.width / 2 + dims.width / 2 + 12,
-      Math.min(room.width / 2 - dims.width / 2 - 12, stepX)
-    );
-    const z = -room.depth / 2 + dims.depth / 2 + rules.rearGapMm;
-    const y = rules.wallMounted ? rules.minHeightFromFloorMm : 0;
+    const x = room.width / 2;
+    const z = -room.depth / 2 + definition.defaultDimensionsMm.depth / 2;
+    
+    const y = definition.placementRules.wallMounted 
+      ? definition.placementRules.minHeightFromFloorMm 
+      : 0;
 
     const outcome = buildModule({
+      instanceId: id,
       moduleId,
-      instanceId,
-      dimensionsMm: dims,
-      materialId: definition.defaultMaterialId,
-      positionMm: { x, y, z },
-      room: { widthMm: room.width, depthMm: room.depth, heightMm: room.height }
+      dimensionsMm: definition.defaultDimensionsMm,
+      positionMm: { x, y, z }
     });
 
     if (!outcome.ok) {
-      set({ lastLibraryError: outcome.error ?? "Falha desconhecida no build do módulo." });
-      return null;
+       set(s => ({ ...s, lastLibraryError: outcome.error || 'Erro no build' }));
+       return null;
     }
 
     const instance: FurnitureInstance = {
-      id: instanceId,
+      id,
       moduleDefinitionId: moduleId,
       familyId: definition.familyId,
       name: definition.name,
@@ -287,118 +268,111 @@ export const usePlannerStore = create<PlannerState>((set, get) => ({
     };
 
     set((s) => ({
-      lastLibraryError: null,
-      selectedId: instanceId,
-      furniture: s.furniture.map((item) => ({ ...item, selected: false })),
-      instances: [
-        ...s.instances.map((item) => ({ ...item, selected: false })),
-        instance
-      ]
+      ...s,
+      instances: [...s.instances.map(i => ({ ...i, selected: false })), instance],
+      selectedId: id
     }));
 
-    return instanceId;
+    return id;
   },
 
-  updateFurnitureInstance: (id, patch) => {
+  updateFurnitureInstance: (id, patch) =>
     set((s) => ({
+      ...s,
       instances: s.instances.map((item) => (item.id === id ? { ...item, ...patch } : item))
-    }));
-    if (patch.dimensionsMm || patch.materialOverrides) {
-      get().rebuildFurnitureInstance(id);
-    }
-  },
-
-  rebuildFurnitureInstance: (id) => {
-    const instance = get().instances.find((item) => item.id === id);
-    if (!instance) return;
-    const room = useRoomBuilderStore.getState();
-    const outcome = buildModule({
-      moduleId: instance.moduleDefinitionId,
-      instanceId: instance.id,
-      dimensionsMm: instance.dimensionsMm,
-      materialId: instance.materialOverrides["*"],
-      materialOverrides: instance.materialOverrides,
-      hardwareOverrides: instance.hardwareOverrides,
-      positionMm: instance.positionMm,
-      room: { widthMm: room.width, depthMm: room.depth, heightMm: room.height }
-    });
-    if (!outcome.ok) {
-      set({ lastLibraryError: outcome.error ?? "Falha ao reconstruir o módulo." });
-      return;
-    }
-    set((s) => ({
-      lastLibraryError: null,
-      instances: s.instances.map((item) =>
-        item.id === id
-          ? { ...item, parts: outcome.parts, dimensionsMm: outcome.dimensionsMm }
-          : item
-      )
-    }));
-  },
+    })),
 
   removeFurnitureInstance: (id) =>
     set((s) => ({
+      ...s,
       instances: s.instances.filter((item) => item.id !== id),
       selectedId: s.selectedId === id ? null : s.selectedId
     })),
 
   duplicateFurnitureInstance: (id) => {
-    const instance = get().instances.find((item) => item.id === id);
-    if (!instance) return;
-    const cloneId = `${instance.moduleDefinitionId}-${Date.now().toString(36)}`;
+    const original = get().instances.find((i) => i.id === id);
+    if (!original) return;
+
+    const newId = `${original.id}-copy-${Date.now()}`;
     const clone: FurnitureInstance = {
-      ...instance,
-      id: cloneId,
-      selected: true,
-      positionMm: {
-        ...instance.positionMm,
-        x: instance.positionMm.x + instance.dimensionsMm.width + 20
-      },
-      parts: instance.parts.map((part) => ({
-        ...part,
-        id: part.id.replace(instance.id, cloneId),
-        moduleId: cloneId,
-        groupId: part.groupId?.replace(instance.id, cloneId)
-      }))
+      ...original,
+      id: newId,
+      positionMm: { ...original.positionMm, x: original.positionMm.x + 100 },
+      selected: true
     };
+
     set((s) => ({
-      selectedId: cloneId,
-      instances: [...s.instances.map((item) => ({ ...item, selected: false })), clone]
+      ...s,
+      instances: [...s.instances.map((i) => ({ ...i, selected: false })), clone],
+      selectedId: newId
     }));
   },
 
   selectFurnitureInstance: (id) =>
     set((s) => ({
+      ...s,
       selectedId: id,
-      instances: s.instances.map((item) => ({ ...item, selected: item.id === id })),
-      furniture: s.furniture.map((item) => ({ ...item, selected: false }))
+      instances: s.instances.map((item) => ({ ...item, selected: item.id === id }))
     })),
+
+  rebuildFurnitureInstance: (id) => {
+    const instance = get().instances.find((i) => i.id === id);
+    if (!instance) return;
+
+    const outcome = buildModule({
+      instanceId: instance.id,
+      moduleId: instance.moduleDefinitionId,
+      dimensionsMm: instance.dimensionsMm,
+      positionMm: instance.positionMm,
+      rotationDeg: instance.rotationDeg,
+      materialOverrides: instance.materialOverrides,
+      hardwareOverrides: instance.hardwareOverrides
+    });
+
+    if (!outcome.ok) return;
+
+    set((s) => ({
+      ...s,
+      instances: s.instances.map((i) => (i.id === id ? { ...i, parts: outcome.parts, dimensionsMm: outcome.dimensionsMm } : i))
+    }));
+  },
 
   hideFurnitureInstance: (id) =>
     set((s) => ({
+      ...s,
       instances: s.instances.map((item) => (item.id === id ? { ...item, visible: false } : item))
     })),
 
   showFurnitureInstance: (id) =>
     set((s) => ({
+      ...s,
       instances: s.instances.map((item) => (item.id === id ? { ...item, visible: true } : item))
     })),
 
   toggleInstanceAnimation: (id) =>
     set((s) => ({
+      ...s,
       instances: s.instances.map((item) =>
         item.id === id ? { ...item, isOpen: !item.isOpen, openAmount: item.isOpen ? 0 : 1 } : item
       )
     })),
 
   lockFurnitureInstance: (id) =>
-
     set((s) => ({
+      ...s,
       instances: s.instances.map((item) => (item.id === id ? { ...item, locked: true } : item))
     })),
 
   unlockFurnitureInstance: (id) =>
     set((s) => ({
+      ...s,
       instances: s.instances.map((item) => (item.id === id ? { ...item, locked: false } : item))
-    }))
-}));
+    })),
+    
+  clearLibraryError: () => set((s) => ({ ...s, lastLibraryError: null }))
+  }))
+);
+
+if (typeof window !== "undefined") {
+  (window as any).plannerV2Store = usePlannerStore;
+}
