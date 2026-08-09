@@ -63,10 +63,10 @@ export function RightPanel() {
                 </div>
 
                 <div className="quick-actions">
-                  <button>+ Iluminação</button>
-                  <button>+ Prateleira</button>
-                  <button>+ Render</button>
-                  <button>+ Orçamento</button>
+                  <button onClick={() => sendMessage("Troque o MDF para Freijó")}>Trocar p/ Freijó</button>
+                  <button onClick={() => sendMessage("Adicione fita LED nos aéreos")}>Adicionar LED</button>
+                  <button onClick={() => sendMessage("Qual o valor estimado deste projeto?")}>Ver Orçamento</button>
+                  <button onClick={() => sendMessage("Abra todas as portas e gavetas")}>Abrir Tudo</button>
                 </div>
 
                 <div className="composer">
