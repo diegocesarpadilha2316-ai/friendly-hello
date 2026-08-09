@@ -24,14 +24,7 @@ export const usePlannerStore = create<any>((set, get) => ({
   lastLibraryError: null,
 
 
-  messages: [
-    {
-      id: "m1",
-      role: "assistant",
-      content: "Planner V2 Conectado. Como posso ajudar com seu projeto real?",
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    }
-  ],
+  messages: [],
 
   // Actions
   toggleLeft: () => set((s: any) => ({ leftCollapsed: !s.leftCollapsed })),
