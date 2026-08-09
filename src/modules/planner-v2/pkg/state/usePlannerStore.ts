@@ -299,8 +299,10 @@ export const usePlannerStore = create<PlannerState>()(
         });
 
         if (!outcome.ok) {
-           // Impedir atravessamento básico se for crítico (opcional)
-           // return item; 
+           console.warn("Validação falhou ao atualizar instância:", outcome.error);
+           // O validateModule já clampa ou retorna erro se atravessar.
+           // Se for um erro crítico de colisão, podemos reverter, mas para UX 
+           // é melhor deixar o usuário ver o erro visual ou corrigir a posição.
         }
 
         return { 
