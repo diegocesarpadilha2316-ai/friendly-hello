@@ -118,7 +118,8 @@ export function RightPanel() {
                     className="secondary"
                     style={{ flex: 1, padding: '8px', fontSize: '12px' }}
                     onClick={() => {
-                      const allOpen = instance.openStates && Object.values(instance.openStates).some(v => v > 0);
+                      const states = instance.openStates || {};
+                      const allOpen = Object.values(states).some((v: any) => v > 0);
                       if (allOpen || instance.isOpen) {
                         usePlannerStore.getState().closeAllAnimations();
                       } else {
@@ -126,7 +127,8 @@ export function RightPanel() {
                       }
                     }}
                    >
-                    {((instance.openStates && Object.values(instance.openStates).some(v => v > 0)) || instance.isOpen) ? 'Fechar Tudo' : 'Abrir Tudo'}
+                    {((Object.values(instance.openStates || {}).some((v: any) => v > 0)) || instance.isOpen) ? 'Fechar Tudo' : 'Abrir Tudo'}
+
 
                    </button>
                    <button 
