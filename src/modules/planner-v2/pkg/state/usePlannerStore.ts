@@ -247,8 +247,10 @@ export const usePlannerStore = create<PlannerState>()(
       instanceId: id,
       moduleId,
       dimensionsMm: definition.defaultDimensionsMm,
-      positionMm: { x, y, z }
+      positionMm: { x, y, z },
+      instances: get().instances
     });
+
 
     if (!outcome.ok) {
        set(s => ({ ...s, lastLibraryError: outcome.error || 'Erro no build' }));
@@ -295,8 +297,10 @@ export const usePlannerStore = create<PlannerState>()(
           rotationDeg: updated.rotationDeg,
           materialOverrides: updated.materialOverrides,
           hardwareOverrides: updated.hardwareOverrides,
-          room: { widthMm: room.width, depthMm: room.depth, heightMm: 2600 }
+          room: { widthMm: room.width, depthMm: room.depth, heightMm: 2600 },
+          instances: s.instances.filter(i => i.id !== id)
         });
+
 
         if (!outcome.ok) {
            console.warn("Validação falhou ao atualizar instância:", outcome.error);
@@ -434,16 +438,24 @@ export const usePlannerStore = create<PlannerState>()(
       })
     })),
 
-  closeAllAnimations: () =>
-    set((s) => ({
-      ...s,
-      instances: s.instances.map(i => ({ 
+  closeAllAnimations: () => {
+    const s = get();
+    const selectedId = s.selectedId;
+    set((state) => ({
+      ...state,
+      instances: state.instances.map(i => ({ 
         ...i, 
         isOpen: false, 
         openAmount: 0, 
         openStates: {} 
       }))
-    })),
+    }));
+    // Se houver uma instância selecionada, força o rebuild das peças para garantir sincronia visual
+    if (selectedId) {
+      get().rebuildFurnitureInstance(selectedId);
+    }
+  },
+
 
   setInstanceIsolated: (id: string | null) =>
     set((s) => ({

@@ -18,7 +18,9 @@ export interface ValidateModuleInput {
   hardwareIds?: string[];
   positionMm?: { x: number; y: number; z: number };
   room?: RoomBoundsMm;
+  instances?: any[];
 }
+
 
 const TOLERANCE_MM = 2;
 
@@ -114,16 +116,16 @@ export function validateModule(input: ValidateModuleInput): ValidationResult {
   });
 
   if (positionMm && room) {
-    const halfW = room.widthMm / 2;
-    const halfD = room.depthMm / 2;
-    
-    // Envelope total do móvel em relação ao cômodo
     const minX = positionMm.x - dimensionsMm.width / 2;
     const maxX = positionMm.x + dimensionsMm.width / 2;
     const minY = positionMm.y;
     const maxY = positionMm.y + dimensionsMm.height;
     const minZ = positionMm.z - dimensionsMm.depth / 2;
     const maxZ = positionMm.z + dimensionsMm.depth / 2;
+
+    const halfW = room.widthMm / 2;
+    const halfD = room.depthMm / 2;
+
 
     if (minX < -halfW - TOLERANCE_MM) errors.push({ code: "module-outside-room", message: "Módulo atravessando parede esquerda." });
     if (maxX > halfW + TOLERANCE_MM) errors.push({ code: "module-outside-room", message: "Módulo atravessando parede direita." });
@@ -134,6 +136,30 @@ export function validateModule(input: ValidateModuleInput): ValidationResult {
 
     // Validação de colisão móvel x móvel (simplificada via AABB)
     // Nota: Em um sistema real, leríamos todas as instâncias do store aqui ou passaríamos no input.
+    if (input.instances) {
+      for (const other of input.instances) {
+        if (other.id === input.definition.id || (positionMm && other.id === positionMm.x + "" + positionMm.y)) continue; // Skip self (approximate)
+        
+        const otherMinX = other.positionMm.x - other.dimensionsMm.width / 2;
+        const otherMaxX = other.positionMm.x + other.dimensionsMm.width / 2;
+        const otherMinY = other.positionMm.y;
+        const otherMaxY = other.positionMm.y + other.dimensionsMm.height;
+        const otherMinZ = other.positionMm.z - other.dimensionsMm.depth / 2;
+        const otherMaxZ = other.positionMm.z + other.dimensionsMm.depth / 2;
+
+        const collisionX = minX < otherMaxX - TOLERANCE_MM && maxX > otherMinX + TOLERANCE_MM;
+        const collisionY = minY < otherMaxY - TOLERANCE_MM && maxY > otherMinY + TOLERANCE_MM;
+        const collisionZ = minZ < otherMaxZ - TOLERANCE_MM && maxZ > otherMinZ + TOLERANCE_MM;
+
+        if (collisionX && collisionY && collisionZ) {
+          errors.push({ 
+            code: "module-collision", 
+            message: `Colisão detectada com o módulo "${other.name}".` 
+          });
+        }
+      }
+    }
+
   }
 
 
