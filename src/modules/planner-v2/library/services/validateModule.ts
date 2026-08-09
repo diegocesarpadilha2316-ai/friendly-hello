@@ -116,16 +116,16 @@ export function validateModule(input: ValidateModuleInput): ValidationResult {
   });
 
   if (positionMm && room) {
-    const halfW = room.widthMm / 2;
-    const halfD = room.depthMm / 2;
-    
-    // Envelope total do móvel em relação ao cômodo
     const minX = positionMm.x - dimensionsMm.width / 2;
     const maxX = positionMm.x + dimensionsMm.width / 2;
     const minY = positionMm.y;
     const maxY = positionMm.y + dimensionsMm.height;
     const minZ = positionMm.z - dimensionsMm.depth / 2;
     const maxZ = positionMm.z + dimensionsMm.depth / 2;
+
+    const halfW = room.widthMm / 2;
+    const halfD = room.depthMm / 2;
+
 
     if (minX < -halfW - TOLERANCE_MM) errors.push({ code: "module-outside-room", message: "Módulo atravessando parede esquerda." });
     if (maxX > halfW + TOLERANCE_MM) errors.push({ code: "module-outside-room", message: "Módulo atravessando parede direita." });
@@ -138,7 +138,7 @@ export function validateModule(input: ValidateModuleInput): ValidationResult {
     // Nota: Em um sistema real, leríamos todas as instâncias do store aqui ou passaríamos no input.
     if (input.instances) {
       for (const other of input.instances) {
-        if (other.id === input.definition.id || other.id === input.positionMm.x + "" + input.positionMm.y) continue; // Skip self (approximate)
+        if (other.id === input.definition.id || (positionMm && other.id === positionMm.x + "" + positionMm.y)) continue; // Skip self (approximate)
         
         const otherMinX = other.positionMm.x - other.dimensionsMm.width / 2;
         const otherMaxX = other.positionMm.x + other.dimensionsMm.width / 2;
