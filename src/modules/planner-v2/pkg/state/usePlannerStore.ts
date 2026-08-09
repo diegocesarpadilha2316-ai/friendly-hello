@@ -411,15 +411,18 @@ export const usePlannerStore = create<PlannerState>()(
         if (item.id !== id) return item;
         
         if (partId) {
-          const current = item.openStates?.[partId] || 0;
+          const currentOpenStates = item.openStates || {};
+          const current = currentOpenStates[partId] || 0;
           return {
             ...item,
+            isOpen: false, // Reset global state if interacting individually
             openStates: {
-              ...(item.openStates || {}),
+              ...currentOpenStates,
               [partId]: current > 0 ? 0 : 1
             }
           };
         }
+
 
         const nextOpen = !item.isOpen;
         return { 

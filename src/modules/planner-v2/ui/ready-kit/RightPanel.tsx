@@ -117,9 +117,19 @@ export function RightPanel() {
                     type="button" 
                     className="secondary"
                     style={{ flex: 1, padding: '8px', fontSize: '12px' }}
-                    onClick={() => toggleAnim(selectedId)}
+                    onClick={() => {
+                      const states = instance.openStates || {};
+                      const allOpen = Object.values(states).some((v: any) => v > 0);
+                      if (allOpen || instance.isOpen) {
+                        usePlannerStore.getState().closeAllAnimations();
+                      } else {
+                        toggleAnim(selectedId);
+                      }
+                    }}
                    >
-                    {instance.isOpen ? 'Fechar Tudo' : 'Abrir Tudo'}
+                    {((Object.values(instance.openStates || {}).some((v: any) => v > 0)) || instance.isOpen) ? 'Fechar Tudo' : 'Abrir Tudo'}
+
+
                    </button>
                    <button 
                     type="button" 
