@@ -961,7 +961,7 @@ export function usePlannerChat() {
                 {
                     id: uid(),
                     role: "assistant",
-                    content: "Prontinho, comecei do zero. 😊 O que você quer projetar agora? Pode ser um ambiente inteiro ou um móvel específico — me conta.",
+                content: "I have approved the plan",
                     createdAt: new Date().toISOString(),
                     status: "done",
                 },
