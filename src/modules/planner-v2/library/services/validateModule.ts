@@ -18,7 +18,9 @@ export interface ValidateModuleInput {
   hardwareIds?: string[];
   positionMm?: { x: number; y: number; z: number };
   room?: RoomBoundsMm;
+  instances?: any[];
 }
+
 
 const TOLERANCE_MM = 2;
 
@@ -134,6 +136,30 @@ export function validateModule(input: ValidateModuleInput): ValidationResult {
 
     // Validação de colisão móvel x móvel (simplificada via AABB)
     // Nota: Em um sistema real, leríamos todas as instâncias do store aqui ou passaríamos no input.
+    if (input.instances) {
+      for (const other of input.instances) {
+        if (other.id === input.definition.id || other.id === input.positionMm.x + "" + input.positionMm.y) continue; // Skip self (approximate)
+        
+        const otherMinX = other.positionMm.x - other.dimensionsMm.width / 2;
+        const otherMaxX = other.positionMm.x + other.dimensionsMm.width / 2;
+        const otherMinY = other.positionMm.y;
+        const otherMaxY = other.positionMm.y + other.dimensionsMm.height;
+        const otherMinZ = other.positionMm.z - other.dimensionsMm.depth / 2;
+        const otherMaxZ = other.positionMm.z + other.dimensionsMm.depth / 2;
+
+        const collisionX = minX < otherMaxX - TOLERANCE_MM && maxX > otherMinX + TOLERANCE_MM;
+        const collisionY = minY < otherMaxY - TOLERANCE_MM && maxY > otherMinY + TOLERANCE_MM;
+        const collisionZ = minZ < otherMaxZ - TOLERANCE_MM && maxZ > otherMinZ + TOLERANCE_MM;
+
+        if (collisionX && collisionY && collisionZ) {
+          errors.push({ 
+            code: "module-collision", 
+            message: `Colisão detectada com o módulo "${other.name}".` 
+          });
+        }
+      }
+    }
+
   }
 
 

@@ -94,7 +94,9 @@ export function buildModule(request: BuildRequest): BuildOutcome {
     hardwareIds: result.hardwareIds,
     positionMm: request.positionMm,
     room: request.room,
+    instances: request.instances,
   });
+
 
 
   if (!validation.valid) {
