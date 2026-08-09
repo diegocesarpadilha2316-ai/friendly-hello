@@ -125,12 +125,12 @@ export function validateModule(input: ValidateModuleInput): ValidationResult {
     const minZ = positionMm.z - dimensionsMm.depth / 2;
     const maxZ = positionMm.z + dimensionsMm.depth / 2;
 
-    if (minX < -halfW - 1) errors.push({ code: "module-outside-room", message: "Módulo atravessando parede esquerda." });
-    if (maxX > halfW + 1) errors.push({ code: "module-outside-room", message: "Módulo atravessando parede direita." });
-    if (minY < -1) errors.push({ code: "module-below-floor", message: "Módulo abaixo do piso." });
-    if (maxY > room.heightMm + 1) errors.push({ code: "module-through-ceiling", message: "Módulo atravessando o teto." });
-    if (minZ < -halfD - 1) errors.push({ code: "module-through-wall", message: "Módulo atravessando parede do fundo." });
-    if (maxZ > halfD + 1) errors.push({ code: "module-outside-room", message: "Módulo fora da zona frontal." });
+    if (minX < -halfW - TOLERANCE_MM) errors.push({ code: "module-outside-room", message: "Módulo atravessando parede esquerda." });
+    if (maxX > halfW + TOLERANCE_MM) errors.push({ code: "module-outside-room", message: "Módulo atravessando parede direita." });
+    if (minY < -TOLERANCE_MM) errors.push({ code: "module-below-floor", message: "Módulo abaixo do piso." });
+    if (maxY > room.heightMm + TOLERANCE_MM) errors.push({ code: "module-through-ceiling", message: "Módulo atravessando o teto." });
+    if (minZ < -halfD - TOLERANCE_MM) errors.push({ code: "module-through-wall", message: "Módulo atravessando parede do fundo." });
+    if (maxZ > halfD + TOLERANCE_MM) errors.push({ code: "module-outside-room", message: "Módulo fora da zona frontal." });
 
     // Validação de colisão móvel x móvel (simplificada via AABB)
     // Nota: Em um sistema real, leríamos todas as instâncias do store aqui ou passaríamos no input.
