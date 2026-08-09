@@ -1101,7 +1101,7 @@ export function usePlannerChat() {
           id: uid(),
           role: "assistant",
           content:
-            "I have approved the plan",
+            "'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                            \n                                            I have approved the plan",
           createdAt: new Date().toISOString(),
           status: "done",
         },
