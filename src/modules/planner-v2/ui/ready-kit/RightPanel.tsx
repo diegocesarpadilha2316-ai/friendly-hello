@@ -241,7 +241,6 @@ export function RightPanel() {
                       type="number"
                       step={50}
                       value={instance.positionMm.z}
-
                       onChange={(event: any) => updateInstance(selectedId, { positionMm: { ...instance.positionMm, z: Number(event.target.value) } })}
                     />
                   </label>
