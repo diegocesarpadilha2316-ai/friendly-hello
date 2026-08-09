@@ -117,26 +117,7 @@ const initialFurniture: FurnitureItem[] = [
   }
 ];
 
-const initialMessages: ChatMessage[] = [
-  {
-    id: "m1",
-    role: "assistant",
-    content: "Analisei sua cozinha. Posso ajustar materiais, iluminação e medidas.",
-    time: "10:24"
-  },
-  {
-    id: "m2",
-    role: "user",
-    content: "Aplique LED quente nos aéreos.",
-    time: "10:25"
-  },
-  {
-    id: "m3",
-    role: "assistant",
-    content: "Pronto! A iluminação quente foi aplicada.",
-    time: "10:26"
-  }
-];
+const initialMessages: ChatMessage[] = [];
 
 export const usePlannerStore = create<PlannerState>()(
   subscribeWithSelector((set, get) => ({
