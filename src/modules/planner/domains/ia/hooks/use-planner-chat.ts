@@ -1101,7 +1101,7 @@ export function usePlannerChat() {
           id: uid(),
           role: "assistant",
           content:
-            "'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                            \n                                            Pode fala",
+            "'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            Implemente uma opção para eu editar as instruções do sistema do chat sem precisar mexer em hooks.",
           createdAt: new Date().toISOString(),
           status: "done",
         },
