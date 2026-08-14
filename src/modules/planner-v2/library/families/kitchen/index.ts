@@ -1,21 +1,15 @@
 import type { FamilyDefinition } from "../../contracts/FamilyDefinition";
-import { KitchenBaseCabinet } from "../../modules/kitchen/KitchenBaseCabinet";
-import { KitchenUpperCabinet } from "../../modules/kitchen/KitchenUpperCabinet";
-import { KitchenDrawerCabinet } from "../../modules/kitchen/KitchenDrawerCabinet";
+import { professionalKitchenModules } from "./professionalModules";
 
-export const kitchenModules = [
-  KitchenBaseCabinet,
-  KitchenUpperCabinet,
-  KitchenDrawerCabinet,
-];
+export const kitchenModules = professionalKitchenModules;
 
 export const kitchenFamily: FamilyDefinition = {
   id: "kitchen",
   name: "Cozinha",
-  description: "Cozinhas planejadas com balcões, aéreos e gaveteiros.",
+  description: "Biblioteca paramétrica profissional para cozinhas planejadas.",
   icon: "cooking-pot",
-  categories: ["Inferiores", "Aéreos", "Torres", "Cantos", "Eletrodomésticos"],
-  moduleIds: kitchenModules.map((m) => m.id),
+  categories: ["Inferiores", "Aéreos", "Torres", "Complementos", "Bancadas", "Cantos"],
+  moduleIds: kitchenModules.map((module) => module.id),
   enabled: true,
-  version: 1,
+  version: 2,
 };

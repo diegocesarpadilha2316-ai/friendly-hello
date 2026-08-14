@@ -1,4 +1,5 @@
 import { Eye, EyeOff, Layers3, ScanLine, Undo2 } from "lucide-react";
+import { usePlannerStore } from "../state/usePlannerStore";
 import { useImmersiveStore } from "../state/useImmersiveStore";
 
 function rootId(id: string | null) {
@@ -8,15 +9,21 @@ function rootId(id: string | null) {
 
 export function InspectionControls() {
   const selectedPart = useImmersiveStore((s) => s.selectedPart);
+  const selectedInstanceId = usePlannerStore((s) => s.selectedId);
   const mode = useImmersiveStore((s) => s.occlusionMode);
   const setMode = useImmersiveStore((s) => s.setOcclusionMode);
   const hideSelected = useImmersiveStore((s) => s.hideSelected);
   const showAll = useImmersiveStore((s) => s.showAll);
-  const selectedRoot = rootId(selectedPart);
+  const selectedRoot = rootId(selectedPart) ?? selectedInstanceId;
+  const syncSelection = () => {
+    if (!selectedPart && selectedInstanceId) useImmersiveStore.getState().selectPart(selectedInstanceId);
+  };
   return <div className="inspection-toolbar">
-    <button disabled={!selectedPart} className={mode === "xray" ? "active" : ""} onClick={() => setMode(mode === "xray" ? "normal" : "xray")}><ScanLine size={16}/>Raio-X</button>
-    <button disabled={!selectedPart} className={mode === "isolate" ? "active" : ""} onClick={() => setMode(mode === "isolate" ? "normal" : "isolate")}><Layers3 size={16}/>Isolar</button>
-    <button disabled={!selectedRoot} onClick={hideSelected}><EyeOff size={16}/>Ocultar</button>
+    <button disabled={!selectedRoot} className={mode === "xray" ? "active" : ""} onClick={() => { syncSelection(); setMode(mode === "xray" ? "normal" : "xray"); }}>
+<ScanLine size={16}/>Raio-X</button>
+    <button disabled={!selectedRoot} className={mode === "isolate" ? "active" : ""} onClick={() => { syncSelection(); setMode(mode === "isolate" ? "normal" : "isolate"); }}>
+<Layers3 size={16}/>Isolar</button>
+    <button disabled={!selectedRoot} onClick={() => { syncSelection(); hideSelected(); }}><EyeOff size={16}/>Ocultar</button>
     <button onClick={showAll}><Eye size={16}/>Mostrar tudo</button>
     <button onClick={() => setMode("normal")}><Undo2 size={16}/>Normal</button>
   </div>;

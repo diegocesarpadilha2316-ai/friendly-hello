@@ -1,0 +1,3414 @@
+{
+  "request": "Crie uma cozinha nessa parede. Quero uma torre de forno e micro-ondas na esquerda, um balcão de 800 com duas portas, um gaveteiro de 600 com quatro gavetas, um balcão de pia de 1200 com duas portas e aéreos em cima. Use MDF 18 mm.",
+  "modules": [
+    {
+      "id": "furniture-1786745216207",
+      "moduleDefinitionId": "kitchen-tower-oven-microwave",
+      "dimensionsMm": {
+        "width": 800,
+        "height": 2200,
+        "depth": 620
+      },
+      "positionMm": {
+        "x": -2000,
+        "y": 0,
+        "z": -1540
+      },
+      "supported": true,
+      "partCount": 19
+    },
+    {
+      "id": "furniture-1786745216209",
+      "moduleDefinitionId": "kitchen-base-2-doors",
+      "dimensionsMm": {
+        "width": 800,
+        "height": 870,
+        "depth": 580
+      },
+      "positionMm": {
+        "x": -1200,
+        "y": 0,
+        "z": -1560
+      },
+      "supported": true,
+      "partCount": 16
+    },
+    {
+      "id": "furniture-1786745216210",
+      "moduleDefinitionId": "kitchen-drawer-4",
+      "dimensionsMm": {
+        "width": 600,
+        "height": 870,
+        "depth": 580
+      },
+      "positionMm": {
+        "x": -500,
+        "y": 0,
+        "z": -1560
+      },
+      "supported": true,
+      "partCount": 42
+    },
+    {
+      "id": "furniture-1786745216212",
+      "moduleDefinitionId": "kitchen-sink-cabinet",
+      "dimensionsMm": {
+        "width": 1200,
+        "height": 870,
+        "depth": 580
+      },
+      "positionMm": {
+        "x": 400,
+        "y": 0,
+        "z": -1560
+      },
+      "supported": true,
+      "partCount": 23
+    },
+    {
+      "id": "furniture-1786745216214",
+      "moduleDefinitionId": "kitchen-golden-upper-800",
+      "dimensionsMm": {
+        "width": 800,
+        "height": 700,
+        "depth": 350
+      },
+      "positionMm": {
+        "x": -1200,
+        "y": 1470,
+        "z": -1675
+      },
+      "supported": true,
+      "partCount": 14
+    }
+  ],
+  "fabrication": {
+    "generatedAt": "2026-08-14T22:06:56.216Z",
+    "moduleCount": 5,
+    "cutItems": [
+      {
+        "key": "{\"role\":\"side-left\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":2050,\"depthMm\":620,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216207:side-left"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave"
+        ],
+        "names": [
+          "Lateral esquerda"
+        ],
+        "role": "side-left",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 18,
+        "heightMm": 2050,
+        "depthMm": 620,
+        "grainDirection": "vertical",
+        "edgeBanding": {
+          "front": "mdf-white"
+        },
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"side-right\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":2050,\"depthMm\":620,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216207:side-right"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave"
+        ],
+        "names": [
+          "Lateral direita"
+        ],
+        "role": "side-right",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 18,
+        "heightMm": 2050,
+        "depthMm": 620,
+        "grainDirection": "vertical",
+        "edgeBanding": {
+          "front": "mdf-white"
+        },
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":620,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216207:base"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave"
+        ],
+        "names": [
+          "Base"
+        ],
+        "role": "base",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 764,
+        "heightMm": 18,
+        "depthMm": 620,
+        "grainDirection": "horizontal",
+        "edgeBanding": {
+          "front": "mdf-white"
+        },
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":620,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216207:top"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave"
+        ],
+        "names": [
+          "Topo"
+        ],
+        "role": "top",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 764,
+        "heightMm": 18,
+        "depthMm": 620,
+        "grainDirection": "horizontal",
+        "edgeBanding": {
+          "front": "mdf-white"
+        },
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":2014,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"safety\"}",
+        "partIds": [
+          "furniture-1786745216207:back"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave"
+        ],
+        "names": [
+          "Fundo"
+        ],
+        "role": "back",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 764,
+        "heightMm": 2014,
+        "depthMm": 6,
+        "grainDirection": "none",
+        "edgeBanding": {},
+        "volumeType": "safety"
+      },
+      {
+        "key": "{\"role\":\"toe-kick\",\"materialId\":\"metal-black\",\"widthMm\":764,\"heightMm\":150,\"depthMm\":18,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216207:toe-kick",
+          "furniture-1786745216209:toe-kick"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave",
+          "kitchen-base-2-doors"
+        ],
+        "names": [
+          "Rodapé"
+        ],
+        "role": "toe-kick",
+        "materialId": "metal-black",
+        "quantity": 2,
+        "widthMm": 764,
+        "heightMm": 150,
+        "depthMm": 18,
+        "grainDirection": "none",
+        "edgeBanding": {},
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"divider\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":584,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216207:appliance-divider"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave"
+        ],
+        "names": [
+          "Divisória entre forno e micro-ondas"
+        ],
+        "role": "divider",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 764,
+        "heightMm": 18,
+        "depthMm": 584,
+        "grainDirection": "vertical",
+        "edgeBanding": {
+          "front": "mdf-white"
+        },
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"door\",\"materialId\":\"mdf-white\",\"widthMm\":396,\"heightMm\":1346,\"depthMm\":18,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"volumeType\":\"opening\"}",
+        "partIds": [
+          "furniture-1786745216207:door-1",
+          "furniture-1786745216207:door-2"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave"
+        ],
+        "names": [
+          "Porta 1",
+          "Porta 2"
+        ],
+        "role": "door",
+        "materialId": "mdf-white",
+        "quantity": 2,
+        "widthMm": 396,
+        "heightMm": 1346,
+        "depthMm": 18,
+        "grainDirection": "vertical",
+        "edgeBanding": {
+          "top": "mdf-white",
+          "bottom": "mdf-white",
+          "left": "mdf-white",
+          "right": "mdf-white"
+        },
+        "volumeType": "opening"
+      },
+      {
+        "key": "{\"role\":\"side-left\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":720,\"depthMm\":580,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216209:side-left",
+          "furniture-1786745216210:side-left",
+          "furniture-1786745216212:side-left"
+        ],
+        "moduleIds": [
+          "kitchen-base-2-doors",
+          "kitchen-drawer-4",
+          "kitchen-sink-cabinet"
+        ],
+        "names": [
+          "Lateral esquerda"
+        ],
+        "role": "side-left",
+        "materialId": "mdf-white",
+        "quantity": 3,
+        "widthMm": 18,
+        "heightMm": 720,
+        "depthMm": 580,
+        "grainDirection": "vertical",
+        "edgeBanding": {
+          "front": "mdf-white"
+        },
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"side-right\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":720,\"depthMm\":580,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216209:side-right",
+          "furniture-1786745216210:side-right",
+          "furniture-1786745216212:side-right"
+        ],
+        "moduleIds": [
+          "kitchen-base-2-doors",
+          "kitchen-drawer-4",
+          "kitchen-sink-cabinet"
+        ],
+        "names": [
+          "Lateral direita"
+        ],
+        "role": "side-right",
+        "materialId": "mdf-white",
+        "quantity": 3,
+        "widthMm": 18,
+        "heightMm": 720,
+        "depthMm": 580,
+        "grainDirection": "vertical",
+        "edgeBanding": {
+          "front": "mdf-white"
+        },
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216209:base"
+        ],
+        "moduleIds": [
+          "kitchen-base-2-doors"
+        ],
+        "names": [
+          "Base"
+        ],
+        "role": "base",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 764,
+        "heightMm": 18,
+        "depthMm": 580,
+        "grainDirection": "horizontal",
+        "edgeBanding": {
+          "front": "mdf-white"
+        },
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216209:top"
+        ],
+        "moduleIds": [
+          "kitchen-base-2-doors"
+        ],
+        "names": [
+          "Topo"
+        ],
+        "role": "top",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 764,
+        "heightMm": 18,
+        "depthMm": 580,
+        "grainDirection": "horizontal",
+        "edgeBanding": {
+          "front": "mdf-white"
+        },
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":684,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"safety\"}",
+        "partIds": [
+          "furniture-1786745216209:back"
+        ],
+        "moduleIds": [
+          "kitchen-base-2-doors"
+        ],
+        "names": [
+          "Fundo"
+        ],
+        "role": "back",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 764,
+        "heightMm": 684,
+        "depthMm": 6,
+        "grainDirection": "none",
+        "edgeBanding": {},
+        "volumeType": "safety"
+      },
+      {
+        "key": "{\"role\":\"door\",\"materialId\":\"mdf-white\",\"widthMm\":396,\"heightMm\":716,\"depthMm\":18,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"volumeType\":\"opening\"}",
+        "partIds": [
+          "furniture-1786745216209:door-1",
+          "furniture-1786745216209:door-2"
+        ],
+        "moduleIds": [
+          "kitchen-base-2-doors"
+        ],
+        "names": [
+          "Porta 1",
+          "Porta 2"
+        ],
+        "role": "door",
+        "materialId": "mdf-white",
+        "quantity": 2,
+        "widthMm": 396,
+        "heightMm": 716,
+        "depthMm": 18,
+        "grainDirection": "vertical",
+        "edgeBanding": {
+          "top": "mdf-white",
+          "bottom": "mdf-white",
+          "left": "mdf-white",
+          "right": "mdf-white"
+        },
+        "volumeType": "opening"
+      },
+      {
+        "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":564,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216210:base"
+        ],
+        "moduleIds": [
+          "kitchen-drawer-4"
+        ],
+        "names": [
+          "Base"
+        ],
+        "role": "base",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 564,
+        "heightMm": 18,
+        "depthMm": 580,
+        "grainDirection": "horizontal",
+        "edgeBanding": {
+          "front": "mdf-white"
+        },
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":564,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216210:top"
+        ],
+        "moduleIds": [
+          "kitchen-drawer-4"
+        ],
+        "names": [
+          "Topo"
+        ],
+        "role": "top",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 564,
+        "heightMm": 18,
+        "depthMm": 580,
+        "grainDirection": "horizontal",
+        "edgeBanding": {
+          "front": "mdf-white"
+        },
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":564,\"heightMm\":684,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"safety\"}",
+        "partIds": [
+          "furniture-1786745216210:back"
+        ],
+        "moduleIds": [
+          "kitchen-drawer-4"
+        ],
+        "names": [
+          "Fundo"
+        ],
+        "role": "back",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 564,
+        "heightMm": 684,
+        "depthMm": 6,
+        "grainDirection": "none",
+        "edgeBanding": {},
+        "volumeType": "safety"
+      },
+      {
+        "key": "{\"role\":\"toe-kick\",\"materialId\":\"metal-black\",\"widthMm\":564,\"heightMm\":150,\"depthMm\":18,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216210:toe-kick"
+        ],
+        "moduleIds": [
+          "kitchen-drawer-4"
+        ],
+        "names": [
+          "Rodapé"
+        ],
+        "role": "toe-kick",
+        "materialId": "metal-black",
+        "quantity": 1,
+        "widthMm": 564,
+        "heightMm": 150,
+        "depthMm": 18,
+        "grainDirection": "none",
+        "edgeBanding": {},
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"drawer-front\",\"materialId\":\"mdf-white\",\"widthMm\":596,\"heightMm\":173,\"depthMm\":18,\"grainDirection\":\"none\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"volumeType\":\"opening\"}",
+        "partIds": [
+          "furniture-1786745216210:drawer-1:front",
+          "furniture-1786745216210:drawer-2:front",
+          "furniture-1786745216210:drawer-3:front",
+          "furniture-1786745216210:drawer-4:front"
+        ],
+        "moduleIds": [
+          "kitchen-drawer-4"
+        ],
+        "names": [
+          "Frente gaveta 1",
+          "Frente gaveta 2",
+          "Frente gaveta 3",
+          "Frente gaveta 4"
+        ],
+        "role": "drawer-front",
+        "materialId": "mdf-white",
+        "quantity": 4,
+        "widthMm": 596,
+        "heightMm": 173,
+        "depthMm": 18,
+        "grainDirection": "none",
+        "edgeBanding": {
+          "top": "mdf-white",
+          "bottom": "mdf-white",
+          "left": "mdf-white",
+          "right": "mdf-white"
+        },
+        "volumeType": "opening"
+      },
+      {
+        "key": "{\"role\":\"drawer-side\",\"materialId\":\"mdf-white\",\"widthMm\":15,\"heightMm\":133,\"depthMm\":520,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"opening\"}",
+        "partIds": [
+          "furniture-1786745216210:drawer-1:side-left",
+          "furniture-1786745216210:drawer-1:side-right",
+          "furniture-1786745216210:drawer-2:side-left",
+          "furniture-1786745216210:drawer-2:side-right",
+          "furniture-1786745216210:drawer-3:side-left",
+          "furniture-1786745216210:drawer-3:side-right",
+          "furniture-1786745216210:drawer-4:side-left",
+          "furniture-1786745216210:drawer-4:side-right"
+        ],
+        "moduleIds": [
+          "kitchen-drawer-4"
+        ],
+        "names": [
+          "Lateral gaveta 1 esquerda",
+          "Lateral gaveta 1 direita",
+          "Lateral gaveta 2 esquerda",
+          "Lateral gaveta 2 direita",
+          "Lateral gaveta 3 esquerda",
+          "Lateral gaveta 3 direita",
+          "Lateral gaveta 4 esquerda",
+          "Lateral gaveta 4 direita"
+        ],
+        "role": "drawer-side",
+        "materialId": "mdf-white",
+        "quantity": 8,
+        "widthMm": 15,
+        "heightMm": 133,
+        "depthMm": 520,
+        "grainDirection": "none",
+        "edgeBanding": {},
+        "volumeType": "opening"
+      },
+      {
+        "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":538,\"heightMm\":133,\"depthMm\":18,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"opening\"}",
+        "partIds": [
+          "furniture-1786745216210:drawer-1:back",
+          "furniture-1786745216210:drawer-2:back",
+          "furniture-1786745216210:drawer-3:back",
+          "furniture-1786745216210:drawer-4:back"
+        ],
+        "moduleIds": [
+          "kitchen-drawer-4"
+        ],
+        "names": [
+          "Traseira gaveta 1",
+          "Traseira gaveta 2",
+          "Traseira gaveta 3",
+          "Traseira gaveta 4"
+        ],
+        "role": "back",
+        "materialId": "mdf-white",
+        "quantity": 4,
+        "widthMm": 538,
+        "heightMm": 133,
+        "depthMm": 18,
+        "grainDirection": "none",
+        "edgeBanding": {},
+        "volumeType": "opening"
+      },
+      {
+        "key": "{\"role\":\"drawer-bottom\",\"materialId\":\"mdf-white\",\"widthMm\":523,\"heightMm\":6,\"depthMm\":520,\"grainDirection\":\"horizontal\",\"edgeBanding\":{},\"volumeType\":\"opening\"}",
+        "partIds": [
+          "furniture-1786745216210:drawer-1:bottom",
+          "furniture-1786745216210:drawer-2:bottom",
+          "furniture-1786745216210:drawer-3:bottom",
+          "furniture-1786745216210:drawer-4:bottom"
+        ],
+        "moduleIds": [
+          "kitchen-drawer-4"
+        ],
+        "names": [
+          "Fundo gaveta 1",
+          "Fundo gaveta 2",
+          "Fundo gaveta 3",
+          "Fundo gaveta 4"
+        ],
+        "role": "drawer-bottom",
+        "materialId": "mdf-white",
+        "quantity": 4,
+        "widthMm": 523,
+        "heightMm": 6,
+        "depthMm": 520,
+        "grainDirection": "horizontal",
+        "edgeBanding": {},
+        "volumeType": "opening"
+      },
+      {
+        "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":1164,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216212:base"
+        ],
+        "moduleIds": [
+          "kitchen-sink-cabinet"
+        ],
+        "names": [
+          "Base"
+        ],
+        "role": "base",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 1164,
+        "heightMm": 18,
+        "depthMm": 580,
+        "grainDirection": "horizontal",
+        "edgeBanding": {
+          "front": "mdf-white"
+        },
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":1164,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216212:top"
+        ],
+        "moduleIds": [
+          "kitchen-sink-cabinet"
+        ],
+        "names": [
+          "Topo"
+        ],
+        "role": "top",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 1164,
+        "heightMm": 18,
+        "depthMm": 580,
+        "grainDirection": "horizontal",
+        "edgeBanding": {
+          "front": "mdf-white"
+        },
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":1164,\"heightMm\":684,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"safety\"}",
+        "partIds": [
+          "furniture-1786745216212:back"
+        ],
+        "moduleIds": [
+          "kitchen-sink-cabinet"
+        ],
+        "names": [
+          "Fundo"
+        ],
+        "role": "back",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 1164,
+        "heightMm": 684,
+        "depthMm": 6,
+        "grainDirection": "none",
+        "edgeBanding": {},
+        "volumeType": "safety"
+      },
+      {
+        "key": "{\"role\":\"toe-kick\",\"materialId\":\"metal-black\",\"widthMm\":1164,\"heightMm\":150,\"depthMm\":18,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216212:toe-kick"
+        ],
+        "moduleIds": [
+          "kitchen-sink-cabinet"
+        ],
+        "names": [
+          "Rodapé"
+        ],
+        "role": "toe-kick",
+        "materialId": "metal-black",
+        "quantity": 1,
+        "widthMm": 1164,
+        "heightMm": 150,
+        "depthMm": 18,
+        "grainDirection": "none",
+        "edgeBanding": {},
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"door\",\"materialId\":\"mdf-white\",\"widthMm\":596,\"heightMm\":716,\"depthMm\":18,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"volumeType\":\"opening\"}",
+        "partIds": [
+          "furniture-1786745216212:door-1",
+          "furniture-1786745216212:door-2"
+        ],
+        "moduleIds": [
+          "kitchen-sink-cabinet"
+        ],
+        "names": [
+          "Porta 1",
+          "Porta 2"
+        ],
+        "role": "door",
+        "materialId": "mdf-white",
+        "quantity": 2,
+        "widthMm": 596,
+        "heightMm": 716,
+        "depthMm": 18,
+        "grainDirection": "vertical",
+        "edgeBanding": {
+          "top": "mdf-white",
+          "bottom": "mdf-white",
+          "left": "mdf-white",
+          "right": "mdf-white"
+        },
+        "volumeType": "opening"
+      },
+      {
+        "key": "{\"role\":\"side-left\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":700,\"depthMm\":350,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216214:side-left"
+        ],
+        "moduleIds": [
+          "kitchen-golden-upper-800"
+        ],
+        "names": [
+          "Lateral esquerda"
+        ],
+        "role": "side-left",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 18,
+        "heightMm": 700,
+        "depthMm": 350,
+        "grainDirection": "vertical",
+        "edgeBanding": {
+          "front": "mdf-white"
+        },
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"side-right\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":700,\"depthMm\":350,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216214:side-right"
+        ],
+        "moduleIds": [
+          "kitchen-golden-upper-800"
+        ],
+        "names": [
+          "Lateral direita"
+        ],
+        "role": "side-right",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 18,
+        "heightMm": 700,
+        "depthMm": 350,
+        "grainDirection": "vertical",
+        "edgeBanding": {
+          "front": "mdf-white"
+        },
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":350,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216214:base"
+        ],
+        "moduleIds": [
+          "kitchen-golden-upper-800"
+        ],
+        "names": [
+          "Base"
+        ],
+        "role": "base",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 764,
+        "heightMm": 18,
+        "depthMm": 350,
+        "grainDirection": "horizontal",
+        "edgeBanding": {
+          "front": "mdf-white"
+        },
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":350,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216214:top"
+        ],
+        "moduleIds": [
+          "kitchen-golden-upper-800"
+        ],
+        "names": [
+          "Topo"
+        ],
+        "role": "top",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 764,
+        "heightMm": 18,
+        "depthMm": 350,
+        "grainDirection": "horizontal",
+        "edgeBanding": {
+          "front": "mdf-white"
+        },
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":664,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"safety\"}",
+        "partIds": [
+          "furniture-1786745216214:back"
+        ],
+        "moduleIds": [
+          "kitchen-golden-upper-800"
+        ],
+        "names": [
+          "Fundo"
+        ],
+        "role": "back",
+        "materialId": "mdf-white",
+        "quantity": 1,
+        "widthMm": 764,
+        "heightMm": 664,
+        "depthMm": 6,
+        "grainDirection": "none",
+        "edgeBanding": {},
+        "volumeType": "safety"
+      },
+      {
+        "key": "{\"role\":\"shelf\",\"materialId\":\"mdf-white\",\"widthMm\":762,\"heightMm\":18,\"depthMm\":330,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786745216214:shelf-1",
+          "furniture-1786745216214:shelf-2",
+          "furniture-1786745216214:shelf-3"
+        ],
+        "moduleIds": [
+          "kitchen-golden-upper-800"
+        ],
+        "names": [
+          "Prateleira 1",
+          "Prateleira 2",
+          "Prateleira 3"
+        ],
+        "role": "shelf",
+        "materialId": "mdf-white",
+        "quantity": 3,
+        "widthMm": 762,
+        "heightMm": 18,
+        "depthMm": 330,
+        "grainDirection": "horizontal",
+        "edgeBanding": {
+          "front": "mdf-white"
+        },
+        "volumeType": "physical"
+      },
+      {
+        "key": "{\"role\":\"door\",\"materialId\":\"mdf-white\",\"widthMm\":396,\"heightMm\":696,\"depthMm\":18,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"volumeType\":\"opening\"}",
+        "partIds": [
+          "furniture-1786745216214:door-1",
+          "furniture-1786745216214:door-2"
+        ],
+        "moduleIds": [
+          "kitchen-golden-upper-800"
+        ],
+        "names": [
+          "Porta 1",
+          "Porta 2"
+        ],
+        "role": "door",
+        "materialId": "mdf-white",
+        "quantity": 2,
+        "widthMm": 396,
+        "heightMm": 696,
+        "depthMm": 18,
+        "grainDirection": "vertical",
+        "edgeBanding": {
+          "top": "mdf-white",
+          "bottom": "mdf-white",
+          "left": "mdf-white",
+          "right": "mdf-white"
+        },
+        "volumeType": "opening"
+      }
+    ],
+    "hardwareItems": [
+      {
+        "hardwareId": "leg-adjustable",
+        "quantity": 16,
+        "partIds": [
+          "furniture-1786745216207:foot-left-back",
+          "furniture-1786745216207:foot-right-back",
+          "furniture-1786745216207:foot-left-front",
+          "furniture-1786745216207:foot-right-front",
+          "furniture-1786745216209:foot-left-back",
+          "furniture-1786745216209:foot-right-back",
+          "furniture-1786745216209:foot-left-front",
+          "furniture-1786745216209:foot-right-front",
+          "furniture-1786745216210:foot-left-back",
+          "furniture-1786745216210:foot-right-back",
+          "furniture-1786745216210:foot-left-front",
+          "furniture-1786745216210:foot-right-front",
+          "furniture-1786745216212:foot-left-back",
+          "furniture-1786745216212:foot-right-back",
+          "furniture-1786745216212:foot-left-front",
+          "furniture-1786745216212:foot-right-front"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave",
+          "kitchen-base-2-doors",
+          "kitchen-drawer-4",
+          "kitchen-sink-cabinet"
+        ]
+      },
+      {
+        "hardwareId": "hinge-soft-close",
+        "quantity": 8,
+        "partIds": [
+          "furniture-1786745216207:door-1:hinge",
+          "furniture-1786745216207:door-2:hinge",
+          "furniture-1786745216209:door-1:hinge",
+          "furniture-1786745216209:door-2:hinge",
+          "furniture-1786745216212:door-1:hinge",
+          "furniture-1786745216212:door-2:hinge",
+          "furniture-1786745216214:door-1:hinge",
+          "furniture-1786745216214:door-2:hinge"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave",
+          "kitchen-base-2-doors",
+          "kitchen-sink-cabinet",
+          "kitchen-golden-upper-800"
+        ]
+      },
+      {
+        "hardwareId": "handle-bar",
+        "quantity": 12,
+        "partIds": [
+          "furniture-1786745216207:door-1:handle",
+          "furniture-1786745216207:door-2:handle",
+          "furniture-1786745216209:door-1:handle",
+          "furniture-1786745216209:door-2:handle",
+          "furniture-1786745216210:drawer-1:handle",
+          "furniture-1786745216210:drawer-2:handle",
+          "furniture-1786745216210:drawer-3:handle",
+          "furniture-1786745216210:drawer-4:handle",
+          "furniture-1786745216212:door-1:handle",
+          "furniture-1786745216212:door-2:handle",
+          "furniture-1786745216214:door-1:handle",
+          "furniture-1786745216214:door-2:handle"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave",
+          "kitchen-base-2-doors",
+          "kitchen-drawer-4",
+          "kitchen-sink-cabinet",
+          "kitchen-golden-upper-800"
+        ]
+      },
+      {
+        "hardwareId": "slide-hidden-soft-close",
+        "quantity": 8,
+        "partIds": [
+          "furniture-1786745216210:drawer-1:slide-left",
+          "furniture-1786745216210:drawer-1:slide-right",
+          "furniture-1786745216210:drawer-2:slide-left",
+          "furniture-1786745216210:drawer-2:slide-right",
+          "furniture-1786745216210:drawer-3:slide-left",
+          "furniture-1786745216210:drawer-3:slide-right",
+          "furniture-1786745216210:drawer-4:slide-left",
+          "furniture-1786745216210:drawer-4:slide-right"
+        ],
+        "moduleIds": [
+          "kitchen-drawer-4"
+        ]
+      },
+      {
+        "hardwareId": "sink-bowl",
+        "quantity": 4,
+        "partIds": [
+          "furniture-1786745216212:sink-rim-front",
+          "furniture-1786745216212:sink-rim-back",
+          "furniture-1786745216212:sink-rim-left",
+          "furniture-1786745216212:sink-rim-right"
+        ],
+        "moduleIds": [
+          "kitchen-sink-cabinet"
+        ]
+      }
+    ],
+    "modules": [
+      {
+        "instanceId": "furniture-1786745216207",
+        "moduleDefinitionId": "kitchen-tower-oven-microwave",
+        "name": "Torre Forno + Micro-ondas",
+        "dimensionsMm": {
+          "width": 800,
+          "height": 2200,
+          "depth": 620
+        },
+        "partCount": 19,
+        "physicalPartCount": 9,
+        "hardwarePartCount": 8,
+        "technicalPartCount": 12,
+        "warningCount": 0
+      },
+      {
+        "instanceId": "furniture-1786745216209",
+        "moduleDefinitionId": "kitchen-base-2-doors",
+        "name": "Balcão 2 Portas",
+        "dimensionsMm": {
+          "width": 800,
+          "height": 870,
+          "depth": 580
+        },
+        "partCount": 16,
+        "physicalPartCount": 8,
+        "hardwarePartCount": 8,
+        "technicalPartCount": 10,
+        "warningCount": 0
+      },
+      {
+        "instanceId": "furniture-1786745216210",
+        "moduleDefinitionId": "kitchen-drawer-4",
+        "name": "Gaveteiro 4 Gavetas",
+        "dimensionsMm": {
+          "width": 600,
+          "height": 870,
+          "depth": 580
+        },
+        "partCount": 42,
+        "physicalPartCount": 26,
+        "hardwarePartCount": 16,
+        "technicalPartCount": 36,
+        "warningCount": 0
+      },
+      {
+        "instanceId": "furniture-1786745216212",
+        "moduleDefinitionId": "kitchen-sink-cabinet",
+        "name": "Balcão para Pia",
+        "dimensionsMm": {
+          "width": 1200,
+          "height": 870,
+          "depth": 580
+        },
+        "partCount": 23,
+        "physicalPartCount": 8,
+        "hardwarePartCount": 12,
+        "technicalPartCount": 17,
+        "warningCount": 0
+      },
+      {
+        "instanceId": "furniture-1786745216214",
+        "moduleDefinitionId": "kitchen-golden-upper-800",
+        "name": "Golden Module — Aéreo 800×700×350",
+        "dimensionsMm": {
+          "width": 800,
+          "height": 700,
+          "depth": 350
+        },
+        "partCount": 14,
+        "physicalPartCount": 10,
+        "hardwarePartCount": 4,
+        "technicalPartCount": 6,
+        "warningCount": 0
+      }
+    ],
+    "warnings": []
+  },
+  "joinery": {
+    "operations": [
+      {
+        "id": "furniture-1786745216207-furniture-1786745216207:side-left-confirmat-0",
+        "moduleInstanceId": "furniture-1786745216207",
+        "partId": "furniture-1786745216207:side-left",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216207-furniture-1786745216207:side-left-dowel-0",
+        "moduleInstanceId": "furniture-1786745216207",
+        "partId": "furniture-1786745216207:side-left",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216207-furniture-1786745216207:side-right-confirmat-1",
+        "moduleInstanceId": "furniture-1786745216207",
+        "partId": "furniture-1786745216207:side-right",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216207-furniture-1786745216207:side-right-dowel-1",
+        "moduleInstanceId": "furniture-1786745216207",
+        "partId": "furniture-1786745216207:side-right",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216207-furniture-1786745216207:base-confirmat-2",
+        "moduleInstanceId": "furniture-1786745216207",
+        "partId": "furniture-1786745216207:base",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216207-furniture-1786745216207:base-dowel-2",
+        "moduleInstanceId": "furniture-1786745216207",
+        "partId": "furniture-1786745216207:base",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216207-furniture-1786745216207:top-confirmat-3",
+        "moduleInstanceId": "furniture-1786745216207",
+        "partId": "furniture-1786745216207:top",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216207-furniture-1786745216207:top-dowel-3",
+        "moduleInstanceId": "furniture-1786745216207",
+        "partId": "furniture-1786745216207:top",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216207-furniture-1786745216207:back-confirmat-4",
+        "moduleInstanceId": "furniture-1786745216207",
+        "partId": "furniture-1786745216207:back",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216207-furniture-1786745216207:back-dowel-4",
+        "moduleInstanceId": "furniture-1786745216207",
+        "partId": "furniture-1786745216207:back",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216207-furniture-1786745216207:appliance-divider-confirmat-5",
+        "moduleInstanceId": "furniture-1786745216207",
+        "partId": "furniture-1786745216207:appliance-divider",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216207-furniture-1786745216207:appliance-divider-dowel-5",
+        "moduleInstanceId": "furniture-1786745216207",
+        "partId": "furniture-1786745216207:appliance-divider",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216207-furniture-1786745216207:door-1-hinge-cup-0",
+        "moduleInstanceId": "furniture-1786745216207",
+        "partId": "furniture-1786745216207:door-1",
+        "kind": "hinge-cup",
+        "face": "F1",
+        "positionMm": {
+          "x": 21.5,
+          "y": 1246
+        },
+        "diameterMm": 35,
+        "depthMm": 12.5,
+        "tool": "broca-forstner-35",
+        "hardwareId": "hinge-soft-close",
+        "notes": "Copo de dobradiça; repetir no topo e base da porta conforme altura."
+      },
+      {
+        "id": "furniture-1786745216207-furniture-1786745216207:door-1-hinge-fixing-0",
+        "moduleInstanceId": "furniture-1786745216207",
+        "partId": "furniture-1786745216207:door-1",
+        "kind": "hinge-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 1246
+        },
+        "diameterMm": 35,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "hardwareId": "hinge-soft-close"
+      },
+      {
+        "id": "furniture-1786745216207-furniture-1786745216207:door-2-hinge-cup-1",
+        "moduleInstanceId": "furniture-1786745216207",
+        "partId": "furniture-1786745216207:door-2",
+        "kind": "hinge-cup",
+        "face": "F1",
+        "positionMm": {
+          "x": 21.5,
+          "y": 1246
+        },
+        "diameterMm": 35,
+        "depthMm": 12.5,
+        "tool": "broca-forstner-35",
+        "hardwareId": "hinge-soft-close",
+        "notes": "Copo de dobradiça; repetir no topo e base da porta conforme altura."
+      },
+      {
+        "id": "furniture-1786745216207-furniture-1786745216207:door-2-hinge-fixing-1",
+        "moduleInstanceId": "furniture-1786745216207",
+        "partId": "furniture-1786745216207:door-2",
+        "kind": "hinge-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 1246
+        },
+        "diameterMm": 35,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "hardwareId": "hinge-soft-close"
+      },
+      {
+        "id": "furniture-1786745216209-furniture-1786745216209:side-left-confirmat-0",
+        "moduleInstanceId": "furniture-1786745216209",
+        "partId": "furniture-1786745216209:side-left",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216209-furniture-1786745216209:side-left-dowel-0",
+        "moduleInstanceId": "furniture-1786745216209",
+        "partId": "furniture-1786745216209:side-left",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216209-furniture-1786745216209:side-right-confirmat-1",
+        "moduleInstanceId": "furniture-1786745216209",
+        "partId": "furniture-1786745216209:side-right",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216209-furniture-1786745216209:side-right-dowel-1",
+        "moduleInstanceId": "furniture-1786745216209",
+        "partId": "furniture-1786745216209:side-right",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216209-furniture-1786745216209:base-confirmat-2",
+        "moduleInstanceId": "furniture-1786745216209",
+        "partId": "furniture-1786745216209:base",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216209-furniture-1786745216209:base-dowel-2",
+        "moduleInstanceId": "furniture-1786745216209",
+        "partId": "furniture-1786745216209:base",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216209-furniture-1786745216209:top-confirmat-3",
+        "moduleInstanceId": "furniture-1786745216209",
+        "partId": "furniture-1786745216209:top",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216209-furniture-1786745216209:top-dowel-3",
+        "moduleInstanceId": "furniture-1786745216209",
+        "partId": "furniture-1786745216209:top",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216209-furniture-1786745216209:back-confirmat-4",
+        "moduleInstanceId": "furniture-1786745216209",
+        "partId": "furniture-1786745216209:back",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216209-furniture-1786745216209:back-dowel-4",
+        "moduleInstanceId": "furniture-1786745216209",
+        "partId": "furniture-1786745216209:back",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216209-furniture-1786745216209:door-1-hinge-cup-0",
+        "moduleInstanceId": "furniture-1786745216209",
+        "partId": "furniture-1786745216209:door-1",
+        "kind": "hinge-cup",
+        "face": "F1",
+        "positionMm": {
+          "x": 21.5,
+          "y": 616
+        },
+        "diameterMm": 35,
+        "depthMm": 12.5,
+        "tool": "broca-forstner-35",
+        "hardwareId": "hinge-soft-close",
+        "notes": "Copo de dobradiça; repetir no topo e base da porta conforme altura."
+      },
+      {
+        "id": "furniture-1786745216209-furniture-1786745216209:door-1-hinge-fixing-0",
+        "moduleInstanceId": "furniture-1786745216209",
+        "partId": "furniture-1786745216209:door-1",
+        "kind": "hinge-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 616
+        },
+        "diameterMm": 35,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "hardwareId": "hinge-soft-close"
+      },
+      {
+        "id": "furniture-1786745216209-furniture-1786745216209:door-2-hinge-cup-1",
+        "moduleInstanceId": "furniture-1786745216209",
+        "partId": "furniture-1786745216209:door-2",
+        "kind": "hinge-cup",
+        "face": "F1",
+        "positionMm": {
+          "x": 21.5,
+          "y": 616
+        },
+        "diameterMm": 35,
+        "depthMm": 12.5,
+        "tool": "broca-forstner-35",
+        "hardwareId": "hinge-soft-close",
+        "notes": "Copo de dobradiça; repetir no topo e base da porta conforme altura."
+      },
+      {
+        "id": "furniture-1786745216209-furniture-1786745216209:door-2-hinge-fixing-1",
+        "moduleInstanceId": "furniture-1786745216209",
+        "partId": "furniture-1786745216209:door-2",
+        "kind": "hinge-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 616
+        },
+        "diameterMm": 35,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "hardwareId": "hinge-soft-close"
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:side-left-confirmat-0",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:side-left",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:side-left-dowel-0",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:side-left",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:side-right-confirmat-1",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:side-right",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:side-right-dowel-1",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:side-right",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:base-confirmat-2",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:base",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:base-dowel-2",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:base",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:top-confirmat-3",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:top",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:top-dowel-3",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:top",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:back-confirmat-4",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:back",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:back-dowel-4",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:back",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-1:back-confirmat-5",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-1:back",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-1:back-dowel-5",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-1:back",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-2:back-confirmat-6",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-2:back",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-2:back-dowel-6",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-2:back",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-3:back-confirmat-7",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-3:back",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-3:back-dowel-7",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-3:back",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-4:back-confirmat-8",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-4:back",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-4:back-dowel-8",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-4:back",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-1:front-handle-through-0",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-1:front",
+        "kind": "handle-through",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 18,
+        "tool": "broca-5",
+        "hardwareId": "handle-bar",
+        "notes": "Furação do puxador conforme gabarito do fabricante."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-2:front-handle-through-1",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-2:front",
+        "kind": "handle-through",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 18,
+        "tool": "broca-5",
+        "hardwareId": "handle-bar",
+        "notes": "Furação do puxador conforme gabarito do fabricante."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-3:front-handle-through-2",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-3:front",
+        "kind": "handle-through",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 18,
+        "tool": "broca-5",
+        "hardwareId": "handle-bar",
+        "notes": "Furação do puxador conforme gabarito do fabricante."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-4:front-handle-through-3",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-4:front",
+        "kind": "handle-through",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 18,
+        "tool": "broca-5",
+        "hardwareId": "handle-bar",
+        "notes": "Furação do puxador conforme gabarito do fabricante."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-1:side-left-slide-fixing-0",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-1:side-left",
+        "kind": "slide-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 12,
+        "tool": "broca-5",
+        "hardwareId": "slide-hidden-soft-close",
+        "notes": "Furação da corrediça com paralelismo obrigatório."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-1:side-right-slide-fixing-1",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-1:side-right",
+        "kind": "slide-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 12,
+        "tool": "broca-5",
+        "hardwareId": "slide-hidden-soft-close",
+        "notes": "Furação da corrediça com paralelismo obrigatório."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-1:bottom-slide-fixing-2",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-1:bottom",
+        "kind": "slide-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 12,
+        "tool": "broca-5",
+        "hardwareId": "slide-hidden-soft-close",
+        "notes": "Furação da corrediça com paralelismo obrigatório."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-2:side-left-slide-fixing-3",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-2:side-left",
+        "kind": "slide-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 12,
+        "tool": "broca-5",
+        "hardwareId": "slide-hidden-soft-close",
+        "notes": "Furação da corrediça com paralelismo obrigatório."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-2:side-right-slide-fixing-4",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-2:side-right",
+        "kind": "slide-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 12,
+        "tool": "broca-5",
+        "hardwareId": "slide-hidden-soft-close",
+        "notes": "Furação da corrediça com paralelismo obrigatório."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-2:bottom-slide-fixing-5",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-2:bottom",
+        "kind": "slide-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 12,
+        "tool": "broca-5",
+        "hardwareId": "slide-hidden-soft-close",
+        "notes": "Furação da corrediça com paralelismo obrigatório."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-3:side-left-slide-fixing-6",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-3:side-left",
+        "kind": "slide-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 12,
+        "tool": "broca-5",
+        "hardwareId": "slide-hidden-soft-close",
+        "notes": "Furação da corrediça com paralelismo obrigatório."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-3:side-right-slide-fixing-7",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-3:side-right",
+        "kind": "slide-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 12,
+        "tool": "broca-5",
+        "hardwareId": "slide-hidden-soft-close",
+        "notes": "Furação da corrediça com paralelismo obrigatório."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-3:bottom-slide-fixing-8",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-3:bottom",
+        "kind": "slide-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 12,
+        "tool": "broca-5",
+        "hardwareId": "slide-hidden-soft-close",
+        "notes": "Furação da corrediça com paralelismo obrigatório."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-4:side-left-slide-fixing-9",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-4:side-left",
+        "kind": "slide-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 12,
+        "tool": "broca-5",
+        "hardwareId": "slide-hidden-soft-close",
+        "notes": "Furação da corrediça com paralelismo obrigatório."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-4:side-right-slide-fixing-10",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-4:side-right",
+        "kind": "slide-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 12,
+        "tool": "broca-5",
+        "hardwareId": "slide-hidden-soft-close",
+        "notes": "Furação da corrediça com paralelismo obrigatório."
+      },
+      {
+        "id": "furniture-1786745216210-furniture-1786745216210:drawer-4:bottom-slide-fixing-11",
+        "moduleInstanceId": "furniture-1786745216210",
+        "partId": "furniture-1786745216210:drawer-4:bottom",
+        "kind": "slide-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 12,
+        "tool": "broca-5",
+        "hardwareId": "slide-hidden-soft-close",
+        "notes": "Furação da corrediça com paralelismo obrigatório."
+      },
+      {
+        "id": "furniture-1786745216212-furniture-1786745216212:side-left-confirmat-0",
+        "moduleInstanceId": "furniture-1786745216212",
+        "partId": "furniture-1786745216212:side-left",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216212-furniture-1786745216212:side-left-dowel-0",
+        "moduleInstanceId": "furniture-1786745216212",
+        "partId": "furniture-1786745216212:side-left",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216212-furniture-1786745216212:side-right-confirmat-1",
+        "moduleInstanceId": "furniture-1786745216212",
+        "partId": "furniture-1786745216212:side-right",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216212-furniture-1786745216212:side-right-dowel-1",
+        "moduleInstanceId": "furniture-1786745216212",
+        "partId": "furniture-1786745216212:side-right",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216212-furniture-1786745216212:base-confirmat-2",
+        "moduleInstanceId": "furniture-1786745216212",
+        "partId": "furniture-1786745216212:base",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216212-furniture-1786745216212:base-dowel-2",
+        "moduleInstanceId": "furniture-1786745216212",
+        "partId": "furniture-1786745216212:base",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216212-furniture-1786745216212:top-confirmat-3",
+        "moduleInstanceId": "furniture-1786745216212",
+        "partId": "furniture-1786745216212:top",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216212-furniture-1786745216212:top-dowel-3",
+        "moduleInstanceId": "furniture-1786745216212",
+        "partId": "furniture-1786745216212:top",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216212-furniture-1786745216212:back-confirmat-4",
+        "moduleInstanceId": "furniture-1786745216212",
+        "partId": "furniture-1786745216212:back",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216212-furniture-1786745216212:back-dowel-4",
+        "moduleInstanceId": "furniture-1786745216212",
+        "partId": "furniture-1786745216212:back",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216212-furniture-1786745216212:sink-plumbing-recess-confirmat-5",
+        "moduleInstanceId": "furniture-1786745216212",
+        "partId": "furniture-1786745216212:sink-plumbing-recess",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216212-furniture-1786745216212:sink-plumbing-recess-dowel-5",
+        "moduleInstanceId": "furniture-1786745216212",
+        "partId": "furniture-1786745216212:sink-plumbing-recess",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216212-furniture-1786745216212:door-1-hinge-cup-0",
+        "moduleInstanceId": "furniture-1786745216212",
+        "partId": "furniture-1786745216212:door-1",
+        "kind": "hinge-cup",
+        "face": "F1",
+        "positionMm": {
+          "x": 21.5,
+          "y": 616
+        },
+        "diameterMm": 35,
+        "depthMm": 12.5,
+        "tool": "broca-forstner-35",
+        "hardwareId": "hinge-soft-close",
+        "notes": "Copo de dobradiça; repetir no topo e base da porta conforme altura."
+      },
+      {
+        "id": "furniture-1786745216212-furniture-1786745216212:door-1-hinge-fixing-0",
+        "moduleInstanceId": "furniture-1786745216212",
+        "partId": "furniture-1786745216212:door-1",
+        "kind": "hinge-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 616
+        },
+        "diameterMm": 35,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "hardwareId": "hinge-soft-close"
+      },
+      {
+        "id": "furniture-1786745216212-furniture-1786745216212:door-2-hinge-cup-1",
+        "moduleInstanceId": "furniture-1786745216212",
+        "partId": "furniture-1786745216212:door-2",
+        "kind": "hinge-cup",
+        "face": "F1",
+        "positionMm": {
+          "x": 21.5,
+          "y": 616
+        },
+        "diameterMm": 35,
+        "depthMm": 12.5,
+        "tool": "broca-forstner-35",
+        "hardwareId": "hinge-soft-close",
+        "notes": "Copo de dobradiça; repetir no topo e base da porta conforme altura."
+      },
+      {
+        "id": "furniture-1786745216212-furniture-1786745216212:door-2-hinge-fixing-1",
+        "moduleInstanceId": "furniture-1786745216212",
+        "partId": "furniture-1786745216212:door-2",
+        "kind": "hinge-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 616
+        },
+        "diameterMm": 35,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "hardwareId": "hinge-soft-close"
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:side-left-confirmat-0",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:side-left",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:side-left-dowel-0",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:side-left",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:side-right-confirmat-1",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:side-right",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:side-right-dowel-1",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:side-right",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:base-confirmat-2",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:base",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:base-dowel-2",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:base",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:top-confirmat-3",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:top",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:top-dowel-3",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:top",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:back-confirmat-4",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:back",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:back-dowel-4",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:back",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:shelf-1-confirmat-5",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:shelf-1",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:shelf-1-dowel-5",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:shelf-1",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:shelf-2-confirmat-6",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:shelf-2",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:shelf-2-dowel-6",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:shelf-2",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:shelf-3-confirmat-7",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:shelf-3",
+        "kind": "confirmat",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 5,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:shelf-3-dowel-7",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:shelf-3",
+        "kind": "dowel",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 37
+        },
+        "diameterMm": 8,
+        "depthMm": 30,
+        "tool": "broca-8",
+        "notes": "Cavilha de alinhamento estrutural."
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:door-1-hinge-cup-0",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:door-1",
+        "kind": "hinge-cup",
+        "face": "F1",
+        "positionMm": {
+          "x": 21.5,
+          "y": 596
+        },
+        "diameterMm": 35,
+        "depthMm": 12.5,
+        "tool": "broca-forstner-35",
+        "hardwareId": "hinge-soft-close",
+        "notes": "Copo de dobradiça; repetir no topo e base da porta conforme altura."
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:door-1-hinge-fixing-0",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:door-1",
+        "kind": "hinge-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 596
+        },
+        "diameterMm": 35,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "hardwareId": "hinge-soft-close"
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:door-2-hinge-cup-1",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:door-2",
+        "kind": "hinge-cup",
+        "face": "F1",
+        "positionMm": {
+          "x": 21.5,
+          "y": 596
+        },
+        "diameterMm": 35,
+        "depthMm": 12.5,
+        "tool": "broca-forstner-35",
+        "hardwareId": "hinge-soft-close",
+        "notes": "Copo de dobradiça; repetir no topo e base da porta conforme altura."
+      },
+      {
+        "id": "furniture-1786745216214-furniture-1786745216214:door-2-hinge-fixing-1",
+        "moduleInstanceId": "furniture-1786745216214",
+        "partId": "furniture-1786745216214:door-2",
+        "kind": "hinge-fixing",
+        "face": "F1",
+        "positionMm": {
+          "x": 37,
+          "y": 596
+        },
+        "diameterMm": 35,
+        "depthMm": 13,
+        "tool": "broca-5",
+        "hardwareId": "hinge-soft-close"
+      }
+    ],
+    "warnings": []
+  },
+  "nesting": {
+    "algorithm": "max-rects",
+    "options": {
+      "algorithm": "max-rects",
+      "kerfMm": 4,
+      "rotation": "auto",
+      "grainMode": "respect",
+      "marginMm": 10,
+      "minOffcutMm": 100
+    },
+    "boards": [
+      {
+        "index": 1,
+        "spec": {
+          "id": "duratex-mdf-18-branco-tx",
+          "material": "MDF",
+          "brand": "Duratex",
+          "color": "Branco TX",
+          "thicknessMm": 18,
+          "lengthMm": 2750,
+          "widthMm": 1850,
+          "supplier": "Duratex",
+          "weightKg": 52,
+          "price": 320,
+          "grain": "vertical"
+        },
+        "placements": [
+          {
+            "partId": "furniture-1786745216207:back:0",
+            "code": "furniture-1786745216207:back",
+            "x": 10,
+            "y": 10,
+            "w": 2014,
+            "h": 764,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216212:back:0",
+            "code": "furniture-1786745216212:back",
+            "x": 2028,
+            "y": 10,
+            "w": 684,
+            "h": 1164,
+            "rotated": true,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216209:back:0",
+            "code": "furniture-1786745216209:back",
+            "x": 10,
+            "y": 778,
+            "w": 684,
+            "h": 764,
+            "rotated": true,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216214:back:0",
+            "code": "furniture-1786745216214:back",
+            "x": 698,
+            "y": 778,
+            "w": 664,
+            "h": 764,
+            "rotated": true,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216210:back:0",
+            "code": "furniture-1786745216210:back",
+            "x": 1366,
+            "y": 778,
+            "w": 564,
+            "h": 684,
+            "rotated": true,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          }
+        ],
+        "usedM2": 3.751,
+        "wasteM2": 1.337,
+        "usageRatio": 0.7372,
+        "weightKg": 38.33,
+        "offcuts": [
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:1:0",
+            "x": 0,
+            "y": 1542,
+            "widthMm": 2750,
+            "heightMm": 308,
+            "areaM2": 0.847,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          },
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:1:1",
+            "x": 1930,
+            "y": 1174,
+            "widthMm": 820,
+            "heightMm": 288,
+            "areaM2": 0.236,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "spec": {
+          "id": "duratex-mdf-18-branco-tx",
+          "material": "MDF",
+          "brand": "Duratex",
+          "color": "Branco TX",
+          "thicknessMm": 18,
+          "lengthMm": 2750,
+          "widthMm": 1850,
+          "supplier": "Duratex",
+          "weightKg": 52,
+          "price": 320,
+          "grain": "vertical"
+        },
+        "placements": [
+          {
+            "partId": "furniture-1786745216207:side-left:0",
+            "code": "furniture-1786745216207:side-left",
+            "x": 10,
+            "y": 10,
+            "w": 2050,
+            "h": 620,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216207:side-right:0",
+            "code": "furniture-1786745216207:side-right",
+            "x": 10,
+            "y": 634,
+            "w": 2050,
+            "h": 620,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216212:base:0",
+            "code": "furniture-1786745216212:base",
+            "x": 10,
+            "y": 1258,
+            "w": 1164,
+            "h": 580,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216212:top:0",
+            "code": "furniture-1786745216212:top",
+            "x": 1178,
+            "y": 1258,
+            "w": 1164,
+            "h": 580,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216210:base:0",
+            "code": "furniture-1786745216210:base",
+            "x": 2064,
+            "y": 10,
+            "w": 580,
+            "h": 564,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216210:top:0",
+            "code": "furniture-1786745216210:top",
+            "x": 2064,
+            "y": 578,
+            "w": 580,
+            "h": 564,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          }
+        ],
+        "usedM2": 4.546,
+        "wasteM2": 0.541,
+        "usageRatio": 0.8937,
+        "weightKg": 46.47,
+        "offcuts": [
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:2:0",
+            "x": 2342,
+            "y": 1258,
+            "widthMm": 408,
+            "heightMm": 580,
+            "areaM2": 0.237,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          },
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:2:1",
+            "x": 2060,
+            "y": 1142,
+            "widthMm": 690,
+            "heightMm": 112,
+            "areaM2": 0.077,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          },
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:2:2",
+            "x": 2644,
+            "y": 634,
+            "widthMm": 106,
+            "heightMm": 508,
+            "areaM2": 0.054,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          },
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:2:3",
+            "x": 2644,
+            "y": 10,
+            "widthMm": 106,
+            "heightMm": 564,
+            "areaM2": 0.06,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "spec": {
+          "id": "duratex-mdf-18-branco-tx",
+          "material": "MDF",
+          "brand": "Duratex",
+          "color": "Branco TX",
+          "thicknessMm": 18,
+          "lengthMm": 2750,
+          "widthMm": 1850,
+          "supplier": "Duratex",
+          "weightKg": 52,
+          "price": 320,
+          "grain": "vertical"
+        },
+        "placements": [
+          {
+            "partId": "furniture-1786745216207:base:0",
+            "code": "furniture-1786745216207:base",
+            "x": 10,
+            "y": 10,
+            "w": 764,
+            "h": 620,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216207:top:0",
+            "code": "furniture-1786745216207:top",
+            "x": 10,
+            "y": 634,
+            "w": 764,
+            "h": 620,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216207:appliance-divider:0",
+            "code": "furniture-1786745216207:appliance-divider",
+            "x": 778,
+            "y": 10,
+            "w": 764,
+            "h": 584,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216209:base:0",
+            "code": "furniture-1786745216209:base",
+            "x": 10,
+            "y": 1258,
+            "w": 764,
+            "h": 580,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216209:top:0",
+            "code": "furniture-1786745216209:top",
+            "x": 1546,
+            "y": 10,
+            "w": 764,
+            "h": 580,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216209:side-left:0",
+            "code": "furniture-1786745216209:side-left",
+            "x": 1546,
+            "y": 594,
+            "w": 720,
+            "h": 580,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216209:side-right:0",
+            "code": "furniture-1786745216209:side-right",
+            "x": 778,
+            "y": 598,
+            "w": 720,
+            "h": 580,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216210:side-left:0",
+            "code": "furniture-1786745216210:side-left",
+            "x": 778,
+            "y": 1182,
+            "w": 720,
+            "h": 580,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216210:side-right:0",
+            "code": "furniture-1786745216210:side-right",
+            "x": 1502,
+            "y": 598,
+            "w": 720,
+            "h": 580,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216212:side-left:0",
+            "code": "furniture-1786745216212:side-left",
+            "x": 1502,
+            "y": 1182,
+            "w": 720,
+            "h": 580,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          }
+        ],
+        "usedM2": 4.368,
+        "wasteM2": 0.72,
+        "usageRatio": 0.8585,
+        "weightKg": 44.64,
+        "offcuts": [
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:3:0",
+            "x": 2222,
+            "y": 1258,
+            "widthMm": 528,
+            "heightMm": 504,
+            "areaM2": 0.266,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          },
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:3:1",
+            "x": 2266,
+            "y": 634,
+            "widthMm": 484,
+            "heightMm": 540,
+            "areaM2": 0.261,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          },
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:3:2",
+            "x": 2310,
+            "y": 10,
+            "widthMm": 440,
+            "heightMm": 580,
+            "areaM2": 0.255,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "spec": {
+          "id": "duratex-mdf-18-branco-tx",
+          "material": "MDF",
+          "brand": "Duratex",
+          "color": "Branco TX",
+          "thicknessMm": 18,
+          "lengthMm": 2750,
+          "widthMm": 1850,
+          "supplier": "Duratex",
+          "weightKg": 52,
+          "price": 320,
+          "grain": "vertical"
+        },
+        "placements": [
+          {
+            "partId": "furniture-1786745216212:side-right:0",
+            "code": "furniture-1786745216212:side-right",
+            "x": 10,
+            "y": 10,
+            "w": 720,
+            "h": 580,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216214:base:0",
+            "code": "furniture-1786745216214:base",
+            "x": 10,
+            "y": 594,
+            "w": 764,
+            "h": 350,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216214:top:0",
+            "code": "furniture-1786745216214:top",
+            "x": 10,
+            "y": 948,
+            "w": 764,
+            "h": 350,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216214:side-left:0",
+            "code": "furniture-1786745216214:side-left",
+            "x": 10,
+            "y": 1302,
+            "w": 700,
+            "h": 350,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216214:side-right:0",
+            "code": "furniture-1786745216214:side-right",
+            "x": 714,
+            "y": 1302,
+            "w": 700,
+            "h": 350,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216214:shelf-1:0",
+            "code": "furniture-1786745216214:shelf-1",
+            "x": 734,
+            "y": 10,
+            "w": 762,
+            "h": 330,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216214:shelf-2:0",
+            "code": "furniture-1786745216214:shelf-2",
+            "x": 1500,
+            "y": 10,
+            "w": 762,
+            "h": 330,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216214:shelf-3:0",
+            "code": "furniture-1786745216214:shelf-3",
+            "x": 734,
+            "y": 344,
+            "w": 762,
+            "h": 330,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          }
+        ],
+        "usedM2": 2.197,
+        "wasteM2": 2.891,
+        "usageRatio": 0.4318,
+        "weightKg": 22.45,
+        "offcuts": [
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:4:0",
+            "x": 0,
+            "y": 1652,
+            "widthMm": 2750,
+            "heightMm": 198,
+            "areaM2": 0.545,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          },
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:4:1",
+            "x": 1414,
+            "y": 1302,
+            "widthMm": 1336,
+            "heightMm": 350,
+            "areaM2": 0.468,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          },
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:4:2",
+            "x": 774,
+            "y": 948,
+            "widthMm": 1976,
+            "heightMm": 350,
+            "areaM2": 0.692,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          },
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:4:3",
+            "x": 774,
+            "y": 674,
+            "widthMm": 1976,
+            "heightMm": 270,
+            "areaM2": 0.534,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          },
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:4:4",
+            "x": 1496,
+            "y": 344,
+            "widthMm": 1254,
+            "heightMm": 246,
+            "areaM2": 0.308,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          },
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:4:5",
+            "x": 2262,
+            "y": 10,
+            "widthMm": 488,
+            "heightMm": 330,
+            "areaM2": 0.161,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "spec": {
+          "id": "duratex-mdf-18-branco-tx",
+          "material": "MDF",
+          "brand": "Duratex",
+          "color": "Branco TX",
+          "thicknessMm": 18,
+          "lengthMm": 2750,
+          "widthMm": 1850,
+          "supplier": "Duratex",
+          "weightKg": 52,
+          "price": 320,
+          "grain": "vertical"
+        },
+        "placements": [
+          {
+            "partId": "furniture-1786745216212:toe-kick:0",
+            "code": "furniture-1786745216212:toe-kick",
+            "x": 10,
+            "y": 10,
+            "w": 150,
+            "h": 1164,
+            "rotated": true,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216207:toe-kick:0",
+            "code": "furniture-1786745216207:toe-kick",
+            "x": 10,
+            "y": 1178,
+            "w": 764,
+            "h": 150,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216209:toe-kick:0",
+            "code": "furniture-1786745216209:toe-kick",
+            "x": 10,
+            "y": 1332,
+            "w": 764,
+            "h": 150,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          },
+          {
+            "partId": "furniture-1786745216210:toe-kick:0",
+            "code": "furniture-1786745216210:toe-kick",
+            "x": 10,
+            "y": 1486,
+            "w": 564,
+            "h": 150,
+            "rotated": false,
+            "grainRespected": true,
+            "locked": false,
+            "pinned": false
+          }
+        ],
+        "usedM2": 0.488,
+        "wasteM2": 4.599,
+        "usageRatio": 0.096,
+        "weightKg": 4.99,
+        "offcuts": [
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:5:0",
+            "x": 0,
+            "y": 1636,
+            "widthMm": 2750,
+            "heightMm": 214,
+            "areaM2": 0.589,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          },
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:5:1",
+            "x": 574,
+            "y": 1486,
+            "widthMm": 2176,
+            "heightMm": 150,
+            "areaM2": 0.326,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          },
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:5:2",
+            "x": 774,
+            "y": 1332,
+            "widthMm": 1976,
+            "heightMm": 150,
+            "areaM2": 0.296,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          },
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:5:3",
+            "x": 774,
+            "y": 1178,
+            "widthMm": 1976,
+            "heightMm": 150,
+            "areaM2": 0.296,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          },
+          {
+            "id": "offcut:duratex-mdf-18-branco-tx:5:4",
+            "x": 160,
+            "y": 10,
+            "widthMm": 2590,
+            "heightMm": 1164,
+            "areaM2": 3.015,
+            "material": "MDF",
+            "thicknessMm": 18,
+            "color": "Branco TX",
+            "status": "available"
+          }
+        ]
+      }
+    ],
+    "unplaced": [],
+    "statistics": {
+      "boardsCount": 5,
+      "partsCount": 33,
+      "usedAreaM2": 15.35,
+      "wasteAreaM2": 10.088,
+      "offcutAreaM2": 9.523,
+      "totalWeightKg": 156.88,
+      "avgUsageRatio": 0.6034,
+      "totalCost": 1600,
+      "estimatedTimeMin": 57
+    },
+    "generatedAt": "2026-08-14T22:06:56.219Z"
+  }
+}

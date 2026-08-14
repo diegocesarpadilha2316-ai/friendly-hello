@@ -1,6 +1,7 @@
 import type { FamilyId } from "./FamilyDefinition";
-import type { Dimensions3 } from "./ModuleDefinition";
+import type { Dimensions3, ThicknessProfileMm } from "./ModuleDefinition";
 import type { PartDefinition } from "./PartDefinition";
+import type { LayoutPlacement } from "../layout/LayoutTypes";
 
 export interface FurnitureInstance {
   id: string;
@@ -8,11 +9,13 @@ export interface FurnitureInstance {
   familyId: FamilyId;
   name: string;
   dimensionsMm: Dimensions3;
+  thicknessMm?: ThicknessProfileMm;
   positionMm: { x: number; y: number; z: number };
   rotationDeg: { x: number; y: number; z: number };
   materialOverrides: Record<string, string>;
   hardwareOverrides: Record<string, string>;
   parts: PartDefinition[];
+  layout?: LayoutPlacement;
   visible: boolean;
   locked: boolean;
   selected: boolean;

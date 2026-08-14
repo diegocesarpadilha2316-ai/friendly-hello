@@ -1,11 +1,12 @@
 import { create } from "zustand";
 
 export type NavigationMode = "orbit" | "walk" | "inspect";
-export type QualityMode = "editing" | "presentation";
+export type QualityMode = "work" | "realistic" | "presentation";
 export type OcclusionMode = "normal" | "xray" | "isolate";
 
 function rootId(id: string | null) {
   if (!id) return null;
+  if (id.includes(":")) return id.split(":", 1)[0];
   return id.replace(/-(left-door|right-door|drawer-[123])$/, "");
 }
 
@@ -13,12 +14,14 @@ interface ImmersiveState {
   navigationMode: NavigationMode;
   qualityMode: QualityMode;
   occlusionMode: OcclusionMode;
+  autoOcclusion: boolean;
   selectedPart: string | null;
   openStates: Record<string, boolean>;
   hiddenObjects: Record<string, boolean>;
   setNavigationMode: (mode: NavigationMode) => void;
   setQualityMode: (mode: QualityMode) => void;
   setOcclusionMode: (mode: OcclusionMode) => void;
+  setAutoOcclusion: (enabled: boolean) => void;
   selectPart: (id: string | null) => void;
   toggleOpen: (id: string) => void;
   hideSelected: () => void;
@@ -28,14 +31,16 @@ interface ImmersiveState {
 
 export const useImmersiveStore = create<ImmersiveState>((set, get) => ({
   navigationMode: "orbit",
-  qualityMode: "presentation",
+  qualityMode: "realistic",
   occlusionMode: "normal",
+  autoOcclusion: false,
   selectedPart: null,
   openStates: {},
   hiddenObjects: {},
 
   setNavigationMode: (navigationMode) => set({ navigationMode }),
   setQualityMode: (qualityMode) => set({ qualityMode }),
+  setAutoOcclusion: (autoOcclusion) => set({ autoOcclusion }),
 
   setOcclusionMode: (occlusionMode) => {
     const selectedRoot = rootId(get().selectedPart);

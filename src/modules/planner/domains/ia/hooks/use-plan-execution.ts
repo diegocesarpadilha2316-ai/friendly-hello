@@ -46,6 +46,8 @@ export interface UsePlanExecutionResult {
 
 export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
   const editor = usePlannerEditor();
+  const editorRef = useRef(editor);
+  editorRef.current = editor;
   const [plan, setPlan] = useState<ProjectPlan | null>(null);
   const runnerRef = useRef<PlanRunner | null>(null);
   // Referência síncrona do projeto canônico. Ao criar o primeiro projeto,
@@ -54,6 +56,13 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
   // "Nenhum projeto ativo" mesmo com o viewport já exibindo o cômodo.
   const projectRef = useRef<PlannerProject | null>(editor.state.project);
   projectRef.current = editor.state.project ?? projectRef.current;
+  // Durante o primeiro comando natural, `loadProject()` e `propose()` podem
+  // ocorrer no mesmo render. Nesse intervalo o callback de `updateProject`
+  // ainda foi fechado sobre `state.project === null`; manter um espelho
+  // síncrono permite materializar o primeiro resultado no provider em vez de
+  // deixá-lo apenas dentro do PlanRunner.
+  const editorProjectRef = useRef<PlannerProject | null>(editor.state.project);
+  editorProjectRef.current = editor.state.project ?? editorProjectRef.current;
   const ctxRef = useRef<ToolContext | null>(null);
   const messageRef = useRef<string>("");
   const finishRef = useRef<(plan: ProjectPlan) => void>(() => {});
@@ -84,11 +93,19 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
         getProject: () => projectRef.current,
         applyProject: (project) => {
           projectRef.current = project;
-          // `propose` só é chamado depois de o contexto operacional ter sido
-          // carregado no provider. Use sempre o canal oficial de mutação;
-          // consultar `editor.state.project` aqui lia o valor do render antigo
-          // e transformava cada etapa em um novo load, perdendo Undo/Redo.
-          editor.updateProject(() => project);
+          // No primeiro turno, o provider pode ainda estar entre `loadProject`
+          // e o próximo render. Nessa janela, `updateProject` é um no-op por
+          // design; carregar o snapshot resultante preserva a primeira etapa.
+          if (!editorProjectRef.current) {
+            // Não altere o ref aqui: até o próximo render ele ainda representa
+            // corretamente que updateProject não pode ser usado. As etapas
+            // seguintes carregarão snapshots sucessivos; o último é completo.
+            editorRef.current.loadProject(project);
+            return;
+          }
+          // Depois que o projeto existe no provider, toda etapa passa pelo
+          // canal oficial de mutação, preservando Undo/Redo e Autosave.
+          editorRef.current.updateProject(() => project);
         },
         onUpdate: commit,
       });

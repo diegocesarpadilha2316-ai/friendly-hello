@@ -1,27 +1,70 @@
 import { getToolContract } from "../tools/registry";
-import { classifyRequest } from "./classify";
+import { classifyRequest, detectRoomType } from "./classify";
+import { decompose } from "../services/decomposer";
 import { PIPELINES, pickPipeline } from "./pipelines";
 import { analyzeRequirements, extractFacts } from "./requirements";
 import { analyzeImpact } from "./impact";
 import { validateGraph } from "./graph";
 import { PLAN_LIMITS, } from "./types";
 const uid = (prefix) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+function isConcreteMaterial(value) {
+    if (!value?.trim()) return false;
+    return !/^(moderno|moderna|contempor[aâ]neo|contempor[aâ]nea|minimalista|industrial|r[uú]stico|r[uú]stica|cl[aá]ssico|cl[aá]ssica|escandinavo|escandinava|clean|luxuoso|luxuosa)$/i.test(value.trim());
+}
 /** Monta args válidos para cada estágio; `null` descarta o estágio. */
 function argsForStage(stage, facts, message) {
     switch (stage.tool) {
         case "set_style":
             return facts.style ? { style: facts.style } : null;
-        case "insert_described":
+        case "insert_described": {
+            const dec = decompose(message);
+            if (dec.modules.length > 0) {
+                return {
+                    description: dec.modules.map((m) => m.description).join(", "),
+                    count: dec.modules.reduce((total, m) => total + m.count, 0),
+                };
+            }
             return { description: `${stage.description} ${message}`.slice(0, 300) };
-        case "layout_room":
+        }
+        case "layout_room": {
+            const dec = decompose(message);
             return {
                 shape: "linear",
-                pieces: [{ description: stage.description.slice(0, 200) }],
+                pieces: dec.modules.length > 0
+                    ? dec.modules.map((m) => ({
+                        description: m.description,
+                        count: m.count,
+                        wall: m.wall,
+                        width: m.width,
+                        height: m.height,
+                        depth: m.depth,
+                    }))
+                    : [{ description: stage.description.slice(0, 200) }],
             };
+        }
+
         case "search_material":
-            return facts.material ? { query: facts.material } : null;
+            return isConcreteMaterial(facts.material) ? { query: facts.material } : null;
         case "set_render_preset":
             return { quality: "alta", lighting: "cenica" };
+        case "create_room_preset": {
+            const dec = decompose(message);
+            return {
+                preset: detectRoomType(message) ?? "cozinha",
+                style: facts.style ?? "moderno",
+                material: isConcreteMaterial(facts.material) ? facts.material : "off white",
+                pieces: dec.modules.length > 0
+                    ? dec.modules.map((m) => ({
+                        description: m.description,
+                        count: m.count,
+                        wall: m.wall,
+                        width: m.width,
+                        height: m.height,
+                        depth: m.depth,
+                    }))
+                    : undefined,
+            };
+        }
         case "remove":
             return {};
         default:
@@ -63,6 +106,8 @@ function selectStages(kind, message) {
             return wants(/produ[çc][ãa]o|corte|fabrica/);
         if (stage.id === "render")
             return wants(/render|imagem|foto|apresenta[çc][ãa]o/);
+        if (kind === "projeto_completo" && stage.id === "layout")
+            return false;
         if (kind === "plano_intermediario" && stage.id === "layout") {
             return wants(/layout|organiz|distribu|reorganiz/);
         }

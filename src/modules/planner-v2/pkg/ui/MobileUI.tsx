@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Bot, Box, Menu, Settings2, X, Send } from "lucide-react";
+import { Bot, Box, Camera, Menu, Settings2, X, Send } from "lucide-react";
 import { usePlannerStore } from "../state/usePlannerStore";
 import { Explorer } from "./Explorer";
 import { RightPanel } from "./RightPanel";
@@ -97,9 +97,10 @@ export function MobileUI() {
 
       <nav className="mobile-nav">
         <button onClick={() => { setMobileDrawer(true); setMobileSheet(false); }}><Menu size={19} /><span>Projeto</span></button>
-        <button onClick={() => setMobileSheet(false)}><Box size={19} /><span>3D</span></button>
-        <button onClick={() => { setRightTab("chat"); setMobileSheet(true); setMobileSheetHeight(100); }}><Bot size={19} /><span>IA</span></button>
-        <button onClick={() => { setRightTab("inspector"); setMobileSheet(true); setMobileSheetHeight(50); }}><Settings2 size={19} /><span>Propriedades</span></button>
+        <button onClick={() => { setMobileDrawer(false); setMobileSheet(false); }}><Box size={19} /><span>3D</span></button>
+        <button onClick={() => { setMobileDrawer(false); setRightTab("chat"); setMobileSheet(true); setMobileSheetHeight(100); }}><Bot size={19} /><span>IA</span></button>
+        <button onClick={() => { setMobileDrawer(false); setRightTab("inspector"); setMobileSheet(true); setMobileSheetHeight(50); }}><Settings2 size={19} /><span>Propriedades</span></button>
+        <button onClick={() => window.dispatchEvent(new CustomEvent("dioris:open-render-final"))}><Camera size={19} /><span>Render</span></button>
       </nav>
     </>
   );

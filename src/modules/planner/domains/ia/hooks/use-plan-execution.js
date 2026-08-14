@@ -11,6 +11,8 @@ import { readMemory, updateMemoryFromTurn } from "../memory";
 import { PlanRunner, generatePlan, planProgressOf, readStoredPlan, writeStoredPlan, } from "../planning";
 export function usePlanExecution(tenantId) {
     const editor = usePlannerEditor();
+    const editorRef = useRef(editor);
+    editorRef.current = editor;
     const [plan, setPlan] = useState(null);
     const runnerRef = useRef(null);
     // Referência síncrona do projeto canônico. Ao criar o primeiro projeto,
@@ -19,6 +21,9 @@ export function usePlanExecution(tenantId) {
     // "Nenhum projeto ativo" mesmo com o viewport já exibindo o cômodo.
     const projectRef = useRef(editor.state.project);
     projectRef.current = editor.state.project ?? projectRef.current;
+    // Espelho síncrono para a corrida entre loadProject e o primeiro plano.
+    const editorProjectRef = useRef(editor.state.project);
+    editorProjectRef.current = editor.state.project ?? editorProjectRef.current;
     const ctxRef = useRef(null);
     const messageRef = useRef("");
     const finishRef = useRef(() => { });
@@ -43,11 +48,21 @@ export function usePlanExecution(tenantId) {
             getProject: () => projectRef.current,
             applyProject: (project) => {
                 projectRef.current = project;
-                // `propose` só é chamado depois de o contexto operacional ter sido
-                // carregado no provider. Use sempre o canal oficial de mutação;
-                // consultar `editor.state.project` aqui lia o valor do render antigo
-                // e transformava cada etapa em um novo load, perdendo Undo/Redo.
-                editor.updateProject(() => project);
+                console.info("[planner-plan] applyProject", {
+                    furniture: project.environments.flatMap((env) => env.rooms).reduce((total, room) => total + room.nodeOrder.filter((id) => room.nodes[id]?.params?.role === "furniture").length, 0),
+                    providerHasProject: Boolean(editorProjectRef.current),
+                    projectId: project.id,
+                });
+                // No primeiro turno o provider pode ainda não ter renderizado o
+                // projeto; updateProject seria no-op. Carrega o snapshot completo.
+                if (!editorProjectRef.current) {
+                    // Até o próximo render updateProject ainda é no-op; não
+                    // altere o ref para que etapas seguintes carreguem o
+                    // snapshot sucessivo e completo no provider.
+                    editorRef.current.loadProject(project);
+                    return;
+                }
+                editorRef.current.updateProject(() => project);
             },
             onUpdate: commit,
         });

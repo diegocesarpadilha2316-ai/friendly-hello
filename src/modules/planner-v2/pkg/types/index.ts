@@ -1,5 +1,5 @@
-export type RightTab = "chat" | "inspector" | "materials" | "hardware";
-export type ToolMode = "orbit" | "pan" | "select" | "measure";
+export type RightTab = "chat" | "inspector" | "materials" | "hardware" | "fabrication";
+export type ToolMode = "orbit" | "pan" | "select" | "measure" | "move" | "rotate" | "dimensions";
 export type SheetHeight = 25 | 50 | 100;
 
 export interface FurnitureItem {

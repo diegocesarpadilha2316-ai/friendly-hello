@@ -97,3 +97,32 @@ export function createFloorTexture() {
   texture.repeat.set(3, 2.4);
   return texture;
 }
+
+
+import type { MaterialDefinition } from "../../library/contracts/MaterialDefinition";
+
+const materialTextureCache = new Map<string, string>();
+
+/** Textura procedural leve e determinística para o viewport Realista/Apresentação. */
+export function createMaterialTextureUrl(material: MaterialDefinition) {
+  const cached = materialTextureCache.get(material.id);
+  if (cached) return cached;
+  const color = material.baseColor;
+  const id = material.id;
+  let pattern = `<rect width="100%" height="100%" fill="${color}"/>`;
+  if (material.category === "mdf" && material.finish === "textured") {
+    pattern += `<path d="M0 24 C90 8 150 38 240 18 S420 30 520 14" stroke="#5a321d" stroke-opacity=".22" stroke-width="3" fill="none"/><path d="M0 56 C100 36 180 78 300 48 S450 62 640 42" stroke="#f5d1a1" stroke-opacity=".2" stroke-width="2" fill="none"/>`;
+  } else if (material.category === "stone") {
+    pattern += `<path d="M-40 180 C100 90 210 230 350 120 S610 140 760 34" stroke="#8b8178" stroke-opacity=".34" stroke-width="7" fill="none"/><path d="M-20 360 C120 270 260 410 400 300 S650 320 800 230" stroke="#ffffff" stroke-opacity=".36" stroke-width="3" fill="none"/><circle cx="210" cy="180" r="3" fill="#6c625b" fill-opacity=".22"/><circle cx="520" cy="290" r="4" fill="#6c625b" fill-opacity=".2"/>`;
+  } else if (material.category === "metal") {
+    pattern += `<path d="M0 8 H1000 M0 20 H1000 M0 32 H1000 M0 44 H1000" stroke="#ffffff" stroke-opacity=".18" stroke-width="2"/>`;
+  } else if (material.category === "glass" || material.category === "mirror") {
+    pattern += `<path d="M0 120 L420 0 M180 320 L760 0 M520 420 L1000 170" stroke="#ffffff" stroke-opacity=".2" stroke-width="9"/>`;
+  } else {
+    pattern += `<path d="M0 180 H1000 M0 360 H1000" stroke="#ffffff" stroke-opacity=".06" stroke-width="3"/>`;
+  }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600"><defs><filter id="soft"><feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="2" seed="${id.length}" result="noise"/><feColorMatrix type="saturate" values="0"/></filter></defs>${pattern}<rect width="100%" height="100%" filter="url(#soft)" opacity=".04"/></svg>`;
+  const url = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+  materialTextureCache.set(material.id, url);
+  return url;
+}

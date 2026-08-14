@@ -10,7 +10,8 @@ import type { PlannerProject } from "@/modules/planner/shared";
 import type { PlannerAgentId } from "../agents/types";
 import { getToolContract } from "../tools/registry";
 import type { ProjectMemory } from "../memory/types";
-import { classifyRequest } from "./classify";
+import { classifyRequest, detectRoomType } from "./classify";
+import { decompose } from "../services/decomposer";
 import { PIPELINES, pickPipeline, type PipelineStage } from "./pipelines";
 import { analyzeRequirements, extractFacts, type RequestFacts } from "./requirements";
 import { analyzeImpact } from "./impact";
@@ -37,6 +38,12 @@ export interface GeneratePlanInput {
 const uid = (prefix: string) =>
   `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 
+/** Evita que qualificadores de estilo sejam enviados como busca de acabamento. */
+function isConcreteMaterial(value: string | undefined): value is string {
+  if (!value?.trim()) return false;
+  return !/^(moderno|moderna|contempor[aâ]neo|contempor[aâ]nea|minimalista|industrial|r[uú]stico|r[uú]stica|cl[aá]ssico|cl[aá]ssica|escandinavo|escandinava|clean|luxuoso|luxuosa)$/i.test(value.trim());
+}
+
 /** Monta args válidos para cada estágio; `null` descarta o estágio. */
 function argsForStage(
   stage: PipelineStage,
@@ -46,17 +53,56 @@ function argsForStage(
   switch (stage.tool) {
     case "set_style":
       return facts.style ? { style: facts.style } : null;
-    case "insert_described":
+    case "insert_described": {
+      const dec = decompose(message);
+      if (dec.modules.length > 0) {
+        return {
+          description: dec.modules.map((m) => m.description).join(", "),
+          count: dec.modules.reduce((total, m) => total + m.count, 0),
+        };
+      }
       return { description: `${stage.description} ${message}`.slice(0, 300) };
-    case "layout_room":
+    }
+    case "layout_room": {
+      const dec = decompose(message);
       return {
         shape: "linear",
-        pieces: [{ description: stage.description.slice(0, 200) }],
+        pieces:
+          dec.modules.length > 0
+            ? dec.modules.map((m) => ({
+                description: m.description,
+                count: m.count,
+                wall: m.wall,
+                width: m.width,
+                height: m.height,
+                depth: m.depth,
+              }))
+            : [{ description: stage.description.slice(0, 200) }],
       };
+    }
     case "search_material":
-      return facts.material ? { query: facts.material } : null;
+      return facts.material && isConcreteMaterial(facts.material) ? { query: facts.material } : null;
     case "set_render_preset":
       return { quality: "alta", lighting: "cenica" };
+    case "create_room_preset": {
+      const dec = decompose(message);
+      return {
+        preset: facts.widthMm ? "cozinha" : (detectRoomType(message) ?? "cozinha"),
+        style: facts.style ?? "moderno",
+        material: facts.material && isConcreteMaterial(facts.material) ? facts.material : "off white",
+        pieces:
+          dec.modules.length > 0
+            ? dec.modules.map((m) => ({
+                description: m.description,
+                count: m.count,
+                wall: m.wall,
+                width: m.width,
+                height: m.height,
+                depth: m.depth,
+              }))
+            : undefined,
+      };
+    }
     case "remove":
       return {};
     default:
@@ -102,6 +148,9 @@ function selectStages(kind: PlanRequestKind, message: string): readonly Pipeline
     if (stage.id === "orcamento") return wants(/or[çc]amento|or[çc]ar|custo|pre[çc]o/);
     if (stage.id === "producao") return wants(/produ[çc][ãa]o|corte|fabrica/);
     if (stage.id === "render") return wants(/render|imagem|foto|apresenta[çc][ãa]o/);
+    // `create_room_preset` já compõe e posiciona os módulos com o Layout Engine.
+    // O layout genérico posterior só permanece em pedidos intermediários explícitos.
+    if (kind === "projeto_completo" && stage.id === "layout") return false;
     if (kind === "plano_intermediario" && stage.id === "layout") {
       return wants(/layout|organiz|distribu|reorganiz/);
     }

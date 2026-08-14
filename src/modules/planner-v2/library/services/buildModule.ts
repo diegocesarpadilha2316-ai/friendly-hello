@@ -4,6 +4,7 @@ import { ModuleRegistry } from "../registry/ModuleRegistry";
 import { MaterialRegistry } from "../registry/MaterialRegistry";
 import { validateModule, type RoomBoundsMm } from "./validateModule";
 import type { ValidationResult } from "../contracts/ValidationResult";
+import type { ThicknessProfileMm } from "../contracts/ModuleDefinition";
 
 export interface BuildRequest {
   moduleId: string;
@@ -12,6 +13,7 @@ export interface BuildRequest {
   materialId?: string;
   materialOverrides?: Record<string, string>;
   hardwareOverrides?: Record<string, string>;
+  thicknessMm?: ThicknessProfileMm;
   positionMm?: { x: number; y: number; z: number };
   rotationDeg?: { x: number; y: number; z: number };
   room?: RoomBoundsMm;
@@ -67,6 +69,7 @@ export function buildModule(request: BuildRequest): BuildOutcome {
       materialId,
       materialOverrides: request.materialOverrides,
       hardwareOverrides: request.hardwareOverrides,
+      thicknessMm: request.thicknessMm,
     });
   } catch (error) {
     return {
@@ -81,8 +84,11 @@ export function buildModule(request: BuildRequest): BuildOutcome {
   const overrides = request.materialOverrides ?? {};
   const parts = result.parts.map((part) => ({
     ...part,
+    volumeType: part.volumeType ?? (part.interactive && part.interactive.type !== "none" ? "opening" : part.role === "hardware" ? "technical" : part.role === "back" ? "safety" : "physical"),
+    clearanceMm: part.clearanceMm ?? (part.interactive && part.interactive.type !== "none" ? 8 : 0),
     id: part.id.replace(definition.id, request.instanceId),
     moduleId: request.instanceId,
+    parentInstanceId: request.instanceId,
     groupId: part.groupId?.replace(definition.id, request.instanceId),
     materialId: overrides[part.role] ?? overrides[part.id] ?? part.materialId,
   }));

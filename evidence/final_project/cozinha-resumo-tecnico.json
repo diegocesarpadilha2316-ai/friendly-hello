@@ -1,0 +1,43 @@
+{
+  "request": "Crie uma cozinha linear com torre de forno, balcão de duas portas, gaveteiro de quatro gavetas, balcão de pia, módulos aéreos e bancada. Use MDF 18mm.",
+  "modules": [
+    {
+      "type": "kitchen-golden-upper-800",
+      "pos": {
+        "x": -1982,
+        "y": 1470,
+        "z": -1675
+      }
+    }
+  ],
+  "stats": {
+    "parts": 14,
+    "hardware": 4,
+    "machining_ops": 20,
+    "boards": 2
+  },
+  "hardware": [
+    {
+      "hardwareId": "hinge-soft-close",
+      "quantity": 2,
+      "partIds": [
+        "furniture-1786746188887:door-1:hinge",
+        "furniture-1786746188887:door-2:hinge"
+      ],
+      "moduleIds": [
+        "kitchen-golden-upper-800"
+      ]
+    },
+    {
+      "hardwareId": "handle-bar",
+      "quantity": 2,
+      "partIds": [
+        "furniture-1786746188887:door-1:handle",
+        "furniture-1786746188887:door-2:handle"
+      ],
+      "moduleIds": [
+        "kitchen-golden-upper-800"
+      ]
+    }
+  ]
+}

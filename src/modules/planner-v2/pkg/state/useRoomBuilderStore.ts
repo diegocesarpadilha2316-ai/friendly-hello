@@ -29,6 +29,7 @@ interface RoomBuilderState {
   setReferenceImage: (dataUrl: string | null, name?: string | null) => void;
   applyReferencePreset: () => void;
   resetRoom: () => void;
+  restoreRoom: (room: Omit<RoomBuilderState, "setDimension" | "addOpening" | "updateOpening" | "removeOpening" | "setReferenceImage" | "applyReferencePreset" | "resetRoom" | "restoreRoom">) => void;
 }
 
 const defaultOpenings: OpeningSpec[] = [
@@ -128,5 +129,17 @@ export const useRoomBuilderStore = create<RoomBuilderState>((set) => ({
       height: 2700,
       openings: defaultOpenings,
       referenceStyle: "natural"
+    }),
+
+  restoreRoom: (room) =>
+    set({
+      width: room.width,
+      depth: room.depth,
+      height: room.height,
+      wallThickness: room.wallThickness,
+      openings: room.openings,
+      referenceImage: room.referenceImage,
+      referenceName: room.referenceName,
+      referenceStyle: room.referenceStyle
     })
 }));

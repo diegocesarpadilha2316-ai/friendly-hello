@@ -52,12 +52,12 @@ export function ImmersiveControls() {
           className={qualityMode === "presentation" ? "active" : ""}
           onClick={() =>
             setQualityMode(
-              qualityMode === "presentation" ? "editing" : "presentation"
+              qualityMode === "presentation" ? "realistic" : "presentation"
             )
           }
         >
           <Eye size={16} />
-          {qualityMode === "presentation" ? "Realista" : "Edição"}
+          {qualityMode === "presentation" ? "Realista" : "Apresentação"}
         </button>
       </div>
 

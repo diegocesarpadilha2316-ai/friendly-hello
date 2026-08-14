@@ -12,6 +12,7 @@ import {
   WallSide,
   useRoomBuilderStore
 } from "../state/useRoomBuilderStore";
+import { usePlannerStore } from "../state/usePlannerStore";
 
 const wallNames: Record<WallSide, string> = {
   back: "Parede do fundo",
@@ -110,6 +111,12 @@ export function RoomBuilderPanel() {
   const setDimension = useRoomBuilderStore((s) => s.setDimension);
   const addOpening = useRoomBuilderStore((s) => s.addOpening);
   const resetRoom = useRoomBuilderStore((s) => s.resetRoom);
+  const validateFurnitureInstances = usePlannerStore((s) => s.validateFurnitureInstances);
+
+  const setRoomDimension = (key: "width" | "depth" | "height", value: number) => {
+    setDimension(key, value);
+    validateFurnitureInstances();
+  };
 
   return (
     <div className="builder-panel">
@@ -126,21 +133,21 @@ export function RoomBuilderPanel() {
         value={width}
         min={1.8}
         max={12}
-        onChange={(value) => setDimension("width", value)}
+        onChange={(value) => setRoomDimension("width", value)}
       />
       <NumberField
         label="Profundidade interna"
         value={depth}
         min={1.8}
         max={12}
-        onChange={(value) => setDimension("depth", value)}
+        onChange={(value) => setRoomDimension("depth", value)}
       />
       <NumberField
         label="Pé-direito"
         value={height}
         min={2.2}
         max={4}
-        onChange={(value) => setDimension("height", value)}
+        onChange={(value) => setRoomDimension("height", value)}
       />
 
       <div className="builder-actions-title">

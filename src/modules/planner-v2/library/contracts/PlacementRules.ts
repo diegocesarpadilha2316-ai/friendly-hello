@@ -8,6 +8,8 @@ export interface PlacementRules {
   rearGapMm: number;
   sideGapMm: number;
   minHeightFromFloorMm: number;
+  /** Altura padrão da base do módulo ao inserir pela Biblioteca. */
+  defaultHeightFromFloorMm?: number;
   maxHeightFromFloorMm?: number;
   collisionRequired: boolean;
   allowedBelowWindow: boolean;

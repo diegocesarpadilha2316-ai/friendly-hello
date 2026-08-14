@@ -6,7 +6,8 @@ export type HardwareCategory =
   | "shelf-support"
   | "piston"
   | "rod"
-  | "led";
+  | "led"
+  | "accessory";
 
 export interface HardwareDefinition {
   id: string;
@@ -15,10 +16,12 @@ export interface HardwareDefinition {
   manufacturer?: string;
   dimensionsMm: { width: number; height: number; depth: number };
   /** Onde a ferragem é instalada dentro do módulo. */
-  installation: "door" | "drawer" | "front" | "carcass" | "base" | "interior";
+  installation: "door" | "drawer" | "front" | "carcass" | "base" | "interior" | "countertop";
   /** Papéis de peça compatíveis. */
   compatibleRoles: string[];
   /** Representação 3D simplificada opcional. */
-  mesh3d?: "box" | "cylinder" | "profile" | "none";
+  mesh3d?: "box" | "cylinder" | "profile" | "gola" | "cava" | "none";
+  /** Acabamento visual para material PBR e auditoria do catálogo. */
+  finish?: "aluminio-anodizado" | "inox-escovado" | "preto-fosco" | "grafite" | "champagne" | "polimero";
   costBrl?: number;
 }
