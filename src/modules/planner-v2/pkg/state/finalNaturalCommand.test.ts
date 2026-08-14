@@ -37,7 +37,7 @@ describe("final natural command execution", () => {
       ).join("");
       return `<g transform="translate(0, ${board.index * 380})">` +
              `<rect width="${board.spec.lengthMm * scale}" height="${board.spec.widthMm * scale}" fill="#fafafa" stroke="#333"/>` +
-             `<text x="5" y="-10" font-size="12" font-weight="bold">Chapa ${board.index + 1} - ${board.materialId}</text>${rects}</g>`;
+             `<text x="5" y="-10" font-size="12" font-weight="bold">Chapa ${board.index + 1}</text>${rects}</g>`;
     }).join("");
     
     writeFileSync(resolve(evidenceDir, "cozinha-nesting.svg"), 
