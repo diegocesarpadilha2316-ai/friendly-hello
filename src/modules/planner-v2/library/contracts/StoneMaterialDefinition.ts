@@ -13,6 +13,8 @@ export interface StoneMaterialDefinition extends MaterialDefinition {
   };
 }
 
-export function isStoneMaterialDefinition(material: MaterialDefinition): material is StoneMaterialDefinition {
+export function isStoneMaterialDefinition(
+  material: MaterialDefinition,
+): material is StoneMaterialDefinition {
   return material.category === "stone" && "stone" in material;
 }

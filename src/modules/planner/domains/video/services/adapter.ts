@@ -32,7 +32,11 @@ export function buildVideoScene(
 
   for (const r of rooms) {
     const nodes =
-      (r as unknown as { nodes?: Record<string, { kind?: string; params?: Record<string, unknown> }> }).nodes ?? {};
+      (
+        r as unknown as {
+          nodes?: Record<string, { kind?: string; params?: Record<string, unknown> }>;
+        }
+      ).nodes ?? {};
     for (const n of Object.values(nodes)) {
       const params = n.params ?? {};
       const role = typeof params.role === "string" ? params.role : undefined;

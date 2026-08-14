@@ -1,11 +1,7 @@
 /**
  * Fase 3.23 — Estado do viewport interativo.
  */
-import type {
-  RealtimeNavigationMode,
-  RealtimeQualityTier,
-  RealtimeViewportState,
-} from "./types";
+import type { RealtimeNavigationMode, RealtimeQualityTier, RealtimeViewportState } from "./types";
 
 export const DEFAULT_REALTIME_VIEWPORT: RealtimeViewportState = {
   navigation: "orbit",
@@ -71,17 +67,30 @@ export function toggleHotspots(s: RealtimeViewportState): RealtimeViewportState 
 }
 
 export const REALTIME_NAV_MODES: readonly RealtimeNavigationMode[] = [
-  "walk", "fps", "orbit", "drone", "cliente", "apresentacao", "livre",
+  "walk",
+  "fps",
+  "orbit",
+  "drone",
+  "cliente",
+  "apresentacao",
+  "livre",
 ];
 
 export function navigationLabel(m: RealtimeNavigationMode): string {
   switch (m) {
-    case "walk": return "Caminhar";
-    case "fps": return "1ª Pessoa";
-    case "orbit": return "Órbita";
-    case "drone": return "Drone";
-    case "cliente": return "Cliente";
-    case "apresentacao": return "Apresentação";
-    case "livre": return "Livre";
+    case "walk":
+      return "Caminhar";
+    case "fps":
+      return "1ª Pessoa";
+    case "orbit":
+      return "Órbita";
+    case "drone":
+      return "Drone";
+    case "cliente":
+      return "Cliente";
+    case "apresentacao":
+      return "Apresentação";
+    case "livre":
+      return "Livre";
   }
 }

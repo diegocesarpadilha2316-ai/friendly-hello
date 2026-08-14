@@ -15,7 +15,7 @@ export function MobileUI() {
   const rightTab = usePlannerStore((s) => s.rightTab);
   const messages = usePlannerStore((s) => s.messages);
   const sendMessage = usePlannerStore((s) => s.sendMessage);
-  
+
   const [draft, setDraft] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -31,7 +31,10 @@ export function MobileUI() {
 
   return (
     <>
-      <div className={`mobile-backdrop ${drawerOpen ? "show" : ""}`} onClick={() => setMobileDrawer(false)} />
+      <div
+        className={`mobile-backdrop ${drawerOpen ? "show" : ""}`}
+        onClick={() => setMobileDrawer(false)}
+      />
 
       <div className={`mobile-drawer ${drawerOpen ? "open" : ""}`}>
         <Explorer />
@@ -50,7 +53,9 @@ export function MobileUI() {
                 {height === 25 ? "¼" : height === 50 ? "½" : "1"}
               </button>
             ))}
-            <button onClick={() => setMobileSheet(false)}><X size={16} /></button>
+            <button onClick={() => setMobileSheet(false)}>
+              <X size={16} />
+            </button>
           </div>
         </div>
         <div className="sheet-body">
@@ -96,11 +101,50 @@ export function MobileUI() {
       </div>
 
       <nav className="mobile-nav">
-        <button onClick={() => { setMobileDrawer(true); setMobileSheet(false); }}><Menu size={19} /><span>Projeto</span></button>
-        <button onClick={() => { setMobileDrawer(false); setMobileSheet(false); }}><Box size={19} /><span>3D</span></button>
-        <button onClick={() => { setMobileDrawer(false); setRightTab("chat"); setMobileSheet(true); setMobileSheetHeight(100); }}><Bot size={19} /><span>IA</span></button>
-        <button onClick={() => { setMobileDrawer(false); setRightTab("inspector"); setMobileSheet(true); setMobileSheetHeight(50); }}><Settings2 size={19} /><span>Propriedades</span></button>
-        <button onClick={() => window.dispatchEvent(new CustomEvent("dioris:open-render-final"))}><Camera size={19} /><span>Render</span></button>
+        <button
+          onClick={() => {
+            setMobileDrawer(true);
+            setMobileSheet(false);
+          }}
+        >
+          <Menu size={19} />
+          <span>Projeto</span>
+        </button>
+        <button
+          onClick={() => {
+            setMobileDrawer(false);
+            setMobileSheet(false);
+          }}
+        >
+          <Box size={19} />
+          <span>3D</span>
+        </button>
+        <button
+          onClick={() => {
+            setMobileDrawer(false);
+            setRightTab("chat");
+            setMobileSheet(true);
+            setMobileSheetHeight(100);
+          }}
+        >
+          <Bot size={19} />
+          <span>IA</span>
+        </button>
+        <button
+          onClick={() => {
+            setMobileDrawer(false);
+            setRightTab("inspector");
+            setMobileSheet(true);
+            setMobileSheetHeight(50);
+          }}
+        >
+          <Settings2 size={19} />
+          <span>Propriedades</span>
+        </button>
+        <button onClick={() => window.dispatchEvent(new CustomEvent("dioris:open-render-final"))}>
+          <Camera size={19} />
+          <span>Render</span>
+        </button>
       </nav>
     </>
   );

@@ -135,7 +135,9 @@ export const upsertCompanyMaterialPrice = createServerFn({ method: "POST" })
     const { data: row, error } = await context.supabase
       .from("company_material_prices")
       .upsert(payload, { onConflict: "company_id,material_id" })
-      .select("id,material_id,cost_price,sale_price,markup_percent,currency,stock_quantity,is_available,supplier_name,updated_at")
+      .select(
+        "id,material_id,cost_price,sale_price,markup_percent,currency,stock_quantity,is_available,supplier_name,updated_at",
+      )
       .single();
     if (error) throw new Response(error.message, { status: 400 });
     return row;
@@ -143,9 +145,7 @@ export const upsertCompanyMaterialPrice = createServerFn({ method: "POST" })
 
 export const deleteCompanyMaterialPrice = createServerFn({ method: "POST" })
   .middleware([requireTenant])
-  .inputValidator((data: unknown) =>
-    z.object({ materialId: z.string().uuid() }).parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({ materialId: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("company_material_prices")

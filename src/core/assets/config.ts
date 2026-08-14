@@ -43,11 +43,23 @@ export const ASSETS_CONFIG = {
   mime: {
     allowlist: [
       // images
-      "image/png", "image/jpeg", "image/webp", "image/gif", "image/svg+xml", "image/avif",
+      "image/png",
+      "image/jpeg",
+      "image/webp",
+      "image/gif",
+      "image/svg+xml",
+      "image/avif",
       // video
-      "video/mp4", "video/webm", "video/quicktime",
+      "video/mp4",
+      "video/webm",
+      "video/quicktime",
       // audio
-      "audio/mpeg", "audio/wav", "audio/ogg", "audio/aac", "audio/flac", "audio/mp4",
+      "audio/mpeg",
+      "audio/wav",
+      "audio/ogg",
+      "audio/aac",
+      "audio/flac",
+      "audio/mp4",
       // documents
       "application/pdf",
       "application/msword",
@@ -56,11 +68,16 @@ export const ASSETS_CONFIG = {
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "application/vnd.ms-powerpoint",
       "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-      "text/csv", "text/plain",
+      "text/csv",
+      "text/plain",
       // 3d / cad
-      "model/gltf-binary", "model/gltf+json", "model/obj", "model/stl",
+      "model/gltf-binary",
+      "model/gltf+json",
+      "model/obj",
+      "model/stl",
       "application/octet-stream", // fallback CAD/DWG/DXF/STEP/FBX
-      "application/zip", "application/x-zip-compressed",
+      "application/zip",
+      "application/x-zip-compressed",
     ] as readonly string[],
   },
 } as const;

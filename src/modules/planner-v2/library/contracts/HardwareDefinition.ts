@@ -1,13 +1,5 @@
 export type HardwareCategory =
-  | "hinge"
-  | "slide"
-  | "handle"
-  | "leg"
-  | "shelf-support"
-  | "piston"
-  | "rod"
-  | "led"
-  | "accessory";
+  "hinge" | "slide" | "handle" | "leg" | "shelf-support" | "piston" | "rod" | "led" | "accessory";
 
 export interface HardwareDefinition {
   id: string;
@@ -22,6 +14,7 @@ export interface HardwareDefinition {
   /** Representação 3D simplificada opcional. */
   mesh3d?: "box" | "cylinder" | "profile" | "gola" | "cava" | "none";
   /** Acabamento visual para material PBR e auditoria do catálogo. */
-  finish?: "aluminio-anodizado" | "inox-escovado" | "preto-fosco" | "grafite" | "champagne" | "polimero";
+  finish?:
+    "aluminio-anodizado" | "inox-escovado" | "preto-fosco" | "grafite" | "champagne" | "polimero";
   costBrl?: number;
 }

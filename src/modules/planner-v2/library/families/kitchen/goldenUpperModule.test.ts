@@ -37,7 +37,11 @@ describe("Golden Module — Aéreo 800×700×350 mm", () => {
     expect(shelves.every((part) => part.dimensionsMm.width === 762)).toBe(true);
     expect(shelves.every((part) => part.dimensionsMm.height === 18)).toBe(true);
     expect(shelves.every((part) => part.dimensionsMm.depth === 330)).toBe(true);
-    expect(parts.find((part) => part.role === "back")?.dimensionsMm).toEqual({ width: 764, height: 664, depth: 6 });
+    expect(parts.find((part) => part.role === "back")?.dimensionsMm).toEqual({
+      width: 764,
+      height: 664,
+      depth: 6,
+    });
   });
 
   it("calcula duas portas com folgas perimetrais e encontro central", () => {
@@ -55,14 +59,24 @@ describe("Golden Module — Aéreo 800×700×350 mm", () => {
   it("aplica ferragens paramétricas reais e materiais válidos", () => {
     const outcome = buildModule(request);
     const handles = outcome.parts.filter((part) => part.hardwareId === "handle-cava");
-    const hinges = outcome.parts.filter((part) => part.role === "hardware" && part.hardwareId === "hinge-soft-close");
+    const hinges = outcome.parts.filter(
+      (part) => part.role === "hardware" && part.hardwareId === "hinge-soft-close",
+    );
     expect(handles).toHaveLength(2);
     expect(hinges).toHaveLength(2);
     expect(handles.every((part) => part.hardwareGeometry?.kind === "cava")).toBe(true);
     expect(MaterialRegistry.has("mdf-freijo")).toBe(true);
     expect(HardwareRegistry.get("handle-cava")?.dimensionsMm.depth).toBeGreaterThan(0);
-    expect(outcome.parts.filter((part) => part.role === "door").every((part) => part.grainDirection === "vertical")).toBe(true);
-    expect(outcome.parts.filter((part) => part.role === "shelf").every((part) => part.grainDirection === "horizontal")).toBe(true);
+    expect(
+      outcome.parts
+        .filter((part) => part.role === "door")
+        .every((part) => part.grainDirection === "vertical"),
+    ).toBe(true);
+    expect(
+      outcome.parts
+        .filter((part) => part.role === "shelf")
+        .every((part) => part.grainDirection === "horizontal"),
+    ).toBe(true);
   });
 
   it("não cria rodapé ou pés em módulo aéreo e mantém IDs únicos", () => {
@@ -87,12 +101,29 @@ function validateGoldenModuleMath() {
 }
 
 it("documenta a auditoria matemática independente do Golden Module", () => {
-  expect(validateGoldenModuleMath()).toEqual({ panel: 18, back: 6, width: 800, height: 700, depth: 350, innerWidth: 764, innerHeight: 664, doorWidth: 396 });
+  expect(validateGoldenModuleMath()).toEqual({
+    panel: 18,
+    back: 6,
+    width: 800,
+    height: 700,
+    depth: 350,
+    innerWidth: 764,
+    innerHeight: 664,
+    doorWidth: 396,
+  });
 });
 
 it("recalcula espessuras sem escalar o móvel externo", () => {
-  const thin = buildModule({ ...request, instanceId: "golden-upper-15", thicknessMm: { panelMm: 15, doorMm: 15, shelfMm: 15, backMm: 6 } });
-  const thick = buildModule({ ...request, instanceId: "golden-upper-25", thicknessMm: { panelMm: 25, doorMm: 25, shelfMm: 25, backMm: 9 } });
+  const thin = buildModule({
+    ...request,
+    instanceId: "golden-upper-15",
+    thicknessMm: { panelMm: 15, doorMm: 15, shelfMm: 15, backMm: 6 },
+  });
+  const thick = buildModule({
+    ...request,
+    instanceId: "golden-upper-25",
+    thicknessMm: { panelMm: 25, doorMm: 25, shelfMm: 25, backMm: 9 },
+  });
   expect(thin.ok).toBe(true);
   expect(thick.ok).toBe(true);
   expect(thin.dimensionsMm).toEqual(request.dimensionsMm);
@@ -103,6 +134,10 @@ it("recalcula espessuras sem escalar o móvel externo", () => {
   expect(thick.parts.find((part) => part.role === "door")?.dimensionsMm.depth).toBe(25);
   expect(thin.parts.find((part) => part.role === "shelf")?.dimensionsMm.height).toBe(15);
   expect(thick.parts.find((part) => part.role === "shelf")?.dimensionsMm.height).toBe(25);
-  expect(thin.parts.find((part) => part.role === "back" && part.name === "Fundo")?.dimensionsMm.depth).toBe(6);
-  expect(thick.parts.find((part) => part.role === "back" && part.name === "Fundo")?.dimensionsMm.depth).toBe(9);
+  expect(
+    thin.parts.find((part) => part.role === "back" && part.name === "Fundo")?.dimensionsMm.depth,
+  ).toBe(6);
+  expect(
+    thick.parts.find((part) => part.role === "back" && part.name === "Fundo")?.dimensionsMm.depth,
+  ).toBe(9);
 });

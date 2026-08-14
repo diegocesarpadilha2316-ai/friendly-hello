@@ -35,10 +35,7 @@ function EmpresaSettings() {
   if (!activeCompany) {
     return (
       <PageContainer>
-        <EmptyState
-          icon={<Building2 className="h-6 w-6" />}
-          title="Selecione uma empresa"
-        />
+        <EmptyState icon={<Building2 className="h-6 w-6" />} title="Selecione uma empresa" />
       </PageContainer>
     );
   }
@@ -49,7 +46,11 @@ function EmpresaSettings() {
         eyebrow="Configurações"
         title={activeCompany.name}
         description={`Plano ${activeCompany.plan} · seu papel: ${role}`}
-        actions={<StatusBadge tone={activeCompany.status === "active" ? "success" : "warning"}>{activeCompany.status}</StatusBadge>}
+        actions={
+          <StatusBadge tone={activeCompany.status === "active" ? "success" : "warning"}>
+            {activeCompany.status}
+          </StatusBadge>
+        }
       />
       <div className="mt-8 space-y-6">
         <div>
@@ -58,8 +59,16 @@ function EmpresaSettings() {
             data={(query.data ?? []) as CompanyMember[]}
             empty="Nenhum membro."
             columns={[
-              { id: "user_id", header: "Usuário", cell: (m) => <span className="font-mono text-xs">{m.user_id.slice(0, 8)}…</span> },
-              { id: "role", header: "Papel", cell: (m) => <StatusBadge tone="info">{m.role}</StatusBadge> },
+              {
+                id: "user_id",
+                header: "Usuário",
+                cell: (m) => <span className="font-mono text-xs">{m.user_id.slice(0, 8)}…</span>,
+              },
+              {
+                id: "role",
+                header: "Papel",
+                cell: (m) => <StatusBadge tone="info">{m.role}</StatusBadge>,
+              },
               {
                 id: "active",
                 header: "Status",
@@ -69,7 +78,11 @@ function EmpresaSettings() {
                   </StatusBadge>
                 ),
               },
-              { id: "joined_at", header: "Entrou em", cell: (m) => new Date(m.joined_at).toLocaleDateString("pt-BR") },
+              {
+                id: "joined_at",
+                header: "Entrou em",
+                cell: (m) => new Date(m.joined_at).toLocaleDateString("pt-BR"),
+              },
             ]}
           />
         </div>

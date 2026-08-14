@@ -97,7 +97,8 @@ export function bathroomFromLegacy(f: LegacyFurnitureLike): BathroomModuleInput 
     install: normalizeInstall(install, /suspens|flutuant/.test(hint) ? "suspenso" : "suspenso"),
     floorGapMm: numParam(params, ["floorGapMm", "alturaPiso", "gap"]),
     feetHeightMm: numParam(params, ["feetHeightMm", "pes", "alturaPe"]),
-    finishId: (rawParam(params, ["finishId", "acabamento", "cor"]) as string | undefined) ?? undefined,
+    finishId:
+      (rawParam(params, ["finishId", "acabamento", "cor"]) as string | undefined) ?? undefined,
     led: Boolean(rawParam(params, ["led", "iluminacao"])),
     mirror: normalizeMirror(mirror, /espelheira/.test(hint) ? "porta" : "nenhum"),
     countertop: material ? { material: slug(material) as never } : undefined,

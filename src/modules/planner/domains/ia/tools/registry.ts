@@ -40,8 +40,7 @@ const empty = () => z.object({}).strict();
 function legacy(name: ToolName): (args: unknown, run: PlannerToolRunContext) => PlannerToolOutcome {
   return (args, run) => {
     const fn = (TOOL_FUNCTIONS as Record<string, unknown>)[name] as
-      | ((p: PlannerProject, c: ToolContext, a: unknown) => ToolExecutionResult)
-      | undefined;
+      ((p: PlannerProject, c: ToolContext, a: unknown) => ToolExecutionResult) | undefined;
     if (!fn) {
       return { summary: `Ferramenta indisponível: ${name}.`, errorCode: "NOT_FOUND" };
     }
@@ -406,9 +405,7 @@ function buildContracts(): readonly PlannerToolContract[] {
           drawers: z.number().int().min(0).max(12).optional(),
           shelves: z.number().int().min(0).max(20).optional(),
           divisions: z.number().int().min(0).max(12).optional(),
-          opening: z
-            .enum(["abrir", "correr", "sanfonada", "basculante", "sem-porta"])
-            .optional(),
+          opening: z.enum(["abrir", "correr", "sanfonada", "basculante", "sem-porta"]).optional(),
           maleiro: z.boolean().optional(),
           cabideiros: z.number().int().min(0).max(8).optional(),
           nichos: z.number().int().min(0).max(20).optional(),

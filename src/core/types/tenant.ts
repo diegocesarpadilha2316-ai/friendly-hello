@@ -6,22 +6,11 @@ export type CompanyId = string & { readonly __brand: "CompanyId" };
 export type TenantRole = "owner" | "admin" | "manager" | "member";
 
 /** JSON serializável — usado por campos `settings` etc. */
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json }
-  | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json } | Json[];
 export type TenantPlan = "free" | "starter" | "pro" | "business" | "enterprise";
 export type TenantStatus = "active" | "suspended" | "canceled";
 
-export const TENANT_ROLES: readonly TenantRole[] = [
-  "owner",
-  "admin",
-  "manager",
-  "member",
-] as const;
+export const TENANT_ROLES: readonly TenantRole[] = ["owner", "admin", "manager", "member"] as const;
 
 export const TENANT_ROLE_LEVEL: Record<TenantRole, number> = {
   owner: 4,

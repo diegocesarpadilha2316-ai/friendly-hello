@@ -4,8 +4,19 @@
  */
 import type { NestingAlgorithm } from "./types";
 
-export interface FreeRect { x: number; y: number; w: number; h: number }
-export interface PackedRect { x: number; y: number; w: number; h: number; rotated: boolean }
+export interface FreeRect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+export interface PackedRect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  rotated: boolean;
+}
 
 export interface PackingContext {
   readonly binW: number;
@@ -15,7 +26,12 @@ export interface PackingContext {
   free: FreeRect[];
 }
 
-export function createContext(binW: number, binH: number, kerf: number, margin: number): PackingContext {
+export function createContext(
+  binW: number,
+  binH: number,
+  kerf: number,
+  margin: number,
+): PackingContext {
   return {
     binW,
     binH,
@@ -25,7 +41,11 @@ export function createContext(binW: number, binH: number, kerf: number, margin: 
   };
 }
 
-export interface Orientation { w: number; h: number; rotated: boolean }
+export interface Orientation {
+  w: number;
+  h: number;
+  rotated: boolean;
+}
 
 export function tryPack(
   ctx: PackingContext,
@@ -90,8 +110,15 @@ function pruneFree(ctx: PackingContext): void {
   const list = ctx.free;
   for (let i = 0; i < list.length; i++) {
     for (let j = i + 1; j < list.length; j++) {
-      if (contains(list[j], list[i])) { list.splice(i, 1); i--; break; }
-      if (contains(list[i], list[j])) { list.splice(j, 1); j--; }
+      if (contains(list[j], list[i])) {
+        list.splice(i, 1);
+        i--;
+        break;
+      }
+      if (contains(list[i], list[j])) {
+        list.splice(j, 1);
+        j--;
+      }
     }
   }
 }

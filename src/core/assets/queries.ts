@@ -1,10 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import {
-  assetsList,
-  assetsListAudit,
-  assetsListJobs,
-  assetsStats,
-} from "./assets.functions";
+import { assetsList, assetsListAudit, assetsListJobs, assetsStats } from "./assets.functions";
 
 export const assetsQueryKeys = {
   all: ["core", "assets"] as const,

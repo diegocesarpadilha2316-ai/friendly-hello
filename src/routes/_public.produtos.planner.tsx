@@ -1,12 +1,27 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Layers, Box, Palette, Brain, Receipt, Home, Factory, Cog, Check, ArrowRight } from "lucide-react";
+import {
+  Layers,
+  Box,
+  Palette,
+  Brain,
+  Receipt,
+  Home,
+  Factory,
+  Cog,
+  Check,
+  ArrowRight,
+} from "lucide-react";
 import { Reveal, GradientText, SectionEyebrow } from "@/core/components/public/PublicLayout";
 
 export const Route = createFileRoute("/_public/produtos/planner")({
   head: () => ({
     meta: [
       { title: "Dioris Planner — Projeto 3D + IA + Produção" },
-      { name: "description", content: "Renderização, catálogo, IA, orçamentos, ambientes, produção e CNC em uma única plataforma." },
+      {
+        name: "description",
+        content:
+          "Renderização, catálogo, IA, orçamentos, ambientes, produção e CNC em uma única plataforma.",
+      },
       { property: "og:title", content: "Dioris Planner" },
       { property: "og:description", content: "Projeto 3D + IA + Produção em um único fluxo." },
       { property: "og:url", content: "/produtos/planner" },
@@ -18,11 +33,27 @@ export const Route = createFileRoute("/_public/produtos/planner")({
 });
 
 const capabilities = [
-  { icon: Box, t: "Renderização", d: "Motor 3D moderno com iluminação global e materiais físicos." },
-  { icon: Palette, t: "Catálogo", d: "Módulos, materiais, ferragens e acabamentos parametrizados." },
+  {
+    icon: Box,
+    t: "Renderização",
+    d: "Motor 3D moderno com iluminação global e materiais físicos.",
+  },
+  {
+    icon: Palette,
+    t: "Catálogo",
+    d: "Módulos, materiais, ferragens e acabamentos parametrizados.",
+  },
   { icon: Brain, t: "IA de Projeto", d: "Copiloto que interpreta briefings e propõe soluções." },
-  { icon: Receipt, t: "Orçamentos", d: "Preço automático a partir do projeto — margem, imposto, frete." },
-  { icon: Home, t: "Ambientes", d: "Cozinhas, dormitórios, escritórios, comerciais — templates completos." },
+  {
+    icon: Receipt,
+    t: "Orçamentos",
+    d: "Preço automático a partir do projeto — margem, imposto, frete.",
+  },
+  {
+    icon: Home,
+    t: "Ambientes",
+    d: "Cozinhas, dormitórios, escritórios, comerciais — templates completos.",
+  },
   { icon: Factory, t: "Produção", d: "Lista de corte, plano de usinagem, etiquetas e ordens." },
   { icon: Cog, t: "CNC", d: "Exportação para máquinas CNC com nesting automático." },
   { icon: Layers, t: "Integrações", d: "ERPs, marketplaces, fornecedores e catálogos externos." },
@@ -38,8 +69,8 @@ function Page() {
             Do briefing à <GradientText>fábrica</GradientText>.
           </h1>
           <p className="mt-6 text-lg text-foreground/70">
-            Uma plataforma única para arquitetos, marceneiros e indústria. Projete em 3D,
-            orce em segundos, produza com precisão — com IA acompanhando cada etapa.
+            Uma plataforma única para arquitetos, marceneiros e indústria. Projete em 3D, orce em
+            segundos, produza com precisão — com IA acompanhando cada etapa.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
@@ -49,7 +80,10 @@ function Page() {
             >
               Entrar na lista
             </Link>
-            <Link to="/planos" className="rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold hover:bg-white/10">
+            <Link
+              to="/planos"
+              className="rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold hover:bg-white/10"
+            >
               Ver planos
             </Link>
           </div>
@@ -58,7 +92,10 @@ function Page() {
           <div className="relative rounded-3xl border border-white/10 bg-gradient-to-br from-primary/20 via-secondary/10 to-accent/20 p-6">
             <div className="grid grid-cols-2 gap-3">
               {capabilities.slice(0, 4).map((c) => (
-                <div key={c.t} className="rounded-xl border border-white/10 bg-background/40 p-4 backdrop-blur">
+                <div
+                  key={c.t}
+                  className="rounded-xl border border-white/10 bg-background/40 p-4 backdrop-blur"
+                >
                   <c.icon className="h-5 w-5 text-accent" />
                   <div className="mt-3 font-bold">{c.t}</div>
                 </div>
@@ -99,7 +136,10 @@ function Page() {
               "Storage isolado com versionamento",
               "SDK e API pública para automações",
             ].map((b) => (
-              <div key={b} className="flex items-start gap-3 rounded-xl border border-white/10 bg-background/30 p-4">
+              <div
+                key={b}
+                className="flex items-start gap-3 rounded-xl border border-white/10 bg-background/30 p-4"
+              >
                 <Check className="mt-0.5 h-4 w-4 text-accent" />
                 <span className="text-sm">{b}</span>
               </div>

@@ -60,10 +60,7 @@ export async function buildProductionPdf(input: ProductionPdfInput): Promise<Blo
     ["Módulos", String(report.totals.modules)],
     ["Peças", String(report.totals.parts)],
     ["Chapas", String(report.cuttingPlan.totals.boardsCount)],
-    [
-      "Aproveitamento",
-      `${Math.round(report.cuttingPlan.totals.avgUsageRatio * 100)}%`,
-    ],
+    ["Aproveitamento", `${Math.round(report.cuttingPlan.totals.avgUsageRatio * 100)}%`],
     ["Peso total", `${report.totals.weightKg.toFixed(1)} kg`],
     ["Fita de borda", `${report.totals.edgeMeters.toFixed(1)} m`],
   ];
@@ -90,36 +87,21 @@ export async function buildProductionPdf(input: ProductionPdfInput): Promise<Blo
       3: { fontStyle: "bold" },
     },
     body: [
-      [
-        "Subtotal",
-        fmtBRL(report.budget.summary.subtotal),
-        "Corte",
-        `${report.time.cuttingH} h`,
-      ],
+      ["Subtotal", fmtBRL(report.budget.summary.subtotal), "Corte", `${report.time.cuttingH} h`],
       [
         "Overhead",
         fmtBRL(report.budget.summary.overhead),
         "Usinagem",
         `${report.time.machiningH} h`,
       ],
-      [
-        "Margem",
-        fmtBRL(report.budget.summary.margin),
-        "Montagem",
-        `${report.time.assemblyH} h`,
-      ],
+      ["Margem", fmtBRL(report.budget.summary.margin), "Montagem", `${report.time.assemblyH} h`],
       [
         "Impostos",
         fmtBRL(report.budget.summary.taxes),
         "Acabamento",
         `${report.time.finishingH} h`,
       ],
-      [
-        "Total final",
-        fmtBRL(report.budget.summary.final),
-        "Total (h)",
-        `${report.time.totalH} h`,
-      ],
+      ["Total final", fmtBRL(report.budget.summary.final), "Total (h)", `${report.time.totalH} h`],
       [
         "R$ / m²",
         fmtBRL(report.budget.summary.perM2),
@@ -133,17 +115,7 @@ export async function buildProductionPdf(input: ProductionPdfInput): Promise<Blo
   // ── Lista de corte ───────────────────────────────────────────────
   autoTable(doc, {
     startY: (doc as any).lastAutoTable.finalY + 24,
-    head: [[
-      "Cód.",
-      "Peça",
-      "Material",
-      "Esp.",
-      "Comp.",
-      "Larg.",
-      "Qtd",
-      "Veio",
-      "Fita",
-    ]],
+    head: [["Cód.", "Peça", "Material", "Esp.", "Comp.", "Larg.", "Qtd", "Veio", "Fita"]],
     body: report.cutList.map((r) => [
       r.code,
       r.name,
@@ -204,14 +176,7 @@ export async function buildProductionPdf(input: ProductionPdfInput): Promise<Blo
   if (report.cuttingPlan.boards.length > 0) {
     autoTable(doc, {
       startY: (doc as any).lastAutoTable.finalY + 24,
-      head: [[
-        "#",
-        "Chapa",
-        "Material",
-        "Peças",
-        "Uso",
-        "Sobra (m²)",
-      ]],
+      head: [["#", "Chapa", "Material", "Peças", "Uso", "Sobra (m²)"]],
       body: report.cuttingPlan.boards.map((b) => [
         String(b.index + 1),
         `${b.spec.lengthMm} × ${b.spec.widthMm} × ${b.spec.thicknessMm} mm`,
@@ -335,11 +300,7 @@ function drawCover(
   });
 }
 
-function drawTOC(
-  doc: import("jspdf").jsPDF,
-  pageW: number,
-  report: ProductionReport,
-) {
+function drawTOC(doc: import("jspdf").jsPDF, pageW: number, report: ProductionReport) {
   doc.setTextColor(...BRAND.ink);
   doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
@@ -348,16 +309,8 @@ function drawTOC(
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...BRAND.muted);
-  doc.text(
-    "Este relatório reúne todos os artefatos necessários para orçar, produzir e",
-    40,
-    130,
-  );
-  doc.text(
-    "montar o projeto — extraídos automaticamente pelo Dioris Planner.",
-    40,
-    145,
-  );
+  doc.text("Este relatório reúne todos os artefatos necessários para orçar, produzir e", 40, 130);
+  doc.text("montar o projeto — extraídos automaticamente pelo Dioris Planner.", 40, 145);
 
   const items: Array<[string, string]> = [
     ["1", "KPIs e indicadores principais"],
@@ -457,11 +410,7 @@ function drawKpiRow(
   });
 }
 
-function drawFooter(
-  doc: import("jspdf").jsPDF,
-  pageW: number,
-  pageH: number,
-) {
+function drawFooter(doc: import("jspdf").jsPDF, pageW: number, pageH: number) {
   const y = pageH - 24;
   doc.setDrawColor(...BRAND.line);
   doc.setLineWidth(0.5);

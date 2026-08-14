@@ -30,15 +30,8 @@ import { DEFAULT_HDRI_ID } from "../services/lighting";
 import { DEFAULT_RENDER_PRESET_ID, getRenderPreset } from "../services/presets";
 import { RENDER_PIPELINE } from "../services/pipeline";
 import { postForPreset } from "../services/postprocess";
-import {
-  DEFAULT_RENDER_PROVIDER_ID,
-  RENDER_PROVIDERS,
-} from "../services/providers";
-import type {
-  RenderPresetId,
-  RenderProviderId,
-  RenderTargetKind,
-} from "../types";
+import { DEFAULT_RENDER_PROVIDER_ID, RENDER_PROVIDERS } from "../services/providers";
+import type { RenderPresetId, RenderProviderId, RenderTargetKind } from "../types";
 import { PresetGrid } from "./PresetGrid";
 import { LightingPanel } from "./LightingPanel";
 import { CameraPanel } from "./CameraPanel";
@@ -215,7 +208,10 @@ export function RenderStudio() {
 
       {/* Sidebar direita — controles */}
       <aside className="space-y-4">
-        <FormSection title="Preset de qualidade" description="Sombras, GI, AO, AA, resolução, amostras e denoise.">
+        <FormSection
+          title="Preset de qualidade"
+          description="Sombras, GI, AO, AA, resolução, amostras e denoise."
+        >
           <PresetGrid selectedId={presetId} onSelect={setPresetId} />
         </FormSection>
 
@@ -269,9 +265,7 @@ export function RenderStudio() {
             return (
               <div className="flex items-center gap-2">
                 <Icon className="h-4 w-4 text-primary" />
-                <span>
-                  {RENDER_PROVIDERS.find((p) => p.id === providerId)?.description}
-                </span>
+                <span>{RENDER_PROVIDERS.find((p) => p.id === providerId)?.description}</span>
               </div>
             );
           })()}
@@ -329,9 +323,8 @@ function ViewportPreview({
           {active ? stage : "Viewport pronto para renderizar"}
         </h3>
         <p className="max-w-md text-xs text-muted-foreground">
-          Prepare presets, iluminação e câmeras. O motor está desacoplado —
-          qualquer backend (Local, IA, Nuvem, Vídeo, Marketing) consome os
-          mesmos jobs.
+          Prepare presets, iluminação e câmeras. O motor está desacoplado — qualquer backend (Local,
+          IA, Nuvem, Vídeo, Marketing) consome os mesmos jobs.
         </p>
         <div className="mt-2 h-1.5 w-64 overflow-hidden rounded-full bg-background/50 ring-1 ring-inset ring-border/60">
           <div

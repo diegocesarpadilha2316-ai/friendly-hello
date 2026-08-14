@@ -34,7 +34,10 @@ export interface LaundryDiagnosticEntry {
 
 const isDev = (): boolean => {
   try {
-    return typeof import.meta !== "undefined" && Boolean((import.meta as { env?: { DEV?: boolean } }).env?.DEV);
+    return (
+      typeof import.meta !== "undefined" &&
+      Boolean((import.meta as { env?: { DEV?: boolean } }).env?.DEV)
+    );
   } catch {
     return false;
   }

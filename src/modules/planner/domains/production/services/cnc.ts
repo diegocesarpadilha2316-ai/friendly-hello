@@ -1,15 +1,60 @@
 import type { CncJobPreview, CncTargetMachine, CutListRow } from "../types";
 
 export const CNC_MACHINES: readonly CncTargetMachine[] = [
-  { id: "biesse-selco", brand: "Biesse", model: "Selco WNA", kind: "seccionadora", formats: ["xxl", "dxf"], status: "planejado" },
-  { id: "scm-gabbiani", brand: "SCM", model: "Gabbiani Galaxy", kind: "seccionadora", formats: ["xxl", "dxf"], status: "planejado" },
-  { id: "biesse-akron", brand: "Biesse", model: "Akron 1400", kind: "coladeira", formats: ["cix"], status: "planejado" },
-  { id: "scm-startech", brand: "SCM", model: "Startech CN", kind: "furadeira", formats: ["cix", "dxf"], status: "planejado" },
-  { id: "biesse-rover", brand: "Biesse", model: "Rover K", kind: "router", formats: ["gcode", "dxf"], status: "beta" },
-  { id: "cnc-generico", brand: "Genérico", model: "3-Axis CNC", kind: "router", formats: ["gcode", "dxf"], status: "planejado" },
+  {
+    id: "biesse-selco",
+    brand: "Biesse",
+    model: "Selco WNA",
+    kind: "seccionadora",
+    formats: ["xxl", "dxf"],
+    status: "planejado",
+  },
+  {
+    id: "scm-gabbiani",
+    brand: "SCM",
+    model: "Gabbiani Galaxy",
+    kind: "seccionadora",
+    formats: ["xxl", "dxf"],
+    status: "planejado",
+  },
+  {
+    id: "biesse-akron",
+    brand: "Biesse",
+    model: "Akron 1400",
+    kind: "coladeira",
+    formats: ["cix"],
+    status: "planejado",
+  },
+  {
+    id: "scm-startech",
+    brand: "SCM",
+    model: "Startech CN",
+    kind: "furadeira",
+    formats: ["cix", "dxf"],
+    status: "planejado",
+  },
+  {
+    id: "biesse-rover",
+    brand: "Biesse",
+    model: "Rover K",
+    kind: "router",
+    formats: ["gcode", "dxf"],
+    status: "beta",
+  },
+  {
+    id: "cnc-generico",
+    brand: "Genérico",
+    model: "3-Axis CNC",
+    kind: "router",
+    formats: ["gcode", "dxf"],
+    status: "planejado",
+  },
 ];
 
-export function previewCncJobs(rows: readonly CutListRow[], machineId: string): readonly CncJobPreview[] {
+export function previewCncJobs(
+  rows: readonly CutListRow[],
+  machineId: string,
+): readonly CncJobPreview[] {
   const machine = CNC_MACHINES.find((m) => m.id === machineId);
   const format = machine?.formats.includes("gcode") ? "gcode" : "dxf";
   return rows.slice(0, 8).map((row) => ({
@@ -22,7 +67,7 @@ export function previewCncJobs(rows: readonly CutListRow[], machineId: string): 
       row.edgeTape !== "—" ? `EDGE ${row.edgeTape}` : "NO-EDGE",
       "DRILL minifix ×4",
     ],
-    estimatedMinutes: Math.max(2, Math.round((row.lengthMm + row.widthMm) / 700 * 10) / 10),
+    estimatedMinutes: Math.max(2, Math.round(((row.lengthMm + row.widthMm) / 700) * 10) / 10),
   }));
 }
 

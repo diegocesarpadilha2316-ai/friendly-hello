@@ -24,7 +24,10 @@ export const HARDWARE_ITEMS: readonly HardwareItem[] = [
   hw("fgv-telescopica", "FGV", "corredica", "Telescópica Slim", { capacityKg: 25, sizeMm: 500 }),
   hw("blum-aventos-hf", "Blum", "pistao", "Aventos HF", { capacityKg: 12 }),
   hw("hettich-lift-advanced", "Hettich", "pistao", "Lift Advanced HL", { capacityKg: 10 }),
-  hw("hafele-trilho-slid", "Häfele", "trilho", "Slido Classic 40", { capacityKg: 40, sizeMm: 2000 }),
+  hw("hafele-trilho-slid", "Häfele", "trilho", "Slido Classic 40", {
+    capacityKg: 40,
+    sizeMm: 2000,
+  }),
   hw("fgv-trilho-embutido", "FGV", "trilho", "Trilho Embutido 3m", { sizeMm: 3000 }),
   hw("dioris-cabid-ret", "Dioris", "cabideiro", "Cabideiro Retangular", { sizeMm: 1000 }),
   hw("dioris-cabid-oval", "Dioris", "cabideiro", "Cabideiro Oval", { sizeMm: 1000 }),

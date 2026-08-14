@@ -7,7 +7,7 @@ const tabs: { id: RightTab; label: string }[] = [
   { id: "chat", label: "IA" },
   { id: "inspector", label: "Inspetor" },
   { id: "materials", label: "Materiais" },
-  { id: "hardware", label: "Ferragens" }
+  { id: "hardware", label: "Ferragens" },
 ];
 
 export function RightPanel() {
@@ -34,7 +34,9 @@ export function RightPanel() {
       </div>
 
       {collapsed ? (
-        <div className="collapsed-icons"><Bot size={19} /></div>
+        <div className="collapsed-icons">
+          <Bot size={19} />
+        </div>
       ) : (
         <div className="right-tabs">
           {tabs.map((tab) => (
@@ -113,8 +115,8 @@ export function RightPanel() {
                       size: [
                         Number((event.target as HTMLInputElement).value),
                         selected.size[1],
-                        selected.size[2]
-                      ]
+                        selected.size[2],
+                      ],
                     })
                   }
                 />
@@ -131,8 +133,8 @@ export function RightPanel() {
                       size: [
                         selected.size[0],
                         Number((event.target as HTMLInputElement).value),
-                        selected.size[2]
-                      ]
+                        selected.size[2],
+                      ],
                     })
                   }
                 />
@@ -149,8 +151,8 @@ export function RightPanel() {
                       size: [
                         selected.size[0],
                         selected.size[1],
-                        Number((event.target as HTMLInputElement).value)
-                      ]
+                        Number((event.target as HTMLInputElement).value),
+                      ],
                     })
                   }
                 />
@@ -161,7 +163,9 @@ export function RightPanel() {
                   type="number"
                   step="0.1"
                   value={selected?.rotationY ?? 0}
-                  onChange={(event: any) => updateSelected({ rotationY: Number(event.target.value) })}
+                  onChange={(event: any) =>
+                    updateSelected({ rotationY: Number(event.target.value) })
+                  }
                 />
               </label>
             </div>
@@ -174,7 +178,7 @@ export function RightPanel() {
                 ["Taupe", "taupe", "#8b7564"],
                 ["Branco", "white", "#e8e5df"],
                 ["Grafite", "graphite", "#4a4745"],
-                ["Pedra", "stone", "#cbbba6"]
+                ["Pedra", "stone", "#cbbba6"],
               ].map(([label, id, color]) => (
                 <button
                   type="button"
@@ -191,9 +195,28 @@ export function RightPanel() {
 
           {rightTab === "hardware" && (
             <div className="form">
-              <label>Dobradiças<select><option>Blum Clip Top</option><option>FGV</option></select></label>
-              <label>Corrediças<select><option>Blum Legrabox</option><option>Telescópica</option></select></label>
-              <label>Puxador<select><option>Gola</option><option>Cava</option><option>Perfil</option></select></label>
+              <label>
+                Dobradiças
+                <select>
+                  <option>Blum Clip Top</option>
+                  <option>FGV</option>
+                </select>
+              </label>
+              <label>
+                Corrediças
+                <select>
+                  <option>Blum Legrabox</option>
+                  <option>Telescópica</option>
+                </select>
+              </label>
+              <label>
+                Puxador
+                <select>
+                  <option>Gola</option>
+                  <option>Cava</option>
+                  <option>Perfil</option>
+                </select>
+              </label>
             </div>
           )}
         </div>

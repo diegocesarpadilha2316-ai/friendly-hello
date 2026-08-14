@@ -35,11 +35,7 @@ export async function exportFromCanvas(
   ctx.drawImage(canvas, 0, 0, spec.width, spec.height);
   const mime = MIME[spec.format];
   const blob: Blob = await new Promise((resolve, reject) => {
-    off.toBlob(
-      (b) => (b ? resolve(b) : reject(new Error("toBlob falhou"))),
-      mime,
-      spec.quality,
-    );
+    off.toBlob((b) => (b ? resolve(b) : reject(new Error("toBlob falhou"))), mime, spec.quality);
   });
   const url = URL.createObjectURL(blob);
   const filename = spec.filename ?? `render-dioris-${Date.now()}.${EXT[spec.format]}`;
@@ -57,7 +53,11 @@ export function download(result: RealExportResult): void {
 }
 
 /** Resoluções pré-configuradas 4K / 8K. */
-export const REAL_EXPORT_RESOLUTIONS: readonly { readonly label: string; readonly width: number; readonly height: number }[] = [
+export const REAL_EXPORT_RESOLUTIONS: readonly {
+  readonly label: string;
+  readonly width: number;
+  readonly height: number;
+}[] = [
   { label: "Full HD", width: 1920, height: 1080 },
   { label: "2K", width: 2560, height: 1440 },
   { label: "4K UHD", width: 3840, height: 2160 },

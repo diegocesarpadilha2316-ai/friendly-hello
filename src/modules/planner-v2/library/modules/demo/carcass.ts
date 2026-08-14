@@ -16,7 +16,7 @@ export function buildCarcass(
   moduleId: string,
   dims: Dimensions3,
   materialId: string,
-  options: CarcassOptions = {}
+  options: CarcassOptions = {},
 ): PartDefinition[] {
   const toe = options.toeKickMm ?? 0;
   const shelves = options.shelves ?? 0;
@@ -136,7 +136,7 @@ export function buildHandle(
   id: string,
   positionMm: { x: number; y: number; z: number },
   widthMm: number,
-  vertical = false
+  vertical = false,
 ): PartDefinition {
   return {
     id,
@@ -157,7 +157,7 @@ export function buildDoors(
   moduleId: string,
   dims: Dimensions3,
   materialId: string,
-  options: { toeKickMm?: number; leaves?: 1 | 2 }
+  options: { toeKickMm?: number; leaves?: 1 | 2 },
 ): PartDefinition[] {
   const toe = options.toeKickMm ?? 0;
   const leaves = options.leaves ?? 2;
@@ -169,11 +169,9 @@ export function buildDoors(
 
   for (let index = 0; index < leaves; index += 1) {
     const hingeSide: "left" | "right" = leaves === 1 ? "left" : index === 0 ? "left" : "right";
-    const x =
-      leaves === 1 ? 0 : index === 0 ? -(doorWidth / 2 + 1.5) : doorWidth / 2 + 1.5;
+    const x = leaves === 1 ? 0 : index === 0 ? -(doorWidth / 2 + 1.5) : doorWidth / 2 + 1.5;
     const doorId = `${moduleId}:part-interactive-door-${index + 1}`;
     parts.push({
-
       id: doorId,
       moduleId,
       role: "door",
@@ -199,7 +197,7 @@ export function buildDoors(
         `${doorId}:handle`,
         { x: handleX, y: toe + FRONT_GAP_MM + doorHeight / 2, z: doorZ + PANEL_MM },
         Math.min(240, doorHeight * 0.4),
-        true
+        true,
       ),
       groupId: doorId,
     });
@@ -213,7 +211,7 @@ export function buildDrawers(
   moduleId: string,
   dims: Dimensions3,
   materialId: string,
-  options: { toeKickMm?: number; count: number }
+  options: { toeKickMm?: number; count: number },
 ): PartDefinition[] {
   const toe = options.toeKickMm ?? 0;
   const count = options.count;
@@ -254,7 +252,7 @@ export function buildDrawers(
         moduleId,
         `${groupId}:handle`,
         { x: 0, y: centerY + frontHeight / 2 - 40, z: frontZ + PANEL_MM },
-        Math.min(320, frontWidth * 0.5)
+        Math.min(320, frontWidth * 0.5),
       ),
       groupId,
     });

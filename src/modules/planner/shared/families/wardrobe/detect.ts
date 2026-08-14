@@ -13,12 +13,7 @@
  */
 
 export type FurnitureRenderer =
-  | "wardrobe"
-  | "dresser"
-  | "kitchen"
-  | "bathroom"
-  | "laundry"
-  | "cabinet";
+  "wardrobe" | "dresser" | "kitchen" | "bathroom" | "laundry" | "cabinet";
 
 export interface RendererDecisionInput {
   readonly id?: string;
@@ -102,7 +97,8 @@ const KITCHEN_ALIASES = new Set([
   "nicho-aberto",
 ]);
 
-const KITCHEN_CATALOG_HINT = /(cozinha|kitchen|balcao|aereo|cooktop|cristaleira|adega|torre-quente)/i;
+const KITCHEN_CATALOG_HINT =
+  /(cozinha|kitchen|balcao|aereo|cooktop|cristaleira|adega|torre-quente)/i;
 
 /** Nomes que sempre significam módulo de banheiro (família convertida). */
 const BATHROOM_ALIASES = new Set([
@@ -150,10 +146,7 @@ const LAUNDRY_ALIASES_SET = new Set([
 const LAUNDRY_CATALOG_HINT =
   /(lavanderia|area[-_ ]?de[-_ ]?servico|laundry|tanque|vassoureiro|lavadora|secadora|lava[-_ ]?e[-_ ]?seca)/i;
 
-function numParam(
-  params: RendererDecisionInput["params"],
-  ...keys: string[]
-): number | undefined {
+function numParam(params: RendererDecisionInput["params"], ...keys: string[]): number | undefined {
   for (const k of keys) {
     const v = params?.[k];
     if (typeof v === "number" && Number.isFinite(v)) return v;
@@ -162,10 +155,7 @@ function numParam(
   return undefined;
 }
 
-function textParam(
-  params: RendererDecisionInput["params"],
-  ...keys: string[]
-): string | undefined {
+function textParam(params: RendererDecisionInput["params"], ...keys: string[]): string | undefined {
   for (const k of keys) {
     const v = params?.[k];
     if (typeof v === "string" && v.trim() !== "") return v;
@@ -330,7 +320,7 @@ export function logRendererDecision(id: string, decision: RendererDecision): voi
   const key = `${id}:${decision.renderer}:${decision.resolvedType}`;
   if (logged.has(key)) return;
   logged.add(key);
-  // eslint-disable-next-line no-console
+
   console.info("[planner:renderer]", {
     id,
     tipo: decision.resolvedType,

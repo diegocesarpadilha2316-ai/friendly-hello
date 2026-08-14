@@ -1,11 +1,5 @@
 import type { PlannerProject } from "@/modules/planner/shared";
-import type {
-  AIChatChunk,
-  AIChatResponse,
-  AIMessage,
-  AIProvider,
-  AIToolResult,
-} from "../types";
+import type { AIChatChunk, AIChatResponse, AIMessage, AIProvider, AIToolResult } from "../types";
 import { pushLog } from "./logs";
 import { runToolCall, toolSchemas } from "./tools";
 
@@ -95,7 +89,11 @@ export async function runAgent(
   });
 
   return {
-    finalMessage: { role: "assistant", content: response.content, createdAt: new Date().toISOString() },
+    finalMessage: {
+      role: "assistant",
+      content: response.content,
+      createdAt: new Date().toISOString(),
+    },
     response,
     toolResults,
   };

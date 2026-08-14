@@ -22,11 +22,7 @@ import {
   StatusBadge,
   Button,
 } from "@/core/components/ui-kit";
-import {
-  useBillingSummary,
-  useCreditLedger,
-  usePlansCatalog,
-} from "@/core/billing/use-billing";
+import { useBillingSummary, useCreditLedger, usePlansCatalog } from "@/core/billing/use-billing";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAIMetrics } from "@/core/ai/use-ai";
@@ -166,11 +162,7 @@ function WorkspaceCreditos() {
         <MetricCard
           icon={<Calendar className="h-4 w-4" />}
           label="Renova em"
-          value={
-            summary.resetsAt
-              ? new Date(summary.resetsAt).toLocaleDateString("pt-BR")
-              : "—"
-          }
+          value={summary.resetsAt ? new Date(summary.resetsAt).toLocaleDateString("pt-BR") : "—"}
           hint="próximo ciclo"
         />
       </div>
@@ -201,7 +193,9 @@ function WorkspaceCreditos() {
                     {(summary.plan?.monthlyCredits ?? totalGranted).toLocaleString("pt-BR")}
                   </p>
                 </div>
-                <StatusBadge tone={usagePct >= 90 ? "danger" : usagePct >= 60 ? "warning" : "success"}>
+                <StatusBadge
+                  tone={usagePct >= 90 ? "danger" : usagePct >= 60 ? "warning" : "success"}
+                >
                   {usagePct}% utilizado
                 </StatusBadge>
               </div>
@@ -245,7 +239,9 @@ function WorkspaceCreditos() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Status</span>
-                <StatusBadge tone={summary.subscription?.status === "active" ? "success" : "neutral"}>
+                <StatusBadge
+                  tone={summary.subscription?.status === "active" ? "success" : "neutral"}
+                >
                   {summary.subscription?.status ?? "—"}
                 </StatusBadge>
               </div>
@@ -266,9 +262,7 @@ function WorkspaceCreditos() {
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Renova em</span>
                 <span className="font-medium">
-                  {summary.resetsAt
-                    ? new Date(summary.resetsAt).toLocaleDateString("pt-BR")
-                    : "—"}
+                  {summary.resetsAt ? new Date(summary.resetsAt).toLocaleDateString("pt-BR") : "—"}
                 </span>
               </div>
               <Button className="mt-2 w-full" variant="secondary">
@@ -369,9 +363,7 @@ function WorkspaceCreditos() {
                             {new Date(o.createdAt).toLocaleString("pt-BR")}
                           </td>
                           <td className="py-2 uppercase text-xs">{o.method}</td>
-                          <td className="py-2 font-medium">
-                            {o.credits.toLocaleString("pt-BR")}
-                          </td>
+                          <td className="py-2 font-medium">{o.credits.toLocaleString("pt-BR")}</td>
                           <td className="py-2">
                             <StatusBadge tone={ORDER_TONE[o.status]}>
                               {ORDER_LABEL[o.status]}
@@ -403,11 +395,7 @@ function WorkspaceCreditos() {
           ) : (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {plans.map((plan) => (
-                <PlanCard
-                  key={plan.key}
-                  plan={plan}
-                  current={summary.plan?.key === plan.key}
-                />
+                <PlanCard key={plan.key} plan={plan} current={summary.plan?.key === plan.key} />
               ))}
             </div>
           )}
@@ -438,7 +426,9 @@ function WorkspaceCreditos() {
                   </div>
                   <p className="mt-1 text-2xl font-semibold">
                     {entries.length
-                      ? Math.round(totalConsumed / Math.max(1, entries.length)).toLocaleString("pt-BR")
+                      ? Math.round(totalConsumed / Math.max(1, entries.length)).toLocaleString(
+                          "pt-BR",
+                        )
                       : "0"}
                   </p>
                   <p className="text-xs text-muted-foreground">créditos por movimento</p>
@@ -478,15 +468,11 @@ function PlanCard({ plan, current }: { plan: PlanDefinition; current: boolean })
       </CardHeader>
       <CardContent className="space-y-3">
         <div>
-          <p className="text-3xl font-semibold">
-            {formatCurrency(plan.priceCents, plan.currency)}
-          </p>
+          <p className="text-3xl font-semibold">{formatCurrency(plan.priceCents, plan.currency)}</p>
           <p className="text-xs text-muted-foreground">/mês</p>
         </div>
         <div className="text-sm">
-          <span className="font-medium">
-            {plan.monthlyCredits.toLocaleString("pt-BR")}
-          </span>{" "}
+          <span className="font-medium">{plan.monthlyCredits.toLocaleString("pt-BR")}</span>{" "}
           <span className="text-muted-foreground">créditos/mês</span>
         </div>
         {plan.features.length > 0 ? (
@@ -499,11 +485,7 @@ function PlanCard({ plan, current }: { plan: PlanDefinition; current: boolean })
             ))}
           </ul>
         ) : null}
-        <Button
-          className="w-full"
-          variant={current ? "ghost" : "default"}
-          disabled={current}
-        >
+        <Button className="w-full" variant={current ? "ghost" : "default"} disabled={current}>
           {current ? "Plano atual" : "Selecionar plano"}
         </Button>
       </CardContent>

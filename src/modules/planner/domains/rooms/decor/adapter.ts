@@ -30,34 +30,34 @@ export interface AppliedNode {
  * Constrói o(s) `PlannerParametricNode` correspondentes a uma sugestão.
  * Retorna vazio para sugestões apenas informativas (paleta / material).
  */
-export function buildNodesForSuggestion(
-  suggestion: DecorSuggestion,
-): PlannerParametricNode[] {
+export function buildNodesForSuggestion(suggestion: DecorSuggestion): PlannerParametricNode[] {
   if (suggestion.target === "item" && suggestion.itemId) {
     const item = getDecorItem(suggestion.itemId);
     if (!item) return [];
     const width = suggestion.overrides?.width ?? item.defaults.width;
     const depth = suggestion.overrides?.depth ?? item.defaults.depth;
     const height = suggestion.overrides?.height ?? item.defaults.height;
-    return [{
-      id: nodeId("decor"),
-      kind: "module",
-      label: item.name,
-      params: {
-        role: "decor",
-        "ai:kind": `decor.${item.kind}`,
-        "ai:category": "decor",
-        catalogItemId: item.id,
-        width,
-        depth,
-        height,
-        x: suggestion.at?.x ?? 0,
-        y: suggestion.at?.y ?? 0,
-        rotation: suggestion.rotation ?? 0,
-        material: item.material ?? null,
-        color: item.color ?? null,
+    return [
+      {
+        id: nodeId("decor"),
+        kind: "module",
+        label: item.name,
+        params: {
+          role: "decor",
+          "ai:kind": `decor.${item.kind}`,
+          "ai:category": "decor",
+          catalogItemId: item.id,
+          width,
+          depth,
+          height,
+          x: suggestion.at?.x ?? 0,
+          y: suggestion.at?.y ?? 0,
+          rotation: suggestion.rotation ?? 0,
+          material: item.material ?? null,
+          color: item.color ?? null,
+        },
       },
-    }];
+    ];
   }
   if (suggestion.target === "lighting" && suggestion.lightingSceneId) {
     const scene = getLightingScene(suggestion.lightingSceneId);

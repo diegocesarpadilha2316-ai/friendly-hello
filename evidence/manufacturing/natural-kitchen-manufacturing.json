@@ -88,15 +88,9 @@
     "cutItems": [
       {
         "key": "{\"role\":\"side-left\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":2050,\"depthMm\":620,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": [
-          "furniture-1786745216207:side-left"
-        ],
-        "moduleIds": [
-          "kitchen-tower-oven-microwave"
-        ],
-        "names": [
-          "Lateral esquerda"
-        ],
+        "partIds": ["furniture-1786745216207:side-left"],
+        "moduleIds": ["kitchen-tower-oven-microwave"],
+        "names": ["Lateral esquerda"],
         "role": "side-left",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -111,15 +105,9 @@
       },
       {
         "key": "{\"role\":\"side-right\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":2050,\"depthMm\":620,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": [
-          "furniture-1786745216207:side-right"
-        ],
-        "moduleIds": [
-          "kitchen-tower-oven-microwave"
-        ],
-        "names": [
-          "Lateral direita"
-        ],
+        "partIds": ["furniture-1786745216207:side-right"],
+        "moduleIds": ["kitchen-tower-oven-microwave"],
+        "names": ["Lateral direita"],
         "role": "side-right",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -134,15 +122,9 @@
       },
       {
         "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":620,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": [
-          "furniture-1786745216207:base"
-        ],
-        "moduleIds": [
-          "kitchen-tower-oven-microwave"
-        ],
-        "names": [
-          "Base"
-        ],
+        "partIds": ["furniture-1786745216207:base"],
+        "moduleIds": ["kitchen-tower-oven-microwave"],
+        "names": ["Base"],
         "role": "base",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -157,15 +139,9 @@
       },
       {
         "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":620,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": [
-          "furniture-1786745216207:top"
-        ],
-        "moduleIds": [
-          "kitchen-tower-oven-microwave"
-        ],
-        "names": [
-          "Topo"
-        ],
+        "partIds": ["furniture-1786745216207:top"],
+        "moduleIds": ["kitchen-tower-oven-microwave"],
+        "names": ["Topo"],
         "role": "top",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -180,15 +156,9 @@
       },
       {
         "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":2014,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"safety\"}",
-        "partIds": [
-          "furniture-1786745216207:back"
-        ],
-        "moduleIds": [
-          "kitchen-tower-oven-microwave"
-        ],
-        "names": [
-          "Fundo"
-        ],
+        "partIds": ["furniture-1786745216207:back"],
+        "moduleIds": ["kitchen-tower-oven-microwave"],
+        "names": ["Fundo"],
         "role": "back",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -201,17 +171,9 @@
       },
       {
         "key": "{\"role\":\"toe-kick\",\"materialId\":\"metal-black\",\"widthMm\":764,\"heightMm\":150,\"depthMm\":18,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"physical\"}",
-        "partIds": [
-          "furniture-1786745216207:toe-kick",
-          "furniture-1786745216209:toe-kick"
-        ],
-        "moduleIds": [
-          "kitchen-tower-oven-microwave",
-          "kitchen-base-2-doors"
-        ],
-        "names": [
-          "Rodapé"
-        ],
+        "partIds": ["furniture-1786745216207:toe-kick", "furniture-1786745216209:toe-kick"],
+        "moduleIds": ["kitchen-tower-oven-microwave", "kitchen-base-2-doors"],
+        "names": ["Rodapé"],
         "role": "toe-kick",
         "materialId": "metal-black",
         "quantity": 2,
@@ -224,15 +186,9 @@
       },
       {
         "key": "{\"role\":\"divider\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":584,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": [
-          "furniture-1786745216207:appliance-divider"
-        ],
-        "moduleIds": [
-          "kitchen-tower-oven-microwave"
-        ],
-        "names": [
-          "Divisória entre forno e micro-ondas"
-        ],
+        "partIds": ["furniture-1786745216207:appliance-divider"],
+        "moduleIds": ["kitchen-tower-oven-microwave"],
+        "names": ["Divisória entre forno e micro-ondas"],
         "role": "divider",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -247,17 +203,9 @@
       },
       {
         "key": "{\"role\":\"door\",\"materialId\":\"mdf-white\",\"widthMm\":396,\"heightMm\":1346,\"depthMm\":18,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"volumeType\":\"opening\"}",
-        "partIds": [
-          "furniture-1786745216207:door-1",
-          "furniture-1786745216207:door-2"
-        ],
-        "moduleIds": [
-          "kitchen-tower-oven-microwave"
-        ],
-        "names": [
-          "Porta 1",
-          "Porta 2"
-        ],
+        "partIds": ["furniture-1786745216207:door-1", "furniture-1786745216207:door-2"],
+        "moduleIds": ["kitchen-tower-oven-microwave"],
+        "names": ["Porta 1", "Porta 2"],
         "role": "door",
         "materialId": "mdf-white",
         "quantity": 2,
@@ -280,14 +228,8 @@
           "furniture-1786745216210:side-left",
           "furniture-1786745216212:side-left"
         ],
-        "moduleIds": [
-          "kitchen-base-2-doors",
-          "kitchen-drawer-4",
-          "kitchen-sink-cabinet"
-        ],
-        "names": [
-          "Lateral esquerda"
-        ],
+        "moduleIds": ["kitchen-base-2-doors", "kitchen-drawer-4", "kitchen-sink-cabinet"],
+        "names": ["Lateral esquerda"],
         "role": "side-left",
         "materialId": "mdf-white",
         "quantity": 3,
@@ -307,14 +249,8 @@
           "furniture-1786745216210:side-right",
           "furniture-1786745216212:side-right"
         ],
-        "moduleIds": [
-          "kitchen-base-2-doors",
-          "kitchen-drawer-4",
-          "kitchen-sink-cabinet"
-        ],
-        "names": [
-          "Lateral direita"
-        ],
+        "moduleIds": ["kitchen-base-2-doors", "kitchen-drawer-4", "kitchen-sink-cabinet"],
+        "names": ["Lateral direita"],
         "role": "side-right",
         "materialId": "mdf-white",
         "quantity": 3,
@@ -329,15 +265,9 @@
       },
       {
         "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": [
-          "furniture-1786745216209:base"
-        ],
-        "moduleIds": [
-          "kitchen-base-2-doors"
-        ],
-        "names": [
-          "Base"
-        ],
+        "partIds": ["furniture-1786745216209:base"],
+        "moduleIds": ["kitchen-base-2-doors"],
+        "names": ["Base"],
         "role": "base",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -352,15 +282,9 @@
       },
       {
         "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": [
-          "furniture-1786745216209:top"
-        ],
-        "moduleIds": [
-          "kitchen-base-2-doors"
-        ],
-        "names": [
-          "Topo"
-        ],
+        "partIds": ["furniture-1786745216209:top"],
+        "moduleIds": ["kitchen-base-2-doors"],
+        "names": ["Topo"],
         "role": "top",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -375,15 +299,9 @@
       },
       {
         "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":684,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"safety\"}",
-        "partIds": [
-          "furniture-1786745216209:back"
-        ],
-        "moduleIds": [
-          "kitchen-base-2-doors"
-        ],
-        "names": [
-          "Fundo"
-        ],
+        "partIds": ["furniture-1786745216209:back"],
+        "moduleIds": ["kitchen-base-2-doors"],
+        "names": ["Fundo"],
         "role": "back",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -396,17 +314,9 @@
       },
       {
         "key": "{\"role\":\"door\",\"materialId\":\"mdf-white\",\"widthMm\":396,\"heightMm\":716,\"depthMm\":18,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"volumeType\":\"opening\"}",
-        "partIds": [
-          "furniture-1786745216209:door-1",
-          "furniture-1786745216209:door-2"
-        ],
-        "moduleIds": [
-          "kitchen-base-2-doors"
-        ],
-        "names": [
-          "Porta 1",
-          "Porta 2"
-        ],
+        "partIds": ["furniture-1786745216209:door-1", "furniture-1786745216209:door-2"],
+        "moduleIds": ["kitchen-base-2-doors"],
+        "names": ["Porta 1", "Porta 2"],
         "role": "door",
         "materialId": "mdf-white",
         "quantity": 2,
@@ -424,15 +334,9 @@
       },
       {
         "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":564,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": [
-          "furniture-1786745216210:base"
-        ],
-        "moduleIds": [
-          "kitchen-drawer-4"
-        ],
-        "names": [
-          "Base"
-        ],
+        "partIds": ["furniture-1786745216210:base"],
+        "moduleIds": ["kitchen-drawer-4"],
+        "names": ["Base"],
         "role": "base",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -447,15 +351,9 @@
       },
       {
         "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":564,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": [
-          "furniture-1786745216210:top"
-        ],
-        "moduleIds": [
-          "kitchen-drawer-4"
-        ],
-        "names": [
-          "Topo"
-        ],
+        "partIds": ["furniture-1786745216210:top"],
+        "moduleIds": ["kitchen-drawer-4"],
+        "names": ["Topo"],
         "role": "top",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -470,15 +368,9 @@
       },
       {
         "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":564,\"heightMm\":684,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"safety\"}",
-        "partIds": [
-          "furniture-1786745216210:back"
-        ],
-        "moduleIds": [
-          "kitchen-drawer-4"
-        ],
-        "names": [
-          "Fundo"
-        ],
+        "partIds": ["furniture-1786745216210:back"],
+        "moduleIds": ["kitchen-drawer-4"],
+        "names": ["Fundo"],
         "role": "back",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -491,15 +383,9 @@
       },
       {
         "key": "{\"role\":\"toe-kick\",\"materialId\":\"metal-black\",\"widthMm\":564,\"heightMm\":150,\"depthMm\":18,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"physical\"}",
-        "partIds": [
-          "furniture-1786745216210:toe-kick"
-        ],
-        "moduleIds": [
-          "kitchen-drawer-4"
-        ],
-        "names": [
-          "Rodapé"
-        ],
+        "partIds": ["furniture-1786745216210:toe-kick"],
+        "moduleIds": ["kitchen-drawer-4"],
+        "names": ["Rodapé"],
         "role": "toe-kick",
         "materialId": "metal-black",
         "quantity": 1,
@@ -518,15 +404,8 @@
           "furniture-1786745216210:drawer-3:front",
           "furniture-1786745216210:drawer-4:front"
         ],
-        "moduleIds": [
-          "kitchen-drawer-4"
-        ],
-        "names": [
-          "Frente gaveta 1",
-          "Frente gaveta 2",
-          "Frente gaveta 3",
-          "Frente gaveta 4"
-        ],
+        "moduleIds": ["kitchen-drawer-4"],
+        "names": ["Frente gaveta 1", "Frente gaveta 2", "Frente gaveta 3", "Frente gaveta 4"],
         "role": "drawer-front",
         "materialId": "mdf-white",
         "quantity": 4,
@@ -554,9 +433,7 @@
           "furniture-1786745216210:drawer-4:side-left",
           "furniture-1786745216210:drawer-4:side-right"
         ],
-        "moduleIds": [
-          "kitchen-drawer-4"
-        ],
+        "moduleIds": ["kitchen-drawer-4"],
         "names": [
           "Lateral gaveta 1 esquerda",
           "Lateral gaveta 1 direita",
@@ -585,9 +462,7 @@
           "furniture-1786745216210:drawer-3:back",
           "furniture-1786745216210:drawer-4:back"
         ],
-        "moduleIds": [
-          "kitchen-drawer-4"
-        ],
+        "moduleIds": ["kitchen-drawer-4"],
         "names": [
           "Traseira gaveta 1",
           "Traseira gaveta 2",
@@ -612,15 +487,8 @@
           "furniture-1786745216210:drawer-3:bottom",
           "furniture-1786745216210:drawer-4:bottom"
         ],
-        "moduleIds": [
-          "kitchen-drawer-4"
-        ],
-        "names": [
-          "Fundo gaveta 1",
-          "Fundo gaveta 2",
-          "Fundo gaveta 3",
-          "Fundo gaveta 4"
-        ],
+        "moduleIds": ["kitchen-drawer-4"],
+        "names": ["Fundo gaveta 1", "Fundo gaveta 2", "Fundo gaveta 3", "Fundo gaveta 4"],
         "role": "drawer-bottom",
         "materialId": "mdf-white",
         "quantity": 4,
@@ -633,15 +501,9 @@
       },
       {
         "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":1164,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": [
-          "furniture-1786745216212:base"
-        ],
-        "moduleIds": [
-          "kitchen-sink-cabinet"
-        ],
-        "names": [
-          "Base"
-        ],
+        "partIds": ["furniture-1786745216212:base"],
+        "moduleIds": ["kitchen-sink-cabinet"],
+        "names": ["Base"],
         "role": "base",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -656,15 +518,9 @@
       },
       {
         "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":1164,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": [
-          "furniture-1786745216212:top"
-        ],
-        "moduleIds": [
-          "kitchen-sink-cabinet"
-        ],
-        "names": [
-          "Topo"
-        ],
+        "partIds": ["furniture-1786745216212:top"],
+        "moduleIds": ["kitchen-sink-cabinet"],
+        "names": ["Topo"],
         "role": "top",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -679,15 +535,9 @@
       },
       {
         "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":1164,\"heightMm\":684,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"safety\"}",
-        "partIds": [
-          "furniture-1786745216212:back"
-        ],
-        "moduleIds": [
-          "kitchen-sink-cabinet"
-        ],
-        "names": [
-          "Fundo"
-        ],
+        "partIds": ["furniture-1786745216212:back"],
+        "moduleIds": ["kitchen-sink-cabinet"],
+        "names": ["Fundo"],
         "role": "back",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -700,15 +550,9 @@
       },
       {
         "key": "{\"role\":\"toe-kick\",\"materialId\":\"metal-black\",\"widthMm\":1164,\"heightMm\":150,\"depthMm\":18,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"physical\"}",
-        "partIds": [
-          "furniture-1786745216212:toe-kick"
-        ],
-        "moduleIds": [
-          "kitchen-sink-cabinet"
-        ],
-        "names": [
-          "Rodapé"
-        ],
+        "partIds": ["furniture-1786745216212:toe-kick"],
+        "moduleIds": ["kitchen-sink-cabinet"],
+        "names": ["Rodapé"],
         "role": "toe-kick",
         "materialId": "metal-black",
         "quantity": 1,
@@ -721,17 +565,9 @@
       },
       {
         "key": "{\"role\":\"door\",\"materialId\":\"mdf-white\",\"widthMm\":596,\"heightMm\":716,\"depthMm\":18,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"volumeType\":\"opening\"}",
-        "partIds": [
-          "furniture-1786745216212:door-1",
-          "furniture-1786745216212:door-2"
-        ],
-        "moduleIds": [
-          "kitchen-sink-cabinet"
-        ],
-        "names": [
-          "Porta 1",
-          "Porta 2"
-        ],
+        "partIds": ["furniture-1786745216212:door-1", "furniture-1786745216212:door-2"],
+        "moduleIds": ["kitchen-sink-cabinet"],
+        "names": ["Porta 1", "Porta 2"],
         "role": "door",
         "materialId": "mdf-white",
         "quantity": 2,
@@ -749,15 +585,9 @@
       },
       {
         "key": "{\"role\":\"side-left\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":700,\"depthMm\":350,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": [
-          "furniture-1786745216214:side-left"
-        ],
-        "moduleIds": [
-          "kitchen-golden-upper-800"
-        ],
-        "names": [
-          "Lateral esquerda"
-        ],
+        "partIds": ["furniture-1786745216214:side-left"],
+        "moduleIds": ["kitchen-golden-upper-800"],
+        "names": ["Lateral esquerda"],
         "role": "side-left",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -772,15 +602,9 @@
       },
       {
         "key": "{\"role\":\"side-right\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":700,\"depthMm\":350,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": [
-          "furniture-1786745216214:side-right"
-        ],
-        "moduleIds": [
-          "kitchen-golden-upper-800"
-        ],
-        "names": [
-          "Lateral direita"
-        ],
+        "partIds": ["furniture-1786745216214:side-right"],
+        "moduleIds": ["kitchen-golden-upper-800"],
+        "names": ["Lateral direita"],
         "role": "side-right",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -795,15 +619,9 @@
       },
       {
         "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":350,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": [
-          "furniture-1786745216214:base"
-        ],
-        "moduleIds": [
-          "kitchen-golden-upper-800"
-        ],
-        "names": [
-          "Base"
-        ],
+        "partIds": ["furniture-1786745216214:base"],
+        "moduleIds": ["kitchen-golden-upper-800"],
+        "names": ["Base"],
         "role": "base",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -818,15 +636,9 @@
       },
       {
         "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":350,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": [
-          "furniture-1786745216214:top"
-        ],
-        "moduleIds": [
-          "kitchen-golden-upper-800"
-        ],
-        "names": [
-          "Topo"
-        ],
+        "partIds": ["furniture-1786745216214:top"],
+        "moduleIds": ["kitchen-golden-upper-800"],
+        "names": ["Topo"],
         "role": "top",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -841,15 +653,9 @@
       },
       {
         "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":664,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"safety\"}",
-        "partIds": [
-          "furniture-1786745216214:back"
-        ],
-        "moduleIds": [
-          "kitchen-golden-upper-800"
-        ],
-        "names": [
-          "Fundo"
-        ],
+        "partIds": ["furniture-1786745216214:back"],
+        "moduleIds": ["kitchen-golden-upper-800"],
+        "names": ["Fundo"],
         "role": "back",
         "materialId": "mdf-white",
         "quantity": 1,
@@ -867,14 +673,8 @@
           "furniture-1786745216214:shelf-2",
           "furniture-1786745216214:shelf-3"
         ],
-        "moduleIds": [
-          "kitchen-golden-upper-800"
-        ],
-        "names": [
-          "Prateleira 1",
-          "Prateleira 2",
-          "Prateleira 3"
-        ],
+        "moduleIds": ["kitchen-golden-upper-800"],
+        "names": ["Prateleira 1", "Prateleira 2", "Prateleira 3"],
         "role": "shelf",
         "materialId": "mdf-white",
         "quantity": 3,
@@ -889,17 +689,9 @@
       },
       {
         "key": "{\"role\":\"door\",\"materialId\":\"mdf-white\",\"widthMm\":396,\"heightMm\":696,\"depthMm\":18,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"volumeType\":\"opening\"}",
-        "partIds": [
-          "furniture-1786745216214:door-1",
-          "furniture-1786745216214:door-2"
-        ],
-        "moduleIds": [
-          "kitchen-golden-upper-800"
-        ],
-        "names": [
-          "Porta 1",
-          "Porta 2"
-        ],
+        "partIds": ["furniture-1786745216214:door-1", "furniture-1786745216214:door-2"],
+        "moduleIds": ["kitchen-golden-upper-800"],
+        "names": ["Porta 1", "Porta 2"],
         "role": "door",
         "materialId": "mdf-white",
         "quantity": 2,
@@ -1003,9 +795,7 @@
           "furniture-1786745216210:drawer-4:slide-left",
           "furniture-1786745216210:drawer-4:slide-right"
         ],
-        "moduleIds": [
-          "kitchen-drawer-4"
-        ]
+        "moduleIds": ["kitchen-drawer-4"]
       },
       {
         "hardwareId": "sink-bowl",
@@ -1016,9 +806,7 @@
           "furniture-1786745216212:sink-rim-left",
           "furniture-1786745216212:sink-rim-right"
         ],
-        "moduleIds": [
-          "kitchen-sink-cabinet"
-        ]
+        "moduleIds": ["kitchen-sink-cabinet"]
       }
     ],
     "modules": [

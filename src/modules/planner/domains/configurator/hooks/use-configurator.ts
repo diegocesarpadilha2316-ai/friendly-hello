@@ -42,8 +42,15 @@ interface HiddenLocked {
 }
 
 const DEFAULT_LAYER_STATE: HiddenLocked["layerVisible"] = {
-  estrutura: true, portas: true, gavetas: true, ferragens: true,
-  vidros: true, espelhos: true, led: true, decoracao: true, producao: true,
+  estrutura: true,
+  portas: true,
+  gavetas: true,
+  ferragens: true,
+  vidros: true,
+  espelhos: true,
+  led: true,
+  decoracao: true,
+  producao: true,
 };
 
 export function useConfigurator() {
@@ -58,7 +65,17 @@ export function useConfigurator() {
     hidden: {},
     locked: {},
     layerVisible: { ...DEFAULT_LAYER_STATE },
-    layerLocked: { estrutura: false, portas: false, gavetas: false, ferragens: false, vidros: false, espelhos: false, led: false, decoracao: false, producao: false },
+    layerLocked: {
+      estrutura: false,
+      portas: false,
+      gavetas: false,
+      ferragens: false,
+      vidros: false,
+      espelhos: false,
+      led: false,
+      decoracao: false,
+      producao: false,
+    },
   });
 
   const activeNode = useMemo(() => {
@@ -165,12 +182,20 @@ export function useConfigurator() {
 
   const openAllDoors = useCallback(() => applyPatchToAll({ doorsOpenPct: 100 }), [applyPatchToAll]);
   const closeAllDoors = useCallback(() => applyPatchToAll({ doorsOpenPct: 0 }), [applyPatchToAll]);
-  const openAllDrawers = useCallback(() => applyPatchToAll({ drawersOpenPct: 100 }), [applyPatchToAll]);
-  const closeAllDrawers = useCallback(() => applyPatchToAll({ drawersOpenPct: 0 }), [applyPatchToAll]);
+  const openAllDrawers = useCallback(
+    () => applyPatchToAll({ drawersOpenPct: 100 }),
+    [applyPatchToAll],
+  );
+  const closeAllDrawers = useCallback(
+    () => applyPatchToAll({ drawersOpenPct: 0 }),
+    [applyPatchToAll],
+  );
   const openPercent = useCallback(
     (pct: number, target: "doors" | "drawers") => {
       const clamped = Math.max(0, Math.min(100, pct));
-      applyPatchToAll(target === "drawers" ? { drawersOpenPct: clamped } : { doorsOpenPct: clamped });
+      applyPatchToAll(
+        target === "drawers" ? { drawersOpenPct: clamped } : { doorsOpenPct: clamped },
+      );
     },
     [applyPatchToAll],
   );

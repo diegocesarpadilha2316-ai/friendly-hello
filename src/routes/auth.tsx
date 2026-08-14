@@ -73,13 +73,34 @@ function AuthPage() {
       {/* Floating bokeh orbs */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-[5] overflow-hidden">
         <div className="dioris-orb h-[380px] w-[380px] -left-24 top-16 bg-[radial-gradient(circle,_oklch(0.72_0.22_300)_0%,_transparent_65%)]" />
-        <div className="dioris-orb h-[300px] w-[300px] -right-16 top-28 bg-[radial-gradient(circle,_oklch(0.7_0.2_275)_0%,_transparent_65%)]" style={{ animationDelay: "2s" }} />
-        <div className="dioris-orb h-[260px] w-[260px] left-[18%] -bottom-10 bg-[radial-gradient(circle,_oklch(0.72_0.22_290)_0%,_transparent_65%)]" style={{ animationDelay: "4s" }} />
-        <div className="dioris-orb h-[340px] w-[340px] right-[10%] -bottom-20 bg-[radial-gradient(circle,_oklch(0.68_0.2_255)_0%,_transparent_65%)]" style={{ animationDelay: "6s" }} />
-        <div className="dioris-orb h-24 w-24 left-[8%] top-[42%] bg-[radial-gradient(circle,_oklch(0.75_0.22_295)_0%,_transparent_65%)]" style={{ animationDelay: "1s" }} />
-        <div className="dioris-orb h-16 w-16 right-[24%] top-[30%] bg-[radial-gradient(circle,_oklch(0.78_0.2_270)_0%,_transparent_65%)]" style={{ animationDelay: "3s" }} />
-        <div className="dioris-orb h-20 w-20 left-[42%] top-[8%] bg-[radial-gradient(circle,_oklch(0.75_0.22_285)_0%,_transparent_65%)]" style={{ animationDelay: "5s" }} />
-        <div className="dioris-orb h-14 w-14 right-[38%] bottom-[22%] bg-[radial-gradient(circle,_oklch(0.78_0.2_260)_0%,_transparent_65%)]" style={{ animationDelay: "7s" }} />
+        <div
+          className="dioris-orb h-[300px] w-[300px] -right-16 top-28 bg-[radial-gradient(circle,_oklch(0.7_0.2_275)_0%,_transparent_65%)]"
+          style={{ animationDelay: "2s" }}
+        />
+        <div
+          className="dioris-orb h-[260px] w-[260px] left-[18%] -bottom-10 bg-[radial-gradient(circle,_oklch(0.72_0.22_290)_0%,_transparent_65%)]"
+          style={{ animationDelay: "4s" }}
+        />
+        <div
+          className="dioris-orb h-[340px] w-[340px] right-[10%] -bottom-20 bg-[radial-gradient(circle,_oklch(0.68_0.2_255)_0%,_transparent_65%)]"
+          style={{ animationDelay: "6s" }}
+        />
+        <div
+          className="dioris-orb h-24 w-24 left-[8%] top-[42%] bg-[radial-gradient(circle,_oklch(0.75_0.22_295)_0%,_transparent_65%)]"
+          style={{ animationDelay: "1s" }}
+        />
+        <div
+          className="dioris-orb h-16 w-16 right-[24%] top-[30%] bg-[radial-gradient(circle,_oklch(0.78_0.2_270)_0%,_transparent_65%)]"
+          style={{ animationDelay: "3s" }}
+        />
+        <div
+          className="dioris-orb h-20 w-20 left-[42%] top-[8%] bg-[radial-gradient(circle,_oklch(0.75_0.22_285)_0%,_transparent_65%)]"
+          style={{ animationDelay: "5s" }}
+        />
+        <div
+          className="dioris-orb h-14 w-14 right-[38%] bottom-[22%] bg-[radial-gradient(circle,_oklch(0.78_0.2_260)_0%,_transparent_65%)]"
+          style={{ animationDelay: "7s" }}
+        />
       </div>
 
       <div className="relative w-full max-w-md">
@@ -113,7 +134,9 @@ function AuthPage() {
               <form onSubmit={onSubmit} className="space-y-3">
                 {tab === "signup" && (
                   <div className="space-y-1.5">
-                    <Label htmlFor="name" className="sr-only">Nome</Label>
+                    <Label htmlFor="name" className="sr-only">
+                      Nome
+                    </Label>
                     <Input
                       id="name"
                       placeholder="Seu nome"
@@ -125,7 +148,9 @@ function AuthPage() {
                   </div>
                 )}
                 <div className="space-y-1.5">
-                  <Label htmlFor="email" className="sr-only">E-mail</Label>
+                  <Label htmlFor="email" className="sr-only">
+                    E-mail
+                  </Label>
                   <Input
                     id="email"
                     type="email"
@@ -139,7 +164,9 @@ function AuthPage() {
                 </div>
                 {tab !== "reset" && (
                   <div className="space-y-1.5">
-                    <Label htmlFor="password" className="sr-only">Senha</Label>
+                    <Label htmlFor="password" className="sr-only">
+                      Senha
+                    </Label>
                     <Input
                       id="password"
                       type="password"

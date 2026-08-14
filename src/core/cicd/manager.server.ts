@@ -1,7 +1,15 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
-  Approval, Artifact, Build, CicdHealth, CicdHistoryPoint, Deploy,
-  Environment, Pipeline, PipelineStage, Release,
+  Approval,
+  Artifact,
+  Build,
+  CicdHealth,
+  CicdHistoryPoint,
+  Deploy,
+  Environment,
+  Pipeline,
+  PipelineStage,
+  Release,
 } from "./types";
 
 /**
@@ -170,12 +178,16 @@ export async function rollbackDeploy(
   deployId: string,
 ): Promise<Deploy> {
   const { data: target, error: e1 } = await supabase
-    .from("cicd_deploys").select("*")
-    .eq("company_id", tenantId).eq("id", deployId).single();
+    .from("cicd_deploys")
+    .select("*")
+    .eq("company_id", tenantId)
+    .eq("id", deployId)
+    .single();
   if (e1) throw new Error(e1.message);
   const src = target as Record<string, unknown>;
   const { data: row, error } = await supabase
-    .from("cicd_deploys").insert({
+    .from("cicd_deploys")
+    .insert({
       company_id: tenantId,
       build_id: src.build_id ?? null,
       environment_id: src.environment_id ?? null,
@@ -185,10 +197,14 @@ export async function rollbackDeploy(
       strategy: "recreate",
       rollback_of: deployId,
       metadata: { reason: "rollback", from: deployId },
-    }).select("*").single();
+    })
+    .select("*")
+    .single();
   if (error) throw new Error(error.message);
-  await supabase.from("cicd_deploys")
+  await supabase
+    .from("cicd_deploys")
     .update({ status: "rolled_back", finished_at: new Date().toISOString() })
-    .eq("company_id", tenantId).eq("id", deployId);
+    .eq("company_id", tenantId)
+    .eq("id", deployId);
   return mapDeploy(row as Record<string, unknown>);
 }

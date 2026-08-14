@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { usePlannerStore } from "./usePlannerStore";
 
-
 describe("Golden Kitchen preset", () => {
   afterEach(() => {
     usePlannerStore.getState().newProject();
@@ -11,10 +10,16 @@ describe("Golden Kitchen preset", () => {
     usePlannerStore.getState().applyGoldenKitchen();
     const instances = usePlannerStore.getState().instances;
     expect(instances.length).toBeGreaterThanOrEqual(6);
-    expect(instances.some((instance) => instance.moduleDefinitionId === "kitchen-tower-oven-microwave")).toBe(true);
+    expect(
+      instances.some((instance) => instance.moduleDefinitionId === "kitchen-tower-oven-microwave"),
+    ).toBe(true);
     expect(instances.every((instance) => instance.parts.length > 0)).toBe(true);
-    expect(instances.some((instance) => instance.materialOverrides.body === "mdf-freijo")).toBe(true);
-    expect(instances.some((instance) => instance.materialOverrides.countertop === "stone-quartzite")).toBe(true);
+    expect(instances.some((instance) => instance.materialOverrides.body === "mdf-freijo")).toBe(
+      true,
+    );
+    expect(
+      instances.some((instance) => instance.materialOverrides.countertop === "stone-quartzite"),
+    ).toBe(true);
   });
 
   it("records the preset as one undoable project operation", () => {

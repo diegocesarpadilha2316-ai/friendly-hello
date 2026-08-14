@@ -19,5 +19,7 @@ export function highestRated(limit = 10): readonly MarketplaceItem[] {
 }
 
 export function newest(limit = 10): readonly MarketplaceItem[] {
-  return [...MARKETPLACE_ITEMS].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, limit);
+  return [...MARKETPLACE_ITEMS]
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+    .slice(0, limit);
 }

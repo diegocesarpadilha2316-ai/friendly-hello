@@ -6,7 +6,12 @@
  * → peças + rigs → motionGroup → intertravamento.
  */
 import { describe, expect, it } from "vitest";
-import { buildKitchenModule, normalizeKitchenModule, planKitchen, type KitchenLayoutInput } from "../index";
+import {
+  buildKitchenModule,
+  normalizeKitchenModule,
+  planKitchen,
+  type KitchenLayoutInput,
+} from "../index";
 import {
   buildAssembly,
   classifyFront,
@@ -109,7 +114,12 @@ describe("canto diagonal — abas fixas", () => {
   });
 
   it("6. a geometria do canto diagonal permanece dentro do envelope", () => {
-    const spec = normalizeKitchenModule({ kind: "canto-diagonal", widthMm: 900, heightMm: 850, depthMm: 600 });
+    const spec = normalizeKitchenModule({
+      kind: "canto-diagonal",
+      widthMm: 900,
+      heightMm: 850,
+      depthMm: 600,
+    });
     const built = buildKitchenModule(spec);
     for (const p of built.assembly.pieces) {
       expect(p.box.x, p.id).toBeGreaterThanOrEqual(-60);
@@ -155,7 +165,10 @@ describe("canto diagonal — abas fixas", () => {
       // Nenhuma peça fixa carrega rig em nenhum módulo da cena.
       for (const piece of built.assembly.pieces) {
         if (isFixedFront(piece.partKind)) {
-          expect(built.assembly.motions.some((m) => m.pieceId === piece.id), piece.id).toBe(false);
+          expect(
+            built.assembly.motions.some((m) => m.pieceId === piece.id),
+            piece.id,
+          ).toBe(false);
         }
       }
     }
@@ -184,11 +197,27 @@ describe("canto diagonal — abas fixas", () => {
 
 describe("taxonomia de frentes", () => {
   it("distingue os seis tipos de frente", () => {
-    const piece = (partKind: ConstructionPiece["partKind"], frontRole?: ConstructionPiece["frontRole"]) =>
-      ({ partKind, frontRole }) as Pick<ConstructionPiece, "partKind" | "frontRole">;
+    const piece = (
+      partKind: ConstructionPiece["partKind"],
+      frontRole?: ConstructionPiece["frontRole"],
+    ) => ({ partKind, frontRole }) as Pick<ConstructionPiece, "partKind" | "frontRole">;
 
-    const hinge = { pieceId: "x", kind: "hinge", axis: "y", direction: 1, durationMs: 600, easing: "ease-out" } as const;
-    const slide = { pieceId: "x", kind: "slide", axis: "x", direction: 1, durationMs: 600, easing: "ease-out" } as const;
+    const hinge = {
+      pieceId: "x",
+      kind: "hinge",
+      axis: "y",
+      direction: 1,
+      durationMs: 600,
+      easing: "ease-out",
+    } as const;
+    const slide = {
+      pieceId: "x",
+      kind: "slide",
+      axis: "x",
+      direction: 1,
+      durationMs: 600,
+      easing: "ease-out",
+    } as const;
     expect(classifyFront(piece("porta"), hinge)).toBe("porta-abrir");
     expect(classifyFront(piece("porta"), slide)).toBe("porta-correr");
     expect(classifyFront(piece("gaveta-frente"))).toBe("gaveta-frente");
@@ -202,7 +231,13 @@ describe("taxonomia de frentes", () => {
     const assembly = buildAssembly({
       id: "t",
       label: "Painel",
-      slots: [{ id: "p", component: "painel", params: { widthMm: 1200, heightMm: 2400, treatment: "liso" } }],
+      slots: [
+        {
+          id: "p",
+          component: "painel",
+          params: { widthMm: 1200, heightMm: 2400, treatment: "liso" },
+        },
+      ],
     });
     const front = assembly.pieces[0];
     expect(front.partKind).toBe("frente-fixa");

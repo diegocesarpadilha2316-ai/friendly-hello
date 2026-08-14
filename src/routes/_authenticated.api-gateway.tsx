@@ -137,7 +137,9 @@ function ApiGatewayPage() {
 
       {revealed && (
         <div className="rounded-lg border border-warning/40 bg-warning/10 p-4 text-sm">
-          <div className="mb-1 font-medium">Copie e guarde este segredo. Ele não será mostrado novamente.</div>
+          <div className="mb-1 font-medium">
+            Copie e guarde este segredo. Ele não será mostrado novamente.
+          </div>
           <code className="break-all rounded bg-background px-2 py-1 text-xs">{revealed}</code>
           <Button size="sm" variant="ghost" className="ml-2" onClick={() => setRevealed(null)}>
             Ok
@@ -233,7 +235,8 @@ function ApiGatewayPage() {
         ),
       },
     ];
-    if (!data.length) return <EmptyState title="Nenhuma API Key" description="Crie sua primeira chave." />;
+    if (!data.length)
+      return <EmptyState title="Nenhuma API Key" description="Crie sua primeira chave." />;
     return <DataTable data={[...data]} columns={cols} getRowKey={(r) => r.id} />;
   }
 }
@@ -248,14 +251,18 @@ function EndpointsTab({ data }: { data: readonly ApiEndpoint[] }) {
       id: "public",
       header: "Público",
       cell: (r) => (
-        <StatusBadge tone={r.public ? "success" : "neutral"}>{r.public ? "Sim" : "Não"}</StatusBadge>
+        <StatusBadge tone={r.public ? "success" : "neutral"}>
+          {r.public ? "Sim" : "Não"}
+        </StatusBadge>
       ),
     },
     {
       id: "dep",
       header: "Deprecado",
       cell: (r) => (
-        <StatusBadge tone={r.deprecated ? "warning" : "neutral"}>{r.deprecated ? "Sim" : "Não"}</StatusBadge>
+        <StatusBadge tone={r.deprecated ? "warning" : "neutral"}>
+          {r.deprecated ? "Sim" : "Não"}
+        </StatusBadge>
       ),
     },
   ];
@@ -288,7 +295,12 @@ function RateLimitTab({ data }: { data: readonly ApiRateLimit[] }) {
     { id: "m", header: "Máx.", cell: (r) => r.maxRequests },
   ];
   if (!data.length)
-    return <EmptyState title="Nenhum rate limit configurado" description="Usando limite padrão: 120 req/min." />;
+    return (
+      <EmptyState
+        title="Nenhum rate limit configurado"
+        description="Usando limite padrão: 120 req/min."
+      />
+    );
   return <DataTable data={[...data]} columns={cols} getRowKey={(r) => r.id} />;
 }
 
@@ -312,7 +324,9 @@ function WebhooksTab({ data }: { data: readonly ApiWebhookEndpoint[] }) {
       id: "active",
       header: "Ativo",
       cell: (r) => (
-        <StatusBadge tone={r.active ? "success" : "neutral"}>{r.active ? "Sim" : "Não"}</StatusBadge>
+        <StatusBadge tone={r.active ? "success" : "neutral"}>
+          {r.active ? "Sim" : "Não"}
+        </StatusBadge>
       ),
     },
     {
@@ -338,7 +352,13 @@ function DeliveriesTab({ data }: { data: readonly ApiWebhookDelivery[] }) {
       cell: (r) => (
         <StatusBadge
           tone={
-            r.status === "delivered" ? "success" : r.status === "pending" ? "info" : r.status === "failed" ? "warning" : "danger"
+            r.status === "delivered"
+              ? "success"
+              : r.status === "pending"
+                ? "info"
+                : r.status === "failed"
+                  ? "warning"
+                  : "danger"
           }
         >
           {r.status}

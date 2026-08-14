@@ -103,10 +103,7 @@ async function advanceTable(
       finished += 1;
       processed += 1;
     } else {
-      await admin
-        .from(table)
-        .update({ progress: next, updated_at: now })
-        .eq("id", raw.id);
+      await admin.from(table).update({ progress: next, updated_at: now }).eq("id", raw.id);
       processed += 1;
     }
   }
@@ -114,9 +111,7 @@ async function advanceTable(
   return { processed, finished };
 }
 
-export async function tickRenderWorkers(opts?: {
-  maxJobs?: number;
-}): Promise<{
+export async function tickRenderWorkers(opts?: { maxJobs?: number }): Promise<{
   render: { processed: number; finished: number };
   video: { processed: number; finished: number };
 }> {

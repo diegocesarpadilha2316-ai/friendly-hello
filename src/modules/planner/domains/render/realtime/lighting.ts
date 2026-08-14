@@ -28,18 +28,12 @@ const WEATHER_MULT: Record<RealtimeWeatherId, number> = {
   "blue-hour": 0.35,
 };
 
-export function computeSun(
-  time: RealtimeTimeOfDay,
-  weather: RealtimeWeatherId,
-): RealtimeSunState {
+export function computeSun(time: RealtimeTimeOfDay, weather: RealtimeWeatherId): RealtimeSunState {
   const base = SUN_BY_TIME[time];
   return { ...base, intensity: Math.max(0, base.intensity * WEATHER_MULT[weather]) };
 }
 
-export function computeSky(
-  time: RealtimeTimeOfDay,
-  weather: RealtimeWeatherId,
-) {
+export function computeSky(time: RealtimeTimeOfDay, weather: RealtimeWeatherId) {
   const day = time === "12h" || time === "15h";
   const dawn = time === "06h" || time === "08h";
   const dusk = time === "18h";

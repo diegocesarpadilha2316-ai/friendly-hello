@@ -8,11 +8,8 @@ export interface InsufficientCreditsPayload {
   need: number;
 }
 
-export function parseInsufficientCredits(
-  err: unknown,
-): InsufficientCreditsPayload | null {
-  const msg =
-    err instanceof Error ? err.message : typeof err === "string" ? err : "";
+export function parseInsufficientCredits(err: unknown): InsufficientCreditsPayload | null {
+  const msg = err instanceof Error ? err.message : typeof err === "string" ? err : "";
   if (!msg || !msg.includes("insufficient_credits")) return null;
   try {
     const start = msg.indexOf("{");

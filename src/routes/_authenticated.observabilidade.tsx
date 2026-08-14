@@ -76,18 +76,38 @@ function ObservabilityPage() {
   };
 
   const logCols: DataTableColumn<LogEntry>[] = [
-    { id: "createdAt", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR") },
-    { id: "level", header: "Nível", cell: (r) => <StatusBadge tone={levelTone(r.level)}>{r.level}</StatusBadge> },
+    {
+      id: "createdAt",
+      header: "Quando",
+      cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR"),
+    },
+    {
+      id: "level",
+      header: "Nível",
+      cell: (r) => <StatusBadge tone={levelTone(r.level)}>{r.level}</StatusBadge>,
+    },
     { id: "module", header: "Módulo", cell: (r) => r.module },
     { id: "action", header: "Ação", cell: (r) => r.action },
     { id: "message", header: "Mensagem", cell: (r) => r.message ?? "—" },
     { id: "trace", header: "Trace", cell: (r) => (r.traceId ? r.traceId.slice(0, 8) : "—") },
-    { id: "duration", header: "Duração", cell: (r) => (r.durationMs != null ? `${r.durationMs}ms` : "—") },
+    {
+      id: "duration",
+      header: "Duração",
+      cell: (r) => (r.durationMs != null ? `${r.durationMs}ms` : "—"),
+    },
   ];
 
   const auditCols: DataTableColumn<AuditEntry>[] = [
-    { id: "createdAt", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR") },
-    { id: "action", header: "Ação", cell: (r) => <StatusBadge tone="info">{r.action}</StatusBadge> },
+    {
+      id: "createdAt",
+      header: "Quando",
+      cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR"),
+    },
+    {
+      id: "action",
+      header: "Ação",
+      cell: (r) => <StatusBadge tone="info">{r.action}</StatusBadge>,
+    },
     { id: "entity", header: "Entidade", cell: (r) => r.entity },
     { id: "entityId", header: "ID", cell: (r) => r.entityId ?? "—" },
     { id: "user", header: "Usuário", cell: (r) => r.userId ?? "sistema" },
@@ -95,11 +115,23 @@ function ObservabilityPage() {
   ];
 
   const errCols: DataTableColumn<ErrorReport>[] = [
-    { id: "lastSeen", header: "Última", cell: (r) => new Date(r.lastSeenAt).toLocaleString("pt-BR") },
+    {
+      id: "lastSeen",
+      header: "Última",
+      cell: (r) => new Date(r.lastSeenAt).toLocaleString("pt-BR"),
+    },
     { id: "module", header: "Módulo", cell: (r) => r.module },
     { id: "message", header: "Mensagem", cell: (r) => r.message },
     { id: "occurrences", header: "Ocorrências", cell: (r) => r.occurrences },
-    { id: "resolved", header: "Status", cell: (r) => <StatusBadge tone={r.resolved ? "success" : "danger"}>{r.resolved ? "resolvido" : "aberto"}</StatusBadge> },
+    {
+      id: "resolved",
+      header: "Status",
+      cell: (r) => (
+        <StatusBadge tone={r.resolved ? "success" : "danger"}>
+          {r.resolved ? "resolvido" : "aberto"}
+        </StatusBadge>
+      ),
+    },
     {
       id: "actions",
       header: "",
@@ -117,19 +149,39 @@ function ObservabilityPage() {
   ];
 
   const traceCols: DataTableColumn<TraceSession>[] = [
-    { id: "startedAt", header: "Início", cell: (r) => new Date(r.startedAt).toLocaleString("pt-BR") },
+    {
+      id: "startedAt",
+      header: "Início",
+      cell: (r) => new Date(r.startedAt).toLocaleString("pt-BR"),
+    },
     { id: "trace", header: "Trace", cell: (r) => r.traceId.slice(0, 8) },
     { id: "module", header: "Módulo", cell: (r) => r.rootModule ?? "—" },
     { id: "action", header: "Ação", cell: (r) => r.rootAction ?? "—" },
-    { id: "duration", header: "Duração", cell: (r) => (r.durationMs != null ? `${r.durationMs}ms` : "—") },
+    {
+      id: "duration",
+      header: "Duração",
+      cell: (r) => (r.durationMs != null ? `${r.durationMs}ms` : "—"),
+    },
     { id: "status", header: "Status", cell: (r) => r.status ?? "—" },
   ];
 
   const healthCols: DataTableColumn<HealthCheckEntry>[] = [
-    { id: "createdAt", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR") },
+    {
+      id: "createdAt",
+      header: "Quando",
+      cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR"),
+    },
     { id: "component", header: "Componente", cell: (r) => r.component },
-    { id: "status", header: "Status", cell: (r) => <StatusBadge tone={healthTone(r.status)}>{r.status}</StatusBadge> },
-    { id: "latency", header: "Latência", cell: (r) => (r.latencyMs != null ? `${r.latencyMs}ms` : "—") },
+    {
+      id: "status",
+      header: "Status",
+      cell: (r) => <StatusBadge tone={healthTone(r.status)}>{r.status}</StatusBadge>,
+    },
+    {
+      id: "latency",
+      header: "Latência",
+      cell: (r) => (r.latencyMs != null ? `${r.latencyMs}ms` : "—"),
+    },
   ];
 
   return (
@@ -176,30 +228,57 @@ function ObservabilityPage() {
       <section className="mt-10 space-y-3">
         <h2 className="text-lg font-semibold">Health</h2>
         {health.data && health.data.length > 0 ? (
-          <DataTable data={health.data as HealthCheckEntry[]} columns={healthCols} getRowKey={(r) => r.id} />
+          <DataTable
+            data={health.data as HealthCheckEntry[]}
+            columns={healthCols}
+            getRowKey={(r) => r.id}
+          />
         ) : (
-          <EmptyState title="Sem health checks" description="Componentes começarão a reportar assim que emitirem status." />
+          <EmptyState
+            title="Sem health checks"
+            description="Componentes começarão a reportar assim que emitirem status."
+          />
         )}
       </section>
 
       <section className="mt-10 space-y-3">
         <h2 className="text-lg font-semibold">Logs recentes</h2>
-        <DataTable data={(logs.data ?? []) as LogEntry[]} columns={logCols} getRowKey={(r) => r.id} empty="Sem logs registrados." />
+        <DataTable
+          data={(logs.data ?? []) as LogEntry[]}
+          columns={logCols}
+          getRowKey={(r) => r.id}
+          empty="Sem logs registrados."
+        />
       </section>
 
       <section className="mt-10 space-y-3">
         <h2 className="text-lg font-semibold">Auditoria</h2>
-        <DataTable data={(audit.data ?? []) as AuditEntry[]} columns={auditCols} getRowKey={(r) => r.id} empty="Sem eventos de auditoria." />
+        <DataTable
+          data={(audit.data ?? []) as AuditEntry[]}
+          columns={auditCols}
+          getRowKey={(r) => r.id}
+          empty="Sem eventos de auditoria."
+        />
       </section>
 
       <section className="mt-10 grid gap-8 md:grid-cols-2">
         <div className="space-y-3">
           <h2 className="text-lg font-semibold">Erros</h2>
-          <DataTable data={(errors.data ?? []) as ErrorReport[]} columns={errCols} getRowKey={(r) => r.id} empty="Nenhum erro reportado." />
+          <DataTable
+            data={(errors.data ?? []) as ErrorReport[]}
+            columns={errCols}
+            getRowKey={(r) => r.id}
+            empty="Nenhum erro reportado."
+          />
         </div>
         <div className="space-y-3">
           <h2 className="text-lg font-semibold">Traces</h2>
-          <DataTable data={(traces.data ?? []) as TraceSession[]} columns={traceCols} getRowKey={(r) => r.id} empty="Sem sessões de trace." />
+          <DataTable
+            data={(traces.data ?? []) as TraceSession[]}
+            columns={traceCols}
+            getRowKey={(r) => r.id}
+            empty="Sem sessões de trace."
+          />
         </div>
       </section>
     </PageContainer>

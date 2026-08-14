@@ -15,7 +15,13 @@ export function parseFBX(input: ArrayBuffer | string, filename: string): ImportR
     materials: [],
     texts: [],
     previewSvg: null,
-    warnings: [{ code: "fbx-mesh", severity: "info", message: "FBX importado como malha — anexado ao Editor 3D." }],
+    warnings: [
+      {
+        code: "fbx-mesh",
+        severity: "info",
+        message: "FBX importado como malha — anexado ao Editor 3D.",
+      },
+    ],
     createdAt: new Date().toISOString(),
   };
 }

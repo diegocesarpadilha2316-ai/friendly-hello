@@ -56,7 +56,10 @@ function fromXML(text: string): MarketplaceImportResult {
   return { format: "xml", items, errors };
 }
 
-export function importMarketplace(text: string, format: MarketplaceImportFormat): MarketplaceImportResult {
+export function importMarketplace(
+  text: string,
+  format: MarketplaceImportFormat,
+): MarketplaceImportResult {
   if (format === "json") return fromJSON(text);
   if (format === "xml") return fromXML(text);
   return fromCSV(text, format);

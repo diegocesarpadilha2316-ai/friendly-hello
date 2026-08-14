@@ -124,12 +124,11 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
     if (runnerRef.current) return runnerRef.current;
     const current = plan;
     if (!current) return null;
-    const ctx: ToolContext =
-      ctxRef.current ?? {
-        environmentId: editor.state.selectedEnvironmentId ?? "",
-        roomId: editor.state.selectedRoomId ?? "",
-        selectionIds: editor.state.selectedNodeId ? [editor.state.selectedNodeId] : undefined,
-      };
+    const ctx: ToolContext = ctxRef.current ?? {
+      environmentId: editor.state.selectedEnvironmentId ?? "",
+      roomId: editor.state.selectedRoomId ?? "",
+      selectionIds: editor.state.selectedNodeId ? [editor.state.selectedNodeId] : undefined,
+    };
     ctxRef.current = ctx;
     return buildRunner(current, ctx);
   }, [buildRunner, editor.state, plan]);
@@ -146,7 +145,9 @@ export function usePlanExecution(tenantId: string): UsePlanExecutionResult {
         sessionId: input.sessionId,
         clientMessageId: input.clientMessageId,
         project: input.project,
-        memory: input.project.id ? readMemory(tenantId, input.project.id, input.project.name) : null,
+        memory: input.project.id
+          ? readMemory(tenantId, input.project.id, input.project.name)
+          : null,
         hasSelection: Boolean(input.ctx.selectionIds?.length),
         roomHasDimensions: Boolean(room?.dimensions.width && room?.dimensions.depth),
       });

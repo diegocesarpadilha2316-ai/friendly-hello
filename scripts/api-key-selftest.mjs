@@ -28,10 +28,16 @@ const verifyApiKey = (s, h) => {
 };
 
 let fail = 0;
-const t = (name, cond) => { console.log(`${cond ? "PASS" : "FAIL"}  ${name}`); if (!cond) fail++; };
+const t = (name, cond) => {
+  console.log(`${cond ? "PASS" : "FAIL"}  ${name}`);
+  if (!cond) fail++;
+};
 
 const k = generateApiKey();
-t("gera token no formato dio_xxxxxxxx.<secret>", /^dio_[a-f0-9]{8}\.[A-Za-z0-9_-]{32}$/.test(k.full));
+t(
+  "gera token no formato dio_xxxxxxxx.<secret>",
+  /^dio_[a-f0-9]{8}\.[A-Za-z0-9_-]{32}$/.test(k.full),
+);
 t("prefixo independente do segredo", !k.secret.startsWith(k.prefix.slice(4)));
 t("hash determinístico", hashApiKey(k.secret) === hashApiKey(k.secret));
 t("hashes diferentes para chaves diferentes", generateApiKey().keyHash !== k.keyHash);
@@ -39,7 +45,10 @@ t("extrai prefixo corretamente", parseApiKeyToken(k.full).prefix === k.prefix);
 t("verify aceita segredo correto", verifyApiKey(k.secret, k.keyHash));
 t("verify rejeita segredo errado", !verifyApiKey(generateApiKey().secret, k.keyHash));
 t("rejeita formato inválido (sem ponto)", parseApiKeyToken("diox") === null);
-t("rejeita formato inválido (prefixo estranho)", parseApiKeyToken("abc_1234.aaaaaaaaaaaaaaaaaaaa") === null);
+t(
+  "rejeita formato inválido (prefixo estranho)",
+  parseApiKeyToken("abc_1234.aaaaaaaaaaaaaaaaaaaa") === null,
+);
 t("rejeita segredo curto", parseApiKeyToken("dio_12345678.short") === null);
 t("aceita prefixo legado dk_", parseApiKeyToken("dk_abc123.aaaaaaaaaaaaaaaaaaaa") !== null);
 t("normalização ignora espaços", hashApiKey(` ${k.secret} `) === k.keyHash);

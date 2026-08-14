@@ -3,7 +3,11 @@
  */
 import type { LocalTransition, LocalTransitionKind } from "./types";
 
-export const LOCAL_TRANSITIONS: readonly { readonly kind: LocalTransitionKind; readonly label: string; readonly defaultSec: number }[] = [
+export const LOCAL_TRANSITIONS: readonly {
+  readonly kind: LocalTransitionKind;
+  readonly label: string;
+  readonly defaultSec: number;
+}[] = [
   { kind: "cut", label: "Cut", defaultSec: 0 },
   { kind: "fade", label: "Fade", defaultSec: 0.6 },
   { kind: "zoom", label: "Zoom", defaultSec: 0.8 },

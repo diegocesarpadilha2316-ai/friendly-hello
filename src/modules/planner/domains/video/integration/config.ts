@@ -2,7 +2,11 @@
  * Fase 3.31 — Configuração real derivada do encoder + output + timeline.
  */
 import { encoderMaxTier, pickEncoder } from "./encoders";
-import type { LocalTimeline, LocalVideoOutputSpec, LocalVideoResolution } from "../local-engine/types";
+import type {
+  LocalTimeline,
+  LocalVideoOutputSpec,
+  LocalVideoResolution,
+} from "../local-engine/types";
 import { LOCAL_VIDEO_RESOLUTIONS } from "../local-engine/encoder";
 import type { RealResolvedOutput, RealVideoEncoderId } from "./types";
 

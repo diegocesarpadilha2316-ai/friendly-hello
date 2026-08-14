@@ -34,20 +34,56 @@ export const configurationSnapshotQuery = () =>
   });
 
 export const platformQuery = () =>
-  queryOptions({ queryKey: configurationKeys.platform(), queryFn: () => platformGet(), staleTime: 300_000 });
+  queryOptions({
+    queryKey: configurationKeys.platform(),
+    queryFn: () => platformGet(),
+    staleTime: 300_000,
+  });
 export const companySettingsQuery = () =>
-  queryOptions({ queryKey: configurationKeys.company(), queryFn: () => companySettingsGet(), staleTime: 60_000 });
+  queryOptions({
+    queryKey: configurationKeys.company(),
+    queryFn: () => companySettingsGet(),
+    staleTime: 60_000,
+  });
 export const flagsQuery = () =>
-  queryOptions({ queryKey: configurationKeys.flags(), queryFn: () => flagsList(), staleTime: 30_000 });
+  queryOptions({
+    queryKey: configurationKeys.flags(),
+    queryFn: () => flagsList(),
+    staleTime: 30_000,
+  });
 export const integrationsQuery = () =>
-  queryOptions({ queryKey: configurationKeys.integrations(), queryFn: () => integrationsList(), staleTime: 30_000 });
+  queryOptions({
+    queryKey: configurationKeys.integrations(),
+    queryFn: () => integrationsList(),
+    staleTime: 30_000,
+  });
 export const brandingQuery = () =>
-  queryOptions({ queryKey: configurationKeys.branding(), queryFn: () => brandingGet(), staleTime: 120_000 });
+  queryOptions({
+    queryKey: configurationKeys.branding(),
+    queryFn: () => brandingGet(),
+    staleTime: 120_000,
+  });
 export const localizationQuery = () =>
-  queryOptions({ queryKey: configurationKeys.localization(), queryFn: () => localizationGet(), staleTime: 120_000 });
+  queryOptions({
+    queryKey: configurationKeys.localization(),
+    queryFn: () => localizationGet(),
+    staleTime: 120_000,
+  });
 export const securityQuery = () =>
-  queryOptions({ queryKey: configurationKeys.security(), queryFn: () => securityGet(), staleTime: 60_000 });
+  queryOptions({
+    queryKey: configurationKeys.security(),
+    queryFn: () => securityGet(),
+    staleTime: 60_000,
+  });
 export const backupQuery = () =>
-  queryOptions({ queryKey: configurationKeys.backup(), queryFn: () => backupGet(), staleTime: 60_000 });
+  queryOptions({
+    queryKey: configurationKeys.backup(),
+    queryFn: () => backupGet(),
+    staleTime: 60_000,
+  });
 export const apiKeysQuery = () =>
-  queryOptions({ queryKey: configurationKeys.apiKeys(), queryFn: () => apiKeysList(), staleTime: 30_000 });
+  queryOptions({
+    queryKey: configurationKeys.apiKeys(),
+    queryFn: () => apiKeysList(),
+    staleTime: 30_000,
+  });

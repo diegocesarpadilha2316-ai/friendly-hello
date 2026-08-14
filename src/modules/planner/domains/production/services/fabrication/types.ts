@@ -110,32 +110,12 @@ export interface DrillingSheet {
 
 // ─── Máquinas & Pós-processadores ──────────────────────────────
 
-export type CamFormat =
-  | "gcode"
-  | "dxf"
-  | "nc"
-  | "bpp"
-  | "cix"
-  | "xxl"
-  | "cid3"
-  | "iso"
-  | "mpr";
+export type CamFormat = "gcode" | "dxf" | "nc" | "bpp" | "cix" | "xxl" | "cid3" | "iso" | "mpr";
 
-export type MachineVendor =
-  | "Homag"
-  | "Biesse"
-  | "SCM"
-  | "Felder"
-  | "Casadei"
-  | "Genérico";
+export type MachineVendor = "Homag" | "Biesse" | "SCM" | "Felder" | "Casadei" | "Genérico";
 
 export type MachineFamily =
-  | "seccionadora"
-  | "coladeira"
-  | "furadeira"
-  | "router"
-  | "centro-usinagem"
-  | "nesting";
+  "seccionadora" | "coladeira" | "furadeira" | "router" | "centro-usinagem" | "nesting";
 
 export interface FabricationMachine {
   id: string;

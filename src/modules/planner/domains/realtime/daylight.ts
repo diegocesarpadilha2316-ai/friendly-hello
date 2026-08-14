@@ -20,5 +20,9 @@ const SUN: Record<RealtimeTimeOfDay, RealtimeSunPosition> = {
   "22h": { azimuthDeg: 300, elevationDeg: -25 },
 };
 
-export function sunPosition(t: RealtimeTimeOfDay): RealtimeSunPosition { return SUN[t]; }
-export function isDay(t: RealtimeTimeOfDay): boolean { return SUN[t].elevationDeg > 0; }
+export function sunPosition(t: RealtimeTimeOfDay): RealtimeSunPosition {
+  return SUN[t];
+}
+export function isDay(t: RealtimeTimeOfDay): boolean {
+  return SUN[t].elevationDeg > 0;
+}

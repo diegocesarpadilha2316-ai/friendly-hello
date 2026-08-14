@@ -27,7 +27,13 @@ import { Button } from "@/core/components/ui-kit";
 import { cn } from "@/lib/utils";
 import { usePlannerEditor } from "../state/editor-context";
 import { buildScene3D } from "./extrusion";
-import { DEFAULT_VIEWPORT_3D, type Camera3DMode, type Camera3DView, type Render3DMode, type Viewport3DState } from "./types";
+import {
+  DEFAULT_VIEWPORT_3D,
+  type Camera3DMode,
+  type Camera3DView,
+  type Render3DMode,
+  type Viewport3DState,
+} from "./types";
 import { Scene3D } from "./Scene3D";
 import type { PlannerProject, PlannerRoom } from "../types/project";
 import { RotateCw, Trash2, Copy } from "lucide-react";
@@ -189,7 +195,10 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
     controls?.cinematic,
   ]);
 
-  const model = useMemo(() => (room ? buildScene3D(room, viewport.wallHeight) : null), [room, viewport.wallHeight]);
+  const model = useMemo(
+    () => (room ? buildScene3D(room, viewport.wallHeight) : null),
+    [room, viewport.wallHeight],
+  );
 
   // ---------------------------------------------------------------
   // Mutação do cômodo a partir do 3D — mesmo pipeline do Editor2D.
@@ -239,10 +248,7 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
         const bw = Number(q.width) || 0;
         const bd = Number(q.depth) || 0;
         return (
-          xMm < bx1 + bw - 5 &&
-          xMm + wMm > bx1 + 5 &&
-          yMm < by1 + bd - 5 &&
-          yMm + dMm > by1 + 5
+          xMm < bx1 + bw - 5 && xMm + wMm > bx1 + 5 && yMm < by1 + bd - 5 && yMm + dMm > by1 + 5
         );
       });
       if (collides) return r; // aborta o commit — a proxy do gizmo será
@@ -296,7 +302,11 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
     return [
       ...model.walls.map((w) => ({ id: w.id, label: `Parede ${w.id.slice(-4)}`, kind: "wall" })),
       ...model.floors.map((f) => ({ id: f.id, label: `Piso ${f.id.slice(-4)}`, kind: "floor" })),
-      ...model.ceilings.map((c) => ({ id: c.id, label: `Teto ${c.id.slice(-4)}`, kind: "ceiling" })),
+      ...model.ceilings.map((c) => ({
+        id: c.id,
+        label: `Teto ${c.id.slice(-4)}`,
+        kind: "ceiling",
+      })),
       ...model.openings.map((o) => ({
         id: o.id,
         label: `${o.role === "door" ? "Porta" : "Janela"} ${o.id.slice(-4)}`,
@@ -315,13 +325,27 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
     const onKey = (e: KeyboardEvent) => {
       if ((e.target as HTMLElement | null)?.tagName === "INPUT") return;
       switch (e.key.toLowerCase()) {
-        case "1": setViewport((v) => ({ ...v, camera: "orbit" })); break;
-        case "2": setViewport((v) => ({ ...v, camera: "first-person" })); break;
-        case "3": setViewport((v) => ({ ...v, camera: "fly" })); break;
-        case "w": setViewport((v) => ({ ...v, render: v.render === "wireframe" ? "solid" : "wireframe" })); break;
-        case "m": setViewport((v) => ({ ...v, render: v.render === "material" ? "solid" : "material" })); break;
-        case "g": setViewport((v) => ({ ...v, showGrid: !v.showGrid })); break;
-        case "t": setGizmoMode("translate"); break;
+        case "1":
+          setViewport((v) => ({ ...v, camera: "orbit" }));
+          break;
+        case "2":
+          setViewport((v) => ({ ...v, camera: "first-person" }));
+          break;
+        case "3":
+          setViewport((v) => ({ ...v, camera: "fly" }));
+          break;
+        case "w":
+          setViewport((v) => ({ ...v, render: v.render === "wireframe" ? "solid" : "wireframe" }));
+          break;
+        case "m":
+          setViewport((v) => ({ ...v, render: v.render === "material" ? "solid" : "material" }));
+          break;
+        case "g":
+          setViewport((v) => ({ ...v, showGrid: !v.showGrid }));
+          break;
+        case "t":
+          setGizmoMode("translate");
+          break;
         case "r":
           if (e.ctrlKey || e.metaKey) return;
           setGizmoMode("rotate");
@@ -336,7 +360,9 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
             duplicateSelected();
           }
           break;
-        case "escape": setSelectedId(null); break;
+        case "escape":
+          setSelectedId(null);
+          break;
       }
     };
     window.addEventListener("keydown", onKey);
@@ -352,9 +378,7 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
     );
   }
 
-  const selected = selectedId
-    ? sceneNodes.find((n) => n.id === selectedId) ?? null
-    : null;
+  const selected = selectedId ? (sceneNodes.find((n) => n.id === selectedId) ?? null) : null;
 
   return (
     <div className="grid min-h-[520px] grid-cols-1 gap-2 rounded-xl border border-border/60 bg-background/40 p-2 xl:h-[720px] xl:grid-cols-[200px_1fr_240px]">
@@ -388,7 +412,13 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
                 onClick={() => setViewport((v) => ({ ...v, render: m }))}
                 title={`Modo ${RENDER_LABEL[m]}`}
               >
-                {m === "wireframe" ? <ZapOff className="h-3.5 w-3.5" /> : m === "material" ? <Sparkles className="h-3.5 w-3.5" /> : <Boxes className="h-3.5 w-3.5" />}
+                {m === "wireframe" ? (
+                  <ZapOff className="h-3.5 w-3.5" />
+                ) : m === "material" ? (
+                  <Sparkles className="h-3.5 w-3.5" />
+                ) : (
+                  <Boxes className="h-3.5 w-3.5" />
+                )}
                 {RENDER_LABEL[m]}
               </ToolbarButton>
             ))}
@@ -436,7 +466,11 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
               title="Rebaixar / ocultar paredes (cicla: cheia → 900mm → transparente)"
             >
               <ArrowDownToLine className="h-3.5 w-3.5" />
-              {viewport.wallHeight < 2500 ? "Rebaixada" : viewport.wallOpacity < 0.9 ? "Oculta" : "Paredes"}
+              {viewport.wallHeight < 2500
+                ? "Rebaixada"
+                : viewport.wallOpacity < 0.9
+                  ? "Oculta"
+                  : "Paredes"}
             </ToolbarButton>
             <span className="mx-1 h-4 w-px bg-border/60" />
             <ToolbarButton
@@ -470,10 +504,10 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
                   d === "morning"
                     ? "Manhã — sol baixo a leste"
                     : d === "noon"
-                    ? "Meio-dia — sol alto"
-                    : d === "golden"
-                    ? "Golden hour — sol dourado"
-                    : "Noite — estrelado"
+                      ? "Meio-dia — sol alto"
+                      : d === "golden"
+                        ? "Golden hour — sol dourado"
+                        : "Noite — estrelado"
                 }
               >
                 {d === "morning" ? "🌅" : d === "noon" ? "☀️" : d === "golden" ? "🌇" : "🌙"}
@@ -510,16 +544,10 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
             <RotateCw className="h-3.5 w-3.5" /> Girar
           </ToolbarButton>
           <span className="mx-1 h-4 w-px bg-border/60" />
-          <ToolbarButton
-            onClick={duplicateSelected}
-            title="Duplicar seleção (Ctrl+D)"
-          >
+          <ToolbarButton onClick={duplicateSelected} title="Duplicar seleção (Ctrl+D)">
             <Copy className="h-3.5 w-3.5" /> Duplicar
           </ToolbarButton>
-          <ToolbarButton
-            onClick={deleteSelected}
-            title="Excluir seleção (Delete)"
-          >
+          <ToolbarButton onClick={deleteSelected} title="Excluir seleção (Delete)">
             <Trash2 className="h-3.5 w-3.5" /> Excluir
           </ToolbarButton>
         </div>
@@ -527,7 +555,8 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
         {/* Status bar */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-center justify-between gap-2 border-t border-border/40 bg-background/50 px-3 py-1 text-[11px] text-muted-foreground backdrop-blur">
           <span className="inline-flex items-center gap-1">
-            <Compass className="h-3 w-3" /> {CAM_LABEL[viewport.camera]} · {RENDER_LABEL[viewport.render]}
+            <Compass className="h-3 w-3" /> {CAM_LABEL[viewport.camera]} ·{" "}
+            {RENDER_LABEL[viewport.render]}
           </span>
           <span>
             {model.walls.length} paredes · {model.floors.length + model.ceilings.length} lajes ·{" "}
@@ -537,7 +566,8 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
             <Pointer className="h-3 w-3" /> {selected ? selected.label : "Nenhuma seleção"}
           </span>
           <span className="hidden md:inline-flex items-center gap-1 opacity-70">
-            Tecla <kbd className="rounded border border-border/60 bg-background/80 px-1">F</kbd> enquadra a seleção
+            Tecla <kbd className="rounded border border-border/60 bg-background/80 px-1">F</kbd>{" "}
+            enquadra a seleção
           </span>
         </div>
       </div>
@@ -604,14 +634,29 @@ export function Viewport3D({ controls }: { controls?: Viewport3DControls } = {})
 
         <section className="border-t border-border/60 pt-2">
           <header className="mb-2 flex items-center gap-2 text-xs font-medium text-foreground">
-            {selected ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />} Inspector
+            {selected ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}{" "}
+            Inspector
           </header>
           {selected ? (
             <div className="flex flex-col gap-1 text-muted-foreground">
-              <div className="flex justify-between"><span>ID</span><span className="text-foreground">{selected.id.slice(-8)}</span></div>
-              <div className="flex justify-between"><span>Tipo</span><span className="text-foreground">{selected.kind}</span></div>
-              <div className="flex justify-between"><span>Rótulo</span><span className="text-foreground">{selected.label}</span></div>
-              <Button size="sm" variant="ghost" className="mt-2" onClick={() => setSelectedId(null)}>
+              <div className="flex justify-between">
+                <span>ID</span>
+                <span className="text-foreground">{selected.id.slice(-8)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Tipo</span>
+                <span className="text-foreground">{selected.kind}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Rótulo</span>
+                <span className="text-foreground">{selected.label}</span>
+              </div>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="mt-2"
+                onClick={() => setSelectedId(null)}
+              >
                 Limpar seleção
               </Button>
             </div>

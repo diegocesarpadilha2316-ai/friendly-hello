@@ -86,10 +86,18 @@ export function pickEncoder(
 ): RealVideoEncoderId {
   const caps = detectEncoders();
   if (preferred !== "auto") {
-    const chosen = caps.find((e) => e.id === preferred && e.available && e.containers.includes(container));
+    const chosen = caps.find(
+      (e) => e.id === preferred && e.available && e.containers.includes(container),
+    );
     if (chosen) return chosen.id;
   }
-  const priority: readonly RealVideoEncoderId[] = ["webcodecs", "ffmpeg-wasm", "mediarecorder", "gif-encoder", "png-sequence"];
+  const priority: readonly RealVideoEncoderId[] = [
+    "webcodecs",
+    "ffmpeg-wasm",
+    "mediarecorder",
+    "gif-encoder",
+    "png-sequence",
+  ];
   for (const id of priority) {
     const c = caps.find((e) => e.id === id);
     if (c && c.available && c.containers.includes(container)) return c.id;

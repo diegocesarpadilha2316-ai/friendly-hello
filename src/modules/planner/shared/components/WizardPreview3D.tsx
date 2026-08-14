@@ -27,7 +27,9 @@ const ROOM_DIMS: Partial<Record<PlannerRoomType, { w: number; d: number; h: numb
 };
 const DEFAULT_DIM = { w: 4.0, d: 3.4, h: 2.7 };
 
-const STYLE_PALETTE: Partial<Record<PlannerProjectStyle, { floor: string; walls: string; accent: string }>> = {
+const STYLE_PALETTE: Partial<
+  Record<PlannerProjectStyle, { floor: string; walls: string; accent: string }>
+> = {
   moderno: { floor: "#3f3a36", walls: "#eceef2", accent: "#8b5cf6" },
   minimalista: { floor: "#d9d4cc", walls: "#f7f6f2", accent: "#a3a3a3" },
   escandinavo: { floor: "#d9c3a4", walls: "#f6f2ec", accent: "#93b7d6" },
@@ -54,7 +56,8 @@ export function WizardPreview3D({ roomType, style }: Props) {
     [palette.walls],
   );
   const accentMat = useMemo(
-    () => new THREE.MeshStandardMaterial({ color: palette.accent, roughness: 0.5, metalness: 0.15 }),
+    () =>
+      new THREE.MeshStandardMaterial({ color: palette.accent, roughness: 0.5, metalness: 0.15 }),
     [palette.accent],
   );
 
@@ -81,12 +84,7 @@ export function WizardPreview3D({ roomType, style }: Props) {
       </Suspense>
 
       {/* Piso */}
-      <mesh
-        position={[0, 0, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        receiveShadow
-        material={floorMat}
-      >
+      <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow material={floorMat}>
         <planeGeometry args={[w, d]} />
       </mesh>
       {/* Parede fundo */}
@@ -98,25 +96,21 @@ export function WizardPreview3D({ roomType, style }: Props) {
         <boxGeometry args={[0.05, h, d]} />
       </mesh>
       {/* Móvel de destaque (bloco paramétrico proporcional ao ambiente) */}
-      <mesh
-        position={[-w / 2 + 0.35, 0.9, 0]}
-        material={accentMat}
-        castShadow
-        receiveShadow
-      >
+      <mesh position={[-w / 2 + 0.35, 0.9, 0]} material={accentMat} castShadow receiveShadow>
         <boxGeometry args={[0.6, 1.8, Math.min(d * 0.7, 2.2)]} />
       </mesh>
       {/* Bancada baixa */}
-      <mesh
-        position={[0.2, 0.45, -d / 2 + 0.35]}
-        material={accentMat}
-        castShadow
-        receiveShadow
-      >
+      <mesh position={[0.2, 0.45, -d / 2 + 0.35]} material={accentMat} castShadow receiveShadow>
         <boxGeometry args={[Math.min(w * 0.55, 2.4), 0.9, 0.6]} />
       </mesh>
 
-      <ContactShadows position={[0, 0.01, 0]} opacity={0.45} scale={Math.max(w, d) * 1.5} blur={2.4} far={4} />
+      <ContactShadows
+        position={[0, 0.01, 0]}
+        opacity={0.45}
+        scale={Math.max(w, d) * 1.5}
+        blur={2.4}
+        far={4}
+      />
 
       <OrbitControls
         enablePan={false}

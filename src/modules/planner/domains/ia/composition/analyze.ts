@@ -55,11 +55,7 @@ export function readOpenings(room: PlannerRoom): OpeningInfo[] {
   return out;
 }
 
-function analyzeWall(
-  wall: LayoutWall,
-  length: number,
-  openings: readonly OpeningInfo[],
-): WallInfo {
+function analyzeWall(wall: LayoutWall, length: number, openings: readonly OpeningInfo[]): WallInfo {
   const mine = openings.filter((o) => o.wall === wall);
   const doors = mine.filter((o) => o.role === "door");
   const windows = mine.filter((o) => o.role === "window");

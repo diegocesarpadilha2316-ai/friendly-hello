@@ -22,11 +22,7 @@ import {
 } from "@/core/components/ui-kit";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  useBillingSummary,
-  useCreditLedger,
-  usePlansCatalog,
-} from "@/core/billing/use-billing";
+import { useBillingSummary, useCreditLedger, usePlansCatalog } from "@/core/billing/use-billing";
 import { useAudit } from "@/core/observability/use-observability";
 import { cn } from "@/lib/utils";
 import type { PlanDefinition } from "@/core/billing/types";
@@ -84,11 +80,15 @@ function WorkspaceAssinatura() {
 
   const status = summary.subscription?.status ?? "—";
   const statusTone: React.ComponentProps<typeof StatusBadge>["tone"] =
-    status === "active" ? "success"
-    : status === "trial" ? "info"
-    : status === "past_due" ? "danger"
-    : status === "canceled" ? "warning"
-    : "neutral";
+    status === "active"
+      ? "success"
+      : status === "trial"
+        ? "info"
+        : status === "past_due"
+          ? "danger"
+          : status === "canceled"
+            ? "warning"
+            : "neutral";
 
   return (
     <PageContainer>
@@ -137,8 +137,8 @@ function WorkspaceAssinatura() {
               <CardContent className="flex items-center gap-3 py-4 text-sm">
                 <Sparkles className="h-4 w-4 text-primary" />
                 <span>
-                  Trial termina em {trialEnds.toLocaleDateString("pt-BR")} —{" "}
-                  faça upgrade para continuar sem interrupção.
+                  Trial termina em {trialEnds.toLocaleDateString("pt-BR")} — faça upgrade para
+                  continuar sem interrupção.
                 </span>
               </CardContent>
             </Card>
@@ -151,8 +151,12 @@ function WorkspaceAssinatura() {
         <MetricCard
           icon={<CreditCard className="h-4 w-4" />}
           label="Plano ativo"
-          value={isLoading ? "…" : summary.plan?.label ?? "Free"}
-          hint={summary.plan ? formatCurrency(summary.plan.priceCents, summary.plan.currency) + "/mês" : "sem cobrança"}
+          value={isLoading ? "…" : (summary.plan?.label ?? "Free")}
+          hint={
+            summary.plan
+              ? formatCurrency(summary.plan.priceCents, summary.plan.currency) + "/mês"
+              : "sem cobrança"
+          }
         />
         <MetricCard
           icon={<Shield className="h-4 w-4" />}
@@ -240,17 +244,16 @@ function WorkspaceAssinatura() {
               <Row
                 label="Preço"
                 value={
-                  summary.plan ? formatCurrency(summary.plan.priceCents, summary.plan.currency) : "—"
+                  summary.plan
+                    ? formatCurrency(summary.plan.priceCents, summary.plan.currency)
+                    : "—"
                 }
               />
               <Row
                 label="Créditos mensais"
                 value={(summary.plan?.monthlyCredits ?? 0).toLocaleString("pt-BR")}
               />
-              <Row
-                label="Provedor"
-                value={summary.subscription?.externalProvider ?? "interno"}
-              />
+              <Row label="Provedor" value={summary.subscription?.externalProvider ?? "interno"} />
               <Row
                 label="Trial até"
                 value={trialEnds ? trialEnds.toLocaleDateString("pt-BR") : "—"}
@@ -312,7 +315,9 @@ function WorkspaceAssinatura() {
                       </p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm">Gerenciar</Button>
+                  <Button variant="outline" size="sm">
+                    Gerenciar
+                  </Button>
                 </div>
               ) : (
                 <EmptyState
@@ -337,10 +342,7 @@ function WorkspaceAssinatura() {
                     : "—"
                 }
               />
-              <Row
-                label="Data"
-                value={resets ? resets.toLocaleDateString("pt-BR") : "—"}
-              />
+              <Row label="Data" value={resets ? resets.toLocaleDateString("pt-BR") : "—"} />
               <Row label="Ciclo" value="Mensal" />
               <div className="pt-2 text-xs text-muted-foreground">
                 <Receipt className="mr-1 inline h-3 w-3" />

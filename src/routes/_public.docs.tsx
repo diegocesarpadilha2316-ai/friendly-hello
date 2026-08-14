@@ -7,7 +7,10 @@ export const Route = createFileRoute("/_public/docs")({
   head: () => ({
     meta: [
       { title: "Documentação — Dioris" },
-      { name: "description", content: "Guias, referência de API, SDK e exemplos para desenvolvedores." },
+      {
+        name: "description",
+        content: "Guias, referência de API, SDK e exemplos para desenvolvedores.",
+      },
       { property: "og:title", content: "Documentação Dioris" },
       { property: "og:description", content: "Guias, SDK, API e exemplos." },
       { property: "og:url", content: "/docs" },
@@ -19,7 +22,12 @@ export const Route = createFileRoute("/_public/docs")({
 
 const sections = [
   { icon: Rocket, t: "Começando", d: "Crie sua conta, empresa e primeiro projeto.", tag: "Guia" },
-  { icon: Book, t: "Conceitos", d: "Tenants, RBAC, créditos, eventos e observabilidade.", tag: "Guia" },
+  {
+    icon: Book,
+    t: "Conceitos",
+    d: "Tenants, RBAC, créditos, eventos e observabilidade.",
+    tag: "Guia",
+  },
   { icon: KeyRound, t: "Autenticação", d: "Fluxos, MFA e sessões.", tag: "Guia" },
   { icon: Code2, t: "API Reference", d: "Endpoints REST versionados.", tag: "Ref" },
   { icon: Code2, t: "SDK TypeScript", d: "Cliente oficial da plataforma.", tag: "Ref" },
@@ -53,10 +61,16 @@ function Page() {
       </Reveal>
       <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((s) => (
-          <Link key={s.t} to="/docs" className="group rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition-colors hover:border-primary/40 hover:bg-white/5">
+          <Link
+            key={s.t}
+            to="/docs"
+            className="group rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition-colors hover:border-primary/40 hover:bg-white/5"
+          >
             <div className="flex items-start justify-between">
               <s.icon className="h-6 w-6 text-primary" />
-              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">{s.tag}</span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                {s.tag}
+              </span>
             </div>
             <h3 className="mt-4 font-bold">{s.t}</h3>
             <p className="mt-1.5 text-sm text-foreground/70">{s.d}</p>

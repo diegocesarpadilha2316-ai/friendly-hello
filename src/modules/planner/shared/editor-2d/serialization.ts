@@ -21,7 +21,8 @@ function bool(node: PlannerParametricNode, key: string, def: boolean): boolean {
 }
 
 export function toPrimitive(node: PlannerParametricNode): Editor2DPrimitive | null {
-  const layer = (str(node, "layer", "") || defaultLayerFor(node.kind, node.params["role"])) as Editor2DLayerId;
+  const layer = (str(node, "layer", "") ||
+    defaultLayerFor(node.kind, node.params["role"])) as Editor2DLayerId;
   const locked = bool(node, "locked", false);
   const materialId = str(node, "materialId", "") || undefined;
   switch (node.kind) {
@@ -108,15 +109,20 @@ export function toPrimitive(node: PlannerParametricNode): Editor2DPrimitive | nu
 
 function defaultLayerFor(kind: PlannerParametricNode["kind"], role: unknown): Editor2DLayerId {
   switch (kind) {
-    case "wall": return "walls";
-    case "opening": return "openings";
-    case "floor": return "floors";
-    case "ceiling": return "ceilings";
+    case "wall":
+      return "walls";
+    case "opening":
+      return "openings";
+    case "floor":
+      return "floors";
+    case "ceiling":
+      return "ceilings";
     case "material":
       return role === "guide" ? "guides" : "walls";
     case "module":
       return role === "furniture" ? "furniture" : "walls";
-    default: return "walls";
+    default:
+      return "walls";
   }
 }
 
@@ -128,8 +134,13 @@ export function fromPrimitive(p: Editor2DPrimitive, label?: string): PlannerPara
         ...base,
         kind: "wall",
         params: {
-          x1: p.x1, y1: p.y1, x2: p.x2, y2: p.y2,
-          thickness: p.thickness, layer: p.layer, locked: p.locked,
+          x1: p.x1,
+          y1: p.y1,
+          x2: p.x2,
+          y2: p.y2,
+          thickness: p.thickness,
+          layer: p.layer,
+          locked: p.locked,
           materialId: p.materialId ?? null,
         },
       };
@@ -139,8 +150,13 @@ export function fromPrimitive(p: Editor2DPrimitive, label?: string): PlannerPara
         kind: "opening",
         params: {
           role: p.role,
-          x: p.x, y: p.y, width: p.width, height: p.height,
-          rotation: p.rotation, layer: p.layer, locked: p.locked,
+          x: p.x,
+          y: p.y,
+          width: p.width,
+          height: p.height,
+          rotation: p.rotation,
+          layer: p.layer,
+          locked: p.locked,
           materialId: p.materialId ?? null,
         },
       };
@@ -150,8 +166,12 @@ export function fromPrimitive(p: Editor2DPrimitive, label?: string): PlannerPara
         ...base,
         kind: p.kind,
         params: {
-          x: p.x, y: p.y, width: p.width, depth: p.depth,
-          layer: p.layer, locked: p.locked,
+          x: p.x,
+          y: p.y,
+          width: p.width,
+          depth: p.depth,
+          layer: p.layer,
+          locked: p.locked,
           materialId: p.materialId ?? null,
         },
       };
@@ -161,8 +181,10 @@ export function fromPrimitive(p: Editor2DPrimitive, label?: string): PlannerPara
         kind: "material",
         params: {
           role: "guide",
-          axis: p.axis, pos: p.pos,
-          layer: p.layer, locked: p.locked,
+          axis: p.axis,
+          pos: p.pos,
+          layer: p.layer,
+          locked: p.locked,
         },
       };
     case "furniture": {
@@ -175,10 +197,14 @@ export function fromPrimitive(p: Editor2DPrimitive, label?: string): PlannerPara
           role: "furniture",
           subtype: p.subtype,
           catalogItemId: p.catalogItemId,
-          x: p.x, y: p.y,
-          width: p.width, depth: p.depth, height: p.height,
+          x: p.x,
+          y: p.y,
+          width: p.width,
+          depth: p.depth,
+          height: p.height,
           rotation: p.rotation,
-          layer: p.layer, locked: p.locked,
+          layer: p.layer,
+          locked: p.locked,
           materialId: p.materialId ?? null,
           ...custom,
         },
@@ -189,12 +215,18 @@ export function fromPrimitive(p: Editor2DPrimitive, label?: string): PlannerPara
 
 function defaultLabel(p: Editor2DPrimitive): string {
   switch (p.kind) {
-    case "wall": return "Parede";
-    case "opening": return p.role === "door" ? "Porta" : "Janela";
-    case "floor": return "Piso";
-    case "ceiling": return "Teto";
-    case "guide": return "Guia";
-    case "furniture": return p.subtype;
+    case "wall":
+      return "Parede";
+    case "opening":
+      return p.role === "door" ? "Porta" : "Janela";
+    case "floor":
+      return "Piso";
+    case "ceiling":
+      return "Teto";
+    case "guide":
+      return "Guia";
+    case "furniture":
+      return p.subtype;
   }
 }
 

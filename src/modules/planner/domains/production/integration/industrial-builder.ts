@@ -58,14 +58,15 @@ export function buildIndustrialBundle(
     ...DEFAULT_OPTIMIZER_CONSTRAINTS,
     ...(options.optimizer ?? {}),
   };
-  const fabrication = production.cutList.length > 0
-    ? optimizeCutting(production.cutList, constraints)
-    : null;
+  const fabrication =
+    production.cutList.length > 0 ? optimizeCutting(production.cutList, constraints) : null;
   const nesting = selectBestNesting(production.cutList);
   const cnc = buildCncManifest(production.cutList, options.cncMachineId ?? PRIMARY_MACHINE_ID);
   const assembly = buildAssemblyPlan(production.parts);
   const cost = buildIndustrialCost(production, fabrication);
-  const offcuts: readonly OffcutInventoryItem[] = options.tenantId ? loadOffcuts(options.tenantId) : [];
+  const offcuts: readonly OffcutInventoryItem[] = options.tenantId
+    ? loadOffcuts(options.tenantId)
+    : [];
 
   const capacity = buildCapacitySnapshot(production, assembly);
   const routings = buildRoutingPlans(production);
@@ -74,8 +75,21 @@ export function buildIndustrialBundle(
   const factoryDelivery = estimateFactoryDelivery(routings, capacity, balance);
   const quality = buildQualityChecklist(production);
   const prioritized = prioritizeOrders(orders, production);
-  const queues = buildQueues(production, assembly, routings, prioritized, project.client ?? project.name);
-  const factoryKpis = buildFactoryKpis(production, capacity, balance, factoryDelivery, quality, queues);
+  const queues = buildQueues(
+    production,
+    assembly,
+    routings,
+    prioritized,
+    project.client ?? project.name,
+  );
+  const factoryKpis = buildFactoryKpis(
+    production,
+    capacity,
+    balance,
+    factoryDelivery,
+    quality,
+    queues,
+  );
   const factoryAlerts = buildFactoryAlerts(balance, capacity, factoryDelivery, quality, queues);
 
   const planningOrders = buildPlanningOrders(orders, {
@@ -91,8 +105,16 @@ export function buildIndustrialBundle(
   const planningDelivery = estimatePlanningDelivery(planningOrders);
 
   const kpis = buildFinalKpis({
-    report: production, nesting, cnc, cost, capacity, balance, quality,
-    delivery: factoryDelivery, mrp, capacityWindow,
+    report: production,
+    nesting,
+    cnc,
+    cost,
+    capacity,
+    balance,
+    quality,
+    delivery: factoryDelivery,
+    mrp,
+    capacityWindow,
   });
 
   return {
@@ -100,10 +122,29 @@ export function buildIndustrialBundle(
     projectId: project.id,
     projectName: project.name,
     clientName: project.client ?? project.name,
-    production, orders, fabrication, nesting, offcuts, cnc, assembly, cost,
-    capacity, balance, assignments, routings, quality, queues, prioritized,
-    factoryDelivery, factoryAlerts, factoryKpis,
-    planningOrders, mrp, capacityWindow, schedule, planningDelivery,
+    production,
+    orders,
+    fabrication,
+    nesting,
+    offcuts,
+    cnc,
+    assembly,
+    cost,
+    capacity,
+    balance,
+    assignments,
+    routings,
+    quality,
+    queues,
+    prioritized,
+    factoryDelivery,
+    factoryAlerts,
+    factoryKpis,
+    planningOrders,
+    mrp,
+    capacityWindow,
+    schedule,
+    planningDelivery,
     kpis,
   };
 }

@@ -28,7 +28,9 @@ export function VideoQueue({ queue, history, onCancel, onRetry, onClearHistory }
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
       <div className="rounded-2xl border border-border/60 bg-background/40 p-3 backdrop-blur">
         <div className="mb-2 flex items-center justify-between">
-          <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Fila</h4>
+          <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            Fila
+          </h4>
           <StatusBadge tone="neutral">{queue.length}</StatusBadge>
         </div>
         {queue.length === 0 ? (
@@ -44,7 +46,9 @@ export function VideoQueue({ queue, history, onCancel, onRetry, onClearHistory }
 
       <div className="rounded-2xl border border-border/60 bg-background/40 p-3 backdrop-blur">
         <div className="mb-2 flex items-center justify-between">
-          <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Histórico</h4>
+          <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            Histórico
+          </h4>
           <div className="flex items-center gap-2">
             <StatusBadge tone="neutral">{history.length}</StatusBadge>
             {history.length > 0 ? (

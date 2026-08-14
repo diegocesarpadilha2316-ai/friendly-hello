@@ -35,7 +35,17 @@ describe("projectPersistence V4", () => {
         depth: 4000,
         height: 2800,
         wallThickness: 80,
-        openings: [{ id: "window-1", type: "window", wall: "back", offset: 0, width: 1200, height: 950, sill: 1050 }],
+        openings: [
+          {
+            id: "window-1",
+            type: "window",
+            wall: "back",
+            offset: 0,
+            width: 1200,
+            height: 950,
+            sill: 1050,
+          },
+        ],
         referenceImage: null,
         referenceName: null,
         referenceStyle: "natural",
@@ -53,7 +63,9 @@ describe("projectPersistence V4", () => {
 
   it("rejeita schema ou versão incompatíveis", () => {
     expect(parseProject(JSON.stringify({ schema: "other", version: 4 }))).toBeNull();
-    expect(parseProject(JSON.stringify({ schema: "dioris.planner-v2.project", version: 3 }))).toBeNull();
+    expect(
+      parseProject(JSON.stringify({ schema: "dioris.planner-v2.project", version: 3 })),
+    ).toBeNull();
     expect(parseProject("not-json")).toBeNull();
   });
 });

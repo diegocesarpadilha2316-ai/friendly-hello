@@ -33,14 +33,7 @@ import {
 } from "@/core/security";
 
 type TabKey =
-  | "dashboard"
-  | "sessions"
-  | "devices"
-  | "login"
-  | "mfa"
-  | "policies"
-  | "incidents"
-  | "audit";
+  "dashboard" | "sessions" | "devices" | "login" | "mfa" | "policies" | "incidents" | "audit";
 
 const TABS: readonly { key: TabKey; label: string }[] = [
   { key: "dashboard", label: "Dashboard" },
@@ -159,7 +152,11 @@ function SessionsTab({ sessions }: { sessions: SecuritySession[] }) {
   const logout = useGlobalLogout();
   const columns: DataTableColumn<SecuritySession>[] = useMemo(
     () => [
-      { id: "userId", header: "Usuário", cell: (r) => <code className="text-xs">{r.userId.slice(0, 8)}</code> },
+      {
+        id: "userId",
+        header: "Usuário",
+        cell: (r) => <code className="text-xs">{r.userId.slice(0, 8)}</code>,
+      },
       { id: "ip", header: "IP", cell: (r) => r.ip ?? "—" },
       { id: "location", header: "Local", cell: (r) => r.location ?? "—" },
       {
@@ -171,7 +168,11 @@ function SessionsTab({ sessions }: { sessions: SecuritySession[] }) {
           </StatusBadge>
         ),
       },
-      { id: "lastSeenAt", header: "Última atividade", cell: (r) => new Date(r.lastSeenAt).toLocaleString() },
+      {
+        id: "lastSeenAt",
+        header: "Última atividade",
+        cell: (r) => new Date(r.lastSeenAt).toLocaleString(),
+      },
       {
         id: "actions",
         header: "",
@@ -220,7 +221,11 @@ function DevicesTab({ devices }: { devices: SecurityDevice[] }) {
         </StatusBadge>
       ),
     },
-    { id: "lastSeenAt", header: "Última atividade", cell: (r) => new Date(r.lastSeenAt).toLocaleString() },
+    {
+      id: "lastSeenAt",
+      header: "Última atividade",
+      cell: (r) => new Date(r.lastSeenAt).toLocaleString(),
+    },
     {
       id: "actions",
       header: "",
@@ -283,7 +288,11 @@ function MfaTab({ factors, policy }: { factors: SecurityMfaFactor[]; policy: Sec
       header: "",
       cell: (r) => (
         <div className="flex gap-2">
-          <Button size="sm" variant="ghost" onClick={() => toggle.mutate({ id: r.id, enabled: !r.enabled })}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => toggle.mutate({ id: r.id, enabled: !r.enabled })}
+          >
             {r.enabled ? "Desativar" : "Ativar"}
           </Button>
           <Button size="sm" variant="ghost" onClick={() => remove.mutate(r.id)}>
@@ -382,29 +391,77 @@ function PoliciesTab({ policy }: { policy: SecurityPolicy }) {
           onChange={(e) => setForm({ ...form, csp: e.target.value })}
         />
       </label>
-      <NumberField label="HSTS max-age (s)" value={form.hstsMaxAge} onChange={(v) => setForm({ ...form, hstsMaxAge: v })} />
+      <NumberField
+        label="HSTS max-age (s)"
+        value={form.hstsMaxAge}
+        onChange={(v) => setForm({ ...form, hstsMaxAge: v })}
+      />
       <SelectField
         label="X-Frame-Options"
         value={form.frameOptions}
         options={["DENY", "SAMEORIGIN"]}
         onChange={(v) => setForm({ ...form, frameOptions: v as "DENY" | "SAMEORIGIN" })}
       />
-      <TextField label="Referrer-Policy" value={form.referrerPolicy} onChange={(v) => setForm({ ...form, referrerPolicy: v })} />
-      <TextField label="Permissions-Policy" value={form.permissionsPolicy} onChange={(v) => setForm({ ...form, permissionsPolicy: v })} />
+      <TextField
+        label="Referrer-Policy"
+        value={form.referrerPolicy}
+        onChange={(v) => setForm({ ...form, referrerPolicy: v })}
+      />
+      <TextField
+        label="Permissions-Policy"
+        value={form.permissionsPolicy}
+        onChange={(v) => setForm({ ...form, permissionsPolicy: v })}
+      />
       <TextField
         label="CORS origens (vírgula)"
         value={form.corsAllowedOrigins}
         onChange={(v) => setForm({ ...form, corsAllowedOrigins: v })}
       />
-      <NumberField label="Replay window (s)" value={form.replayWindowSeconds} onChange={(v) => setForm({ ...form, replayWindowSeconds: v })} />
-      <NumberField label="Brute-force max tentativas" value={form.bruteForceMaxAttempts} onChange={(v) => setForm({ ...form, bruteForceMaxAttempts: v })} />
-      <NumberField label="Lockout (min)" value={form.bruteForceLockoutMinutes} onChange={(v) => setForm({ ...form, bruteForceLockoutMinutes: v })} />
-      <NumberField label="Sessão TTL (min)" value={form.sessionTtlMinutes} onChange={(v) => setForm({ ...form, sessionTtlMinutes: v })} />
-      <BoolField label="CSRF" value={form.csrfEnabled} onChange={(v) => setForm({ ...form, csrfEnabled: v })} />
-      <BoolField label="Exigir MFA" value={form.requireMfa} onChange={(v) => setForm({ ...form, requireMfa: v })} />
-      <BoolField label="Permitir TOTP" value={form.allowTotp} onChange={(v) => setForm({ ...form, allowTotp: v })} />
-      <BoolField label="Permitir Passkey/WebAuthn" value={form.allowPasskey} onChange={(v) => setForm({ ...form, allowPasskey: v })} />
-      <BoolField label="Permitir Backup Codes" value={form.allowBackupCodes} onChange={(v) => setForm({ ...form, allowBackupCodes: v })} />
+      <NumberField
+        label="Replay window (s)"
+        value={form.replayWindowSeconds}
+        onChange={(v) => setForm({ ...form, replayWindowSeconds: v })}
+      />
+      <NumberField
+        label="Brute-force max tentativas"
+        value={form.bruteForceMaxAttempts}
+        onChange={(v) => setForm({ ...form, bruteForceMaxAttempts: v })}
+      />
+      <NumberField
+        label="Lockout (min)"
+        value={form.bruteForceLockoutMinutes}
+        onChange={(v) => setForm({ ...form, bruteForceLockoutMinutes: v })}
+      />
+      <NumberField
+        label="Sessão TTL (min)"
+        value={form.sessionTtlMinutes}
+        onChange={(v) => setForm({ ...form, sessionTtlMinutes: v })}
+      />
+      <BoolField
+        label="CSRF"
+        value={form.csrfEnabled}
+        onChange={(v) => setForm({ ...form, csrfEnabled: v })}
+      />
+      <BoolField
+        label="Exigir MFA"
+        value={form.requireMfa}
+        onChange={(v) => setForm({ ...form, requireMfa: v })}
+      />
+      <BoolField
+        label="Permitir TOTP"
+        value={form.allowTotp}
+        onChange={(v) => setForm({ ...form, allowTotp: v })}
+      />
+      <BoolField
+        label="Permitir Passkey/WebAuthn"
+        value={form.allowPasskey}
+        onChange={(v) => setForm({ ...form, allowPasskey: v })}
+      />
+      <BoolField
+        label="Permitir Backup Codes"
+        value={form.allowBackupCodes}
+        onChange={(v) => setForm({ ...form, allowBackupCodes: v })}
+      />
       <div className="md:col-span-2">
         <Button type="submit" size="sm" disabled={update.isPending}>
           Salvar política
@@ -497,11 +554,7 @@ function BoolField({
 }) {
   return (
     <label className="flex items-center gap-2 text-sm">
-      <input
-        type="checkbox"
-        checked={value}
-        onChange={(e) => onChange(e.target.checked)}
-      />
+      <input type="checkbox" checked={value} onChange={(e) => onChange(e.target.checked)} />
       <span>{label}</span>
     </label>
   );
@@ -534,7 +587,9 @@ function IncidentsTab({ incidents }: { incidents: SecurityIncident[] }) {
       id: "status",
       header: "Status",
       cell: (r) => (
-        <StatusBadge tone={r.status === "open" ? "warning" : r.status === "resolved" ? "success" : "neutral"}>
+        <StatusBadge
+          tone={r.status === "open" ? "warning" : r.status === "resolved" ? "success" : "neutral"}
+        >
           {r.status}
         </StatusBadge>
       ),
@@ -544,10 +599,18 @@ function IncidentsTab({ incidents }: { incidents: SecurityIncident[] }) {
       header: "",
       cell: (r) => (
         <div className="flex gap-2">
-          <Button size="sm" variant="ghost" onClick={() => update.mutate({ id: r.id, status: "investigating" })}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => update.mutate({ id: r.id, status: "investigating" })}
+          >
             Investigar
           </Button>
-          <Button size="sm" variant="ghost" onClick={() => update.mutate({ id: r.id, status: "resolved" })}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => update.mutate({ id: r.id, status: "resolved" })}
+          >
             Resolver
           </Button>
         </div>
@@ -565,8 +628,16 @@ function IncidentsTab({ incidents }: { incidents: SecurityIncident[] }) {
           setForm({ ...form, title: "", description: "" });
         }}
       >
-        <TextField label="Título" value={form.title} onChange={(v) => setForm({ ...form, title: v })} />
-        <TextField label="Categoria" value={form.category} onChange={(v) => setForm({ ...form, category: v })} />
+        <TextField
+          label="Título"
+          value={form.title}
+          onChange={(v) => setForm({ ...form, title: v })}
+        />
+        <TextField
+          label="Categoria"
+          value={form.category}
+          onChange={(v) => setForm({ ...form, category: v })}
+        />
         <SelectField
           label="Severidade"
           value={form.severity}
@@ -592,8 +663,16 @@ function AuditTab({ audit }: { audit: SecurityAuditEntry[] }) {
   const columns: DataTableColumn<SecurityAuditEntry>[] = [
     { id: "createdAt", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString() },
     { id: "action", header: "Ação", cell: (r) => <code className="text-xs">{r.action}</code> },
-    { id: "actorEmail", header: "Ator", cell: (r) => r.actorEmail ?? r.actorId?.slice(0, 8) ?? "—" },
-    { id: "targetType", header: "Alvo", cell: (r) => (r.targetType ? `${r.targetType}:${r.targetId?.slice(0, 8) ?? ""}` : "—") },
+    {
+      id: "actorEmail",
+      header: "Ator",
+      cell: (r) => r.actorEmail ?? r.actorId?.slice(0, 8) ?? "—",
+    },
+    {
+      id: "targetType",
+      header: "Alvo",
+      cell: (r) => (r.targetType ? `${r.targetType}:${r.targetId?.slice(0, 8) ?? ""}` : "—"),
+    },
     { id: "correlationId", header: "Correlation", cell: (r) => r.correlationId ?? "—" },
   ];
   return audit.length === 0 ? (

@@ -15,7 +15,10 @@ export function optimizeEntities(entities: readonly ImporterEntity[]): readonly 
   return out;
 }
 
-export function mergeCollinearWalls(entities: readonly ImporterEntity[], tolerance = 5): readonly ImporterEntity[] {
+export function mergeCollinearWalls(
+  entities: readonly ImporterEntity[],
+  tolerance = 5,
+): readonly ImporterEntity[] {
   // Mescla apenas polilinhas contínuas do mesmo layer/wall.
   const walls = entities.filter((e) => e.role === "wall");
   const others = entities.filter((e) => e.role !== "wall");
@@ -23,8 +26,10 @@ export function mergeCollinearWalls(entities: readonly ImporterEntity[], toleran
   for (const w of walls) {
     const last = merged[merged.length - 1];
     if (
-      last && last.layerId === w.layerId &&
-      last.points.length > 0 && w.points.length > 0 &&
+      last &&
+      last.layerId === w.layerId &&
+      last.points.length > 0 &&
+      w.points.length > 0 &&
       Math.hypot(
         last.points[last.points.length - 1]![0] - w.points[0]![0],
         last.points[last.points.length - 1]![1] - w.points[0]![1],

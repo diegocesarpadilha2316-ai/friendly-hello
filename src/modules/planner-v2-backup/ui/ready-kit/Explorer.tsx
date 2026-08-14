@@ -11,7 +11,7 @@ import {
   PanelTop,
   Palette,
   Square,
-  Wrench
+  Wrench,
 } from "lucide-react";
 import { usePlannerStore } from "./usePlannerStoreReady";
 
@@ -26,7 +26,6 @@ export function Explorer() {
   };
 
   const toggleVisibility = (id: string) => usePlannerStore.getState().toggleVisibility(id);
-
 
   return (
     <aside className={`explorer ${collapsed ? "collapsed" : ""}`}>
@@ -56,9 +55,24 @@ export function Explorer() {
 
         {!collapsed && (
           <>
-            <div className="tree-row child"><Square size={15} /><span>Paredes</span><span className="grow" /><Eye size={15} /></div>
-            <div className="tree-row child"><Layers3 size={15} /><span>Piso</span><span className="grow" /><Eye size={15} /></div>
-            <div className="tree-row child"><PanelTop size={15} /><span>Teto</span><span className="grow" /><Eye size={15} /></div>
+            <div className="tree-row child">
+              <Square size={15} />
+              <span>Paredes</span>
+              <span className="grow" />
+              <Eye size={15} />
+            </div>
+            <div className="tree-row child">
+              <Layers3 size={15} />
+              <span>Piso</span>
+              <span className="grow" />
+              <Eye size={15} />
+            </div>
+            <div className="tree-row child">
+              <PanelTop size={15} />
+              <span>Teto</span>
+              <span className="grow" />
+              <Eye size={15} />
+            </div>
           </>
         )}
 
@@ -99,9 +113,21 @@ export function Explorer() {
 
         {!collapsed && (
           <>
-            <div className="tree-row root"><Palette size={16} /><span>Materiais</span><span className="grow" /></div>
-            <div className="tree-row root"><Lightbulb size={16} /><span>Iluminação</span><span className="grow" /></div>
-            <div className="tree-row root"><Wrench size={16} /><span>Ferragens</span><span className="grow" /></div>
+            <div className="tree-row root">
+              <Palette size={16} />
+              <span>Materiais</span>
+              <span className="grow" />
+            </div>
+            <div className="tree-row root">
+              <Lightbulb size={16} />
+              <span>Iluminação</span>
+              <span className="grow" />
+            </div>
+            <div className="tree-row root">
+              <Wrench size={16} />
+              <span>Ferragens</span>
+              <span className="grow" />
+            </div>
           </>
         )}
       </div>

@@ -16,12 +16,7 @@ import { PIPELINES, pickPipeline, type PipelineStage } from "./pipelines";
 import { analyzeRequirements, extractFacts, type RequestFacts } from "./requirements";
 import { analyzeImpact } from "./impact";
 import { validateGraph } from "./graph";
-import {
-  PLAN_LIMITS,
-  type PlanRequestKind,
-  type PlanStep,
-  type ProjectPlan,
-} from "./types";
+import { PLAN_LIMITS, type PlanRequestKind, type PlanStep, type ProjectPlan } from "./types";
 
 export interface GeneratePlanInput {
   readonly message: string;
@@ -41,7 +36,9 @@ const uid = (prefix: string) =>
 /** Evita que qualificadores de estilo sejam enviados como busca de acabamento. */
 function isConcreteMaterial(value: string | undefined): value is string {
   if (!value?.trim()) return false;
-  return !/^(moderno|moderna|contempor[aâ]neo|contempor[aâ]nea|minimalista|industrial|r[uú]stico|r[uú]stica|cl[aá]ssico|cl[aá]ssica|escandinavo|escandinava|clean|luxuoso|luxuosa)$/i.test(value.trim());
+  return !/^(moderno|moderna|contempor[aâ]neo|contempor[aâ]nea|minimalista|industrial|r[uú]stico|r[uú]stica|cl[aá]ssico|cl[aá]ssica|escandinavo|escandinava|clean|luxuoso|luxuosa)$/i.test(
+    value.trim(),
+  );
 }
 
 /** Monta args válidos para cada estágio; `null` descarta o estágio. */
@@ -81,7 +78,9 @@ function argsForStage(
       };
     }
     case "search_material":
-      return facts.material && isConcreteMaterial(facts.material) ? { query: facts.material } : null;
+      return facts.material && isConcreteMaterial(facts.material)
+        ? { query: facts.material }
+        : null;
     case "set_render_preset":
       return { quality: "alta", lighting: "cenica" };
     case "create_room_preset": {
@@ -89,7 +88,8 @@ function argsForStage(
       return {
         preset: facts.widthMm ? "cozinha" : (detectRoomType(message) ?? "cozinha"),
         style: facts.style ?? "moderno",
-        material: facts.material && isConcreteMaterial(facts.material) ? facts.material : "off white",
+        material:
+          facts.material && isConcreteMaterial(facts.material) ? facts.material : "off white",
         pieces:
           dec.modules.length > 0
             ? dec.modules.map((m) => ({
@@ -250,7 +250,10 @@ export function generatePlan(input: GeneratePlanInput): ProjectPlan {
     estimatedImpact: impact.impact,
     agents,
     steps,
-    warnings: [...warnings, ...(steps.length ? [] : ["Nenhuma etapa executável foi identificada."])],
+    warnings: [
+      ...warnings,
+      ...(steps.length ? [] : ["Nenhuma etapa executável foi identificada."]),
+    ],
     assumptions: requirements.assumptions,
     missingInformation: requirements.missing,
     checkpointId: null,

@@ -25,13 +25,15 @@ const createUploadSchema = z.object({
 export const assetsCreateUpload = createServerFn({ method: "POST" })
   .middleware([requireTenant])
   .inputValidator((raw: unknown) => createUploadSchema.parse(raw))
-  .handler(async ({ context, data }): Promise<{ job: UploadJob; upload: SignedUrl; asset: Asset }> => {
-    const { StorageManager } = await import("./manager.server");
-    return StorageManager.createUpload(context, {
-      ...data,
-      providerId: data.providerId as StorageProviderId | undefined,
-    });
-  });
+  .handler(
+    async ({ context, data }): Promise<{ job: UploadJob; upload: SignedUrl; asset: Asset }> => {
+      const { StorageManager } = await import("./manager.server");
+      return StorageManager.createUpload(context, {
+        ...data,
+        providerId: data.providerId as StorageProviderId | undefined,
+      });
+    },
+  );
 
 export const assetsCompleteUpload = createServerFn({ method: "POST" })
   .middleware([requireTenant])
@@ -44,11 +46,18 @@ export const assetsCompleteUpload = createServerFn({ method: "POST" })
 export const assetsSignDownload = createServerFn({ method: "POST" })
   .middleware([requireTenant])
   .inputValidator((raw: unknown) =>
-    z.object({
-      assetId: z.string().uuid(),
-      downloadName: z.string().max(240).optional(),
-      expiresInSec: z.number().int().positive().max(60 * 60 * 24).optional(),
-    }).parse(raw),
+    z
+      .object({
+        assetId: z.string().uuid(),
+        downloadName: z.string().max(240).optional(),
+        expiresInSec: z
+          .number()
+          .int()
+          .positive()
+          .max(60 * 60 * 24)
+          .optional(),
+      })
+      .parse(raw),
   )
   .handler(async ({ context, data }): Promise<SignedUrl> => {
     const { StorageManager } = await import("./manager.server");
@@ -96,7 +105,8 @@ export const assetsList = createServerFn({ method: "POST" })
   .inputValidator((raw: unknown) => listSchema.parse(raw ?? {}))
   .handler(async ({ context, data }): Promise<readonly Asset[]> => {
     let q = context.supabase
-      .from("assets").select("*")
+      .from("assets")
+      .select("*")
       .eq("company_id", context.tenantId)
       .order("created_at", { ascending: false })
       .limit(data.limit);
@@ -118,9 +128,11 @@ export const assetsListJobs = createServerFn({ method: "GET" })
   .middleware([requireTenant])
   .handler(async ({ context }): Promise<readonly UploadJob[]> => {
     const { data, error } = await context.supabase
-      .from("upload_jobs").select("*")
+      .from("upload_jobs")
+      .select("*")
       .eq("company_id", context.tenantId)
-      .order("created_at", { ascending: false }).limit(50);
+      .order("created_at", { ascending: false })
+      .limit(50);
     if (error) throw new Error(error.message);
     return (data ?? []).map(mapJobRow);
   });
@@ -129,9 +141,11 @@ export const assetsListAudit = createServerFn({ method: "GET" })
   .middleware([requireTenant])
   .handler(async ({ context }): Promise<readonly AssetAuditEntry[]> => {
     const { data, error } = await context.supabase
-      .from("asset_audit").select("*")
+      .from("asset_audit")
+      .select("*")
       .eq("company_id", context.tenantId)
-      .order("created_at", { ascending: false }).limit(100);
+      .order("created_at", { ascending: false })
+      .limit(100);
     if (error) throw new Error(error.message);
     return (data ?? []).map((r: Record<string, unknown>) => ({
       id: r.id as string,

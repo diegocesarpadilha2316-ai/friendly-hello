@@ -14,10 +14,7 @@ import {
 import { useTenant } from "@/core/providers/TenantProvider";
 import { listProjects, type PlannerProjectRowDTO } from "@/lib/planner-projects.functions";
 
-const projectsQueryOptions = (
-  tenantId: string,
-  fetcher: () => Promise<PlannerProjectRowDTO[]>,
-) =>
+const projectsQueryOptions = (tenantId: string, fetcher: () => Promise<PlannerProjectRowDTO[]>) =>
   queryOptions({
     queryKey: ["planner", "projects", tenantId],
     queryFn: fetcher,
@@ -31,8 +28,7 @@ export const Route = createFileRoute("/_authenticated/planner/projetos/")({
       { title: "Projetos — Dioris Planner" },
       {
         name: "description",
-        content:
-          "Lista de projetos paramétricos do Dioris Planner, escopados por empresa.",
+        content: "Lista de projetos paramétricos do Dioris Planner, escopados por empresa.",
       },
       { property: "og:title", content: "Projetos — Dioris Planner" },
       {
@@ -141,8 +137,7 @@ function PlannerProjectsIndexPage() {
                     </StatusBadge>
                   </div>
                   <p className="mt-3 text-xs text-muted-foreground">
-                    v{p.version} · atualizado{" "}
-                    {new Date(p.updatedAt).toLocaleDateString("pt-BR")}
+                    v{p.version} · atualizado {new Date(p.updatedAt).toLocaleDateString("pt-BR")}
                   </p>
                 </Link>
               </li>

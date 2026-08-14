@@ -44,7 +44,11 @@ export abstract class BaseAIProvider implements AIProvider {
     throw new AIGatewayError(`${this.id}: streaming not implemented`, "unsupported", this.id);
   }
   generateImage(_req: AIRequest): Promise<AIResponse<{ url?: string; b64?: string }>> {
-    throw new AIGatewayError(`${this.id}: image generation not implemented`, "unsupported", this.id);
+    throw new AIGatewayError(
+      `${this.id}: image generation not implemented`,
+      "unsupported",
+      this.id,
+    );
   }
   generateEmbedding(_req: AIRequest): Promise<AIResponse<readonly number[][]>> {
     throw new AIGatewayError(`${this.id}: embeddings not implemented`, "unsupported", this.id);

@@ -1,9 +1,5 @@
 import type { CutListRow } from "../../types";
-import type {
-  CamFormat,
-  FabricationMachine,
-  PostProcessorPreview,
-} from "./types";
+import type { CamFormat, FabricationMachine, PostProcessorPreview } from "./types";
 import { findMachine } from "./machines";
 
 function pickFormat(machine: FabricationMachine): CamFormat {
@@ -58,7 +54,10 @@ function cix(row: CutListRow): { header: string; body: string; footer: string } 
   return { header, body, footer };
 }
 
-function generic(row: CutListRow, format: CamFormat): { header: string; body: string; footer: string } {
+function generic(
+  row: CutListRow,
+  format: CamFormat,
+): { header: string; body: string; footer: string } {
   return {
     header: `# Dioris ${format.toUpperCase()} preview\n# ${row.code} · ${row.name}`,
     body: `SIZE ${row.lengthMm}x${row.widthMm}x${row.thicknessMm}\nMATERIAL ${row.material}\nCUT OUTLINE`,
@@ -73,13 +72,20 @@ export function generatePostProcessor(
 ): PostProcessorPreview | null {
   const machine = findMachine(machineId);
   if (!machine) return null;
-  const format = formatOverride && machine.formats.includes(formatOverride) ? formatOverride : pickFormat(machine);
+  const format =
+    formatOverride && machine.formats.includes(formatOverride)
+      ? formatOverride
+      : pickFormat(machine);
   const parts =
-    format === "gcode" ? gcode(row) :
-    format === "dxf" ? dxf(row) :
-    format === "bpp" ? bpp(row) :
-    format === "cix" || format === "cid3" ? cix(row) :
-    generic(row, format);
+    format === "gcode"
+      ? gcode(row)
+      : format === "dxf"
+        ? dxf(row)
+        : format === "bpp"
+          ? bpp(row)
+          : format === "cix" || format === "cid3"
+            ? cix(row)
+            : generic(row, format);
   const opsCount = parts.body.split("\n").filter(Boolean).length;
   return {
     code: row.code,
@@ -89,7 +95,7 @@ export function generatePostProcessor(
     body: parts.body,
     footer: parts.footer,
     operationsCount: opsCount,
-    estimatedMinutes: Math.max(2, Math.round((row.lengthMm + row.widthMm) / 700 * 10) / 10),
+    estimatedMinutes: Math.max(2, Math.round(((row.lengthMm + row.widthMm) / 700) * 10) / 10),
   };
 }
 

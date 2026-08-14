@@ -401,7 +401,9 @@ describe("lavanderia — roteamento de renderer", () => {
   }
 
   it("catalogItemId identifica lavanderia", () => {
-    expect(resolveFurnitureRenderer({ catalogItemId: "mod-lavanderia-01" }).renderer).toBe("laundry");
+    expect(resolveFurnitureRenderer({ catalogItemId: "mod-lavanderia-01" }).renderer).toBe(
+      "laundry",
+    );
   });
 
   it("não rouba móveis das famílias já convertidas", () => {
@@ -436,7 +438,12 @@ describe("lavanderia — 10 cenários", () => {
   });
 
   it("4. torre de máquinas", () => {
-    const r = buildLaundryModule({ kind: "torre-maquinas", widthMm: 700, heightMm: 2000, depthMm: 750 });
+    const r = buildLaundryModule({
+      kind: "torre-maquinas",
+      widthMm: 700,
+      heightMm: 2000,
+      depthMm: 750,
+    });
     assertSane(r);
     expect(errors(r)).toEqual([]);
   });
@@ -513,7 +520,12 @@ describe("lavanderia — Motion e Interlock", () => {
   });
 
   it("gavetas atrás de porta ficam sob intertravamento do mesmo grupo", () => {
-    const r = buildLaundryModule({ kind: "gabinete-tanque", widthMm: 900, drawers: 2, opening: "gaveta" });
+    const r = buildLaundryModule({
+      kind: "gabinete-tanque",
+      widthMm: 900,
+      drawers: 2,
+      opening: "gaveta",
+    });
     expect(rigs(r).length).toBeGreaterThan(0);
   });
 
@@ -543,7 +555,9 @@ describe("lavanderia — persistência (save/load)", () => {
 
   it("layout serializado recarrega idêntico", () => {
     const plan = planLaundryLayout({ widthMm: 1600, preset: "maquina-tanque" });
-    const round = plan.placements.map((p) => buildLaundryModule(JSON.parse(JSON.stringify(p.module))));
+    const round = plan.placements.map((p) =>
+      buildLaundryModule(JSON.parse(JSON.stringify(p.module))),
+    );
     round.forEach((r) => assertSane(r));
   });
 });
@@ -552,7 +566,9 @@ describe("lavanderia — persistência (save/load)", () => {
 
 describe("lavanderia — não-regressão nas famílias já aprovadas", () => {
   it("roupeiro, gaveteiro, cozinha e banheiro continuam montando", () => {
-    expect(buildWardrobe({ widthMm: 2400, heightMm: 2400, depthMm: 600 }).assembly.pieces.length).toBeGreaterThan(0);
+    expect(
+      buildWardrobe({ widthMm: 2400, heightMm: 2400, depthMm: 600 }).assembly.pieces.length,
+    ).toBeGreaterThan(0);
     expect(buildDresser({ widthMm: 800 }).assembly.pieces.length).toBeGreaterThan(0);
     expect(buildKitchenModule({ widthMm: 800 }).assembly.pieces.length).toBeGreaterThan(0);
     expect(buildBathroomModule({ widthMm: 900 }).assembly.pieces.length).toBeGreaterThan(0);
@@ -599,7 +615,11 @@ describe("lavanderia — auditoria prática (regressões corrigidas)", () => {
   });
 
   it("tampo e acabamento não herdam a altura/profundidade do balcão", () => {
-    const plan = planLaundryLayout({ widthMm: 2000, preset: "maquinas-lado-a-lado", heightMm: 1050 });
+    const plan = planLaundryLayout({
+      widthMm: 2000,
+      preset: "maquinas-lado-a-lado",
+      heightMm: 1050,
+    });
     const tampo = plan.placements.find((p) => p.kind === "tampo-continuo");
     expect(tampo?.module.heightMm).toBeUndefined();
     expect(buildLaundryModule(tampo!.module).spec.heightMm).toBeLessThan(100);

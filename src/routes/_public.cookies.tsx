@@ -75,9 +75,9 @@ function Page() {
           Última atualização: 25 de julho de 2026
         </p>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-foreground/80">
-          A Dioris usa cookies e tecnologias similares para operar a plataforma
-          com segurança, lembrar suas preferências e — apenas com o seu
-          consentimento — entender o uso agregado para melhorar a experiência.
+          A Dioris usa cookies e tecnologias similares para operar a plataforma com segurança,
+          lembrar suas preferências e — apenas com o seu consentimento — entender o uso agregado
+          para melhorar a experiência.
         </p>
       </Reveal>
       <div className="mt-12 space-y-6 text-foreground/80">

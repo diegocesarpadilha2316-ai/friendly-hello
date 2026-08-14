@@ -7,24 +7,22 @@ import { createUserScopedClient } from "@/core/lib/supabase/server-user.server";
  * Injeta em `context`: supabase (RLS como o usuário), userId, email.
  * Lança Response 401 se não autenticado.
  */
-export const requireAuth = createMiddleware({ type: "function" }).server(
-  async ({ next }) => {
-    const authHeader = getRequestHeader("authorization") ?? getRequestHeader("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      throw new Response("Unauthorized", { status: 401 });
-    }
-    const token = authHeader.slice("Bearer ".length);
-    const supabase = createUserScopedClient(token);
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) {
-      throw new Response("Unauthorized", { status: 401 });
-    }
-    return next({
-      context: {
-        supabase,
-        userId: data.user.id,
-        email: data.user.email ?? null,
-      },
-    });
-  },
-);
+export const requireAuth = createMiddleware({ type: "function" }).server(async ({ next }) => {
+  const authHeader = getRequestHeader("authorization") ?? getRequestHeader("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    throw new Response("Unauthorized", { status: 401 });
+  }
+  const token = authHeader.slice("Bearer ".length);
+  const supabase = createUserScopedClient(token);
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data.user) {
+    throw new Response("Unauthorized", { status: 401 });
+  }
+  return next({
+    context: {
+      supabase,
+      userId: data.user.id,
+      email: data.user.email ?? null,
+    },
+  });
+});

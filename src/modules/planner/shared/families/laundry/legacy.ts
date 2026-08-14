@@ -117,11 +117,15 @@ export function laundryFromLegacy(f: LegacyLaundryLike): LaundryModuleInput {
     install: normalizeInstall(install, /suspens|flutuant/.test(hint) ? "suspenso" : "piso"),
     floorGapMm: numParam(params, ["floorGapMm", "alturaPiso", "gap"]),
     feetHeightMm: numParam(params, ["feetHeightMm", "pes", "alturaPe"]),
-    finishId: (rawParam(params, ["finishId", "acabamento", "cor"]) as string | undefined) ?? undefined,
+    finishId:
+      (rawParam(params, ["finishId", "acabamento", "cor"]) as string | undefined) ?? undefined,
     led: Boolean(rawParam(params, ["led", "iluminacao"])),
     basket: normalizeBasket(rawParam(params, ["basket", "cesto"]), "nenhum"),
     baskets: numParam(params, ["baskets", "cestos"]),
-    board: normalizeBoard(rawParam(params, ["board", "tabua"]), /tabua/.test(hint) ? "nicho" : "nenhum"),
+    board: normalizeBoard(
+      rawParam(params, ["board", "tabua"]),
+      /tabua/.test(hint) ? "nicho" : "nenhum",
+    ),
     broomZoneMm: numParam(params, ["broomZoneMm", "vassoura", "zonaVassoura"]),
     stackingKit: Boolean(rawParam(params, ["stackingKit", "kitEmpilhamento"])) || undefined,
     outerDoor: Boolean(rawParam(params, ["outerDoor", "portaExterna"])) || undefined,

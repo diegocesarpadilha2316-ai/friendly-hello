@@ -40,16 +40,22 @@ export const KITCHEN_HARDWARE_IDS = {
   handles: ["handle-bar", "handle-profile", "handle-inset", "handle-none"],
 } as const;
 
-export const kitchenBodyMaterial = (materialOverrides?: Record<string, string>, fallback = "mdf-white") =>
-  materialOverrides?.body ?? fallback;
+export const kitchenBodyMaterial = (
+  materialOverrides?: Record<string, string>,
+  fallback = "mdf-white",
+) => materialOverrides?.body ?? fallback;
 
-export const kitchenFrontMaterial = (materialOverrides?: Record<string, string>, fallback = "mdf-white") =>
-  materialOverrides?.front ?? materialOverrides?.body ?? fallback;
+export const kitchenFrontMaterial = (
+  materialOverrides?: Record<string, string>,
+  fallback = "mdf-white",
+) => materialOverrides?.front ?? materialOverrides?.body ?? fallback;
 
-export const kitchenBackMaterial = (materialOverrides?: Record<string, string>, fallback = "mdf-white") =>
-  materialOverrides?.back ?? materialOverrides?.body ?? fallback;
+export const kitchenBackMaterial = (
+  materialOverrides?: Record<string, string>,
+  fallback = "mdf-white",
+) => materialOverrides?.back ?? materialOverrides?.body ?? fallback;
 
 export const kitchenCountertopMaterial = (
   materialOverrides?: Record<string, string>,
-  fallback = "stone-light"
+  fallback = "stone-light",
 ) => materialOverrides?.countertop ?? fallback;

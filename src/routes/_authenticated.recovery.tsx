@@ -1,8 +1,14 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  DataTable, EmptyState, MetricCard, PageContainer, PageHeader,
-  StatusBadge, type DataTableColumn, type StatusTone,
+  DataTable,
+  EmptyState,
+  MetricCard,
+  PageContainer,
+  PageHeader,
+  StatusBadge,
+  type DataTableColumn,
+  type StatusTone,
 } from "@/core/components/ui-kit";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,8 +31,7 @@ import {
 } from "@/core/recovery";
 
 type TabKey =
-  | "dashboard" | "backups" | "snapshots" | "restore" | "dr"
-  | "integrity" | "schedules" | "history";
+  "dashboard" | "backups" | "snapshots" | "restore" | "dr" | "integrity" | "schedules" | "history";
 
 const TABS: readonly { key: TabKey; label: string }[] = [
   { key: "dashboard", label: "Dashboard" },
@@ -64,21 +69,35 @@ export const Route = createFileRoute("/_authenticated/recovery")({
 
 function backupTone(s: BackupStatus): StatusTone {
   switch (s) {
-    case "completed": case "verified": return "success";
-    case "failed": return "danger";
-    case "expired": case "cancelled": return "warning";
-    case "running": case "queued": return "info";
-    default: return "neutral";
+    case "completed":
+    case "verified":
+      return "success";
+    case "failed":
+      return "danger";
+    case "expired":
+    case "cancelled":
+      return "warning";
+    case "running":
+    case "queued":
+      return "info";
+    default:
+      return "neutral";
   }
 }
 
 function restoreTone(s: Restore["status"]): StatusTone {
   switch (s) {
-    case "completed": return "success";
-    case "failed": return "danger";
-    case "cancelled": return "warning";
-    case "running": case "queued": return "info";
-    default: return "neutral";
+    case "completed":
+      return "success";
+    case "failed":
+      return "danger";
+    case "cancelled":
+      return "warning";
+    case "running":
+    case "queued":
+      return "info";
+    default:
+      return "neutral";
   }
 }
 
@@ -116,9 +135,7 @@ function RecoveryPage() {
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`px-3 py-2 text-sm ${
-              tab === t.key
-                ? "border-b-2 border-primary font-semibold"
-                : "text-muted-foreground"
+              tab === t.key ? "border-b-2 border-primary font-semibold" : "text-muted-foreground"
             }`}
           >
             {t.label}
@@ -133,7 +150,11 @@ function RecoveryPage() {
       {tab === "dr" && <DrTab plans={data.plans} />}
       {tab === "integrity" && <IntegrityTab checks={data.integrity} />}
       {tab === "schedules" && (
-        <SchedulesTab schedules={data.schedules} targets={targetsBySlug} allTargets={data.targets} />
+        <SchedulesTab
+          schedules={data.schedules}
+          targets={targetsBySlug}
+          allTargets={data.targets}
+        />
       )}
       {tab === "history" && <HistoryTab points={data.history} />}
     </PageContainer>
@@ -164,7 +185,11 @@ function BackupsTab({ backups }: { backups: readonly Backup[] }) {
     { id: "kind", header: "Tipo", cell: (r) => <StatusBadge tone="info">{r.kind}</StatusBadge> },
     { id: "strategy", header: "Estratégia", cell: (r) => r.strategy },
     { id: "trigger", header: "Origem", cell: (r) => r.trigger },
-    { id: "status", header: "Status", cell: (r) => <StatusBadge tone={backupTone(r.status)}>{r.status}</StatusBadge> },
+    {
+      id: "status",
+      header: "Status",
+      cell: (r) => <StatusBadge tone={backupTone(r.status)}>{r.status}</StatusBadge>,
+    },
     { id: "size", header: "Tamanho", cell: (r) => fmtBytes(r.sizeBytes) },
     { id: "at", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString() },
   ];
@@ -174,7 +199,11 @@ function BackupsTab({ backups }: { backups: readonly Backup[] }) {
 
 function SnapshotsTab({ snapshots }: { snapshots: readonly Snapshot[] }) {
   const cols: DataTableColumn<Snapshot>[] = [
-    { id: "scope", header: "Escopo", cell: (r) => <StatusBadge tone="info">{r.scope}</StatusBadge> },
+    {
+      id: "scope",
+      header: "Escopo",
+      cell: (r) => <StatusBadge tone="info">{r.scope}</StatusBadge>,
+    },
     { id: "target", header: "Alvo", cell: (r) => r.target },
     { id: "version", header: "Versão", cell: (r) => r.version ?? "—" },
     { id: "size", header: "Tamanho", cell: (r) => fmtBytes(r.sizeBytes) },
@@ -187,8 +216,16 @@ function SnapshotsTab({ snapshots }: { snapshots: readonly Snapshot[] }) {
 function RestoreTab({ restores }: { restores: readonly Restore[] }) {
   const cols: DataTableColumn<Restore>[] = [
     { id: "mode", header: "Modo", cell: (r) => <StatusBadge tone="info">{r.mode}</StatusBadge> },
-    { id: "status", header: "Status", cell: (r) => <StatusBadge tone={restoreTone(r.status)}>{r.status}</StatusBadge> },
-    { id: "pit", header: "Point-in-time", cell: (r) => (r.pointInTime ? new Date(r.pointInTime).toLocaleString() : "—") },
+    {
+      id: "status",
+      header: "Status",
+      cell: (r) => <StatusBadge tone={restoreTone(r.status)}>{r.status}</StatusBadge>,
+    },
+    {
+      id: "pit",
+      header: "Point-in-time",
+      cell: (r) => (r.pointInTime ? new Date(r.pointInTime).toLocaleString() : "—"),
+    },
     { id: "scope", header: "Escopo", cell: (r) => r.targetScope ?? "—" },
     { id: "at", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString() },
   ];
@@ -204,22 +241,38 @@ function DrTab({ plans }: { plans: readonly DrPlan[] }) {
     { id: "name", header: "Nome", cell: (r) => r.name },
     { id: "rto", header: "RTO", cell: (r) => `${r.rtoMinutes} min` },
     { id: "rpo", header: "RPO", cell: (r) => `${r.rpoMinutes} min` },
-    { id: "replication", header: "Replicação", cell: (r) => <StatusBadge tone="info">{r.replication}</StatusBadge> },
+    {
+      id: "replication",
+      header: "Replicação",
+      cell: (r) => <StatusBadge tone="info">{r.replication}</StatusBadge>,
+    },
     { id: "failover", header: "Failover", cell: (r) => r.failover },
     {
-      id: "status", header: "Status",
+      id: "status",
+      header: "Status",
       cell: (r) => (
-        <StatusBadge tone={r.status === "active" ? "success" : r.status === "failing" ? "danger" : "neutral"}>
+        <StatusBadge
+          tone={r.status === "active" ? "success" : r.status === "failing" ? "danger" : "neutral"}
+        >
           {r.status}
         </StatusBadge>
       ),
     },
-    { id: "drill", header: "Último drill", cell: (r) => (r.lastDrillAt ? new Date(r.lastDrillAt).toLocaleString() : "—") },
     {
-      id: "actions", header: "",
+      id: "drill",
+      header: "Último drill",
+      cell: (r) => (r.lastDrillAt ? new Date(r.lastDrillAt).toLocaleString() : "—"),
+    },
+    {
+      id: "actions",
+      header: "",
       cell: (r) => (
         <div className="flex gap-1">
-          <Button size="sm" variant="ghost" onClick={() => drill.mutate({ id: r.id, status: "success" })}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => drill.mutate({ id: r.id, status: "success" })}
+          >
             Drill
           </Button>
           <Button size="sm" variant="ghost" onClick={() => del.mutate(r.id)}>
@@ -235,10 +288,22 @@ function DrTab({ plans }: { plans: readonly DrPlan[] }) {
 
 function IntegrityTab({ checks }: { checks: readonly IntegrityCheck[] }) {
   const cols: DataTableColumn<IntegrityCheck>[] = [
-    { id: "kind", header: "Verificação", cell: (r) => <StatusBadge tone="info">{r.checkKind}</StatusBadge> },
-    { id: "status", header: "Status", cell: (r) => <StatusBadge tone={integrityTone(r.status)}>{r.status}</StatusBadge> },
+    {
+      id: "kind",
+      header: "Verificação",
+      cell: (r) => <StatusBadge tone="info">{r.checkKind}</StatusBadge>,
+    },
+    {
+      id: "status",
+      header: "Status",
+      cell: (r) => <StatusBadge tone={integrityTone(r.status)}>{r.status}</StatusBadge>,
+    },
     { id: "detail", header: "Detalhe", cell: (r) => r.detail ?? "—" },
-    { id: "dur", header: "Duração", cell: (r) => (r.durationMs == null ? "—" : `${r.durationMs} ms`) },
+    {
+      id: "dur",
+      header: "Duração",
+      cell: (r) => (r.durationMs == null ? "—" : `${r.durationMs} ms`),
+    },
     { id: "at", header: "Quando", cell: (r) => new Date(r.checkedAt).toLocaleString() },
   ];
   if (!checks.length) return <EmptyState title="Sem verificações registradas" />;
@@ -246,7 +311,9 @@ function IntegrityTab({ checks }: { checks: readonly IntegrityCheck[] }) {
 }
 
 function SchedulesTab({
-  schedules, targets, allTargets,
+  schedules,
+  targets,
+  allTargets,
 }: {
   schedules: readonly Schedule[];
   targets: Map<string, Target>;
@@ -261,7 +328,8 @@ function SchedulesTab({
   }, [allTargets]);
   const scheduleCols: DataTableColumn<Schedule>[] = [
     {
-      id: "target", header: "Alvo",
+      id: "target",
+      header: "Alvo",
       cell: (r) => {
         const t = byId.get(r.targetId);
         return <code className="text-xs">{t?.slug ?? r.targetId.slice(0, 8)}</code>;
@@ -270,16 +338,22 @@ function SchedulesTab({
     { id: "cron", header: "Cron", cell: (r) => <code className="text-xs">{r.cron}</code> },
     { id: "strategy", header: "Estratégia", cell: (r) => r.strategy },
     {
-      id: "enabled", header: "Status",
+      id: "enabled",
+      header: "Status",
       cell: (r) => (
         <StatusBadge tone={r.enabled ? "success" : "neutral"}>
           {r.enabled ? "ativo" : "pausado"}
         </StatusBadge>
       ),
     },
-    { id: "next", header: "Próxima", cell: (r) => (r.nextRunAt ? new Date(r.nextRunAt).toLocaleString() : "—") },
     {
-      id: "actions", header: "",
+      id: "next",
+      header: "Próxima",
+      cell: (r) => (r.nextRunAt ? new Date(r.nextRunAt).toLocaleString() : "—"),
+    },
+    {
+      id: "actions",
+      header: "",
       cell: (r) => (
         <Button size="sm" variant="ghost" onClick={() => del.mutate(r.id)}>
           Remover
@@ -294,7 +368,8 @@ function SchedulesTab({
     { id: "dest", header: "Destino", cell: (r) => r.destination },
     { id: "ret", header: "Retenção", cell: (r) => `${r.retentionDays} d` },
     {
-      id: "enabled", header: "Status",
+      id: "enabled",
+      header: "Status",
       cell: (r) => (
         <StatusBadge tone={r.enabled ? "success" : "neutral"}>
           {r.enabled ? "ativo" : "desativado"}
@@ -302,7 +377,8 @@ function SchedulesTab({
       ),
     },
     {
-      id: "actions", header: "",
+      id: "actions",
+      header: "",
       cell: (r) => (
         <Button size="sm" variant="ghost" onClick={() => delTarget.mutate(r.id)}>
           Remover

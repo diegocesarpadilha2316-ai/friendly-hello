@@ -101,8 +101,7 @@ export const createPixCheckout = createServerFn({ method: "POST" })
     const { mpCreatePixPayment } = await import("@/core/billing/mercadopago.server");
     const { getSupabaseAdmin } = await import("@/core/lib/supabase/admin.server");
 
-    const totalCredits =
-      pack.credits + Math.floor((pack.credits * (pack.bonus_pct ?? 0)) / 100);
+    const totalCredits = pack.credits + Math.floor((pack.credits * (pack.bonus_pct ?? 0)) / 100);
 
     // URL pública para o webhook
     let notificationUrl = process.env.PUBLIC_APP_URL ?? "";
@@ -173,9 +172,7 @@ export const getCheckoutOrder = createServerFn({ method: "GET" })
     // Se ainda estiver pending, faz um refresh contra MP (fallback ao webhook)
     if (row.status === "pending" && row.external_id && row.provider === "mercadopago") {
       try {
-        const { mpGetPayment, mpStatusToOrder } = await import(
-          "@/core/billing/mercadopago.server"
-        );
+        const { mpGetPayment, mpStatusToOrder } = await import("@/core/billing/mercadopago.server");
         const { getSupabaseAdmin } = await import("@/core/lib/supabase/admin.server");
         const p = await mpGetPayment(row.external_id);
         const newStatus = mpStatusToOrder(p.status);

@@ -363,9 +363,7 @@ export const panel: ConstructionComponent<PanelParams> = {
     /* Peças técnicas (tapa-vão, acabamento, rodabanca) são naturalmente
      * estreitas — 18 mm, 40 mm, 80 mm. Nunca normalizar para 100 mm. */
     const technical =
-      p.fixedRole === "tapa-vao" ||
-      p.fixedRole === "acabamento" ||
-      p.fixedRole === "rodabanca";
+      p.fixedRole === "tapa-vao" || p.fixedRole === "acabamento" || p.fixedRole === "rodabanca";
     const minSide = technical ? 5 : 100;
     return {
       widthMm: clamp(positive(p.widthMm, d.widthMm), minSide, 8000),

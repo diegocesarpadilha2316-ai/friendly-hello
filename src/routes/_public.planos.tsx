@@ -13,7 +13,11 @@ export const Route = createFileRoute("/_public/planos")({
   head: () => ({
     meta: [
       { title: "Planos e Preços — Dioris" },
-      { name: "description", content: "Free, Starter, Professional, Business e Enterprise. Créditos, IA, storage e usuários inclusos." },
+      {
+        name: "description",
+        content:
+          "Free, Starter, Professional, Business e Enterprise. Créditos, IA, storage e usuários inclusos.",
+      },
       { property: "og:title", content: "Planos e Preços Dioris" },
       { property: "og:description", content: "Escolha o plano ideal para sua empresa." },
       { property: "og:url", content: "/planos" },
@@ -34,7 +38,11 @@ const PLAN_DESCRIPTIONS: Record<string, string> = {
 const PLAN_FEATURED = "professional";
 
 function formatBRL(cents: number) {
-  return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+  return (cents / 100).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    maximumFractionDigits: 0,
+  });
 }
 function formatCredits(n: number) {
   return n.toLocaleString("pt-BR");
@@ -74,8 +82,16 @@ function Page() {
             Comece grátis. Escale quando precisar. Sem surpresas na fatura.
           </p>
           <div className="mt-8 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1">
-            <button onClick={() => setYearly(false)} className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${!yearly ? "bg-white/10 text-foreground" : "text-foreground/60"}`}>Mensal</button>
-            <button onClick={() => setYearly(true)} className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${yearly ? "bg-white/10 text-foreground" : "text-foreground/60"}`}>
+            <button
+              onClick={() => setYearly(false)}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${!yearly ? "bg-white/10 text-foreground" : "text-foreground/60"}`}
+            >
+              Mensal
+            </button>
+            <button
+              onClick={() => setYearly(true)}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${yearly ? "bg-white/10 text-foreground" : "text-foreground/60"}`}
+            >
               Anual <span className="ml-1 text-xs text-accent">−17%</span>
             </button>
           </div>
@@ -88,7 +104,9 @@ function Page() {
         </div>
       ) : (
         <>
-          <div className={`mt-16 grid gap-6 ${visiblePlans.length >= 5 ? "lg:grid-cols-5" : "lg:grid-cols-4"}`}>
+          <div
+            className={`mt-16 grid gap-6 ${visiblePlans.length >= 5 ? "lg:grid-cols-5" : "lg:grid-cols-4"}`}
+          >
             {visiblePlans.map((p, i) => {
               const featured = p.key === PLAN_FEATURED;
               const priceMonthly = Math.round(p.priceCents / 100);
@@ -96,23 +114,31 @@ function Page() {
               const isFree = p.priceCents === 0;
               return (
                 <Reveal key={p.key} delay={i * 0.03}>
-                  <div className={`relative flex h-full flex-col rounded-2xl border p-6 ${featured ? "border-primary/60 bg-gradient-to-b from-primary/10 to-transparent" : "border-white/10 bg-white/[0.02]"}`}>
+                  <div
+                    className={`relative flex h-full flex-col rounded-2xl border p-6 ${featured ? "border-primary/60 bg-gradient-to-b from-primary/10 to-transparent" : "border-white/10 bg-white/[0.02]"}`}
+                  >
                     {featured && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-primary via-secondary to-accent px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">
                         <Sparkles className="mr-1 inline h-3 w-3" /> Popular
                       </div>
                     )}
                     <div className="text-lg font-bold">{p.label}</div>
-                    <div className="mt-1 text-xs text-foreground/60">{PLAN_DESCRIPTIONS[p.key] ?? ""}</div>
+                    <div className="mt-1 text-xs text-foreground/60">
+                      {PLAN_DESCRIPTIONS[p.key] ?? ""}
+                    </div>
                     <div className="mt-6">
                       {isFree ? (
                         <span className="text-4xl font-black">R$ 0</span>
                       ) : (
                         <>
-                          <span className="text-4xl font-black">R$ {yearly ? Math.round((priceMonthly * 12 * 0.83) / 12) : priceMonthly}</span>
+                          <span className="text-4xl font-black">
+                            R$ {yearly ? Math.round((priceMonthly * 12 * 0.83) / 12) : priceMonthly}
+                          </span>
                           <span className="text-sm text-foreground/60">/mês</span>
                           {yearly && (
-                            <div className="text-xs text-foreground/60">Faturado R$ {priceYearly}/ano</div>
+                            <div className="text-xs text-foreground/60">
+                              Faturado R$ {priceYearly}/ano
+                            </div>
                           )}
                         </>
                       )}
@@ -125,8 +151,15 @@ function Page() {
                       {isFree ? "Começar grátis" : "Assinar"}
                     </Link>
                     <ul className="mt-6 space-y-2.5 border-t border-white/10 pt-6 text-sm">
-                      <li className="flex gap-2"><Check className="h-4 w-4 shrink-0 text-accent" /> {formatCredits(p.monthlyCredits)} créditos/mês</li>
-                      {p.features.map((f) => <li key={f} className="flex gap-2"><Check className="h-4 w-4 shrink-0 text-accent" /> {f}</li>)}
+                      <li className="flex gap-2">
+                        <Check className="h-4 w-4 shrink-0 text-accent" />{" "}
+                        {formatCredits(p.monthlyCredits)} créditos/mês
+                      </li>
+                      {p.features.map((f) => (
+                        <li key={f} className="flex gap-2">
+                          <Check className="h-4 w-4 shrink-0 text-accent" /> {f}
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </Reveal>
@@ -146,12 +179,26 @@ function Page() {
                 </p>
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {packs.map((pk) => (
-                    <div key={pk.key} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                    <div
+                      key={pk.key}
+                      className="rounded-2xl border border-white/10 bg-white/[0.03] p-5"
+                    >
                       <div className="text-sm text-foreground/60">{pk.label}</div>
                       <div className="mt-2 text-3xl font-black">{formatCredits(pk.credits)}</div>
-                      <div className="text-xs text-foreground/60">créditos{pk.bonusPct > 0 && <span className="ml-1 rounded-full bg-accent/20 px-1.5 py-0.5 text-[10px] font-bold text-accent">+{pk.bonusPct}%</span>}</div>
+                      <div className="text-xs text-foreground/60">
+                        créditos
+                        {pk.bonusPct > 0 && (
+                          <span className="ml-1 rounded-full bg-accent/20 px-1.5 py-0.5 text-[10px] font-bold text-accent">
+                            +{pk.bonusPct}%
+                          </span>
+                        )}
+                      </div>
                       <div className="mt-4 text-xl font-bold">{formatBRL(pk.priceCents)}</div>
-                      <Link to="/auth" search={{ redirect: "/workspace/creditos" }} className="mt-4 block rounded-full border border-white/15 bg-white/5 px-4 py-2 text-center text-xs font-semibold hover:bg-white/10">
+                      <Link
+                        to="/auth"
+                        search={{ redirect: "/workspace/creditos" }}
+                        className="mt-4 block rounded-full border border-white/15 bg-white/5 px-4 py-2 text-center text-xs font-semibold hover:bg-white/10"
+                      >
                         Comprar via Pix
                       </Link>
                     </div>

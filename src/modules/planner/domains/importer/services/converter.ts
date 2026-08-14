@@ -9,8 +9,14 @@ import type { ImportResult, ImporterEntity } from "../types";
  * anexar ao projeto (o `useImporter()` faz o merge preservando Undo/Redo).
  */
 export interface DetectedFloorplan {
-  readonly walls: readonly { readonly a: readonly [number, number]; readonly b: readonly [number, number] }[];
-  readonly openings: readonly { readonly type: "door" | "window"; readonly center: readonly [number, number] }[];
+  readonly walls: readonly {
+    readonly a: readonly [number, number];
+    readonly b: readonly [number, number];
+  }[];
+  readonly openings: readonly {
+    readonly type: "door" | "window";
+    readonly center: readonly [number, number];
+  }[];
   readonly floors: readonly { readonly polygon: readonly (readonly [number, number])[] }[];
   readonly furnitureHints: readonly string[];
 }
@@ -49,7 +55,13 @@ export function detectFloorplan(result: ImportResult): DetectedFloorplan {
 }
 
 /** Rebalanceia todos os pontos para milímetros absolutos. */
-export function normalizeToMm(entities: readonly ImporterEntity[], factor: number): readonly ImporterEntity[] {
+export function normalizeToMm(
+  entities: readonly ImporterEntity[],
+  factor: number,
+): readonly ImporterEntity[] {
   if (factor === 1) return entities;
-  return entities.map((e) => ({ ...e, points: e.points.map((p) => [p[0] * factor, p[1] * factor] as const) }));
+  return entities.map((e) => ({
+    ...e,
+    points: e.points.map((p) => [p[0] * factor, p[1] * factor] as const),
+  }));
 }

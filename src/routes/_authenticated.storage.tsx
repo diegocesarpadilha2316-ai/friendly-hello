@@ -123,7 +123,12 @@ function StoragePage() {
         <MetricCard label="Assets ativos" value={s?.assetCount ?? 0} />
         <MetricCard label="Espaço usado" value={formatBytes(s?.usedBytes ?? 0)} />
         <MetricCard label="Quota do plano" value={quotaLabel} />
-        <MetricCard label="Uploads em andamento" value={jobs.data?.filter((j) => j.status !== "ready" && j.status !== "failed").length ?? 0} />
+        <MetricCard
+          label="Uploads em andamento"
+          value={
+            jobs.data?.filter((j) => j.status !== "ready" && j.status !== "failed").length ?? 0
+          }
+        />
       </div>
 
       <section className="mt-10 space-y-3">

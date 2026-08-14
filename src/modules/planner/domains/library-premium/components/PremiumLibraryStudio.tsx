@@ -61,9 +61,12 @@ export function PremiumLibraryStudio() {
     <div className="flex h-full min-h-[640px] flex-col gap-4 rounded-2xl border border-white/10 bg-[#0b0f19] p-4 text-slate-200">
       <header className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-lg font-semibold tracking-tight text-white">Biblioteca Oficial Premium</h2>
+          <h2 className="text-lg font-semibold tracking-tight text-white">
+            Biblioteca Oficial Premium
+          </h2>
           <p className="text-xs text-slate-400">
-            Materiais, ferragens, vidros, espelhos e LED — {lib.stats.totalMaterials + lib.stats.totalHardware} itens
+            Materiais, ferragens, vidros, espelhos e LED —{" "}
+            {lib.stats.totalMaterials + lib.stats.totalHardware} itens
           </p>
         </div>
         <input
@@ -116,10 +119,21 @@ export function PremiumLibraryStudio() {
             }))}
           />
         )}
-        {tab === "Vidros" && <ChipGrid title="Tipos de vidro" chips={GLASS_TYPES as readonly string[]} />}
-        {tab === "Espelhos" && <ChipGrid title="Tipos de espelho" chips={MIRROR_TYPES as readonly string[]} />}
-        {tab === "LED" && <ChipGrid title="Componentes LED" chips={LED_COMPONENTS as readonly string[]} />}
-        {tab === "Fabricantes" && <ChipGrid title="Fabricantes oficiais" chips={PREMIUM_MANUFACTURERS as readonly string[]} />}
+        {tab === "Vidros" && (
+          <ChipGrid title="Tipos de vidro" chips={GLASS_TYPES as readonly string[]} />
+        )}
+        {tab === "Espelhos" && (
+          <ChipGrid title="Tipos de espelho" chips={MIRROR_TYPES as readonly string[]} />
+        )}
+        {tab === "LED" && (
+          <ChipGrid title="Componentes LED" chips={LED_COMPONENTS as readonly string[]} />
+        )}
+        {tab === "Fabricantes" && (
+          <ChipGrid
+            title="Fabricantes oficiais"
+            chips={PREMIUM_MANUFACTURERS as readonly string[]}
+          />
+        )}
         {tab === "Coleções" && (
           <p className="text-sm text-slate-400">
             {lib.stats.totalCollections} coleções detectadas — sincronização entra em fase futura.
@@ -132,7 +146,8 @@ export function PremiumLibraryStudio() {
         )}
         {tab === "Importação" && (
           <p className="text-sm text-slate-400">
-            Formatos suportados: CSV, Excel, XML, JSON, ZIP, Promob, SketchUp, Bibliotecas próprias. Parsers CSV e JSON já ativos via Biblioteca Oficial.
+            Formatos suportados: CSV, Excel, XML, JSON, ZIP, Promob, SketchUp, Bibliotecas próprias.
+            Parsers CSV e JSON já ativos via Biblioteca Oficial.
           </p>
         )}
         {tab === "Exportação" && (
@@ -140,7 +155,9 @@ export function PremiumLibraryStudio() {
             {(["csv", "excel", "xml", "json", "zip"] as const).map((f) => (
               <button
                 key={f}
-                onClick={() => exportPremium({ format: f, materials: lib.materials, hardware: lib.hardware })}
+                onClick={() =>
+                  exportPremium({ format: f, materials: lib.materials, hardware: lib.hardware })
+                }
                 className="rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white hover:bg-white/10"
               >
                 Exportar {f.toUpperCase()}
@@ -201,17 +218,24 @@ function CategoryGrid({
     <div className="space-y-3">
       <div className="flex flex-wrap gap-1">
         {categories.map((c) => (
-          <span key={c} className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-slate-300">
+          <span
+            key={c}
+            className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-slate-300"
+          >
             {c}
           </span>
         ))}
       </div>
-      <p className="text-xs text-slate-500">{title}: {items.length} itens</p>
+      <p className="text-xs text-slate-500">
+        {title}: {items.length} itens
+      </p>
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
         {items.slice(0, 60).map((it) => (
           <div key={it.id} className="rounded-lg border border-white/10 bg-white/5 p-3 text-xs">
             <p className="font-medium text-white">{it.b}</p>
-            <p className="text-slate-400">{it.a} • {it.c}</p>
+            <p className="text-slate-400">
+              {it.a} • {it.c}
+            </p>
           </div>
         ))}
       </div>
@@ -225,7 +249,10 @@ function ChipGrid({ title, chips }: { title: string; chips: readonly string[] })
       <p className="text-xs text-slate-400">{title}</p>
       <div className="flex flex-wrap gap-2">
         {chips.map((c) => (
-          <span key={c} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-200">
+          <span
+            key={c}
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-200"
+          >
             {c}
           </span>
         ))}

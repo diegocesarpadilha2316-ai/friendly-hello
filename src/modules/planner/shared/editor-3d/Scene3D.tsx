@@ -121,7 +121,13 @@ function useTexturedMaterialProps(
   materialId: string | undefined,
   meshSizeM: readonly [number, number],
   fallbackColor: string,
-  overrides: { roughness?: number; metalness?: number; wireframe?: boolean; transparent?: boolean; opacity?: number } = {},
+  overrides: {
+    roughness?: number;
+    metalness?: number;
+    wireframe?: boolean;
+    transparent?: boolean;
+    opacity?: number;
+  } = {},
   role: "wall" | "floor" | "ceiling" | "furniture" = "furniture",
 ) {
   const lib = useLibraryMaterial(materialId);
@@ -203,11 +209,7 @@ function useTexturedMaterialProps(
     // (madeira, laca, reboco, piso ou pedra) com tiling em metros reais.
     // ---------------------------------------------------------------
     if (!props.map && !props.wireframe) {
-      const kind: SurfaceKind = inferSurfaceKind(
-        role,
-        materialId ?? lib?.id,
-        props.color,
-      );
+      const kind: SurfaceKind = inferSurfaceKind(role, materialId ?? lib?.id, props.color);
       const surf = getProceduralSurface(kind);
       if (surf) {
         const tile = surfaceTileMeters(kind);
@@ -242,7 +244,24 @@ function useTexturedMaterialProps(
       }
     }
     return props;
-  }, [materialId, role, lib?.id, lib?.colorHex, lib?.textureUrl, lib?.widthMm, lib?.lengthMm, lib?.grain, meshSizeM[0], meshSizeM[1], fallbackColor, overrides.roughness, overrides.metalness, overrides.wireframe, overrides.transparent, overrides.opacity]);
+  }, [
+    materialId,
+    role,
+    lib?.id,
+    lib?.colorHex,
+    lib?.textureUrl,
+    lib?.widthMm,
+    lib?.lengthMm,
+    lib?.grain,
+    meshSizeM[0],
+    meshSizeM[1],
+    fallbackColor,
+    overrides.roughness,
+    overrides.metalness,
+    overrides.wireframe,
+    overrides.transparent,
+    overrides.opacity,
+  ]);
 }
 
 function centerOffset(model: Scene3DModel) {
@@ -274,8 +293,7 @@ function Wall({
   const meshRef = useRef<THREE.Mesh>(null);
   const matRef = useRef<THREE.MeshStandardMaterial>(null);
   const pos = explodeVec(w.cx, w.cz, w.height / 2, center, viewport.explode);
-  const clipped =
-    viewport.sectionHeight != null && w.height / 2 > (viewport.sectionHeight / 1000);
+  const clipped = viewport.sectionHeight != null && w.height / 2 > viewport.sectionHeight / 1000;
   if (clipped) return null;
   const wireframe = viewport.render === "wireframe";
   const opacity = viewport.wallOpacity;
@@ -331,19 +349,24 @@ function Wall({
       {/* Rodapé real (100 mm, saliente 12 mm) — só em modo material e com
           a parede visível. Detalhe barato que ancora o ambiente e elimina
           a junta "flutuante" entre parede e piso. */}
-      {viewport.render === "material" && opacity > 0.5 ? (
-        [-1, 1].map((side) => (
-          <mesh
-            key={`skirt-${side}`}
-            position={[0, -w.height / 2 + 0.05, side * (w.thickness / 2 + 0.006)]}
-            castShadow
-            receiveShadow
-          >
-            <boxGeometry args={[w.length, 0.1, 0.012]} />
-            <meshStandardMaterial color="#f2f3f5" roughness={0.45} metalness={0.02} envMapIntensity={1.1} />
-          </mesh>
-        ))
-      ) : null}
+      {viewport.render === "material" && opacity > 0.5
+        ? [-1, 1].map((side) => (
+            <mesh
+              key={`skirt-${side}`}
+              position={[0, -w.height / 2 + 0.05, side * (w.thickness / 2 + 0.006)]}
+              castShadow
+              receiveShadow
+            >
+              <boxGeometry args={[w.length, 0.1, 0.012]} />
+              <meshStandardMaterial
+                color="#f2f3f5"
+                roughness={0.45}
+                metalness={0.02}
+                envMapIntensity={1.1}
+              />
+            </mesh>
+          ))
+        : null}
     </group>
   );
 }
@@ -366,7 +389,7 @@ function Slab({
   const pos = explodeVec(s.cx, s.cz, s.y, center, viewport.explode);
   const fallback = selected
     ? COLORS.wallSel
-    : s.overrideColor ?? (kind === "floor" ? COLORS.floor : COLORS.ceiling);
+    : (s.overrideColor ?? (kind === "floor" ? COLORS.floor : COLORS.ceiling));
   const props = useTexturedMaterialProps(
     s.materialId,
     [s.width, s.depth],
@@ -405,7 +428,7 @@ function Opening({
   const pos = explodeVec(o.cx, o.cz, o.y, center, viewport.explode);
   const color = selected
     ? COLORS.wallSel
-    : o.overrideColor ?? (o.role === "door" ? COLORS.door : COLORS.window);
+    : (o.overrideColor ?? (o.role === "door" ? COLORS.door : COLORS.window));
   return (
     <mesh
       position={[pos.x, pos.y, pos.z]}
@@ -447,8 +470,7 @@ function Furniture({
   const rawBottom = pos.y - f.height / 2;
   const safeBottom = rawBottom < 0 ? 0 : rawBottom;
   const safeCenterY = safeBottom + f.height / 2;
-  const clipped =
-    viewport.sectionHeight != null && safeBottom > viewport.sectionHeight / 1000;
+  const clipped = viewport.sectionHeight != null && safeBottom > viewport.sectionHeight / 1000;
   if (clipped) return null;
   const fallback = selected ? COLORS.furnitureSel : (f.overrideColor ?? COLORS.furniture);
   const props = useTexturedMaterialProps(
@@ -711,7 +733,7 @@ function Furniture({
           hardwareFinish={f.hardwareFinish}
           frontStyle={f.frontStyle}
         />
-        {(f.frontType === "vidro" || f.frontType === "reeded") ? (
+        {f.frontType === "vidro" || f.frontType === "reeded" ? (
           <GlassFront
             width={f.width}
             height={f.height}
@@ -736,7 +758,7 @@ function Furniture({
     >
       <boxGeometry args={[f.width, f.height, f.depth]} />
       <meshStandardMaterial {...props} />
-      {(f.frontType === "vidro" || f.frontType === "reeded") ? (
+      {f.frontType === "vidro" || f.frontType === "reeded" ? (
         <GlassFront
           width={f.width}
           height={f.height}
@@ -826,19 +848,49 @@ function FurnitureGizmo({
   );
 }
 
-function BoundingBox({ id, model, center, viewport }: { id: string; model: Scene3DModel; center: THREE.Vector3; viewport: Viewport3DState }) {
+function BoundingBox({
+  id,
+  model,
+  center,
+  viewport,
+}: {
+  id: string;
+  model: Scene3DModel;
+  center: THREE.Vector3;
+  viewport: Viewport3DState;
+}) {
   const target = useMemo(() => {
     const w = model.walls.find((x) => x.id === id);
-    if (w) return { pos: explodeVec(w.cx, w.cz, w.height / 2, center, viewport.explode), size: [w.length, w.height, w.thickness] as const, rot: w.rotationY };
+    if (w)
+      return {
+        pos: explodeVec(w.cx, w.cz, w.height / 2, center, viewport.explode),
+        size: [w.length, w.height, w.thickness] as const,
+        rot: w.rotationY,
+      };
     const f = [...model.floors, ...model.ceilings].find((x) => x.id === id);
     if (f) {
       const kind = model.ceilings.includes(f as SlabDescriptor) ? "ceiling" : "floor";
-      return { pos: explodeVec(f.cx, f.cz, f.y, center, viewport.explode), size: [f.width, f.thickness, f.depth] as const, rot: 0, kind };
+      return {
+        pos: explodeVec(f.cx, f.cz, f.y, center, viewport.explode),
+        size: [f.width, f.thickness, f.depth] as const,
+        rot: 0,
+        kind,
+      };
     }
     const o = model.openings.find((x) => x.id === id);
-    if (o) return { pos: explodeVec(o.cx, o.cz, o.y, center, viewport.explode), size: [o.width, o.height, 0.04] as const, rot: o.rotationY };
+    if (o)
+      return {
+        pos: explodeVec(o.cx, o.cz, o.y, center, viewport.explode),
+        size: [o.width, o.height, 0.04] as const,
+        rot: o.rotationY,
+      };
     const fu = model.furniture.find((x) => x.id === id);
-    if (fu) return { pos: explodeVec(fu.cx, fu.cz, fu.y, center, viewport.explode), size: [fu.width, fu.height, fu.depth] as const, rot: fu.rotationY };
+    if (fu)
+      return {
+        pos: explodeVec(fu.cx, fu.cz, fu.y, center, viewport.explode),
+        size: [fu.width, fu.height, fu.depth] as const,
+        rot: fu.rotationY,
+      };
     return null;
   }, [id, model, center, viewport.explode]);
   if (!target) return null;
@@ -900,7 +952,8 @@ function FocusOnSelection({
     const onKey = (e: KeyboardEvent) => {
       // Ignora atalhos dentro de inputs (Inspector, chat, etc.)
       const el = document.activeElement as HTMLElement | null;
-      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)) return;
+      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable))
+        return;
       if (e.key === "f" || e.key === "F") setTick((n) => n + 1);
     };
     window.addEventListener("keydown", onKey);
@@ -921,15 +974,24 @@ function FocusOnSelection({
     const fu = model.furniture.find((x) => x.id === selectedId);
     const wl = model.walls.find((x) => x.id === selectedId);
     const op = model.openings.find((x) => x.id === selectedId);
-    let cx = 0, cy = 0, cz = 0, radius = 1;
+    let cx = 0,
+      cy = 0,
+      cz = 0,
+      radius = 1;
     if (fu) {
-      cx = fu.cx - center.x; cy = fu.y; cz = fu.cz - center.z;
+      cx = fu.cx - center.x;
+      cy = fu.y;
+      cz = fu.cz - center.z;
       radius = Math.hypot(fu.width, fu.height, fu.depth) * 0.6;
     } else if (wl) {
-      cx = wl.cx - center.x; cy = wl.height / 2; cz = wl.cz - center.z;
+      cx = wl.cx - center.x;
+      cy = wl.height / 2;
+      cz = wl.cz - center.z;
       radius = Math.hypot(wl.length, wl.height) * 0.6;
     } else if (op) {
-      cx = op.cx - center.x; cy = op.y; cz = op.cz - center.z;
+      cx = op.cx - center.x;
+      cy = op.y;
+      cz = op.cz - center.z;
       radius = Math.hypot(op.width, op.height) * 0.7;
     } else return;
     const dist = Math.max(1.4, radius * 2.2);
@@ -939,7 +1001,10 @@ function FocusOnSelection({
     if (dir.lengthSq() < 1e-6) dir.set(1, 0, 1);
     dir.normalize();
     const target = new THREE.Vector3(cx, cy, cz);
-    const desired = target.clone().add(dir.multiplyScalar(dist)).setY(cy + dist * 0.55);
+    const desired = target
+      .clone()
+      .add(dir.multiplyScalar(dist))
+      .setY(cy + dist * 0.55);
     anim.current = {
       active: true,
       fromPos: camera.position.clone(),
@@ -1062,7 +1127,6 @@ function AutoFitCamera({
     camera.position.set(c.x + d * 0.75, eyeY + d * 0.35, c.z + d * 0.75);
     camera.lookAt(c.x, eyeY * 0.6, c.z);
     camera.updateProjectionMatrix();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [version, camera]);
   return null;
 }
@@ -1076,7 +1140,14 @@ function AutoResize() {
   return null;
 }
 
-export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCommitTransform }: Scene3DProps) {
+export function Scene3D({
+  model,
+  viewport,
+  selectedId,
+  onSelect,
+  gizmoMode,
+  onCommitTransform,
+}: Scene3DProps) {
   const { cx, cz } = centerOffset(model);
   // Alvo da câmera: 1/3 da altura da parede (~olho baixo). Isso ancora o
   // piso (y=0) no terço inferior da tela e reforça a percepção de escala.
@@ -1086,7 +1157,8 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
     () => new THREE.Vector3(cx, Math.max(0.6, viewport.wallHeight / 3000), cz),
     [cx, cz, viewport.wallHeight],
   );
-  const diag = Math.hypot(model.bounds.maxX - model.bounds.minX, model.bounds.maxZ - model.bounds.minZ) || 8;
+  const diag =
+    Math.hypot(model.bounds.maxX - model.bounds.minX, model.bounds.maxZ - model.bounds.minZ) || 8;
   const camDist = Math.max(6, diag * 1.2);
   // Altura da câmera: um pouco acima da linha do olho (1.6 m) sem
   // exagerar — piso sempre visível na base do frame.
@@ -1099,50 +1171,78 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
       case "morning":
         return {
           sun: [d * 0.9, d * 0.35, d * 0.15] as [number, number, number],
-          sunColor: "#ffd9a8", sunIntensity: 2.0,
-          fillColor: "#a8c5ff", fillIntensity: 0.4,
+          sunColor: "#ffd9a8",
+          sunIntensity: 2.0,
+          fillColor: "#a8c5ff",
+          fillIntensity: 0.4,
           hemi: ["#ffe1b8", "#1a1f2e", 0.35] as [string, string, number],
-          skyDist: 450000, turbidity: 8, rayleigh: 3.2, mieCoefficient: 0.006, mieDirectionalG: 0.85,
+          skyDist: 450000,
+          turbidity: 8,
+          rayleigh: 3.2,
+          mieCoefficient: 0.006,
+          mieDirectionalG: 0.85,
           bgFallback: "#7ea8d8",
           envPreset: "sunset" as const,
           envIntensity: 1.1,
-          showSky: true, showStars: false,
+          showSky: true,
+          showStars: false,
         };
       case "golden":
         return {
           sun: [-d * 0.9, d * 0.28, d * 0.35] as [number, number, number],
-          sunColor: "#ffb066", sunIntensity: 2.6,
-          fillColor: "#7c8fb5", fillIntensity: 0.35,
+          sunColor: "#ffb066",
+          sunIntensity: 2.6,
+          fillColor: "#7c8fb5",
+          fillIntensity: 0.35,
           hemi: ["#ffd0a0", "#1a1420", 0.3] as [string, string, number],
-          skyDist: 450000, turbidity: 12, rayleigh: 5, mieCoefficient: 0.01, mieDirectionalG: 0.92,
+          skyDist: 450000,
+          turbidity: 12,
+          rayleigh: 5,
+          mieCoefficient: 0.01,
+          mieDirectionalG: 0.92,
           bgFallback: "#d69564",
           envPreset: "sunset" as const,
           envIntensity: 1.3,
-          showSky: true, showStars: false,
+          showSky: true,
+          showStars: false,
         };
       case "night":
         return {
           sun: [d * 0.4, d * 0.05, -d] as [number, number, number],
-          sunColor: "#a8c0ff", sunIntensity: 0.25,
-          fillColor: "#5b6e9b", fillIntensity: 0.15,
+          sunColor: "#a8c0ff",
+          sunIntensity: 0.25,
+          fillColor: "#5b6e9b",
+          fillIntensity: 0.15,
           hemi: ["#3a4a70", "#0a0d18", 0.2] as [string, string, number],
-          skyDist: 450000, turbidity: 2, rayleigh: 0.2, mieCoefficient: 0.001, mieDirectionalG: 0.5,
+          skyDist: 450000,
+          turbidity: 2,
+          rayleigh: 0.2,
+          mieCoefficient: 0.001,
+          mieDirectionalG: 0.5,
           bgFallback: "#050813",
           envPreset: "night" as const,
           envIntensity: 0.5,
-          showSky: false, showStars: true,
+          showSky: false,
+          showStars: true,
         };
       default: // noon
         return {
           sun: [d * 0.3, d, d * 0.4] as [number, number, number],
-          sunColor: "#fff4e0", sunIntensity: 2.4,
-          fillColor: "#a8c5ff", fillIntensity: 0.35,
+          sunColor: "#fff4e0",
+          sunIntensity: 2.4,
+          fillColor: "#a8c5ff",
+          fillIntensity: 0.35,
           hemi: ["#dbe6ff", "#141822", 0.3] as [string, string, number],
-          skyDist: 450000, turbidity: 6, rayleigh: 1.5, mieCoefficient: 0.005, mieDirectionalG: 0.8,
+          skyDist: 450000,
+          turbidity: 6,
+          rayleigh: 1.5,
+          mieCoefficient: 0.005,
+          mieDirectionalG: 0.8,
           bgFallback: "#87b4e6",
           envPreset: "city" as const,
           envIntensity: 1.0,
-          showSky: true, showStars: false,
+          showSky: true,
+          showStars: false,
         };
     }
   }, [daytime, diag]);
@@ -1152,7 +1252,12 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
     <Canvas
       shadows
       dpr={[1, viewport.cinematic ? 2 : 1.5]}
-      camera={{ position: [cx + camDist * 0.7, camHeight, cz + camDist * 0.7], fov: 38, near: 0.05, far: 500 }}
+      camera={{
+        position: [cx + camDist * 0.7, camHeight, cz + camDist * 0.7],
+        fov: 38,
+        near: 0.05,
+        far: 500,
+      }}
       gl={{ antialias: true, powerPreference: "high-performance" }}
       onCreated={({ gl }) => {
         gl.toneMapping = THREE.ACESFilmicToneMapping;
@@ -1190,7 +1295,11 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
       {viewport.showLights ? (
         <>
           <directionalLight
-            position={[cx + dayPreset.sun[0] * 0.05, dayPreset.sun[1] * 0.05 + 4, cz + dayPreset.sun[2] * 0.05]}
+            position={[
+              cx + dayPreset.sun[0] * 0.05,
+              dayPreset.sun[1] * 0.05 + 4,
+              cz + dayPreset.sun[2] * 0.05,
+            ]}
             intensity={dayPreset.sunIntensity}
             color={dayPreset.sunColor}
             castShadow
@@ -1215,7 +1324,11 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
       ) : null}
       {/* HDRI IBL sempre ativo em modo material — sem alterar cor de fundo */}
       {viewport.render === "material" ? (
-        <Environment preset={dayPreset.envPreset} background={false} environmentIntensity={dayPreset.envIntensity} />
+        <Environment
+          preset={dayPreset.envPreset}
+          background={false}
+          environmentIntensity={dayPreset.envIntensity}
+        />
       ) : null}
       {/* Iluminação interna real: spots de teto em grade + bounce quente do
           piso. É o que separa "maquete cinza" de "ambiente fotografado" —
@@ -1279,42 +1392,81 @@ export function Scene3D({ model, viewport, selectedId, onSelect, gizmoMode, onCo
       {viewport.showAxes ? <axesHelper args={[2]} position={[cx, 0.01, cz]} /> : null}
 
       <group>
-          <AutoResize />
-          {model.floors.map((s) => (
-            <Slab key={s.id} s={s} kind="floor" center={center} viewport={viewport} selected={selectedId === s.id} onSelect={onSelect} />
+        <AutoResize />
+        {model.floors.map((s) => (
+          <Slab
+            key={s.id}
+            s={s}
+            kind="floor"
+            center={center}
+            viewport={viewport}
+            selected={selectedId === s.id}
+            onSelect={onSelect}
+          />
+        ))}
+        {model.walls.map((w) => (
+          <Wall
+            key={w.id}
+            w={w}
+            center={center}
+            viewport={viewport}
+            selected={selectedId === w.id}
+            onSelect={onSelect}
+          />
+        ))}
+        {model.openings.map((o) => (
+          <Opening
+            key={o.id}
+            o={o}
+            center={center}
+            viewport={viewport}
+            selected={selectedId === o.id}
+            onSelect={onSelect}
+          />
+        ))}
+        {model.furniture.map((f) => (
+          <Furniture
+            key={f.id}
+            f={f}
+            center={center}
+            viewport={viewport}
+            selected={selectedId === f.id}
+            onSelect={onSelect}
+          />
+        ))}
+        {viewport.sectionHeight == null &&
+          !(viewport.autoHideCeiling !== false && !viewport.cinematic) &&
+          model.ceilings.map((s) => (
+            <Slab
+              key={s.id}
+              s={s}
+              kind="ceiling"
+              center={center}
+              viewport={viewport}
+              selected={selectedId === s.id}
+              onSelect={onSelect}
+            />
           ))}
-          {model.walls.map((w) => (
-            <Wall key={w.id} w={w} center={center} viewport={viewport} selected={selectedId === w.id} onSelect={onSelect} />
-          ))}
-          {model.openings.map((o) => (
-            <Opening key={o.id} o={o} center={center} viewport={viewport} selected={selectedId === o.id} onSelect={onSelect} />
-          ))}
-          {model.furniture.map((f) => (
-            <Furniture key={f.id} f={f} center={center} viewport={viewport} selected={selectedId === f.id} onSelect={onSelect} />
-          ))}
-          {viewport.sectionHeight == null &&
-            !(viewport.autoHideCeiling !== false && !viewport.cinematic) &&
-            model.ceilings.map((s) => (
-              <Slab key={s.id} s={s} kind="ceiling" center={center} viewport={viewport} selected={selectedId === s.id} onSelect={onSelect} />
-            ))}
-          {selectedId ? <BoundingBox id={selectedId} model={model} center={center} viewport={viewport} /> : null}
-          {(() => {
-            // Gizmo só aparece para MÓVEIS selecionados, em modo válido e
-            // com "explode" zerado (a inversão do explode não é feita).
-            if (!gizmoMode || !onCommitTransform || !selectedId) return null;
-            if ((viewport.explode ?? 0) > 0) return null;
-            const fu = model.furniture.find((x) => x.id === selectedId);
-            if (!fu) return null;
-            return (
-              <FurnitureGizmo
-                fu={fu}
-                center={center}
-                viewport={viewport}
-                mode={gizmoMode}
-                onCommit={onCommitTransform}
-              />
-            );
-          })()}
+        {selectedId ? (
+          <BoundingBox id={selectedId} model={model} center={center} viewport={viewport} />
+        ) : null}
+        {(() => {
+          // Gizmo só aparece para MÓVEIS selecionados, em modo válido e
+          // com "explode" zerado (a inversão do explode não é feita).
+          if (!gizmoMode || !onCommitTransform || !selectedId) return null;
+          if ((viewport.explode ?? 0) > 0) return null;
+          const fu = model.furniture.find((x) => x.id === selectedId);
+          if (!fu) return null;
+          return (
+            <FurnitureGizmo
+              fu={fu}
+              center={center}
+              viewport={viewport}
+              mode={gizmoMode}
+              onCommit={onCommitTransform}
+            />
+          );
+        })()}
       </group>
 
       <Cameras mode={viewport.camera} />

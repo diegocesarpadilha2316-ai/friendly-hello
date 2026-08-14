@@ -1,17 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Users } from "lucide-react";
-import {
-  PageContainer,
-  PageHeader,
-  EmptyState,
-  StatusBadge,
-} from "@/core/components/ui-kit";
+import { PageContainer, PageHeader, EmptyState, StatusBadge } from "@/core/components/ui-kit";
 
 export const Route = createFileRoute("/_authenticated/crm")({
   head: () => ({
     meta: [
       { title: "CRM — Dioris Hub" },
-      { name: "description", content: "Relacionamento com clientes, leads e pipeline na Dioris Hub." },
+      {
+        name: "description",
+        content: "Relacionamento com clientes, leads e pipeline na Dioris Hub.",
+      },
       { property: "og:title", content: "CRM — Dioris Hub" },
       { property: "og:description", content: "Relacionamento com clientes, leads e pipeline." },
       { property: "og:type", content: "website" },

@@ -22,12 +22,20 @@ export function LibraryPanel() {
   const family = FamilyRegistry.get(activeFamily);
 
   const familyModules = useMemo(() => ModuleRegistry.listByFamily(activeFamily), [activeFamily]);
-  const categories = useMemo(() => ["Todas", ...Array.from(new Set(familyModules.map((module) => module.category)))], [familyModules]);
+  const categories = useMemo(
+    () => ["Todas", ...Array.from(new Set(familyModules.map((module) => module.category)))],
+    [familyModules],
+  );
   const modules = useMemo(() => {
     const term = query.trim().toLowerCase();
-    return familyModules.filter((module) =>
-      (activeCategory === "Todas" || module.category === activeCategory) &&
-      (term ? `${module.name} ${module.category} ${module.subcategory ?? ""} ${module.kind ?? ""}`.toLowerCase().includes(term) : true)
+    return familyModules.filter(
+      (module) =>
+        (activeCategory === "Todas" || module.category === activeCategory) &&
+        (term
+          ? `${module.name} ${module.category} ${module.subcategory ?? ""} ${module.kind ?? ""}`
+              .toLowerCase()
+              .includes(term)
+          : true),
     );
   }, [activeCategory, familyModules, query]);
 
@@ -37,11 +45,21 @@ export function LibraryPanel() {
       <LibraryCategoryList
         families={families}
         activeId={activeFamily}
-        onSelect={(familyId) => { setActiveFamily(familyId); setActiveCategory("Todas"); }}
+        onSelect={(familyId) => {
+          setActiveFamily(familyId);
+          setActiveCategory("Todas");
+        }}
       />
       <div className="library-subcategories" role="tablist" aria-label="Categorias da biblioteca">
         {categories.map((category) => (
-          <button key={category} type="button" className={activeCategory === category ? "active" : ""} onClick={() => setActiveCategory(category)}>{category}</button>
+          <button
+            key={category}
+            type="button"
+            className={activeCategory === category ? "active" : ""}
+            onClick={() => setActiveCategory(category)}
+          >
+            {category}
+          </button>
         ))}
       </div>
 

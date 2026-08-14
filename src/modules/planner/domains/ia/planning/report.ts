@@ -64,7 +64,11 @@ export function buildFinalReport(plan: ProjectPlan, status: PlanStatus): PlanFin
     warnings,
     pendings,
     budget: done("budget") ? "disponivel" : has("budget") ? "incompleto" : "nao_solicitado",
-    production: done("production") ? "disponivel" : has("production") ? "preliminar" : "nao_solicitado",
+    production: done("production")
+      ? "disponivel"
+      : has("production")
+        ? "preliminar"
+        : "nao_solicitado",
     render: done("render") ? "preparado" : has("render") ? "pendente" : "nao_solicitado",
     nextSteps,
     text,

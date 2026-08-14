@@ -24,11 +24,7 @@ import {
   type LaundryAppliance,
 } from "./appliances";
 import { tubCentersMm, tubDropMm } from "./tub";
-import {
-  laundryHandle,
-  LAUNDRY_MODULE_PROFILES,
-  type LaundryModuleSpec,
-} from "./spec";
+import { laundryHandle, LAUNDRY_MODULE_PROFILES, type LaundryModuleSpec } from "./spec";
 
 export interface LaundryGeometry extends Record<string, number> {
   floorGapMm: number;
@@ -208,13 +204,27 @@ export function laundryReservedVolumes(
       out.push({
         id: `agua${sfx}`,
         kind: "agua",
-        box: { x: Math.round(cx - 150), y: g.caseY0, z: 0, width: 300, height: g.caseHeightMm, depth: 100 },
+        box: {
+          x: Math.round(cx - 150),
+          y: g.caseY0,
+          z: 0,
+          width: 300,
+          height: g.caseHeightMm,
+          depth: 100,
+        },
         note: "entrada de água do tanque",
       });
       out.push({
         id: `esgoto${sfx}`,
         kind: "esgoto",
-        box: { x: sifX - 20, y: g.caseY0, z: 0, width: s.siphonMm + 40, height: g.caseHeightMm, depth: 120 },
+        box: {
+          x: sifX - 20,
+          y: g.caseY0,
+          z: 0,
+          width: s.siphonMm + 40,
+          height: g.caseHeightMm,
+          depth: 120,
+        },
         note: "saída de esgoto do tanque",
       });
     });
@@ -482,14 +492,26 @@ function caseSlots(
       component: "lateral",
       at: [0, g.caseY0, 0],
       role: "lateral esquerda",
-      params: { heightMm: g.caseHeightMm, depthMm: g.caseDepthMm, thicknessMm: t, side: "esquerda", finishId },
+      params: {
+        heightMm: g.caseHeightMm,
+        depthMm: g.caseDepthMm,
+        thicknessMm: t,
+        side: "esquerda",
+        finishId,
+      },
     },
     {
       id: "lateral-d",
       component: "lateral",
       at: [W - t, g.caseY0, 0],
       role: "lateral direita",
-      params: { heightMm: g.caseHeightMm, depthMm: g.caseDepthMm, thicknessMm: t, side: "direita", finishId },
+      params: {
+        heightMm: g.caseHeightMm,
+        depthMm: g.caseDepthMm,
+        thicknessMm: t,
+        side: "direita",
+        finishId,
+      },
     },
     {
       id: "base",
@@ -525,7 +547,13 @@ function caseSlots(
         component: "fundo",
         at: [0, g.caseY0, 0],
         role: "fundo",
-        params: { widthMm: W, heightMm: g.caseHeightMm, thicknessMm: bt, mounting: "encaixado", finishId },
+        params: {
+          widthMm: W,
+          heightMm: g.caseHeightMm,
+          thicknessMm: bt,
+          mounting: "encaixado",
+          finishId,
+        },
       });
     } else {
       let pieces: { x0: number; x1: number }[] = [{ x0: 0, x1: W }];
@@ -733,7 +761,10 @@ export function laundryDrawerHeights(count: number, regionMm: number, gapMm = 3)
   if (count <= 0) return [];
   const usable = Math.max(60 * count, regionMm - gapMm * (count - 1));
   if (count === 1) return [usable];
-  const weights = Array.from({ length: count }, (_, i) => 1 + (0.7 * (count - 1 - i)) / (count - 1));
+  const weights = Array.from(
+    { length: count },
+    (_, i) => 1 + (0.7 * (count - 1 - i)) / (count - 1),
+  );
   const total = weights.reduce((a, b) => a + b, 0);
   return weights.map((w) => (usable * w) / total);
 }
@@ -828,7 +859,18 @@ function drawerSlots(
 
     if (!hit) {
       out.slots.push(
-        plainDrawer(spec, g, id, `gaveta ${i + 1}`, interiorX0, g.innerWidthMm, y, h, fullDepth, handle),
+        plainDrawer(
+          spec,
+          g,
+          id,
+          `gaveta ${i + 1}`,
+          interiorX0,
+          g.innerWidthMm,
+          y,
+          h,
+          fullDepth,
+          handle,
+        ),
       );
       y += h + gap;
       return;
@@ -862,25 +904,25 @@ function drawerSlots(
           finishId: spec.finishId,
         },
       }));
-      out.slots.push(
-        ...boxSlots,
-        {
-          id: `${groupId}-frente`,
-          component: "frente-gaveta",
-          at: [0, y, g.frontZMm],
-          role: `gaveta em U ${i + 1} — frente única`,
-          params: {
-            widthMm: spec.widthMm,
-            heightMm: h,
-            thicknessMm: t,
-            handle,
-            substrate: "mdf",
-            mounting: "sobreposta",
-            finishId: spec.finishId,
-          },
+      out.slots.push(...boxSlots, {
+        id: `${groupId}-frente`,
+        component: "frente-gaveta",
+        at: [0, y, g.frontZMm],
+        role: `gaveta em U ${i + 1} — frente única`,
+        params: {
+          widthMm: spec.widthMm,
+          heightMm: h,
+          thicknessMm: t,
+          handle,
+          substrate: "mdf",
+          mounting: "sobreposta",
+          finishId: spec.finishId,
         },
-      );
-      out.mechanisms.push({ groupId, slotIds: [...boxSlots.map((s) => s.id), `${groupId}-frente`] });
+      });
+      out.mechanisms.push({
+        groupId,
+        slotIds: [...boxSlots.map((s) => s.id), `${groupId}-frente`],
+      });
       out.decisions.push({
         id,
         action: "gaveta-em-u",
@@ -892,7 +934,18 @@ function drawerSlots(
 
     if (shallow >= 250) {
       out.slots.push(
-        plainDrawer(spec, g, id, `gaveta ${i + 1} (reduzida)`, interiorX0, g.innerWidthMm, y, h, shallow, handle),
+        plainDrawer(
+          spec,
+          g,
+          id,
+          `gaveta ${i + 1} (reduzida)`,
+          interiorX0,
+          g.innerWidthMm,
+          y,
+          h,
+          shallow,
+          handle,
+        ),
       );
       out.decisions.push({
         id,
@@ -1109,7 +1162,10 @@ function nicheBoard(
       id: "nicho-tabua",
       component: "nicho",
       at: [spec.thicknessMm, g.interiorY0, backZone],
-      role: spec.board === "vertical" ? "espaço vertical para tábua solta" : "nicho para tábua dobrável",
+      role:
+        spec.board === "vertical"
+          ? "espaço vertical para tábua solta"
+          : "nicho para tábua dobrável",
       params: {
         widthMm: g.innerWidthMm,
         heightMm: Math.min(2000, Math.max(300, g.interiorHeightMm)),
@@ -1333,7 +1389,15 @@ export function laundryModuleSlots(
 
       if (spec.outerDoor) {
         const leaves = Math.max(1, spec.doors || 2);
-        slots.push(...doorSlots(spec, g, leaves, { y0: g.caseY0, heightMm: g.caseHeightMm }, "porta-externa"));
+        slots.push(
+          ...doorSlots(
+            spec,
+            g,
+            leaves,
+            { y0: g.caseY0, heightMm: g.caseHeightMm },
+            "porta-externa",
+          ),
+        );
         warnings.push(
           "porta externa: abrir a folha antes de operar o aparelho e manter a ventilação desobstruída",
         );
@@ -1445,9 +1509,17 @@ export function laundryModuleSlots(
     decisions.push(...d.decisions);
     if (d.doorsInstead > 0) {
       slots.push(
-        ...doorSlots(spec, g, d.doorsInstead, { y0: g.caseY0, heightMm: drawerRegionH }, "porta-sob-tanque"),
+        ...doorSlots(
+          spec,
+          g,
+          d.doorsInstead,
+          { y0: g.caseY0, heightMm: drawerRegionH },
+          "porta-sob-tanque",
+        ),
       );
-      warnings.push(`${d.doorsInstead} gaveta(s) substituída(s) por porta devido ao volume hidráulico`);
+      warnings.push(
+        `${d.doorsInstead} gaveta(s) substituída(s) por porta devido ao volume hidráulico`,
+      );
     }
   }
 

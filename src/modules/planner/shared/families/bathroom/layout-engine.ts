@@ -29,12 +29,7 @@ import {
 } from "./spec";
 
 export type BathroomLayoutSource =
-  | "explicito"
-  | "legado"
-  | "preset"
-  | "entre-paredes"
-  | "preset-automatico"
-  | "fallback";
+  "explicito" | "legado" | "preset" | "entre-paredes" | "preset-automatico" | "fallback";
 
 export interface BathroomPlacement {
   readonly id: string;
@@ -164,7 +159,8 @@ export function planBathroomLayout(input: BathroomLayoutInput): BathroomLayoutRe
   const widthMm = Math.max(MIN_MODULE_MM, Math.round(input.widthMm || 900));
   const betweenWalls = input.betweenWalls ?? false;
   const wantsBetweenWalls =
-    betweenWalls || (normalizePresetId(input.preset) !== null && !input.modules && !input.legacyModules
+    betweenWalls ||
+    (normalizePresetId(input.preset) !== null && !input.modules && !input.legacyModules
       ? BATHROOM_PRESETS[normalizePresetId(input.preset)!].betweenWalls
       : false);
   const warnings: string[] = [];

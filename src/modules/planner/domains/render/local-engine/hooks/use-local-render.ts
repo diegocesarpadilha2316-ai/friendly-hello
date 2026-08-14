@@ -8,7 +8,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePlannerEditor } from "@/modules/planner/shared/state/editor-context";
 import { buildLocalScene } from "../scene-builder";
 import { buildPlaybook, type LocalRenderPlaybook } from "../renderer";
-import { LOCAL_STAGES, advance, complete, markCancelled, markStart, estimateDurationMs } from "../queue";
+import {
+  LOCAL_STAGES,
+  advance,
+  complete,
+  markCancelled,
+  markStart,
+  estimateDurationMs,
+} from "../queue";
 import { expandCapture } from "../batch";
 import { buildCaptureRequest, DEFAULT_OUTPUT } from "../capture";
 import { DEFAULT_LOCAL_QUALITY } from "../quality";
@@ -68,7 +75,11 @@ export function useLocalRender(): UseLocalRender {
   const active = useMemo(
     () =>
       queue.find(
-        (j) => j.status !== "queued" && j.status !== "done" && j.status !== "cancelled" && j.status !== "failed",
+        (j) =>
+          j.status !== "queued" &&
+          j.status !== "done" &&
+          j.status !== "cancelled" &&
+          j.status !== "failed",
       ) ?? null,
     [queue],
   );

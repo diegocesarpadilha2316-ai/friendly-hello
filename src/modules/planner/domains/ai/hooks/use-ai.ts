@@ -13,12 +13,7 @@ import {
   summarize,
   windowedMessages,
 } from "../services";
-import type {
-  AIConversationState,
-  AIMessage,
-  AIProviderId,
-  AIToolResult,
-} from "../types";
+import type { AIConversationState, AIMessage, AIProviderId, AIToolResult } from "../types";
 
 export interface UseAIOptions {
   readonly provider?: AIProviderId;
@@ -89,14 +84,14 @@ export function useAi(options: UseAIOptions = {}): UseAIReturn {
       const project = editor.state.project;
       const ctx = buildPromptContext({
         project: projectContext(project),
-        room: roomContext(
-          project,
-          editor.state.selectedEnvironmentId,
-          editor.state.selectedRoomId,
-        ),
+        room: roomContext(project, editor.state.selectedEnvironmentId, editor.state.selectedRoomId),
       });
       const sys = composeSystemMessage(ctx);
-      const userMsg: AIMessage = { role: "user", content: text, createdAt: new Date().toISOString() };
+      const userMsg: AIMessage = {
+        role: "user",
+        content: text,
+        createdAt: new Date().toISOString(),
+      };
 
       let next = appendMessage(conversation, userMsg);
       next = summarize(next);

@@ -29,10 +29,18 @@ export function parseDXF(text: string, filename: string): ImportResult {
     if (t.code !== 0) continue;
     const type = t.value;
     if (type === "LINE") {
-      let layer = "0", x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+      let layer = "0",
+        x1 = 0,
+        y1 = 0,
+        x2 = 0,
+        y2 = 0;
       while (i < lines.length) {
-        const p = next(); if (!p) break;
-        if (p.code === 0) { i -= 2; break; }
+        const p = next();
+        if (!p) break;
+        if (p.code === 0) {
+          i -= 2;
+          break;
+        }
         if (p.code === 8) layer = p.value;
         else if (p.code === 10) x1 = Number(p.value);
         else if (p.code === 20) y1 = Number(p.value);
@@ -40,24 +48,44 @@ export function parseDXF(text: string, filename: string): ImportResult {
         else if (p.code === 21) y2 = Number(p.value);
       }
       layers.add(layer);
-      entities.push({ id: `dxf-${++idSeq}`, role: "wall", layerId: layer, points: [[x1, y1], [x2, y2]] });
+      entities.push({
+        id: `dxf-${++idSeq}`,
+        role: "wall",
+        layerId: layer,
+        points: [
+          [x1, y1],
+          [x2, y2],
+        ],
+      });
     } else if (type === "LWPOLYLINE" || type === "POLYLINE") {
       let layer = "0";
       const pts: [number, number][] = [];
       let curX: number | null = null;
       while (i < lines.length) {
-        const p = next(); if (!p) break;
-        if (p.code === 0 && p.value !== "VERTEX") { i -= 2; break; }
+        const p = next();
+        if (!p) break;
+        if (p.code === 0 && p.value !== "VERTEX") {
+          i -= 2;
+          break;
+        }
         if (p.code === 8) layer = p.value;
         else if (p.code === 10) curX = Number(p.value);
-        else if (p.code === 20 && curX != null) { pts.push([curX, Number(p.value)]); curX = null; }
+        else if (p.code === 20 && curX != null) {
+          pts.push([curX, Number(p.value)]);
+          curX = null;
+        }
       }
       layers.add(layer);
-      if (pts.length) entities.push({ id: `dxf-${++idSeq}`, role: "wall", layerId: layer, points: pts });
+      if (pts.length)
+        entities.push({ id: `dxf-${++idSeq}`, role: "wall", layerId: layer, points: pts });
     } else if (type === "TEXT" || type === "MTEXT") {
       while (i < lines.length) {
-        const p = next(); if (!p) break;
-        if (p.code === 0) { i -= 2; break; }
+        const p = next();
+        if (!p) break;
+        if (p.code === 0) {
+          i -= 2;
+          break;
+        }
         if (p.code === 1) texts.push(p.value);
       }
     }

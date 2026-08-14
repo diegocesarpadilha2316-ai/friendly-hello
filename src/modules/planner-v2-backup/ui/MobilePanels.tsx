@@ -1,10 +1,5 @@
 import { X } from "lucide-react";
-import type {
-  ChatMessage,
-  FurnitureSelection,
-  ProjectTreeItem,
-  RightPanelTab
-} from "./planner-ui";
+import type { ChatMessage, FurnitureSelection, ProjectTreeItem, RightPanelTab } from "./planner-ui";
 import { CopilotPanel } from "./CopilotPanel";
 import { ProjectExplorer } from "./ProjectExplorer";
 
@@ -31,20 +26,16 @@ export function MobilePanels(props: Props) {
   return (
     <>
       <div
-        className={`dioris-mobile-backdrop ${
-          props.explorerOpen ? "is-visible" : ""
-        }`}
+        className={`dioris-mobile-backdrop ${props.explorerOpen ? "is-visible" : ""}`}
         onClick={props.onCloseExplorer}
       />
 
-      <aside
-        className={`dioris-mobile-drawer ${
-          props.explorerOpen ? "is-open" : ""
-        }`}
-      >
+      <aside className={`dioris-mobile-drawer ${props.explorerOpen ? "is-open" : ""}`}>
         <div className="dioris-mobile-panel-head">
           <strong>Estrutura do Projeto</strong>
-          <button type="button" onClick={props.onCloseExplorer}><X size={17} /></button>
+          <button type="button" onClick={props.onCloseExplorer}>
+            <X size={17} />
+          </button>
         </div>
         <ProjectExplorer
           items={props.tree}
@@ -59,9 +50,7 @@ export function MobilePanels(props: Props) {
       </aside>
 
       <section
-        className={`dioris-mobile-sheet ${
-          props.copilotOpen ? "is-open" : ""
-        }`}
+        className={`dioris-mobile-sheet ${props.copilotOpen ? "is-open" : ""}`}
         style={{ height: `${props.copilotHeight}%` }}
       >
         <div className="dioris-sheet-handle" />
@@ -77,7 +66,9 @@ export function MobilePanels(props: Props) {
                 {height === 25 ? "¼" : height === 50 ? "½" : "1"}
               </button>
             ))}
-            <button type="button" onClick={props.onCloseCopilot}><X size={17} /></button>
+            <button type="button" onClick={props.onCloseCopilot}>
+              <X size={17} />
+            </button>
           </div>
         </div>
         <CopilotPanel

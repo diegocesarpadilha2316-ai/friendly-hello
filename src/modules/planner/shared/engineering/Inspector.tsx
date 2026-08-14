@@ -76,30 +76,39 @@ type TabId = (typeof TAB_DEFS)[number]["id"];
 // cor rápida (Materiais → Cores). Persiste em `params.__color` (hex),
 // que a extrusão 3D lê como override sobre o material selecionado.
 const COLOR_PALETTE = [
-  { group: "Sólidos", swatches: [
-    { hex: "#F4F4F4", name: "Branco TX" },
-    { hex: "#E7E4DD", name: "Off White" },
-    { hex: "#141414", name: "Preto TX" },
-    { hex: "#3A3D42", name: "Grafite" },
-    { hex: "#B2B4B8", name: "Cinza Cristal" },
-    { hex: "#5C6B73", name: "Chumbo" },
-  ] },
-  { group: "Madeiras", swatches: [
-    { hex: "#C9A87A", name: "Carvalho Naturale" },
-    { hex: "#8B5E3C", name: "Freijó" },
-    { hex: "#6B4A2B", name: "Nogueira" },
-    { hex: "#9E7B4F", name: "Itapuã" },
-    { hex: "#A3835B", name: "Bali" },
-    { hex: "#4A2E1A", name: "Ébano" },
-  ] },
-  { group: "Lacas & Metálicos", swatches: [
-    { hex: "#B24E3A", name: "Terracota" },
-    { hex: "#0B3D5C", name: "Azul Petróleo" },
-    { hex: "#2F4A3A", name: "Verde Musgo" },
-    { hex: "#C9B37E", name: "Champagne" },
-    { hex: "#D4AF37", name: "Dourado" },
-    { hex: "#A9A9A9", name: "Inox Escovado" },
-  ] },
+  {
+    group: "Sólidos",
+    swatches: [
+      { hex: "#F4F4F4", name: "Branco TX" },
+      { hex: "#E7E4DD", name: "Off White" },
+      { hex: "#141414", name: "Preto TX" },
+      { hex: "#3A3D42", name: "Grafite" },
+      { hex: "#B2B4B8", name: "Cinza Cristal" },
+      { hex: "#5C6B73", name: "Chumbo" },
+    ],
+  },
+  {
+    group: "Madeiras",
+    swatches: [
+      { hex: "#C9A87A", name: "Carvalho Naturale" },
+      { hex: "#8B5E3C", name: "Freijó" },
+      { hex: "#6B4A2B", name: "Nogueira" },
+      { hex: "#9E7B4F", name: "Itapuã" },
+      { hex: "#A3835B", name: "Bali" },
+      { hex: "#4A2E1A", name: "Ébano" },
+    ],
+  },
+  {
+    group: "Lacas & Metálicos",
+    swatches: [
+      { hex: "#B24E3A", name: "Terracota" },
+      { hex: "#0B3D5C", name: "Azul Petróleo" },
+      { hex: "#2F4A3A", name: "Verde Musgo" },
+      { hex: "#C9B37E", name: "Champagne" },
+      { hex: "#D4AF37", name: "Dourado" },
+      { hex: "#A9A9A9", name: "Inox Escovado" },
+    ],
+  },
 ] as const;
 
 /* ------------------------------------------------------------------
@@ -114,7 +123,8 @@ function useFurnitureList(): {
 } {
   const { state } = usePlannerEditor();
   return useMemo(() => {
-    const env = state.project?.environments.find((e) => e.id === state.selectedEnvironmentId) ?? null;
+    const env =
+      state.project?.environments.find((e) => e.id === state.selectedEnvironmentId) ?? null;
     const room = env?.rooms.find((r) => r.id === state.selectedRoomId) ?? null;
     const list = room
       ? (listPrimitives(room).filter((p) => p.kind === "furniture") as Furniture[])
@@ -154,7 +164,12 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
   const current = list.find((f) => f.id === selectedId) ?? list[list.length - 1] ?? null;
 
   if (!environmentId || !roomId) {
-    return <Empty title="Selecione um cômodo" description="Escolha um cômodo no projeto para editar seus móveis." />;
+    return (
+      <Empty
+        title="Selecione um cômodo"
+        description="Escolha um cômodo no projeto para editar seus móveis."
+      />
+    );
   }
   if (!current) {
     return (
@@ -167,8 +182,7 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
 
   const rawParams = (state.project?.environments
     .find((e) => e.id === environmentId)
-    ?.rooms.find((r) => r.id === roomId)
-    ?.nodes[current.id]?.params ?? {}) as ParamMap;
+    ?.rooms.find((r) => r.id === roomId)?.nodes[current.id]?.params ?? {}) as ParamMap;
 
   const eng = resolveEngineering(current, rules);
   const decomposition = decomposeFurniture(current, rules);
@@ -178,7 +192,8 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
 
   const isHidden = rawParams["__hidden"] === true;
   const isLocked = rawParams["locked"] === true || rawParams["__locked"] === true;
-  const currentColor = typeof rawParams["__color"] === "string" ? (rawParams["__color"] as string) : "";
+  const currentColor =
+    typeof rawParams["__color"] === "string" ? (rawParams["__color"] as string) : "";
   const zOffsetMm = num(rawParams["mount:y"], 0);
   const tiltDeg = num(rawParams["p:tilt"], 0);
   const notes = typeof rawParams["p:notes"] === "string" ? (rawParams["p:notes"] as string) : "";
@@ -214,10 +229,8 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
   const patchParams = (next: Record<string, ParamValue>) => {
     mutateFurniture((n) => ({ ...n, params: { ...n.params, ...next } }));
   };
-  const patchDim = (
-    key: "width" | "depth" | "height" | "rotation" | "x" | "y",
-    value: number,
-  ) => patchParams({ [key]: value });
+  const patchDim = (key: "width" | "depth" | "height" | "rotation" | "x" | "y", value: number) =>
+    patchParams({ [key]: value });
 
   const applyLibraryMaterial = (materialId: string | null) => {
     patchParams({ materialId: materialId ?? null });
@@ -305,7 +318,9 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Wrench className="h-3.5 w-3.5" />
           <span>Inspector</span>
-          <span className="ml-auto rounded-full bg-primary/15 px-2 py-0.5 text-primary">{rules.label}</span>
+          <span className="ml-auto rounded-full bg-primary/15 px-2 py-0.5 text-primary">
+            {rules.label}
+          </span>
         </div>
         <select
           value={current.id}
@@ -322,22 +337,46 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
           ))}
         </select>
         <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] text-muted-foreground">
-          <span><strong className="text-foreground/80">Categoria:</strong> {current.subtype}</span>
-          {environmentLabel ? <span><strong className="text-foreground/80">Ambiente:</strong> {environmentLabel}</span> : null}
-          {roomLabel ? <span><strong className="text-foreground/80">Cômodo:</strong> {roomLabel}</span> : null}
+          <span>
+            <strong className="text-foreground/80">Categoria:</strong> {current.subtype}
+          </span>
+          {environmentLabel ? (
+            <span>
+              <strong className="text-foreground/80">Ambiente:</strong> {environmentLabel}
+            </span>
+          ) : null}
+          {roomLabel ? (
+            <span>
+              <strong className="text-foreground/80">Cômodo:</strong> {roomLabel}
+            </span>
+          ) : null}
         </div>
 
         {/* Barra de ações rápidas */}
         <div className="flex flex-wrap items-center gap-1">
-          <IconAction title={isHidden ? "Mostrar móvel" : "Ocultar móvel"} onClick={() => setVisible(isHidden)} active={isHidden}>
+          <IconAction
+            title={isHidden ? "Mostrar móvel" : "Ocultar móvel"}
+            onClick={() => setVisible(isHidden)}
+            active={isHidden}
+          >
             {isHidden ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
           </IconAction>
-          <IconAction title={isLocked ? "Desbloquear edição" : "Bloquear edição"} onClick={() => setLocked(!isLocked)} active={isLocked}>
+          <IconAction
+            title={isLocked ? "Desbloquear edição" : "Bloquear edição"}
+            onClick={() => setLocked(!isLocked)}
+            active={isLocked}
+          >
             {isLocked ? <Lock className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}
           </IconAction>
-          <IconAction title="Duplicar (Ctrl+D)" onClick={duplicateFurniture}><Copy className="h-3.5 w-3.5" /></IconAction>
-          <IconAction title="Centralizar no cômodo" onClick={centerInRoom}><Crosshair className="h-3.5 w-3.5" /></IconAction>
-          <IconAction title="Focar no viewport (F)" onClick={focusInViewport}><Crosshair className="h-3.5 w-3.5" /></IconAction>
+          <IconAction title="Duplicar (Ctrl+D)" onClick={duplicateFurniture}>
+            <Copy className="h-3.5 w-3.5" />
+          </IconAction>
+          <IconAction title="Centralizar no cômodo" onClick={centerInRoom}>
+            <Crosshair className="h-3.5 w-3.5" />
+          </IconAction>
+          <IconAction title="Focar no viewport (F)" onClick={focusInViewport}>
+            <Crosshair className="h-3.5 w-3.5" />
+          </IconAction>
           <span className="ml-auto" />
           <IconAction title="Excluir móvel" onClick={deleteFurniture} danger>
             <Trash2 className="h-3.5 w-3.5" />
@@ -367,13 +406,20 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
         </div>
       </header>
 
-      <div className={cn("flex-1 space-y-4 overflow-y-auto px-3 py-3", isLocked && "pointer-events-none opacity-70")}>
+      <div
+        className={cn(
+          "flex-1 space-y-4 overflow-y-auto px-3 py-3",
+          isLocked && "pointer-events-none opacity-70",
+        )}
+      >
         {tab === "geral" && (
           <>
             <Section icon={Info} title="Identificação">
               <TextRow
                 label="Nome"
-                value={typeof rawParams["p:label"] === "string" ? (rawParams["p:label"] as string) : ""}
+                value={
+                  typeof rawParams["p:label"] === "string" ? (rawParams["p:label"] as string) : ""
+                }
                 placeholder={pieceLabel(current)}
                 onChange={(v) => patchParams({ "p:label": v })}
               />
@@ -403,13 +449,44 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
         {tab === "dimensoes" && (
           <>
             <Section icon={Ruler} title="Dimensões (mm)">
-              <NumberRow label="Largura" value={current.width} min={100} max={6000} step={10} onChange={(v) => patchDim("width", v)} />
-              <NumberRow label="Profundidade" value={current.depth} min={100} max={2000} step={10} onChange={(v) => patchDim("depth", v)} />
-              <NumberRow label="Altura" value={current.height} min={100} max={3500} step={10} onChange={(v) => patchDim("height", v)} />
+              <NumberRow
+                label="Largura"
+                value={current.width}
+                min={100}
+                max={6000}
+                step={10}
+                onChange={(v) => patchDim("width", v)}
+              />
+              <NumberRow
+                label="Profundidade"
+                value={current.depth}
+                min={100}
+                max={2000}
+                step={10}
+                onChange={(v) => patchDim("depth", v)}
+              />
+              <NumberRow
+                label="Altura"
+                value={current.height}
+                min={100}
+                max={3500}
+                step={10}
+                onChange={(v) => patchDim("height", v)}
+              />
             </Section>
             <Section icon={Ruler} title="Posição (mm)">
-              <NumberRow label="X (plano)" value={current.x} step={10} onChange={(v) => patchDim("x", v)} />
-              <NumberRow label="Y (plano)" value={current.y} step={10} onChange={(v) => patchDim("y", v)} />
+              <NumberRow
+                label="X (plano)"
+                value={current.x}
+                step={10}
+                onChange={(v) => patchDim("x", v)}
+              />
+              <NumberRow
+                label="Y (plano)"
+                value={current.y}
+                step={10}
+                onChange={(v) => patchDim("y", v)}
+              />
               <NumberRow
                 label="Z (elevação)"
                 value={zOffsetMm}
@@ -447,13 +524,18 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
         {tab === "materiais" && (
           <>
             <Section icon={LayersIcon} title="Biblioteca Dioris">
-              <LibraryMaterialPicker materialId={current.materialId} onApply={applyLibraryMaterial} />
+              <LibraryMaterialPicker
+                materialId={current.materialId}
+                onApply={applyLibraryMaterial}
+              />
             </Section>
             <Section icon={Palette} title="Cores & Acabamentos">
               <div className="space-y-2">
                 {COLOR_PALETTE.map((grp) => (
                   <div key={grp.group}>
-                    <div className="mb-1 text-[10px] uppercase tracking-wide text-muted-foreground">{grp.group}</div>
+                    <div className="mb-1 text-[10px] uppercase tracking-wide text-muted-foreground">
+                      {grp.group}
+                    </div>
                     <div className="flex flex-wrap gap-1">
                       {grp.swatches.map((s) => (
                         <button
@@ -497,7 +579,10 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
                 label="Marca"
                 value={eng.brandId}
                 onChange={(v) => patchEng({ brandId: v })}
-                options={MATERIAL_BRANDS.map((b) => ({ value: b.id, label: `${b.label} (${b.category})` }))}
+                options={MATERIAL_BRANDS.map((b) => ({
+                  value: b.id,
+                  label: `${b.label} (${b.category})`,
+                }))}
               />
               <SelectRow
                 label="Acabamento"
@@ -550,7 +635,11 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
             />
             <SelectRow
               label="Sentido de abertura"
-              value={typeof rawParams["p:openSide"] === "string" ? (rawParams["p:openSide"] as string) : "right"}
+              value={
+                typeof rawParams["p:openSide"] === "string"
+                  ? (rawParams["p:openSide"] as string)
+                  : "right"
+              }
               onChange={(v) => patchParams({ "p:openSide": v })}
               options={[
                 { value: "left", label: "Esquerda" },
@@ -563,7 +652,13 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
               label="Dobradiça"
               value={eng.hardware.dobradica ?? ""}
               onChange={(v) => patchEng({ hardware: { ...eng.hardware, dobradica: v } })}
-              options={[{ value: "", label: "— padrão —" }, ...listHardware("dobradica").map((h) => ({ value: h.id, label: `${h.brand} · ${h.label}` }))]}
+              options={[
+                { value: "", label: "— padrão —" },
+                ...listHardware("dobradica").map((h) => ({
+                  value: h.id,
+                  label: `${h.brand} · ${h.label}`,
+                })),
+              ]}
             />
             <SelectRow
               label="Puxador"
@@ -575,17 +670,33 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
               label="Modelo do puxador"
               value={eng.hardware.puxador ?? ""}
               onChange={(v) => patchEng({ hardware: { ...eng.hardware, puxador: v } })}
-              options={[{ value: "", label: "— nenhum —" }, ...listHardware("puxador").map((h) => ({ value: h.id, label: `${h.brand} · ${h.label}` }))]}
+              options={[
+                { value: "", label: "— nenhum —" },
+                ...listHardware("puxador").map((h) => ({
+                  value: h.id,
+                  label: `${h.brand} · ${h.label}`,
+                })),
+              ]}
             />
             <SelectRow
               label="Perfil"
               value={eng.hardware.perfil ?? ""}
               onChange={(v) => patchEng({ hardware: { ...eng.hardware, perfil: v } })}
-              options={[{ value: "", label: "— nenhum —" }, ...listHardware("perfil").map((h) => ({ value: h.id, label: `${h.brand} · ${h.label}` }))]}
+              options={[
+                { value: "", label: "— nenhum —" },
+                ...listHardware("perfil").map((h) => ({
+                  value: h.id,
+                  label: `${h.brand} · ${h.label}`,
+                })),
+              ]}
             />
             <SelectRow
               label="Vidro / recheio"
-              value={typeof rawParams["glass:tint"] === "string" ? (rawParams["glass:tint"] as string) : ""}
+              value={
+                typeof rawParams["glass:tint"] === "string"
+                  ? (rawParams["glass:tint"] as string)
+                  : ""
+              }
               onChange={(v) => patchParams({ "glass:tint": v || null })}
               options={[
                 { value: "", label: "— sem vidro —" },
@@ -606,7 +717,13 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
 
         {tab === "gavetas" && (
           <Section icon={Archive} title="Gavetas">
-            <StepperRow label="Quantidade" value={eng.drawers} min={0} max={12} onChange={(v) => patchEng({ drawers: v })} />
+            <StepperRow
+              label="Quantidade"
+              value={eng.drawers}
+              min={0}
+              max={12}
+              onChange={(v) => patchEng({ drawers: v })}
+            />
             <SelectRow
               label="Tipo"
               value={eng.drawer}
@@ -642,17 +759,33 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
               label="Corrediça"
               value={eng.hardware.corredica ?? ""}
               onChange={(v) => patchEng({ hardware: { ...eng.hardware, corredica: v } })}
-              options={[{ value: "", label: "— padrão —" }, ...listHardware("corredica").map((h) => ({ value: h.id, label: `${h.brand} · ${h.label}` }))]}
+              options={[
+                { value: "", label: "— padrão —" },
+                ...listHardware("corredica").map((h) => ({
+                  value: h.id,
+                  label: `${h.brand} · ${h.label}`,
+                })),
+              ]}
             />
             <SelectRow
               label="Amortecimento"
               value={eng.hardware.amortecedor ?? ""}
               onChange={(v) => patchEng({ hardware: { ...eng.hardware, amortecedor: v } })}
-              options={[{ value: "", label: "— sem —" }, ...listHardware("amortecedor").map((h) => ({ value: h.id, label: `${h.brand} · ${h.label}` }))]}
+              options={[
+                { value: "", label: "— sem —" },
+                ...listHardware("amortecedor").map((h) => ({
+                  value: h.id,
+                  label: `${h.brand} · ${h.label}`,
+                })),
+              ]}
             />
             <SelectRow
               label="Abertura"
-              value={typeof rawParams["p:drawerOpen"] === "string" ? (rawParams["p:drawerOpen"] as string) : "handle"}
+              value={
+                typeof rawParams["p:drawerOpen"] === "string"
+                  ? (rawParams["p:drawerOpen"] as string)
+                  : "handle"
+              }
               onChange={(v) => patchParams({ "p:drawerOpen": v })}
               options={[
                 { value: "handle", label: "Puxador" },
@@ -731,7 +864,11 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
             />
             <SelectRow
               label="Suporte"
-              value={typeof rawParams["p:shelfSupport"] === "string" ? (rawParams["p:shelfSupport"] as string) : "pin"}
+              value={
+                typeof rawParams["p:shelfSupport"] === "string"
+                  ? (rawParams["p:shelfSupport"] as string)
+                  : "pin"
+              }
               onChange={(v) => patchParams({ "p:shelfSupport": v })}
               options={[
                 { value: "pin", label: "Pino removível" },
@@ -752,7 +889,11 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
             />
             <SelectRow
               label="Tipo de fita"
-              value={typeof rawParams["led:type"] === "string" ? (rawParams["led:type"] as string) : "strip"}
+              value={
+                typeof rawParams["led:type"] === "string"
+                  ? (rawParams["led:type"] as string)
+                  : "strip"
+              }
               onChange={(v) => patchParams({ "led:type": v })}
               options={[
                 { value: "strip", label: "Fita 5050" },
@@ -763,7 +904,11 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
             />
             <SelectRow
               label="Posição"
-              value={typeof rawParams["led:position"] === "string" ? (rawParams["led:position"] as string) : "top"}
+              value={
+                typeof rawParams["led:position"] === "string"
+                  ? (rawParams["led:position"] as string)
+                  : "top"
+              }
               onChange={(v) => patchParams({ "led:position": v })}
               options={[
                 { value: "top", label: "Topo" },
@@ -795,7 +940,11 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
               <span className="text-muted-foreground">Cor</span>
               <input
                 type="color"
-                value={typeof rawParams["led:color"] === "string" ? (rawParams["led:color"] as string) : "#fff2cc"}
+                value={
+                  typeof rawParams["led:color"] === "string"
+                    ? (rawParams["led:color"] as string)
+                    : "#fff2cc"
+                }
                 onChange={(e) => patchParams({ "led:color": e.target.value })}
                 className="h-7 w-14 cursor-pointer rounded-md border border-border/60 bg-background"
               />
@@ -821,15 +970,40 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
               <SelectRow
                 label="Montagem"
                 value={eng.assembly}
-                onChange={(v) => patchEng({ assembly: v as FurnitureEngineeringParams["assembly"] })}
+                onChange={(v) =>
+                  patchEng({ assembly: v as FurnitureEngineeringParams["assembly"] })
+                }
                 options={ASSEMBLY_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
               />
-              <NumberRow label="Folga" value={eng.clearanceMm} min={0} max={50} onChange={(v) => patchEng({ clearanceMm: v })} suffix="mm" />
-              <NumberRow label="Reveal" value={eng.reveal} min={0} max={50} onChange={(v) => patchEng({ reveal: v })} suffix="mm" />
+              <NumberRow
+                label="Folga"
+                value={eng.clearanceMm}
+                min={0}
+                max={50}
+                onChange={(v) => patchEng({ clearanceMm: v })}
+                suffix="mm"
+              />
+              <NumberRow
+                label="Reveal"
+                value={eng.reveal}
+                min={0}
+                max={50}
+                onChange={(v) => patchEng({ reveal: v })}
+                suffix="mm"
+              />
             </Section>
             <Section icon={Palette} title="Ferragens (todas)">
               {(
-                ["dobradica", "corredica", "pistao", "trilho", "cabideiro", "perfil", "puxador", "amortecedor"] as HardwareKind[]
+                [
+                  "dobradica",
+                  "corredica",
+                  "pistao",
+                  "trilho",
+                  "cabideiro",
+                  "perfil",
+                  "puxador",
+                  "amortecedor",
+                ] as HardwareKind[]
               ).map((kind) => (
                 <SelectRow
                   key={kind}
@@ -838,7 +1012,10 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
                   onChange={(v) => patchEng({ hardware: { ...eng.hardware, [kind]: v } })}
                   options={[
                     { value: "", label: "— nenhum —" },
-                    ...listHardware(kind).map((h) => ({ value: h.id, label: `${h.brand} · ${h.label}` })),
+                    ...listHardware(kind).map((h) => ({
+                      value: h.id,
+                      label: `${h.brand} · ${h.label}`,
+                    })),
                   ]}
                 />
               ))}
@@ -868,7 +1045,15 @@ export function Inspector({ initialFurnitureId }: { initialFurnitureId?: string 
 /* ------------------------------------------------------------------
  *  Sub-componentes reutilizáveis
  * ---------------------------------------------------------------- */
-function Section({ icon: Icon, title, children }: { icon: typeof Ruler; title: string; children: React.ReactNode }) {
+function Section({
+  icon: Icon,
+  title,
+  children,
+}: {
+  icon: typeof Ruler;
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <section className="space-y-2">
       <h3 className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
@@ -1102,8 +1287,8 @@ function IconAction({
         danger
           ? "border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/20"
           : active
-          ? "border-primary/40 bg-primary/15 text-primary"
-          : "border-border/60 bg-background text-muted-foreground hover:bg-muted hover:text-foreground",
+            ? "border-primary/40 bg-primary/15 text-primary"
+            : "border-border/60 bg-background text-muted-foreground hover:bg-muted hover:text-foreground",
       )}
     >
       {children}

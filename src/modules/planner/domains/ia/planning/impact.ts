@@ -18,7 +18,9 @@ export interface ImpactAnalysis {
 export function analyzeImpact(steps: readonly PlanStep[]): ImpactAnalysis {
   const mutating = steps.filter((s) => s.mutating);
   const destructive = steps.filter((s) => s.destructive);
-  const touchesRoom = mutating.some((s) => s.affectedScope === "comodo" || s.affectedScope === "ambiente");
+  const touchesRoom = mutating.some(
+    (s) => s.affectedScope === "comodo" || s.affectedScope === "ambiente",
+  );
   const touchesProject = mutating.some((s) => s.affectedScope === "projeto");
 
   const reasons: string[] = [];

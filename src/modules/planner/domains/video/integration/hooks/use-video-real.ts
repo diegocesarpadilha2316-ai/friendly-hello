@@ -89,7 +89,10 @@ export function useVideoReal(): UseVideoReal {
     return makeFrameGrabber(surface, totalFrames);
   }, [surface, local.timeline.durationSec, local.timeline.fps]);
 
-  const planAudio = useCallback((voice?: string) => buildAudioPlan(local.audio, voice), [local.audio]);
+  const planAudio = useCallback(
+    (voice?: string) => buildAudioPlan(local.audio, voice),
+    [local.audio],
+  );
   const planBranding = useCallback((req: RealCaptureRequest) => buildBrandingPlan(req), []);
 
   const doExport = useCallback((blob: Blob, container: LocalVideoContainer, filename?: string) => {

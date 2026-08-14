@@ -6,7 +6,11 @@ const EMPTY: MarketplaceFavoritesState = { itemIds: [] };
 
 function safeStorage(): Storage | null {
   if (typeof window === "undefined") return null;
-  try { return window.localStorage; } catch { return null; }
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
 }
 
 export function readFavorites(): MarketplaceFavoritesState {
@@ -18,13 +22,19 @@ export function readFavorites(): MarketplaceFavoritesState {
     const parsed = JSON.parse(raw) as MarketplaceFavoritesState;
     if (!parsed || !Array.isArray(parsed.itemIds)) return EMPTY;
     return parsed;
-  } catch { return EMPTY; }
+  } catch {
+    return EMPTY;
+  }
 }
 
 function writeFavorites(state: MarketplaceFavoritesState): MarketplaceFavoritesState {
   const s = safeStorage();
   if (s) {
-    try { s.setItem(KEY, JSON.stringify(state)); } catch { /* ignore */ }
+    try {
+      s.setItem(KEY, JSON.stringify(state));
+    } catch {
+      /* ignore */
+    }
   }
   return state;
 }

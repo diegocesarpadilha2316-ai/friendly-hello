@@ -3,8 +3,7 @@ import { getDashboardSnapshot } from "./dashboard.functions";
 
 export const dashboardKeys = {
   root: ["core", "dashboard"] as const,
-  snapshot: (tenantId: string | null) =>
-    ["core", "dashboard", "snapshot", tenantId] as const,
+  snapshot: (tenantId: string | null) => ["core", "dashboard", "snapshot", tenantId] as const,
 };
 
 export function dashboardSnapshotQuery(tenantId: string | null) {

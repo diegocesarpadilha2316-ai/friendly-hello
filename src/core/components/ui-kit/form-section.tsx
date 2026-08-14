@@ -22,9 +22,7 @@ export function FormSection({
     >
       <div className="lg:col-span-1">
         <h2 className="text-base font-semibold text-foreground">{title}</h2>
-        {description ? (
-          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-        ) : null}
+        {description ? <p className="mt-1 text-sm text-muted-foreground">{description}</p> : null}
         {aside ? <div className="mt-4">{aside}</div> : null}
       </div>
       <div className="space-y-4 lg:col-span-2">{children}</div>

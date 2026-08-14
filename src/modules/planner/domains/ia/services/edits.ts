@@ -232,5 +232,8 @@ export function parseEdits(input: string): EditIntent[] {
 
 /** Resumo natural das alterações aplicadas (uma frase). */
 export function describeEdits(edits: readonly EditIntent[]): string {
-  return edits.map((e) => e.change).filter(Boolean).join(", ");
+  return edits
+    .map((e) => e.change)
+    .filter(Boolean)
+    .join(", ");
 }

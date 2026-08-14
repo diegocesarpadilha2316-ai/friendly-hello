@@ -55,14 +55,12 @@ export const useImmersiveStore = create<ImmersiveState>((set, get) => ({
     set((state) => ({
       selectedPart,
       occlusionMode:
-        selectedPart === null && state.occlusionMode === "isolate"
-          ? "normal"
-          : state.occlusionMode
+        selectedPart === null && state.occlusionMode === "isolate" ? "normal" : state.occlusionMode,
     })),
 
   toggleOpen: (id) =>
     set((state) => ({
-      openStates: { ...state.openStates, [id]: !state.openStates[id] }
+      openStates: { ...state.openStates, [id]: !state.openStates[id] },
     })),
 
   hideSelected: () => {
@@ -72,10 +70,10 @@ export const useImmersiveStore = create<ImmersiveState>((set, get) => ({
     set((state) => ({
       hiddenObjects: {
         ...state.hiddenObjects,
-        [selectedRoot]: true
+        [selectedRoot]: true,
       },
       selectedPart: null,
-      occlusionMode: "normal"
+      occlusionMode: "normal",
     }));
   },
 
@@ -83,8 +81,8 @@ export const useImmersiveStore = create<ImmersiveState>((set, get) => ({
     set({
       hiddenObjects: {},
       occlusionMode: "normal",
-      selectedPart: null
+      selectedPart: null,
     }),
 
-  closeAll: () => set({ openStates: {} })
+  closeAll: () => set({ openStates: {} }),
 }));

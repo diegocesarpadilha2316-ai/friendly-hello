@@ -55,17 +55,8 @@ export const Route = createFileRoute("/_authenticated/planner/projetos/$projectI
 function PlannerProjectDetail() {
   const { projectId } = useParams({ from: "/_authenticated/planner/projetos/$projectId" });
   const { activeCompany } = useTenant();
-  const {
-    state,
-    loadProjectById,
-    updateProject,
-    select,
-    saveNow,
-    undo,
-    redo,
-    canUndo,
-    canRedo,
-  } = usePlannerEditor();
+  const { state, loadProjectById, updateProject, select, saveNow, undo, redo, canUndo, canRedo } =
+    usePlannerEditor();
 
   const [viewportMode, setViewportMode] = useState<"2d" | "3d" | "realista">("3d");
   const [walkMode, setWalkMode] = useState(false);
@@ -92,7 +83,9 @@ function PlannerProjectDetail() {
     Promise.resolve(loadProjectById(projectId)).finally(() => {
       if (!cancelled) setLoadStatus("loaded");
     });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [activeCompany?.id, projectId, loadProjectById]);
 
   const project = state.project;
@@ -135,7 +128,9 @@ function PlannerProjectDetail() {
         await (navigator as Navigator & { share: (d: ShareData) => Promise<void> }).share(payload);
         return;
       }
-      await (navigator as unknown as { clipboard: { writeText: (v: string) => Promise<void> } }).clipboard.writeText(url);
+      await (
+        navigator as unknown as { clipboard: { writeText: (v: string) => Promise<void> } }
+      ).clipboard.writeText(url);
       toast.success("Link copiado para a área de transferência");
     } catch {
       toast.error("Não foi possível compartilhar");
@@ -199,7 +194,12 @@ function PlannerProjectDetail() {
     );
   }
 
-  const modeLabel = viewportMode === "realista" ? "3D Realista" : viewportMode === "3d" ? "Ambiente 3D" : "Planta 2D";
+  const modeLabel =
+    viewportMode === "realista"
+      ? "3D Realista"
+      : viewportMode === "3d"
+        ? "Ambiente 3D"
+        : "Planta 2D";
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col bg-background">
@@ -218,7 +218,12 @@ function PlannerProjectDetail() {
         <div className="ml-4 flex items-center gap-1">
           <IconBtn onClick={undo} disabled={!canUndo} icon={Undo2} label="Undo" />
           <IconBtn onClick={redo} disabled={!canRedo} icon={Redo2} label="Redo" />
-          <IconBtn onClick={handleSave} disabled={saving} icon={saving ? Loader2 : Save} label="Salvar (Ctrl+S)" />
+          <IconBtn
+            onClick={handleSave}
+            disabled={saving}
+            icon={saving ? Loader2 : Save}
+            label="Salvar (Ctrl+S)"
+          />
           <IconBtn onClick={handleShare} icon={Share2} label="Compartilhar" />
           <IconBtn onClick={handleExport} icon={Download} label="Exportar .dioris.json" />
         </div>
@@ -288,13 +293,48 @@ function PlannerProjectDetail() {
                 label="Render Realista"
               />
               <span className="mx-1 h-8 w-px bg-border/60" />
-              <ToolBtn active={walkMode} onClick={() => setWalkMode((v) => !v)} icon={Footprints} label="Caminhar" />
-              <ToolBtn active={sectionCut} onClick={() => setSectionCut((v) => !v)} icon={Scissors} label="Cortar ambiente" />
-              <ToolBtn active={wallsHidden} onClick={() => setWallsHidden((v) => !v)} icon={Eye} label="Ocultar paredes" />
-              <ToolBtn active={doorsOpen} onClick={() => setDoorsOpen((v) => !v)} icon={DoorOpen} label="Abrir portas" />
-              <ToolBtn active={drawersOpen} onClick={() => setDrawersOpen((v) => !v)} icon={Archive} label="Abrir gavetas" />
-              <ToolBtn active={ledsOn} onClick={() => setLedsOn((v) => !v)} icon={Lightbulb} label="Ligar LEDs" />
-              <ToolBtn active={wireframe} onClick={() => setWireframe((v) => !v)} icon={Ruler} label="Wireframe" />
+              <ToolBtn
+                active={walkMode}
+                onClick={() => setWalkMode((v) => !v)}
+                icon={Footprints}
+                label="Caminhar"
+              />
+              <ToolBtn
+                active={sectionCut}
+                onClick={() => setSectionCut((v) => !v)}
+                icon={Scissors}
+                label="Cortar ambiente"
+              />
+              <ToolBtn
+                active={wallsHidden}
+                onClick={() => setWallsHidden((v) => !v)}
+                icon={Eye}
+                label="Ocultar paredes"
+              />
+              <ToolBtn
+                active={doorsOpen}
+                onClick={() => setDoorsOpen((v) => !v)}
+                icon={DoorOpen}
+                label="Abrir portas"
+              />
+              <ToolBtn
+                active={drawersOpen}
+                onClick={() => setDrawersOpen((v) => !v)}
+                icon={Archive}
+                label="Abrir gavetas"
+              />
+              <ToolBtn
+                active={ledsOn}
+                onClick={() => setLedsOn((v) => !v)}
+                icon={Lightbulb}
+                label="Ligar LEDs"
+              />
+              <ToolBtn
+                active={wireframe}
+                onClick={() => setWireframe((v) => !v)}
+                icon={Ruler}
+                label="Wireframe"
+              />
               <span className="mx-1 h-8 w-px bg-border/60" />
               <ToolBtn
                 active={detailsOpen}
@@ -316,7 +356,11 @@ function PlannerProjectDetail() {
                 showLights: ledsOn,
                 openDoors: doorsOpen,
                 openDrawers: drawersOpen,
-                render: wireframe ? "wireframe" : viewportMode === "realista" ? "material" : "solid",
+                render: wireframe
+                  ? "wireframe"
+                  : viewportMode === "realista"
+                    ? "material"
+                    : "solid",
                 sectionHeight: sectionCut ? 1200 : null,
                 wallOpacity: wallsHidden ? 0.12 : 1,
                 cinematic: viewportMode === "realista",
@@ -335,7 +379,12 @@ function PlannerProjectDetail() {
               )}
               title="Snap magnético"
             >
-              <span className={cn("inline-block h-2 w-2 rounded-sm", snapOn ? "bg-primary shadow-[0_0_8px_hsl(var(--primary))]" : "bg-slate-500")} />
+              <span
+                className={cn(
+                  "inline-block h-2 w-2 rounded-sm",
+                  snapOn ? "bg-primary shadow-[0_0_8px_hsl(var(--primary))]" : "bg-slate-500",
+                )}
+              />
               Snap
             </button>
             <button
@@ -347,7 +396,12 @@ function PlannerProjectDetail() {
               )}
               title="Grade do viewport"
             >
-              <span className={cn("inline-block h-2 w-2 rounded-sm", gridOn ? "bg-primary shadow-[0_0_8px_hsl(var(--primary))]" : "bg-slate-500")} />
+              <span
+                className={cn(
+                  "inline-block h-2 w-2 rounded-sm",
+                  gridOn ? "bg-primary shadow-[0_0_8px_hsl(var(--primary))]" : "bg-slate-500",
+                )}
+              />
               Grade
             </button>
 
@@ -429,8 +483,8 @@ function PlannerProjectDetail() {
               Detalhes do móvel
             </SheetTitle>
             <SheetDescription className="text-xs">
-              Engenharia completa da peça selecionada — dimensões, chapa, ferragens,
-              acabamento e lista de corte automática.
+              Engenharia completa da peça selecionada — dimensões, chapa, ferragens, acabamento e
+              lista de corte automática.
             </SheetDescription>
           </SheetHeader>
           <div className="h-[calc(100vh-96px)] overflow-hidden px-3 py-3">
@@ -467,7 +521,12 @@ function IconBtn({
         disabled && "cursor-not-allowed opacity-40",
       )}
     >
-      <Icon className={cn("h-3.5 w-3.5", label.startsWith("Salvando") || (Icon === Loader2 && "animate-spin"))} />
+      <Icon
+        className={cn(
+          "h-3.5 w-3.5",
+          label.startsWith("Salvando") || (Icon === Loader2 && "animate-spin"),
+        )}
+      />
     </button>
   );
 }
@@ -521,32 +580,66 @@ function InspectorPanel({
         />
       </Field>
       <Field label="Categoria">
-        <Pick options={["Armário", "Balcão", "Torre", "Nicho", "Painel", "Ferragem", "Iluminação"]} />
+        <Pick
+          options={["Armário", "Balcão", "Torre", "Nicho", "Painel", "Ferragem", "Iluminação"]}
+        />
       </Field>
 
       <Separator label="Dimensões" />
-      <Field label="Largura"><Numeric value="600" suffix="mm" /></Field>
-      <Field label="Altura"><Numeric value="800" suffix="mm" /></Field>
-      <Field label="Profundidade"><Numeric value="350" suffix="mm" /></Field>
+      <Field label="Largura">
+        <Numeric value="600" suffix="mm" />
+      </Field>
+      <Field label="Altura">
+        <Numeric value="800" suffix="mm" />
+      </Field>
+      <Field label="Profundidade">
+        <Numeric value="350" suffix="mm" />
+      </Field>
 
       <Separator label="Acabamento" />
-      <Field label="Material"><Pick options={["MDF", "MDP", "Compensado", "Maciço"]} /></Field>
-      <Field label="Cor"><Pill value="Freijó Natural" /></Field>
-      <Field label="Acabamento"><Pick options={["Fosco", "Semi-brilho", "Alto-brilho"]} /></Field>
-      <Field label="Marca MDF"><Pick options={["Duratex", "Arauco", "Eucatex", "Berneck"]} /></Field>
-      <Field label="Espessura"><Pick options={["6mm", "9mm", "15mm", "18mm", "25mm"]} /></Field>
+      <Field label="Material">
+        <Pick options={["MDF", "MDP", "Compensado", "Maciço"]} />
+      </Field>
+      <Field label="Cor">
+        <Pill value="Freijó Natural" />
+      </Field>
+      <Field label="Acabamento">
+        <Pick options={["Fosco", "Semi-brilho", "Alto-brilho"]} />
+      </Field>
+      <Field label="Marca MDF">
+        <Pick options={["Duratex", "Arauco", "Eucatex", "Berneck"]} />
+      </Field>
+      <Field label="Espessura">
+        <Pick options={["6mm", "9mm", "15mm", "18mm", "25mm"]} />
+      </Field>
 
       <Separator label="Componentes" />
-      <Field label="Ferragens"><Pick options={["Blum", "Hettich", "FGV", "Grass"]} /></Field>
-      <Field label="Puxadores"><Pick options={["Embutido", "Perfil", "Cava", "Cotovelo"]} /></Field>
-      <Field label="Portas"><Numeric value="2" /></Field>
-      <Field label="Gavetas"><Numeric value="0" /></Field>
-      <Field label="Iluminação"><Pill value="LED embutido" /></Field>
+      <Field label="Ferragens">
+        <Pick options={["Blum", "Hettich", "FGV", "Grass"]} />
+      </Field>
+      <Field label="Puxadores">
+        <Pick options={["Embutido", "Perfil", "Cava", "Cotovelo"]} />
+      </Field>
+      <Field label="Portas">
+        <Numeric value="2" />
+      </Field>
+      <Field label="Gavetas">
+        <Numeric value="0" />
+      </Field>
+      <Field label="Iluminação">
+        <Pill value="LED embutido" />
+      </Field>
 
       <Separator label="Montagem" />
-      <Field label="Fundo"><Pick options={["MDF 6mm", "MDF 3mm", "Sem fundo"]} /></Field>
-      <Field label="Montagem"><Pick options={["Cavilhado", "Confirmat", "Minifix"]} /></Field>
-      <Field label="Sentido do veio"><Pick options={["Vertical", "Horizontal"]} /></Field>
+      <Field label="Fundo">
+        <Pick options={["MDF 6mm", "MDF 3mm", "Sem fundo"]} />
+      </Field>
+      <Field label="Montagem">
+        <Pick options={["Cavilhado", "Confirmat", "Minifix"]} />
+      </Field>
+      <Field label="Sentido do veio">
+        <Pick options={["Vertical", "Horizontal"]} />
+      </Field>
     </div>
   );
 }
@@ -573,7 +666,9 @@ function Pick({ options }: { options: string[] }) {
   return (
     <select className="w-full rounded-md border border-input bg-background px-2.5 py-1.5 text-xs text-foreground outline-none focus:border-primary/60">
       {options.map((o) => (
-        <option key={o} value={o}>{o}</option>
+        <option key={o} value={o}>
+          {o}
+        </option>
       ))}
     </select>
   );
@@ -581,7 +676,10 @@ function Pick({ options }: { options: string[] }) {
 function Numeric({ value, suffix }: { value: string; suffix?: string }) {
   return (
     <div className="flex items-center gap-1 rounded-md border border-input bg-background px-2.5 py-1.5 text-xs">
-      <input defaultValue={value} className="w-full border-none bg-transparent text-foreground outline-none" />
+      <input
+        defaultValue={value}
+        className="w-full border-none bg-transparent text-foreground outline-none"
+      />
       {suffix && <span className="text-muted-foreground">{suffix}</span>}
     </div>
   );

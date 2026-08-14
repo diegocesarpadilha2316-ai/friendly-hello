@@ -13,7 +13,7 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
  */
 const attachDiorisContext = createMiddleware({ type: "function" }).client(async ({ next }) => {
   const headers: Record<string, string> = {};
-  
+
   if (typeof window !== "undefined") {
     // 1. Tenta anexar Token de Autenticação
     try {
@@ -29,16 +29,14 @@ const attachDiorisContext = createMiddleware({ type: "function" }).client(async 
 
     // 2. Tenta anexar ID do Tenant ativo
     try {
-      const { getActiveTenantIdFromStorage } = await import(
-        "@/core/providers/TenantProvider"
-      );
+      const { getActiveTenantIdFromStorage } = await import("@/core/providers/TenantProvider");
       const tenantId = getActiveTenantIdFromStorage();
       if (tenantId) headers["x-dioris-tenant"] = tenantId;
     } catch {
       // Ignora falhas se o tenant não estiver disponível
     }
   }
-  
+
   return next({ headers });
 });
 

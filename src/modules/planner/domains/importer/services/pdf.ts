@@ -11,10 +11,19 @@ export function parsePDF(buffer: ArrayBuffer, filename: string): ImportResult {
     binary: true,
     bytes: buffer.byteLength,
     scale: { factorToMm: 1, detectedUnit: "mm" },
-    bbox: null, layers: [], entities: [], materials: [], texts: [], previewSvg: null,
+    bbox: null,
+    layers: [],
+    entities: [],
+    materials: [],
+    texts: [],
+    previewSvg: null,
     warnings: [
       valid
-        ? { code: "pdf-vectorize", severity: "info", message: "PDF será vetorizado sob demanda (use a aba Correções)." }
+        ? {
+            code: "pdf-vectorize",
+            severity: "info",
+            message: "PDF será vetorizado sob demanda (use a aba Correções).",
+          }
         : { code: "pdf-invalid", severity: "error", message: "Assinatura PDF inválida." },
     ],
     createdAt: new Date().toISOString(),

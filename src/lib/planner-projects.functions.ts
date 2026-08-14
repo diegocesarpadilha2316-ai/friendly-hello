@@ -9,12 +9,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireTenant } from "@/core/middleware/require-tenant";
 
-export type PlannerProjectStatusDTO =
-  | "draft"
-  | "in_progress"
-  | "review"
-  | "approved"
-  | "archived";
+export type PlannerProjectStatusDTO = "draft" | "in_progress" | "review" | "approved" | "archived";
 
 export interface PlannerProjectRowDTO {
   id: string;
@@ -139,13 +134,7 @@ export const setProjectStatus = createServerFn({ method: "POST" })
     z
       .object({
         id: z.string().min(1),
-        status: z.enum([
-          "draft",
-          "in_progress",
-          "review",
-          "approved",
-          "archived",
-        ]),
+        status: z.enum(["draft", "in_progress", "review", "approved", "archived"]),
       })
       .parse(d),
   )

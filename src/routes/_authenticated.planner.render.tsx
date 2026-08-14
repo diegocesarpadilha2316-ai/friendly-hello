@@ -142,8 +142,7 @@ function RenderPage() {
     staleTime: 0,
   });
 
-  const invalidate = () =>
-    qc.invalidateQueries({ queryKey: ["planner", "render"] });
+  const invalidate = () => qc.invalidateQueries({ queryKey: ["planner", "render"] });
 
   const cancelMutation = useMutation({
     mutationFn: (id: string) => cancel({ data: { id } }),
@@ -181,17 +180,14 @@ function RenderPage() {
     onError: (e: unknown) => {
       const ic = parseInsufficientCredits(e);
       if (ic) {
-        toast.error(
-          `Créditos insuficientes: precisa de ${ic.need}, saldo atual ${ic.balance}.`,
-          {
-            action: {
-              label: "Comprar créditos",
-              onClick: () => {
-                window.location.href = "/workspace/creditos";
-              },
+        toast.error(`Créditos insuficientes: precisa de ${ic.need}, saldo atual ${ic.balance}.`, {
+          action: {
+            label: "Comprar créditos",
+            onClick: () => {
+              window.location.href = "/workspace/creditos";
             },
           },
-        );
+        });
         return;
       }
       toast.error(e instanceof Error ? e.message : "Falha ao enfileirar");
@@ -272,7 +268,8 @@ function RenderPage() {
           </div>
         ) : rows.length === 0 ? (
           <div className="grid place-items-center p-10 text-sm text-muted-foreground">
-            Nenhum job de render ainda. Clique em <strong className="mx-1">Novo render</strong> para começar.
+            Nenhum job de render ainda. Clique em <strong className="mx-1">Novo render</strong> para
+            começar.
           </div>
         ) : (
           <div className="max-h-[calc(100vh-460px)] min-h-[400px] overflow-auto">
@@ -352,7 +349,10 @@ function JobRowView({
       <td className="px-3 py-2">
         <StatusBadge tone={STATUS_TONE[row.status]}>{STATUS_LABEL[row.status]}</StatusBadge>
         {row.error ? (
-          <div className="mt-1 max-w-[220px] truncate text-[11px] text-destructive" title={row.error}>
+          <div
+            className="mt-1 max-w-[220px] truncate text-[11px] text-destructive"
+            title={row.error}
+          >
             {row.error}
           </div>
         ) : null}
@@ -370,9 +370,7 @@ function JobRowView({
           </span>
         </div>
       </td>
-      <td className="px-3 py-2 text-right tabular-nums text-xs">
-        {row.creditsCost ?? 0}
-      </td>
+      <td className="px-3 py-2 text-right tabular-nums text-xs">{row.creditsCost ?? 0}</td>
       <td className="px-3 py-2 text-right">
         <div className="inline-flex items-center gap-1">
           {canCancel ? (
@@ -451,8 +449,8 @@ function EnqueueDialog({
       <div className="w-full max-w-lg rounded-xl border border-border/60 bg-card p-5 shadow-2xl">
         <h2 className="text-lg font-semibold">Novo render</h2>
         <p className="mt-1 text-xs text-muted-foreground">
-          O job entra na fila e reporta progresso em tempo real. Os créditos são
-          consumidos ao concluir.
+          O job entra na fila e reporta progresso em tempo real. Os créditos são consumidos ao
+          concluir.
         </p>
 
         <div className="mt-4 grid gap-3">

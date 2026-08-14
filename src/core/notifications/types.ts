@@ -17,13 +17,7 @@ export type NotificationChannel =
   | "telegram";
 
 export type NotificationStatus =
-  | "pending"
-  | "sent"
-  | "failed"
-  | "read"
-  | "archived"
-  | "muted"
-  | "skipped";
+  "pending" | "sent" | "failed" | "read" | "archived" | "muted" | "skipped";
 
 export interface Notification {
   readonly id: string;
@@ -144,7 +138,10 @@ export interface NotificationProviderDriver {
 }
 
 export class NotificationError extends Error {
-  constructor(message: string, public readonly channel: NotificationChannel) {
+  constructor(
+    message: string,
+    public readonly channel: NotificationChannel,
+  ) {
     super(message);
     this.name = "NotificationError";
   }

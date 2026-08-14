@@ -22,7 +22,12 @@ describe("ETAPA 1 — inferiores + bancada derivada", () => {
     const lower = state.instances.slice(0, 4);
     expect(lower.map((instance) => instance.layout?.sequenceIndex)).toEqual([0, 1, 2, 3]);
     expect(lower.map((instance) => instance.layout?.supported)).toEqual([true, true, true, true]);
-    expect(lower.map((instance) => instance.layout?.collision)).toEqual([false, false, false, false]);
+    expect(lower.map((instance) => instance.layout?.collision)).toEqual([
+      false,
+      false,
+      false,
+      false,
+    ]);
     expect(lower.map((instance) => instance.dimensionsMm.width)).toEqual([800, 600, 1200, 800]);
     expect(lower.reduce((sum, instance) => sum + instance.dimensionsMm.width, 0)).toBe(3400);
     expect(state.instances[4].layout?.moduleDefinitionId).toBe("kitchen-countertop");
@@ -39,24 +44,50 @@ describe("ETAPA 1 — inferiores + bancada derivada", () => {
     store.newProject();
     store.sendMessage(request);
     const state = usePlannerStore.getState();
-    const drawer = state.instances.find((instance) => instance.moduleDefinitionId === "kitchen-drawer-4")!;
-    const sink = state.instances.find((instance) => instance.moduleDefinitionId === "kitchen-sink-cabinet")!;
+    const drawer = state.instances.find(
+      (instance) => instance.moduleDefinitionId === "kitchen-drawer-4",
+    )!;
+    const sink = state.instances.find(
+      (instance) => instance.moduleDefinitionId === "kitchen-sink-cabinet",
+    )!;
     expect(drawer.parts.filter((part) => part.role === "drawer-front")).toHaveLength(4);
     expect(drawer.parts.filter((part) => part.role === "drawer-side")).toHaveLength(8);
-    expect(drawer.parts.filter((part) => part.role === "hardware" && part.hardwareId === "slide-hidden-soft-close")).toHaveLength(8);
+    expect(
+      drawer.parts.filter(
+        (part) => part.role === "hardware" && part.hardwareId === "slide-hidden-soft-close",
+      ),
+    ).toHaveLength(8);
     expect(sink.parts.filter((part) => part.role === "door")).toHaveLength(2);
-    expect(sink.parts.some((part) => part.volumeType === "technical" && part.id.includes("siphon-zone"))).toBe(true);
-    expect(sink.parts.some((part) => part.volumeType === "technical" && part.id.includes("plumbing-recess"))).toBe(true);
+    expect(
+      sink.parts.some((part) => part.volumeType === "technical" && part.id.includes("siphon-zone")),
+    ).toBe(true);
+    expect(
+      sink.parts.some(
+        (part) => part.volumeType === "technical" && part.id.includes("plumbing-recess"),
+      ),
+    ).toBe(true);
     const firstDrawer = drawer.parts.find((part) => part.role === "drawer-front")!;
     store.toggleInstanceAnimation(drawer.id, firstDrawer.groupId);
-    expect(usePlannerStore.getState().instances.find((instance) => instance.id === drawer.id)?.openStates?.[firstDrawer.groupId!]).toBe(1);
+    expect(
+      usePlannerStore.getState().instances.find((instance) => instance.id === drawer.id)
+        ?.openStates?.[firstDrawer.groupId!],
+    ).toBe(1);
     store.toggleInstanceAnimation(drawer.id, firstDrawer.groupId);
-    expect(usePlannerStore.getState().instances.find((instance) => instance.id === drawer.id)?.openStates?.[firstDrawer.groupId!]).toBe(0);
+    expect(
+      usePlannerStore.getState().instances.find((instance) => instance.id === drawer.id)
+        ?.openStates?.[firstDrawer.groupId!],
+    ).toBe(0);
     store.toggleInstanceAnimation(sink.id);
-    expect(usePlannerStore.getState().instances.find((instance) => instance.id === sink.id)?.isOpen).toBe(true);
+    expect(
+      usePlannerStore.getState().instances.find((instance) => instance.id === sink.id)?.isOpen,
+    ).toBe(true);
     expect(usePlannerStore.getState().lastLibraryError).toBeNull();
     store.closeAllAnimations();
-    expect(usePlannerStore.getState().instances.every((instance) => !instance.isOpen && !instance.openAmount)).toBe(true);
+    expect(
+      usePlannerStore
+        .getState()
+        .instances.every((instance) => !instance.isOpen && !instance.openAmount),
+    ).toBe(true);
   });
 });
 

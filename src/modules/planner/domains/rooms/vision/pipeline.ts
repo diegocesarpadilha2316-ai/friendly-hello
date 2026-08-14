@@ -33,7 +33,11 @@ const STAGE_BLUEPRINT: readonly Omit<VisionStage, "progress" | "status">[] = [
   { id: "doors", label: "Detectando portas", detail: "Localizando vãos e batentes." },
   { id: "windows", label: "Detectando janelas", detail: "Localizando aberturas envidraçadas." },
   { id: "perspective", label: "Calculando perspectiva", detail: "Estimando câmera e escala." },
-  { id: "reconstruction", label: "Preparando reconstrução", detail: "Gerando modelo paramétrico inicial." },
+  {
+    id: "reconstruction",
+    label: "Preparando reconstrução",
+    detail: "Gerando modelo paramétrico inicial.",
+  },
 ];
 
 export function createStages(): VisionStage[] {
@@ -75,7 +79,8 @@ function mulberry32(seed: number): () => number {
 }
 
 function buildModel(input: SimulateInput): VisionRoomModel {
-  const seedBase = input.uploads.map((u) => `${u.name}:${u.sizeBytes}`).join("|") || input.providerId;
+  const seedBase =
+    input.uploads.map((u) => `${u.name}:${u.sizeBytes}`).join("|") || input.providerId;
   const rand = mulberry32(hashSeed(seedBase));
 
   const width = Math.round(3200 + rand() * 1800); // 3200-5000mm
@@ -83,10 +88,38 @@ function buildModel(input: SimulateInput): VisionRoomModel {
   const height = Math.round(2500 + rand() * 400); // 2500-2900mm
 
   const walls: VisionWall[] = [
-    { id: "w-n", a: { x: 0, y: 0 }, b: { x: width, y: 0 }, thickness: 100, height, confidence: 0.9 + rand() * 0.08 },
-    { id: "w-e", a: { x: width, y: 0 }, b: { x: width, y: depth }, thickness: 100, height, confidence: 0.88 + rand() * 0.1 },
-    { id: "w-s", a: { x: width, y: depth }, b: { x: 0, y: depth }, thickness: 100, height, confidence: 0.85 + rand() * 0.1 },
-    { id: "w-w", a: { x: 0, y: depth }, b: { x: 0, y: 0 }, thickness: 100, height, confidence: 0.86 + rand() * 0.1 },
+    {
+      id: "w-n",
+      a: { x: 0, y: 0 },
+      b: { x: width, y: 0 },
+      thickness: 100,
+      height,
+      confidence: 0.9 + rand() * 0.08,
+    },
+    {
+      id: "w-e",
+      a: { x: width, y: 0 },
+      b: { x: width, y: depth },
+      thickness: 100,
+      height,
+      confidence: 0.88 + rand() * 0.1,
+    },
+    {
+      id: "w-s",
+      a: { x: width, y: depth },
+      b: { x: 0, y: depth },
+      thickness: 100,
+      height,
+      confidence: 0.85 + rand() * 0.1,
+    },
+    {
+      id: "w-w",
+      a: { x: 0, y: depth },
+      b: { x: 0, y: 0 },
+      thickness: 100,
+      height,
+      confidence: 0.86 + rand() * 0.1,
+    },
   ];
 
   const openings: VisionOpening[] = [
@@ -112,19 +145,22 @@ function buildModel(input: SimulateInput): VisionRoomModel {
     },
   ];
 
-  const guessedType: VisionRoomModel["suggestedType"] =
-    input.uploads[0]?.name.toLowerCase().includes("cozin")
-      ? "cozinha"
-      : input.uploads[0]?.name.toLowerCase().includes("quarto")
-        ? "dormitorio"
-        : "sala";
+  const guessedType: VisionRoomModel["suggestedType"] = input.uploads[0]?.name
+    .toLowerCase()
+    .includes("cozin")
+    ? "cozinha"
+    : input.uploads[0]?.name.toLowerCase().includes("quarto")
+      ? "dormitorio"
+      : "sala";
 
   return {
     id: `vroom_${Date.now().toString(36)}`,
     suggestedName:
-      guessedType === "cozinha" ? "Cozinha detectada" :
-      guessedType === "dormitorio" ? "Dormitório detectado" :
-      "Sala detectada",
+      guessedType === "cozinha"
+        ? "Cozinha detectada"
+        : guessedType === "dormitorio"
+          ? "Dormitório detectado"
+          : "Sala detectada",
     suggestedType: guessedType,
     bounds: { width, depth, height },
     walls,

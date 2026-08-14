@@ -18,13 +18,7 @@ export const KitchenBaseCabinet: ModuleDefinition = {
     acceptsUpperModule: true,
   },
   defaultMaterialId: "mdf-white",
-  allowedMaterialIds: [
-    "mdf-white",
-    "mdf-wood-natural",
-    "mdf-graphite",
-    "mdf-green",
-    "mdf-taupe",
-  ],
+  allowedMaterialIds: ["mdf-white", "mdf-wood-natural", "mdf-graphite", "mdf-green", "mdf-taupe"],
   defaultHardwareIds: ["hinge-standard", "handle-bar", "leg-adjustable"],
   build: ({ dimensionsMm, materialId }) => {
     const moduleId = KitchenBaseCabinet.id;

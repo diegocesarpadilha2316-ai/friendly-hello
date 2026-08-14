@@ -17,12 +17,7 @@ export type PluginCategory =
   | "generic";
 
 export type PluginStatus =
-  | "installed"
-  | "enabled"
-  | "disabled"
-  | "updating"
-  | "error"
-  | "uninstalled";
+  "installed" | "enabled" | "disabled" | "updating" | "error" | "uninstalled";
 
 export type PluginPermissionScope =
   | "auth.read"

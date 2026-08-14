@@ -20,14 +20,24 @@ const BASE: PerformanceConfig = {
 };
 
 export const PERFORMANCE_BY_PRESET: Readonly<Record<RenderPresetId, PerformanceConfig>> = {
-  rascunho:    { ...BASE, maxTextureSizePx: 1024, maxTrianglesPerFrame: 500_000, compression: "basisu" },
-  baixa:       { ...BASE, maxTextureSizePx: 1024, maxTrianglesPerFrame: 1_000_000 },
-  media:       { ...BASE, maxTextureSizePx: 2048, maxTrianglesPerFrame: 2_000_000 },
-  alta:        { ...BASE, maxTextureSizePx: 4096, maxTrianglesPerFrame: 5_000_000 },
-  ultra:       { ...BASE, maxTextureSizePx: 8192, maxTrianglesPerFrame: 12_000_000 },
+  rascunho: {
+    ...BASE,
+    maxTextureSizePx: 1024,
+    maxTrianglesPerFrame: 500_000,
+    compression: "basisu",
+  },
+  baixa: { ...BASE, maxTextureSizePx: 1024, maxTrianglesPerFrame: 1_000_000 },
+  media: { ...BASE, maxTextureSizePx: 2048, maxTrianglesPerFrame: 2_000_000 },
+  alta: { ...BASE, maxTextureSizePx: 4096, maxTrianglesPerFrame: 5_000_000 },
+  ultra: { ...BASE, maxTextureSizePx: 8192, maxTrianglesPerFrame: 12_000_000 },
   fotografica: { ...BASE, maxTextureSizePx: 8192, maxTrianglesPerFrame: 18_000_000 },
-  marketing:   { ...BASE, maxTextureSizePx: 8192, maxTrianglesPerFrame: 15_000_000 },
-  cinema:      { ...BASE, maxTextureSizePx: 8192, maxTrianglesPerFrame: 24_000_000, compression: "ktx2" },
+  marketing: { ...BASE, maxTextureSizePx: 8192, maxTrianglesPerFrame: 15_000_000 },
+  cinema: {
+    ...BASE,
+    maxTextureSizePx: 8192,
+    maxTrianglesPerFrame: 24_000_000,
+    compression: "ktx2",
+  },
 };
 
 export function performanceForPreset(id: RenderPresetId): PerformanceConfig {

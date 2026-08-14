@@ -32,7 +32,10 @@ export function computeCapacityWindow(
   } satisfies CapacityWindow;
 }
 
-export function computeBottlenecks(totalHoursDemand: number, windowDays: number): readonly CapacityBottleneck[] {
+export function computeBottlenecks(
+  totalHoursDemand: number,
+  windowDays: number,
+): readonly CapacityBottleneck[] {
   const machines = computeMachineLoad(totalHoursDemand, windowDays);
   const overloaded = findOverloadedMachines(machines);
   const ops = computeOperatorLoad(totalHoursDemand, windowDays);

@@ -5,6 +5,7 @@ quantidades → perdas → custos (conhecidos/estimados/ausentes) → mão de ob
 custos indiretos → margem/markup → desconto → impostos → preço final.
 
 ## Estrutura
+
 - `types/` — contrato canônico (`ProjectBudget`, `BudgetItem`, `BudgetTotals`).
 - `services/`
   - `defaults.ts` — padrões e perdas por categoria (todas viram premissas visíveis).
@@ -18,6 +19,7 @@ custos indiretos → margem/markup → desconto → impostos → preço final.
 - `components/BudgetStudio.tsx` — Studio com 4 abas.
 
 ## Regras
+
 - Nunca inventa preço: ausente ⇒ `unitCost: null` e orçamento marcado incompleto.
 - Quantidade líquida e perda são sempre exibidas separadas.
 - Recalcular preserva todos os ajustes manuais (preço, quantidade, perda, exclusões, extras).
@@ -25,6 +27,7 @@ custos indiretos → margem/markup → desconto → impostos → preço final.
 - Visão interna (custos/margem) nunca aparece na proposta comercial.
 
 ## Regras
+
 - Consome exclusivamente `@/core` (Auth, Tenant, RBAC, IA Gateway, Créditos, Uploads, Auditoria).
 - Comunicação com outros domínios apenas via contratos em `@/modules/planner/shared`.
 - Não duplicar stores, providers, tipos ou serviços já existentes no Core.

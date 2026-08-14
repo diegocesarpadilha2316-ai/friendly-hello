@@ -19,13 +19,7 @@ export const DemoTallCabinet: ModuleDefinition = {
     acceptsAppliance: true,
   },
   defaultMaterialId: "mdf-wood-natural",
-  allowedMaterialIds: [
-    "mdf-white",
-    "mdf-wood-natural",
-    "mdf-graphite",
-    "mdf-green",
-    "mdf-taupe",
-  ],
+  allowedMaterialIds: ["mdf-white", "mdf-wood-natural", "mdf-graphite", "mdf-green", "mdf-taupe"],
   defaultHardwareIds: ["hinge-soft-close", "handle-bar", "slide-telescopic", "leg-adjustable"],
   build: ({ dimensionsMm, materialId }) => {
     const moduleId = DemoTallCabinet.id;
@@ -35,21 +29,17 @@ export const DemoTallCabinet: ModuleDefinition = {
 
     const parts = [
       ...buildCarcass(moduleId, dimensionsMm, materialId, { toeKickMm, shelves: 3 }),
-      ...buildDoors(
-        moduleId,
-        { ...dimensionsMm, height: doorZoneHeight },
-        materialId,
-        { toeKickMm: 0, leaves: 2 }
-      ).map((part) => ({
+      ...buildDoors(moduleId, { ...dimensionsMm, height: doorZoneHeight }, materialId, {
+        toeKickMm: 0,
+        leaves: 2,
+      }).map((part) => ({
         ...part,
         positionMm: { ...part.positionMm, y: part.positionMm.y + drawerZoneMm },
       })),
-      ...buildDrawers(
-        moduleId,
-        { ...dimensionsMm, height: drawerZoneMm + toeKickMm },
-        materialId,
-        { toeKickMm, count: 1 }
-      ),
+      ...buildDrawers(moduleId, { ...dimensionsMm, height: drawerZoneMm + toeKickMm }, materialId, {
+        toeKickMm,
+        count: 1,
+      }),
     ];
 
     return {

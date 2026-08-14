@@ -3,7 +3,11 @@
  */
 import type { LocalObjectAnimation } from "./types";
 
-export function doorOpen(nodeId: string, startSec: number, durationSec = 1.2): LocalObjectAnimation {
+export function doorOpen(
+  nodeId: string,
+  startSec: number,
+  durationSec = 1.2,
+): LocalObjectAnimation {
   return {
     id: `door.open.${nodeId}.${startSec.toFixed(2)}`,
     kind: "door-open",
@@ -16,7 +20,11 @@ export function doorOpen(nodeId: string, startSec: number, durationSec = 1.2): L
   };
 }
 
-export function doorClose(nodeId: string, startSec: number, durationSec = 1.0): LocalObjectAnimation {
+export function doorClose(
+  nodeId: string,
+  startSec: number,
+  durationSec = 1.0,
+): LocalObjectAnimation {
   return {
     id: `door.close.${nodeId}.${startSec.toFixed(2)}`,
     kind: "door-close",

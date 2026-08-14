@@ -46,7 +46,10 @@ export function VisionStudio() {
           )}
         </FormSection>
 
-        <FormSection title="Fotos do ambiente" description="Envie uma ou mais imagens para análise.">
+        <FormSection
+          title="Fotos do ambiente"
+          description="Envie uma ou mais imagens para análise."
+        >
           <VisionUploader
             uploads={vs.session.uploads}
             onAdd={vs.addFiles}
@@ -56,7 +59,10 @@ export function VisionStudio() {
           />
         </FormSection>
 
-        <FormSection title="Execução" description="Rode a análise simulada — pronto para IA real no futuro.">
+        <FormSection
+          title="Execução"
+          description="Rode a análise simulada — pronto para IA real no futuro."
+        >
           <div className="flex flex-wrap items-center gap-2">
             {vs.session.status === "processing" ? (
               <Button variant="outline" size="sm" onClick={vs.cancel}>
@@ -71,9 +77,7 @@ export function VisionStudio() {
               <RotateCcw className="mr-2 h-4 w-4" /> Reiniciar
             </Button>
           </div>
-          {vs.session.error && (
-            <p className="mt-2 text-xs text-destructive">{vs.session.error}</p>
-          )}
+          {vs.session.error && <p className="mt-2 text-xs text-destructive">{vs.session.error}</p>}
         </FormSection>
 
         <FormSection title="Progresso" description="Etapas emitidas em tempo real.">

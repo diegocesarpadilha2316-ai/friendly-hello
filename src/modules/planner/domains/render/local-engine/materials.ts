@@ -5,8 +5,21 @@ import type { PbrMaterial, PbrMaterialFamily } from "../types";
 import { PBR_MATERIALS, materialsByFamily } from "../services/materials";
 
 export const LOCAL_MATERIAL_FAMILIES: readonly PbrMaterialFamily[] = [
-  "madeira", "mdf", "mdp", "vidro", "espelho", "metal", "inox", "pedra",
-  "granito", "quartzo", "marmore", "porcelanato", "tecido", "couro", "laca",
+  "madeira",
+  "mdf",
+  "mdp",
+  "vidro",
+  "espelho",
+  "metal",
+  "inox",
+  "pedra",
+  "granito",
+  "quartzo",
+  "marmore",
+  "porcelanato",
+  "tecido",
+  "couro",
+  "laca",
 ];
 
 export function listLocalMaterials(): readonly PbrMaterial[] {

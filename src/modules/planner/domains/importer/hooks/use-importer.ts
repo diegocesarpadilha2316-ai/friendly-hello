@@ -16,12 +16,7 @@ import {
   validateImport,
   withPreview,
 } from "../services";
-import type {
-  ImportResult,
-  ImporterHistoryEntry,
-  ImporterLayer,
-  ImporterUnit,
-} from "../types";
+import type { ImportResult, ImporterHistoryEntry, ImporterLayer, ImporterUnit } from "../types";
 import { withOverride } from "../services/scale";
 import { unitToMm } from "../services/units";
 
@@ -35,12 +30,18 @@ function readHistory(): ImporterHistoryEntry[] {
     if (!raw) return [];
     const parsed = JSON.parse(raw) as ImporterHistoryEntry[];
     return Array.isArray(parsed) ? parsed.slice(0, HISTORY_LIMIT) : [];
-  } catch { return []; }
+  } catch {
+    return [];
+  }
 }
 
 function writeHistory(list: readonly ImporterHistoryEntry[]) {
   if (typeof window === "undefined") return;
-  try { window.localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, HISTORY_LIMIT))); } catch { /* noop */ }
+  try {
+    window.localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, HISTORY_LIMIT)));
+  } catch {
+    /* noop */
+  }
 }
 
 export function useImporter() {
@@ -102,9 +103,12 @@ export function useImporter() {
    */
   const attachToProject = useCallback(() => {
     if (!result) return;
-    const factor = result.scale.overrideUnit ? unitToMm(result.scale.overrideUnit) : result.scale.factorToMm;
+    const factor = result.scale.overrideUnit
+      ? unitToMm(result.scale.overrideUnit)
+      : result.scale.factorToMm;
     const fp = detectFloorplan({ ...result, scale: { ...result.scale, factorToMm: factor } });
-    const summary = `Importação ${result.format.toUpperCase()} · ${result.filename} · ` +
+    const summary =
+      `Importação ${result.format.toUpperCase()} · ${result.filename} · ` +
       `${fp.walls.length} paredes · ${fp.openings.length} aberturas · ${fp.floors.length} pisos.`;
     updateProject((p) => ({
       ...p,
@@ -116,16 +120,29 @@ export function useImporter() {
     }));
   }, [result, updateProject]);
 
-  const clearHistory = useCallback(() => { writeHistory([]); setHistory([]); }, []);
+  const clearHistory = useCallback(() => {
+    writeHistory([]);
+    setHistory([]);
+  }, []);
 
-  useEffect(() => { /* keeps localStorage in sync — no-op guard */ }, []);
+  useEffect(() => {
+    /* keeps localStorage in sync — no-op guard */
+  }, []);
 
   const layers = useMemo<readonly ImporterLayer[]>(() => result?.layers ?? [], [result]);
 
   return {
-    result, loading, layers, history,
+    result,
+    loading,
+    layers,
+    history,
     detectFormat,
-    importFromFile, setUnit, setLayerVisible, setLayerLocked,
-    attachToProject, clear, clearHistory,
+    importFromFile,
+    setUnit,
+    setLayerVisible,
+    setLayerLocked,
+    attachToProject,
+    clear,
+    clearHistory,
   };
 }

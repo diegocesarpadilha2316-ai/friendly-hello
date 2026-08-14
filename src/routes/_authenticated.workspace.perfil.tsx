@@ -52,7 +52,10 @@ export const Route = createFileRoute("/_authenticated/workspace/perfil")({
   head: () => ({
     meta: [
       { title: "Perfil — Workspace | Dioris Hub" },
-      { name: "description", content: "Identidade, segurança, sessões, dispositivos e preferências." },
+      {
+        name: "description",
+        content: "Identidade, segurança, sessões, dispositivos e preferências.",
+      },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -109,10 +112,13 @@ function PerfilContent() {
             size="sm"
             variant="outline"
             onClick={() =>
-              globalLogout.mutate({}, {
-                onSuccess: () => toast.success("Sessões encerradas"),
-                onError: (e) => toast.error((e as Error).message),
-              })
+              globalLogout.mutate(
+                {},
+                {
+                  onSuccess: () => toast.success("Sessões encerradas"),
+                  onError: (e) => toast.error((e as Error).message),
+                },
+              )
             }
             disabled={globalLogout.isPending}
           >
@@ -314,7 +320,12 @@ function SecurityTab({
           </div>
           <div className="space-y-2">
             <Label htmlFor="pwd2">Confirmar</Label>
-            <Input id="pwd2" type="password" value={pwd2} onChange={(e) => setPwd2(e.target.value)} />
+            <Input
+              id="pwd2"
+              type="password"
+              value={pwd2}
+              onChange={(e) => setPwd2(e.target.value)}
+            />
           </div>
         </div>
         <div className="mt-4 flex justify-end">
@@ -324,7 +335,10 @@ function SecurityTab({
         </div>
       </FormSection>
 
-      <FormSection title="MFA — Autenticação em dois fatores" description="Fatores registrados para esta conta.">
+      <FormSection
+        title="MFA — Autenticação em dois fatores"
+        description="Fatores registrados para esta conta."
+      >
         <div className="grid gap-3 rounded-lg border border-border/60 bg-muted/30 p-4 sm:grid-cols-[1fr_1fr_auto]">
           <div className="space-y-2">
             <Label>Método</Label>
@@ -701,9 +715,7 @@ function ActivityTab({ userId }: { userId: string }) {
           id: "ip",
           header: "IP",
           cell: (r) => (
-            <span className="font-mono text-xs">
-              {(r as { ip?: string | null }).ip ?? "—"}
-            </span>
+            <span className="font-mono text-xs">{(r as { ip?: string | null }).ip ?? "—"}</span>
           ),
         },
       ]}

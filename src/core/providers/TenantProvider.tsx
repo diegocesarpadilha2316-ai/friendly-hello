@@ -113,10 +113,12 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
       setActiveId(id);
       writeStoredId(id);
       // Invalida qualquer query dependente do tenant.
-      queryClient.invalidateQueries({ predicate: (q) => {
-        const key = q.queryKey?.[0];
-        return typeof key === "string" && key.startsWith("tenant:");
-      }});
+      queryClient.invalidateQueries({
+        predicate: (q) => {
+          const key = q.queryKey?.[0];
+          return typeof key === "string" && key.startsWith("tenant:");
+        },
+      });
     },
     [queryClient],
   );

@@ -12,7 +12,10 @@ export const DEFAULT_VIEWPORT: LocalViewportState = {
   qualityCompare: ["media", "cinema"],
 };
 
-export function withMode(v: LocalViewportState, mode: LocalViewportState["mode"]): LocalViewportState {
+export function withMode(
+  v: LocalViewportState,
+  mode: LocalViewportState["mode"],
+): LocalViewportState {
   return { ...v, mode };
 }
 

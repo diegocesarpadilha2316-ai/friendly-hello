@@ -63,7 +63,10 @@ export function validateLaundryModule(
   if (spec.widthMm < p.minWidthMm)
     err("largura-minima", `largura ${spec.widthMm} mm abaixo do mínimo ${p.minWidthMm} mm`);
   if (spec.depthMm < p.minDepthMm)
-    err("profundidade-minima", `profundidade ${spec.depthMm} mm abaixo do mínimo ${p.minDepthMm} mm`);
+    err(
+      "profundidade-minima",
+      `profundidade ${spec.depthMm} mm abaixo do mínimo ${p.minDepthMm} mm`,
+    );
   if (spec.depthMm > p.maxDepthMm)
     warn("profundidade-maxima", `profundidade acima do usual (${p.maxDepthMm} mm)`);
 
@@ -151,10 +154,14 @@ export function validateLaundryModule(
   if (spec.board !== "nenhum") {
     const travel = spec.board === "vertical" ? spec.heightMm : g.interiorDepthMm;
     if (travel < BOARD_TRAVEL_MM)
-      warn("tabua-curso", `curso de ${Math.round(travel)} mm menor que ${BOARD_TRAVEL_MM} mm da tábua`);
+      warn(
+        "tabua-curso",
+        `curso de ${Math.round(travel)} mm menor que ${BOARD_TRAVEL_MM} mm da tábua`,
+      );
   }
   if (p.broomZone) {
-    if (spec.broomZoneMm <= 0) err("vassoura-sem-zona", "vassoureiro sem reserva vertical de vassouras");
+    if (spec.broomZoneMm <= 0)
+      err("vassoura-sem-zona", "vassoureiro sem reserva vertical de vassouras");
     else if (spec.broomZoneMm > g.interiorHeightMm)
       err("vassoura-alem", "reserva de vassouras maior que a altura interna");
     else if (spec.broomZoneMm < 1200)
@@ -168,7 +175,10 @@ export function validateLaundryModule(
     const [lo, hi] = ergonomics.counterHeightMm;
     const top = g.topOfCountertopMm;
     if (top < lo || top > hi)
-      tip("altura-bancada", `altura da bancada (${Math.round(top)} mm) fora da faixa recomendada ${lo}–${hi} mm`);
+      tip(
+        "altura-bancada",
+        `altura da bancada (${Math.round(top)} mm) fora da faixa recomendada ${lo}–${hi} mm`,
+      );
   }
   if (spec.kind === "rodabanca" && spec.heightMm > 200)
     warn("rodabanca-alta", "rodabanca acima de 200 mm — confirme intenção de frontão");
@@ -182,7 +192,10 @@ export function validateLaundryModule(
     warn("gap-indevido", "módulo apoiado não deve ter folga sob a caixa");
   }
   if (p.level === "superior") {
-    tip("altura-aereo", `base do aéreo recomendada entre ${ergonomics.upperBottomMm[0]} e ${ergonomics.upperBottomMm[1]} mm do piso`);
+    tip(
+      "altura-aereo",
+      `base do aéreo recomendada entre ${ergonomics.upperBottomMm[0]} e ${ergonomics.upperBottomMm[1]} mm do piso`,
+    );
   }
 
   /* ── acabamentos e tapa-vãos não podem se comportar como frente móvel ── */

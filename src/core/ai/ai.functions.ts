@@ -153,27 +153,29 @@ export const aiMetrics = createServerFn({ method: "GET" })
 
 export const aiListModels = createServerFn({ method: "GET" })
   .middleware([requireTenant])
-  .handler((): {
-    models: readonly AIModel[];
-    defaultProvider: string;
-    priority: readonly string[];
-    capabilities: readonly AICapability[];
-    featureFlags: typeof AI_GATEWAY_CONFIG.featureFlags;
-  } => ({
-    models: AI_MODEL_CATALOG,
-    defaultProvider: AI_GATEWAY_CONFIG.defaultProvider,
-    priority: AI_GATEWAY_CONFIG.providerPriority,
-    capabilities: [
-      "text",
-      "json",
-      "stream",
-      "image",
-      "embedding",
-      "audio",
-      "video",
-      "tools",
-      "multimodal",
-      "mcp",
-    ],
-    featureFlags: AI_GATEWAY_CONFIG.featureFlags,
-  }));
+  .handler(
+    (): {
+      models: readonly AIModel[];
+      defaultProvider: string;
+      priority: readonly string[];
+      capabilities: readonly AICapability[];
+      featureFlags: typeof AI_GATEWAY_CONFIG.featureFlags;
+    } => ({
+      models: AI_MODEL_CATALOG,
+      defaultProvider: AI_GATEWAY_CONFIG.defaultProvider,
+      priority: AI_GATEWAY_CONFIG.providerPriority,
+      capabilities: [
+        "text",
+        "json",
+        "stream",
+        "image",
+        "embedding",
+        "audio",
+        "video",
+        "tools",
+        "multimodal",
+        "mcp",
+      ],
+      featureFlags: AI_GATEWAY_CONFIG.featureFlags,
+    }),
+  );

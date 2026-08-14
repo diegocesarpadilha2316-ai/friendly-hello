@@ -31,7 +31,8 @@ export function useEnqueueJob() {
   const fn = useServerFn(jobEnqueue);
   const invalidate = useInvalidate();
   return useMutation({
-    mutationFn: (data: Parameters<typeof fn>[0] extends { data: infer D } ? D : never) => fn({ data }),
+    mutationFn: (data: Parameters<typeof fn>[0] extends { data: infer D } ? D : never) =>
+      fn({ data }),
     onSuccess: () => invalidate(),
   });
 }
@@ -67,7 +68,8 @@ export function useQueueUpsert() {
   const fn = useServerFn(queueUpsert);
   const invalidate = useInvalidate();
   return useMutation({
-    mutationFn: (data: Parameters<typeof fn>[0] extends { data: infer D } ? D : never) => fn({ data }),
+    mutationFn: (data: Parameters<typeof fn>[0] extends { data: infer D } ? D : never) =>
+      fn({ data }),
     onSuccess: () => invalidate(),
   });
 }
@@ -76,7 +78,8 @@ export function useCronUpsert() {
   const fn = useServerFn(cronUpsert);
   const invalidate = useInvalidate();
   return useMutation({
-    mutationFn: (data: Parameters<typeof fn>[0] extends { data: infer D } ? D : never) => fn({ data }),
+    mutationFn: (data: Parameters<typeof fn>[0] extends { data: infer D } ? D : never) =>
+      fn({ data }),
     onSuccess: () => invalidate(),
   });
 }

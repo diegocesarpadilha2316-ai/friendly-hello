@@ -14,7 +14,8 @@ function isLightNode(role?: string, kind?: string): boolean {
 }
 
 function roomFloorAreaMm2(room: PlannerRoom): number {
-  const dims = (room as unknown as { dimensions?: { widthMm?: number; depthMm?: number } }).dimensions;
+  const dims = (room as unknown as { dimensions?: { widthMm?: number; depthMm?: number } })
+    .dimensions;
   const w = dims?.widthMm ?? 0;
   const d = dims?.depthMm ?? 0;
   return w * d;
@@ -35,7 +36,9 @@ export function buildRenderScene(project: PlannerProject, roomId?: string | null
     const walls = (r as unknown as { walls?: readonly unknown[] }).walls;
     wallCount += walls?.length ?? 0;
     floorAreaMm2 += roomFloorAreaMm2(r);
-    const nodes = (r as unknown as { nodes?: readonly { kind?: string; params?: Record<string, unknown> }[] }).nodes ?? [];
+    const nodes =
+      (r as unknown as { nodes?: readonly { kind?: string; params?: Record<string, unknown> }[] })
+        .nodes ?? [];
     for (const n of nodes) {
       nodeCount += 1;
       const params = n.params ?? {};

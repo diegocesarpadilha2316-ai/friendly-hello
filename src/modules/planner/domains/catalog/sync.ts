@@ -25,7 +25,10 @@ function checksum(items: readonly CatalogItem[]): string {
   return `dr-${(hash >>> 0).toString(16)}`;
 }
 
-export function buildSyncEnvelope(source: CatalogSyncSource, items: readonly CatalogItem[]): CatalogSyncEnvelope {
+export function buildSyncEnvelope(
+  source: CatalogSyncSource,
+  items: readonly CatalogItem[],
+): CatalogSyncEnvelope {
   return {
     source,
     generatedAt: new Date().toISOString(),

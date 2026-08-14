@@ -1,7 +1,8 @@
 export type MaterialCategory = "mdf" | "glass" | "mirror" | "stone" | "metal";
 export type MaterialFinish = "matte" | "satin" | "gloss" | "textured";
 export type GrainDirection = "vertical" | "horizontal" | "none";
-export type StoneType = "quartz" | "marble" | "granite" | "quartzite" | "porcelain" | "solid-surface";
+export type StoneType =
+  "quartz" | "marble" | "granite" | "quartzite" | "porcelain" | "solid-surface";
 export type StoneFinish = "honed" | "polished" | "leathered" | "matte";
 
 export interface MaterialMapSet {

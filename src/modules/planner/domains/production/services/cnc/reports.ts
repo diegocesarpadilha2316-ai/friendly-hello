@@ -23,7 +23,10 @@ export function buildReport(
     totalMin += p.estimatedMin;
     p.tools.forEach((t) => tools.add(t.id));
     for (const o of p.operations) {
-      if (o.toolId !== last) { toolChanges++; last = o.toolId; }
+      if (o.toolId !== last) {
+        toolChanges++;
+        last = o.toolId;
+      }
     }
   }
   return {
@@ -35,7 +38,9 @@ export function buildReport(
   };
 }
 
-export function toolUsageSummary(programs: readonly CncProgram[]): readonly { readonly tool: CncTool; readonly count: number }[] {
+export function toolUsageSummary(
+  programs: readonly CncProgram[],
+): readonly { readonly tool: CncTool; readonly count: number }[] {
   const map = new Map<string, { tool: CncTool; count: number }>();
   for (const p of programs) {
     for (const o of p.operations) {

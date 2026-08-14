@@ -71,7 +71,8 @@ export function useIndustrial(): UseIndustrialResult {
     [report, plan, cost, offcuts],
   );
   const assembly = useMemo(
-    () => (report ? buildAssemblyPlan(report.parts) : { steps: [], totalMinutes: 0, totalSteps: 0 }),
+    () =>
+      report ? buildAssemblyPlan(report.parts) : { steps: [], totalMinutes: 0, totalSteps: 0 },
     [report],
   );
 
@@ -114,10 +115,7 @@ export function useIndustrial(): UseIndustrialResult {
     [report, plan],
   );
 
-  const ask = useCallback(
-    (prompt: string) => matchIndustrialIntent(prompt, intents),
-    [intents],
-  );
+  const ask = useCallback((prompt: string) => matchIndustrialIntent(prompt, intents), [intents]);
 
   return {
     hasProject,

@@ -21,7 +21,13 @@ import { listCollections } from "../services/collections";
 import { listLicenses } from "../services/licenses";
 import { listTargets, buildManifest } from "../services/sync";
 import { searchItems, suggest } from "../services/search";
-import { featured, mostDownloaded, mostFavorited, highestRated, newest } from "../services/featured";
+import {
+  featured,
+  mostDownloaded,
+  mostFavorited,
+  highestRated,
+  newest,
+} from "../services/featured";
 import { recommendationsFor, recommendationsForUser } from "../services/recommendations";
 import { reviewsFor } from "../services/reviews";
 import {
@@ -98,11 +104,15 @@ export function useMarketplace(): UseMarketplace {
   const editor = usePlannerEditor();
   const [filters, setFiltersState] = useState<MarketplaceSearchFilters>({});
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [installedState, setInstalledState] = useState<MarketplaceInstalledState>(() => readInstalled());
-  const [favoritesState, setFavoritesState] = useState<MarketplaceFavoritesState>(() => readFavorites());
+  const [installedState, setInstalledState] = useState<MarketplaceInstalledState>(() =>
+    readInstalled(),
+  );
+  const [favoritesState, setFavoritesState] = useState<MarketplaceFavoritesState>(() =>
+    readFavorites(),
+  );
 
   const filtered = useMemo(() => searchItems(filters), [filters]);
-  const selected = useMemo(() => (selectedId ? getItem(selectedId) ?? null : null), [selectedId]);
+  const selected = useMemo(() => (selectedId ? (getItem(selectedId) ?? null) : null), [selectedId]);
   const analytics = useMemo(() => snapshot(), [installedState, favoritesState]);
   const updates = useMemo(() => pendingUpdates(), [installedState]);
 
@@ -113,14 +123,18 @@ export function useMarketplace(): UseMarketplace {
   const handleInstall = useCallback((itemId: string) => setInstalledState(install(itemId)), []);
   const handleUninstall = useCallback((itemId: string) => setInstalledState(uninstall(itemId)), []);
   const handleReinstall = useCallback((itemId: string) => setInstalledState(reinstall(itemId)), []);
-  const handleUpdateOne = useCallback((itemId: string) => setInstalledState(applyUpdate(itemId)), []);
+  const handleUpdateOne = useCallback(
+    (itemId: string) => setInstalledState(applyUpdate(itemId)),
+    [],
+  );
   const handleUpdateAll = useCallback(() => setInstalledState(applyAllUpdates()), []);
-  const handleToggleFav = useCallback((itemId: string) => setFavoritesState(toggleFavorite(itemId)), []);
+  const handleToggleFav = useCallback(
+    (itemId: string) => setFavoritesState(toggleFavorite(itemId)),
+    [],
+  );
   const handleClearFav = useCallback(() => setFavoritesState(clearFavorites()), []);
 
-  const canInsert = Boolean(
-    editor.state.project && editor.state.selectedRoomId && selected,
-  );
+  const canInsert = Boolean(editor.state.project && editor.state.selectedRoomId && selected);
 
   const insertSelected = useCallback((): boolean => {
     const roomId = editor.state.selectedRoomId;

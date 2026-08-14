@@ -201,7 +201,9 @@ function WorkspaceEmpresa() {
     mutationFn: (input: Json) => updateActiveCompany({ data: input }),
     onSuccess: async () => {
       await refresh();
-      qc.invalidateQueries({ predicate: (q) => String(q.queryKey?.[0] ?? "").startsWith("tenant") });
+      qc.invalidateQueries({
+        predicate: (q) => String(q.queryKey?.[0] ?? "").startsWith("tenant"),
+      });
       toast.success("Empresa atualizada");
     },
     onError: (e: Error) => toast.error(e.message || "Falha ao atualizar"),
@@ -283,14 +285,14 @@ function WorkspaceEmpresa() {
 
       {/* KPIs */}
       <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Plano" value={activeCompany.plan ?? "—"} icon={<Coins className="h-4 w-4" />} />
+        <MetricCard
+          label="Plano"
+          value={activeCompany.plan ?? "—"}
+          icon={<Coins className="h-4 w-4" />}
+        />
         <MetricCard
           label="Storage"
-          value={
-            assets.data
-              ? `${(assets.data.usedBytes / 1024 / 1024).toFixed(1)} MB`
-              : "—"
-          }
+          value={assets.data ? `${(assets.data.usedBytes / 1024 / 1024).toFixed(1)} MB` : "—"}
           icon={<HardDrive className="h-4 w-4" />}
         />
         <MetricCard
@@ -308,57 +310,246 @@ function WorkspaceEmpresa() {
       <div className="mt-8">
         <Tabs defaultValue="dados">
           <TabsList className="flex flex-wrap gap-1">
-            <TabsTrigger value="dados"><Building2 className="mr-2 h-4 w-4" />Dados</TabsTrigger>
-            <TabsTrigger value="branding"><Palette className="mr-2 h-4 w-4" />Branding</TabsTrigger>
-            <TabsTrigger value="endereco"><MapPin className="mr-2 h-4 w-4" />Endereço</TabsTrigger>
-            <TabsTrigger value="comercial"><Briefcase className="mr-2 h-4 w-4" />Comercial</TabsTrigger>
-            <TabsTrigger value="config"><Settings2 className="mr-2 h-4 w-4" />Configurações</TabsTrigger>
-            <TabsTrigger value="seguranca"><ShieldCheck className="mr-2 h-4 w-4" />Segurança</TabsTrigger>
-            <TabsTrigger value="storage"><HardDrive className="mr-2 h-4 w-4" />Storage</TabsTrigger>
+            <TabsTrigger value="dados">
+              <Building2 className="mr-2 h-4 w-4" />
+              Dados
+            </TabsTrigger>
+            <TabsTrigger value="branding">
+              <Palette className="mr-2 h-4 w-4" />
+              Branding
+            </TabsTrigger>
+            <TabsTrigger value="endereco">
+              <MapPin className="mr-2 h-4 w-4" />
+              Endereço
+            </TabsTrigger>
+            <TabsTrigger value="comercial">
+              <Briefcase className="mr-2 h-4 w-4" />
+              Comercial
+            </TabsTrigger>
+            <TabsTrigger value="config">
+              <Settings2 className="mr-2 h-4 w-4" />
+              Configurações
+            </TabsTrigger>
+            <TabsTrigger value="seguranca">
+              <ShieldCheck className="mr-2 h-4 w-4" />
+              Segurança
+            </TabsTrigger>
+            <TabsTrigger value="storage">
+              <HardDrive className="mr-2 h-4 w-4" />
+              Storage
+            </TabsTrigger>
           </TabsList>
 
           {/* DADOS */}
           <TabsContent value="dados" className="mt-6 space-y-6">
             <FormSection title="Identidade" description="Nome, documentos e canais oficiais.">
               <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Nome" value={form.name} onChange={(v) => patch((d) => { d.name = v; })} />
-                <Field label="Razão social" value={form.settings.razao_social} onChange={(v) => patch((d) => { d.settings.razao_social = v; })} />
-                <Field label="Nome fantasia" value={form.settings.nome_fantasia} onChange={(v) => patch((d) => { d.settings.nome_fantasia = v; })} />
-                <Field label="CNPJ" value={form.cnpj} onChange={(v) => patch((d) => { d.cnpj = v; })} placeholder="00.000.000/0000-00" />
-                <Field label="Inscrição Estadual" value={form.settings.ie} onChange={(v) => patch((d) => { d.settings.ie = v; })} />
-                <Field label="Inscrição Municipal" value={form.settings.im} onChange={(v) => patch((d) => { d.settings.im = v; })} />
+                <Field
+                  label="Nome"
+                  value={form.name}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.name = v;
+                    })
+                  }
+                />
+                <Field
+                  label="Razão social"
+                  value={form.settings.razao_social}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.razao_social = v;
+                    })
+                  }
+                />
+                <Field
+                  label="Nome fantasia"
+                  value={form.settings.nome_fantasia}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.nome_fantasia = v;
+                    })
+                  }
+                />
+                <Field
+                  label="CNPJ"
+                  value={form.cnpj}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.cnpj = v;
+                    })
+                  }
+                  placeholder="00.000.000/0000-00"
+                />
+                <Field
+                  label="Inscrição Estadual"
+                  value={form.settings.ie}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.ie = v;
+                    })
+                  }
+                />
+                <Field
+                  label="Inscrição Municipal"
+                  value={form.settings.im}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.im = v;
+                    })
+                  }
+                />
               </div>
             </FormSection>
             <FormSection title="Contato" description="Canais de comunicação da empresa.">
               <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Telefone" value={form.settings.phone} onChange={(v) => patch((d) => { d.settings.phone = v; })} />
-                <Field label="WhatsApp" value={form.settings.whatsapp} onChange={(v) => patch((d) => { d.settings.whatsapp = v; })} />
-                <Field label="E-mail" type="email" value={form.settings.email} onChange={(v) => patch((d) => { d.settings.email = v; })} />
-                <Field label="Site" value={form.settings.site} onChange={(v) => patch((d) => { d.settings.site = v; })} placeholder="https://" />
-                <Field label="Domínio personalizado" value={form.custom_domain} onChange={(v) => patch((d) => { d.custom_domain = v; })} placeholder="app.suaempresa.com" />
+                <Field
+                  label="Telefone"
+                  value={form.settings.phone}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.phone = v;
+                    })
+                  }
+                />
+                <Field
+                  label="WhatsApp"
+                  value={form.settings.whatsapp}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.whatsapp = v;
+                    })
+                  }
+                />
+                <Field
+                  label="E-mail"
+                  type="email"
+                  value={form.settings.email}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.email = v;
+                    })
+                  }
+                />
+                <Field
+                  label="Site"
+                  value={form.settings.site}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.site = v;
+                    })
+                  }
+                  placeholder="https://"
+                />
+                <Field
+                  label="Domínio personalizado"
+                  value={form.custom_domain}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.custom_domain = v;
+                    })
+                  }
+                  placeholder="app.suaempresa.com"
+                />
               </div>
             </FormSection>
           </TabsContent>
 
           {/* BRANDING */}
           <TabsContent value="branding" className="mt-6 space-y-6">
-            <FormSection title="Identidade visual" description="Logo, ícone, banner e cores da marca.">
+            <FormSection
+              title="Identidade visual"
+              description="Logo, ícone, banner e cores da marca."
+            >
               <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Logo (URL)" value={form.logo_url} onChange={(v) => patch((d) => { d.logo_url = v; })} />
-                <Field label="Ícone (URL)" value={form.settings.branding.icon_url} onChange={(v) => patch((d) => { d.settings.branding.icon_url = v; })} />
-                <Field label="Banner (URL)" value={form.settings.branding.banner_url} onChange={(v) => patch((d) => { d.settings.branding.banner_url = v; })} />
-                <Field label="Tema" value={form.settings.branding.theme} onChange={(v) => patch((d) => { d.settings.branding.theme = v; })} placeholder="dark | light | system" />
-                <Field label="Cor primária" value={form.settings.branding.primary_color} onChange={(v) => patch((d) => { d.settings.branding.primary_color = v; })} placeholder="#8B5CF6" />
-                <Field label="Cor secundária" value={form.settings.branding.secondary_color} onChange={(v) => patch((d) => { d.settings.branding.secondary_color = v; })} placeholder="#06B6D4" />
+                <Field
+                  label="Logo (URL)"
+                  value={form.logo_url}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.logo_url = v;
+                    })
+                  }
+                />
+                <Field
+                  label="Ícone (URL)"
+                  value={form.settings.branding.icon_url}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.branding.icon_url = v;
+                    })
+                  }
+                />
+                <Field
+                  label="Banner (URL)"
+                  value={form.settings.branding.banner_url}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.branding.banner_url = v;
+                    })
+                  }
+                />
+                <Field
+                  label="Tema"
+                  value={form.settings.branding.theme}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.branding.theme = v;
+                    })
+                  }
+                  placeholder="dark | light | system"
+                />
+                <Field
+                  label="Cor primária"
+                  value={form.settings.branding.primary_color}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.branding.primary_color = v;
+                    })
+                  }
+                  placeholder="#8B5CF6"
+                />
+                <Field
+                  label="Cor secundária"
+                  value={form.settings.branding.secondary_color}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.branding.secondary_color = v;
+                    })
+                  }
+                  placeholder="#06B6D4"
+                />
               </div>
-              {(form.logo_url || form.settings.branding.icon_url || form.settings.branding.banner_url) && (
+              {(form.logo_url ||
+                form.settings.branding.icon_url ||
+                form.settings.branding.banner_url) && (
                 <div className="mt-4 flex flex-wrap items-center gap-4 rounded-lg border border-border/60 bg-muted/20 p-4">
-                  {form.logo_url && <img src={form.logo_url} alt="Logo" className="h-10 object-contain" />}
-                  {form.settings.branding.icon_url && <img src={form.settings.branding.icon_url} alt="Ícone" className="h-10 w-10 rounded object-contain" />}
-                  {form.settings.branding.banner_url && <img src={form.settings.branding.banner_url} alt="Banner" className="h-14 rounded object-cover" />}
+                  {form.logo_url && (
+                    <img src={form.logo_url} alt="Logo" className="h-10 object-contain" />
+                  )}
+                  {form.settings.branding.icon_url && (
+                    <img
+                      src={form.settings.branding.icon_url}
+                      alt="Ícone"
+                      className="h-10 w-10 rounded object-contain"
+                    />
+                  )}
+                  {form.settings.branding.banner_url && (
+                    <img
+                      src={form.settings.branding.banner_url}
+                      alt="Banner"
+                      className="h-14 rounded object-cover"
+                    />
+                  )}
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span className="inline-block h-6 w-6 rounded" style={{ background: form.settings.branding.primary_color }} />
-                    <span className="inline-block h-6 w-6 rounded" style={{ background: form.settings.branding.secondary_color }} />
+                    <span
+                      className="inline-block h-6 w-6 rounded"
+                      style={{ background: form.settings.branding.primary_color }}
+                    />
+                    <span
+                      className="inline-block h-6 w-6 rounded"
+                      style={{ background: form.settings.branding.secondary_color }}
+                    />
                     <span>Prévia das cores</span>
                   </div>
                 </div>
@@ -370,33 +561,129 @@ function WorkspaceEmpresa() {
           <TabsContent value="endereco" className="mt-6">
             <FormSection title="Endereço" description="Localização principal da empresa.">
               <div className="grid gap-4 md:grid-cols-3">
-                <Field label="CEP" value={form.settings.address.cep} onChange={(v) => patch((d) => { d.settings.address.cep = v; })} />
+                <Field
+                  label="CEP"
+                  value={form.settings.address.cep}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.address.cep = v;
+                    })
+                  }
+                />
                 <div className="md:col-span-2">
-                  <Field label="Rua" value={form.settings.address.street} onChange={(v) => patch((d) => { d.settings.address.street = v; })} />
+                  <Field
+                    label="Rua"
+                    value={form.settings.address.street}
+                    onChange={(v) =>
+                      patch((d) => {
+                        d.settings.address.street = v;
+                      })
+                    }
+                  />
                 </div>
-                <Field label="Número" value={form.settings.address.number} onChange={(v) => patch((d) => { d.settings.address.number = v; })} />
-                <Field label="Complemento" value={form.settings.address.complement} onChange={(v) => patch((d) => { d.settings.address.complement = v; })} />
-                <Field label="Bairro" value={form.settings.address.district} onChange={(v) => patch((d) => { d.settings.address.district = v; })} />
-                <Field label="Cidade" value={form.settings.address.city} onChange={(v) => patch((d) => { d.settings.address.city = v; })} />
-                <Field label="Estado" value={form.settings.address.state} onChange={(v) => patch((d) => { d.settings.address.state = v; })} />
-                <Field label="País" value={form.settings.address.country} onChange={(v) => patch((d) => { d.settings.address.country = v; })} />
+                <Field
+                  label="Número"
+                  value={form.settings.address.number}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.address.number = v;
+                    })
+                  }
+                />
+                <Field
+                  label="Complemento"
+                  value={form.settings.address.complement}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.address.complement = v;
+                    })
+                  }
+                />
+                <Field
+                  label="Bairro"
+                  value={form.settings.address.district}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.address.district = v;
+                    })
+                  }
+                />
+                <Field
+                  label="Cidade"
+                  value={form.settings.address.city}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.address.city = v;
+                    })
+                  }
+                />
+                <Field
+                  label="Estado"
+                  value={form.settings.address.state}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.address.state = v;
+                    })
+                  }
+                />
+                <Field
+                  label="País"
+                  value={form.settings.address.country}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.address.country = v;
+                    })
+                  }
+                />
               </div>
             </FormSection>
           </TabsContent>
 
           {/* COMERCIAL */}
           <TabsContent value="comercial" className="mt-6 space-y-6">
-            <FormSection title="Informações comerciais" description="Segmentação e porte da empresa.">
+            <FormSection
+              title="Informações comerciais"
+              description="Segmentação e porte da empresa."
+            >
               <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Segmento" value={form.settings.business.segment} onChange={(v) => patch((d) => { d.settings.business.segment = v; })} />
-                <Field label="Porte" value={form.settings.business.size} onChange={(v) => patch((d) => { d.settings.business.size = v; })} placeholder="MEI, PP, ME, EPP, Média, Grande" />
-                <Field label="Nº de funcionários" value={form.settings.business.employees} onChange={(v) => patch((d) => { d.settings.business.employees = v; })} />
+                <Field
+                  label="Segmento"
+                  value={form.settings.business.segment}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.business.segment = v;
+                    })
+                  }
+                />
+                <Field
+                  label="Porte"
+                  value={form.settings.business.size}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.business.size = v;
+                    })
+                  }
+                  placeholder="MEI, PP, ME, EPP, Média, Grande"
+                />
+                <Field
+                  label="Nº de funcionários"
+                  value={form.settings.business.employees}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.business.employees = v;
+                    })
+                  }
+                />
                 <div className="md:col-span-1">
                   <Label className="text-xs text-muted-foreground">Horário de atendimento</Label>
                   <Textarea
                     className="mt-1.5"
                     value={form.settings.business.hours}
-                    onChange={(e) => patch((d) => { d.settings.business.hours = e.target.value; })}
+                    onChange={(e) =>
+                      patch((d) => {
+                        d.settings.business.hours = e.target.value;
+                      })
+                    }
                     placeholder="Seg–Sex 09h–18h"
                   />
                 </div>
@@ -404,17 +691,52 @@ function WorkspaceEmpresa() {
             </FormSection>
             <FormSection title="Redes sociais" description="Perfis oficiais da empresa.">
               <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Instagram" value={form.settings.business.instagram} onChange={(v) => patch((d) => { d.settings.business.instagram = v; })} />
-                <Field label="LinkedIn" value={form.settings.business.linkedin} onChange={(v) => patch((d) => { d.settings.business.linkedin = v; })} />
-                <Field label="Facebook" value={form.settings.business.facebook} onChange={(v) => patch((d) => { d.settings.business.facebook = v; })} />
-                <Field label="X / Twitter" value={form.settings.business.x} onChange={(v) => patch((d) => { d.settings.business.x = v; })} />
+                <Field
+                  label="Instagram"
+                  value={form.settings.business.instagram}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.business.instagram = v;
+                    })
+                  }
+                />
+                <Field
+                  label="LinkedIn"
+                  value={form.settings.business.linkedin}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.business.linkedin = v;
+                    })
+                  }
+                />
+                <Field
+                  label="Facebook"
+                  value={form.settings.business.facebook}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.business.facebook = v;
+                    })
+                  }
+                />
+                <Field
+                  label="X / Twitter"
+                  value={form.settings.business.x}
+                  onChange={(v) =>
+                    patch((d) => {
+                      d.settings.business.x = v;
+                    })
+                  }
+                />
               </div>
             </FormSection>
           </TabsContent>
 
           {/* CONFIG (locale/timezone/currency) — usa Configuration Core */}
           <TabsContent value="config" className="mt-6">
-            <FormSection title="Preferências regionais" description="Idioma, moeda, fuso e formatos padrão da empresa.">
+            <FormSection
+              title="Preferências regionais"
+              description="Idioma, moeda, fuso e formatos padrão da empresa."
+            >
               {companySettings.isLoading ? (
                 <Skeleton className="h-24 w-full" />
               ) : (
@@ -435,12 +757,31 @@ function WorkspaceEmpresa() {
           {/* SEGURANÇA */}
           <TabsContent value="seguranca" className="mt-6 space-y-4">
             <div className="grid gap-4 md:grid-cols-4">
-              <MetricCard label="MFA" value={mfaEnabled ? "Ativo" : "Inativo"} icon={<ShieldCheck className="h-4 w-4" />} />
-              <MetricCard label="Sessões" value={String(sessionsCount)} icon={<Users className="h-4 w-4" />} />
-              <MetricCard label="Dispositivos" value={String(devicesCount)} icon={<Globe className="h-4 w-4" />} />
-              <MetricCard label="Eventos" value={String((audit.data ?? []).length)} icon={<Sparkles className="h-4 w-4" />} />
+              <MetricCard
+                label="MFA"
+                value={mfaEnabled ? "Ativo" : "Inativo"}
+                icon={<ShieldCheck className="h-4 w-4" />}
+              />
+              <MetricCard
+                label="Sessões"
+                value={String(sessionsCount)}
+                icon={<Users className="h-4 w-4" />}
+              />
+              <MetricCard
+                label="Dispositivos"
+                value={String(devicesCount)}
+                icon={<Globe className="h-4 w-4" />}
+              />
+              <MetricCard
+                label="Eventos"
+                value={String((audit.data ?? []).length)}
+                icon={<Sparkles className="h-4 w-4" />}
+              />
             </div>
-            <FormSection title="Auditoria recente" description="Últimas alterações da empresa registradas pelo Observability.">
+            <FormSection
+              title="Auditoria recente"
+              description="Últimas alterações da empresa registradas pelo Observability."
+            >
               {audit.isLoading ? (
                 <Skeleton className="h-32 w-full" />
               ) : (audit.data ?? []).length === 0 ? (
@@ -556,13 +897,41 @@ function CompanyRegionalForm({
   return (
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2">
-        <Field label="Idioma" value={state.locale} onChange={(v) => setState((s) => ({ ...s, locale: v }))} />
-        <Field label="Fuso horário" value={state.timezone} onChange={(v) => setState((s) => ({ ...s, timezone: v }))} />
-        <Field label="Moeda" value={state.currency} onChange={(v) => setState((s) => ({ ...s, currency: v }))} />
-        <Field label="Formato de data" value={state.dateFormat} onChange={(v) => setState((s) => ({ ...s, dateFormat: v }))} />
-        <Field label="Formato numérico" value={state.numberFormat} onChange={(v) => setState((s) => ({ ...s, numberFormat: v }))} />
-        <Field label="Unidades" value={state.units} onChange={(v) => setState((s) => ({ ...s, units: v }))} />
-        <Field label="Tema" value={state.theme} onChange={(v) => setState((s) => ({ ...s, theme: v }))} />
+        <Field
+          label="Idioma"
+          value={state.locale}
+          onChange={(v) => setState((s) => ({ ...s, locale: v }))}
+        />
+        <Field
+          label="Fuso horário"
+          value={state.timezone}
+          onChange={(v) => setState((s) => ({ ...s, timezone: v }))}
+        />
+        <Field
+          label="Moeda"
+          value={state.currency}
+          onChange={(v) => setState((s) => ({ ...s, currency: v }))}
+        />
+        <Field
+          label="Formato de data"
+          value={state.dateFormat}
+          onChange={(v) => setState((s) => ({ ...s, dateFormat: v }))}
+        />
+        <Field
+          label="Formato numérico"
+          value={state.numberFormat}
+          onChange={(v) => setState((s) => ({ ...s, numberFormat: v }))}
+        />
+        <Field
+          label="Unidades"
+          value={state.units}
+          onChange={(v) => setState((s) => ({ ...s, units: v }))}
+        />
+        <Field
+          label="Tema"
+          value={state.theme}
+          onChange={(v) => setState((s) => ({ ...s, theme: v }))}
+        />
       </div>
       <div className="flex justify-end">
         <Button onClick={() => onSubmit(state)} disabled={disabled}>

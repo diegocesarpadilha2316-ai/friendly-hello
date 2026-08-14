@@ -1,6 +1,14 @@
 import * as THREE from "three";
 
-export type KitchenRenderView = "front" | "three-quarter-left" | "three-quarter-right" | "island" | "detail" | "overview" | "top" | "lateral";
+export type KitchenRenderView =
+  | "front"
+  | "three-quarter-left"
+  | "three-quarter-right"
+  | "island"
+  | "detail"
+  | "overview"
+  | "top"
+  | "lateral";
 
 export type KitchenCameraPreset = KitchenRenderView;
 
@@ -8,7 +16,14 @@ function isPresentationContent(object: THREE.Object3D) {
   let current: THREE.Object3D | null = object;
   for (let depth = 0; depth < 8 && current; depth += 1) {
     if (current.userData?.renderLayer === "EDITOR_ONLY") return false;
-    if (current.userData?.instanceId || current.userData?.decorAsset || current.userData?.assetId || current.userData?.contentType === "decoration" || current.userData?.contentType === "appliances") return true;
+    if (
+      current.userData?.instanceId ||
+      current.userData?.decorAsset ||
+      current.userData?.assetId ||
+      current.userData?.contentType === "decoration" ||
+      current.userData?.contentType === "appliances"
+    )
+      return true;
     current = current.parent;
   }
   return false;
@@ -18,19 +33,30 @@ export function autoFrameKitchen(scene: THREE.Scene) {
   const bounds = new THREE.Box3();
   scene.traverse((object) => {
     if (!object.visible || !isPresentationContent(object)) return;
-    if (object instanceof THREE.Mesh || object.userData?.contentType === "decoration") bounds.expandByObject(object);
+    if (object instanceof THREE.Mesh || object.userData?.contentType === "decoration")
+      bounds.expandByObject(object);
   });
-  if (bounds.isEmpty()) bounds.setFromCenterAndSize(new THREE.Vector3(0, 1.1, -0.6), new THREE.Vector3(3.8, 2.4, 2.8));
+  if (bounds.isEmpty())
+    bounds.setFromCenterAndSize(new THREE.Vector3(0, 1.1, -0.6), new THREE.Vector3(3.8, 2.4, 2.8));
   const size = bounds.getSize(new THREE.Vector3());
   const center = bounds.getCenter(new THREE.Vector3());
   return { bounds, size, center, radius: Math.max(size.x, size.y, size.z) * 0.5 };
 }
 
-export function applyKitchenCamera(camera: THREE.Camera, scene: THREE.Scene, view: KitchenRenderView, aspect = 16 / 9) {
+export function applyKitchenCamera(
+  camera: THREE.Camera,
+  scene: THREE.Scene,
+  view: KitchenRenderView,
+  aspect = 16 / 9,
+) {
   const frame = autoFrameKitchen(scene);
   const { center, size, radius } = frame;
   const horizontal = Math.max(size.x, size.z, 2.4);
-  const distance = Math.max(3.05, horizontal * (view === "detail" ? 0.78 : view === "overview" ? 1.18 : view === "front" ? 1.08 : 1.12));
+  const distance = Math.max(
+    3.05,
+    horizontal *
+      (view === "detail" ? 0.78 : view === "overview" ? 1.18 : view === "front" ? 1.08 : 1.12),
+  );
   const target = center.clone();
   target.y = Math.max(0.85, Math.min(center.y, 1.35));
   let direction = new THREE.Vector3(0, 0, 1);

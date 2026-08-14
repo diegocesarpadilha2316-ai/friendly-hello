@@ -1,5 +1,9 @@
 /** Fase 3.25 — Analytics determinístico (session-only). */
-import type { MarketplaceAnalyticsSnapshot, MarketplaceCategoryId, MarketplaceManufacturerId } from "../types";
+import type {
+  MarketplaceAnalyticsSnapshot,
+  MarketplaceCategoryId,
+  MarketplaceManufacturerId,
+} from "../types";
 import { MARKETPLACE_ITEMS } from "./publish";
 import { MARKETPLACE_COLLECTIONS } from "./collections";
 import { readInstalled } from "./install";
@@ -15,7 +19,8 @@ export function snapshot(): MarketplaceAnalyticsSnapshot {
   }
   const topBrand = [...brandCount.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
   const topCategory = [...categoryCount.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
-  const mostDownloaded = [...MARKETPLACE_ITEMS].sort((a, b) => b.downloads - a.downloads)[0]?.id ?? null;
+  const mostDownloaded =
+    [...MARKETPLACE_ITEMS].sort((a, b) => b.downloads - a.downloads)[0]?.id ?? null;
   return {
     totalItems: MARKETPLACE_ITEMS.length,
     totalDownloads: MARKETPLACE_ITEMS.reduce((sum, i) => sum + i.downloads, 0),

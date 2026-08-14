@@ -7,7 +7,16 @@ import type { AIVisionAttachment, AIVisionMediaKind } from "../types";
  */
 
 const SUPPORTED: readonly AIVisionMediaKind[] = [
-  "image", "photo", "pdf", "dwg", "dxf", "ifc", "obj", "fbx", "glb", "gltf",
+  "image",
+  "photo",
+  "pdf",
+  "dwg",
+  "dxf",
+  "ifc",
+  "obj",
+  "fbx",
+  "glb",
+  "gltf",
 ];
 
 export function isSupportedVisionKind(kind: string): kind is AIVisionMediaKind {

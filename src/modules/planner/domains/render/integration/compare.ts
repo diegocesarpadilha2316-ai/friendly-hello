@@ -10,7 +10,10 @@ export const DEFAULT_COMPARE: ViewportCompareState = {
   afterJobId: null,
 };
 
-export function withMode(state: ViewportCompareState, mode: ViewportCompareMode): ViewportCompareState {
+export function withMode(
+  state: ViewportCompareState,
+  mode: ViewportCompareMode,
+): ViewportCompareState {
   return { ...state, mode };
 }
 

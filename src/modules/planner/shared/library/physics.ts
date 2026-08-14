@@ -36,8 +36,21 @@ export const REAL_DEPTH_BY_SUBTYPE: Readonly<Record<string, number>> = {
 
 /** Subtypes considerados "marcenaria" que aceitam snap-to-wall. */
 export const CABINET_SUBTYPES: ReadonlySet<string> = new Set([
-  "aereo","balcao","torre","gaveteiro","closet","roupeiro","armario",
-  "guarda-roupa","cristaleira","prateleira","nicho","painel","tampo","bancada","ilha",
+  "aereo",
+  "balcao",
+  "torre",
+  "gaveteiro",
+  "closet",
+  "roupeiro",
+  "armario",
+  "guarda-roupa",
+  "cristaleira",
+  "prateleira",
+  "nicho",
+  "painel",
+  "tampo",
+  "bancada",
+  "ilha",
 ]);
 
 export interface AABB {
@@ -54,7 +67,7 @@ export interface AABB {
  * largura↔profundidade e recentra em torno do centro original.
  */
 export function footprintAABB(p: AABB): { x0: number; y0: number; x1: number; y1: number } {
-  const rot = ((p.rotation ?? 0) % 360 + 360) % 360;
+  const rot = (((p.rotation ?? 0) % 360) + 360) % 360;
   const swap = rot === 90 || rot === 270;
   const w = swap ? p.depth : p.width;
   const d = swap ? p.width : p.depth;

@@ -2,15 +2,15 @@
 
 ## Onde colocar cada coisa
 
-| Recurso | Local |
-|---|---|
-| Auth, usuários, permissões, notificações, créditos, uploads | `src/core/` |
-| Componentes base (Design System) | `src/core/components` + `src/components/ui` |
-| Feature específica de um módulo | `src/modules/<modulo>/` |
-| Rota | `src/routes/` (file-based TanStack Router) |
-| Server function | `*.functions.ts` (client-safe) + `*.server.ts` (server-only) |
-| Assets compartilhados | `src/shared/assets` |
-| Tokens de tema | `src/styles.css` + `src/core/styles/tokens.ts` |
+| Recurso                                                     | Local                                                        |
+| ----------------------------------------------------------- | ------------------------------------------------------------ |
+| Auth, usuários, permissões, notificações, créditos, uploads | `src/core/`                                                  |
+| Componentes base (Design System)                            | `src/core/components` + `src/components/ui`                  |
+| Feature específica de um módulo                             | `src/modules/<modulo>/`                                      |
+| Rota                                                        | `src/routes/` (file-based TanStack Router)                   |
+| Server function                                             | `*.functions.ts` (client-safe) + `*.server.ts` (server-only) |
+| Assets compartilhados                                       | `src/shared/assets`                                          |
+| Tokens de tema                                              | `src/styles.css` + `src/core/styles/tokens.ts`               |
 
 ## Imports
 

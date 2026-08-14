@@ -89,8 +89,8 @@ export function CheckoutDialog({ trigger }: Props) {
             Comprar créditos Dioris
           </DialogTitle>
           <DialogDescription>
-            Checkout transparente via Pix — pagamento processado pelo Mercado Pago,
-            sem sair da plataforma.
+            Checkout transparente via Pix — pagamento processado pelo Mercado Pago, sem sair da
+            plataforma.
           </DialogDescription>
         </DialogHeader>
 
@@ -243,9 +243,7 @@ function PixPanel({ order, onRestart }: { order: CheckoutOrderDTO; onRestart: ()
               <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 Valor
               </div>
-              <div className="text-2xl font-semibold">
-                {formatBRL(order.amountCents)}
-              </div>
+              <div className="text-2xl font-semibold">{formatBRL(order.amountCents)}</div>
               <div className="text-xs text-muted-foreground">
                 {order.credits.toLocaleString("pt-BR")} créditos
               </div>
@@ -262,9 +260,7 @@ function PixPanel({ order, onRestart }: { order: CheckoutOrderDTO; onRestart: ()
                   <Copy className="h-4 w-4" />
                 </Button>
               </div>
-              {copied && (
-                <div className="mt-1 text-[11px] text-emerald-400">Copiado!</div>
-              )}
+              {copied && <div className="mt-1 text-[11px] text-emerald-400">Copiado!</div>}
             </div>
             <div className="text-[11px] text-muted-foreground">
               Assim que o pagamento for confirmado, os créditos aparecem no seu saldo

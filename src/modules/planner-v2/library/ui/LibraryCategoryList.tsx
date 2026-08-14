@@ -3,7 +3,7 @@ import type { FamilyDefinition, FamilyId } from "../contracts/FamilyDefinition";
 export function LibraryCategoryList({
   families,
   activeId,
-  onSelect
+  onSelect,
 }: {
   families: FamilyDefinition[];
   activeId: FamilyId;
@@ -20,11 +20,8 @@ export function LibraryCategoryList({
           }`}
           onClick={() => family.enabled && onSelect(family.id)}
         >
-
           <span>{family.name}</span>
-          <span className="library-badge">
-            {family.enabled ? family.moduleIds.length : "—"}
-          </span>
+          <span className="library-badge">{family.enabled ? family.moduleIds.length : "—"}</span>
         </button>
       ))}
     </div>

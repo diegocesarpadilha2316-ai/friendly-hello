@@ -1,6 +1,7 @@
 # Planner / API Pública (preparada)
 
 ## Subdomínios previstos
+
 - REST
 - SDK
 - Plugins
@@ -8,6 +9,7 @@
 - Docs
 
 ## Regras
+
 - Consome exclusivamente `@/core` (Auth, Tenant, RBAC, IA Gateway, Créditos, Uploads, Auditoria).
 - Comunicação com outros domínios apenas via contratos em `@/modules/planner/shared`.
 - Não duplicar stores, providers, tipos ou serviços já existentes no Core.

@@ -16,9 +16,19 @@ describe("fabricação — lista de peças e ferragens", () => {
 
     expect(report.moduleCount).toBe(5);
     expect(report.modules.filter((module) => module.physicalPartCount > 0)).toHaveLength(5);
-    expect(report.cutItems.filter((item) => item.role === "drawer-front").reduce((sum, item) => sum + item.quantity, 0)).toBe(4);
-    expect(report.cutItems.some((item) => item.role === "countertop" && item.widthMm === 3440)).toBe(true);
-    expect(report.hardwareItems.some((item) => item.hardwareId === "slide-hidden-soft-close" && item.quantity === 8)).toBe(true);
+    expect(
+      report.cutItems
+        .filter((item) => item.role === "drawer-front")
+        .reduce((sum, item) => sum + item.quantity, 0),
+    ).toBe(4);
+    expect(
+      report.cutItems.some((item) => item.role === "countertop" && item.widthMm === 3440),
+    ).toBe(true);
+    expect(
+      report.hardwareItems.some(
+        (item) => item.hardwareId === "slide-hidden-soft-close" && item.quantity === 8,
+      ),
+    ).toBe(true);
     expect(report.warnings).toEqual([]);
   });
 
@@ -26,7 +36,9 @@ describe("fabricação — lista de peças e ferragens", () => {
     const store = usePlannerStore.getState();
     store.newProject();
     store.sendMessage(request);
-    const csv = fabricationReportToCsv(buildFabricationReport(usePlannerStore.getState().instances));
+    const csv = fabricationReportToCsv(
+      buildFabricationReport(usePlannerStore.getState().instances),
+    );
 
     expect(csv).toContain("largura_mm");
     expect(csv).toContain("profundidade_mm");

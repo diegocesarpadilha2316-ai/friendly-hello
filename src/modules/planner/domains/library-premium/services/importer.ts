@@ -33,6 +33,9 @@ export async function importPremium(input: PremiumImportInput): Promise<LibraryI
     case "promob":
     case "sketchup":
     case "custom":
-      return { ...empty, errors: [`Formato ${input.format} preparado — parser ainda não conectado.`] };
+      return {
+        ...empty,
+        errors: [`Formato ${input.format} preparado — parser ainda não conectado.`],
+      };
   }
 }

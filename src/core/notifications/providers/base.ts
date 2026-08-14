@@ -1,4 +1,8 @@
-import { NotificationError, type NotificationChannel, type NotificationProviderDriver } from "../types";
+import {
+  NotificationError,
+  type NotificationChannel,
+  type NotificationProviderDriver,
+} from "../types";
 
 export abstract class BaseNotificationProvider implements NotificationProviderDriver {
   abstract readonly channel: NotificationChannel;

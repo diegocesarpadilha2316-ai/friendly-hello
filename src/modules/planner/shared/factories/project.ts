@@ -37,25 +37,61 @@ function roomShellNodes(input: {
       id: `${roomId}_wall_bottom`,
       kind: "wall",
       label: "Parede frontal",
-      params: { x1: 0, y1: 0, x2: width, y2: 0, thickness, layer: "walls", locked: true, materialId: null },
+      params: {
+        x1: 0,
+        y1: 0,
+        x2: width,
+        y2: 0,
+        thickness,
+        layer: "walls",
+        locked: true,
+        materialId: null,
+      },
     },
     {
       id: `${roomId}_wall_right`,
       kind: "wall",
       label: "Parede direita",
-      params: { x1: width, y1: 0, x2: width, y2: depth, thickness, layer: "walls", locked: true, materialId: null },
+      params: {
+        x1: width,
+        y1: 0,
+        x2: width,
+        y2: depth,
+        thickness,
+        layer: "walls",
+        locked: true,
+        materialId: null,
+      },
     },
     {
       id: `${roomId}_wall_top`,
       kind: "wall",
       label: "Parede do fundo",
-      params: { x1: width, y1: depth, x2: 0, y2: depth, thickness, layer: "walls", locked: true, materialId: null },
+      params: {
+        x1: width,
+        y1: depth,
+        x2: 0,
+        y2: depth,
+        thickness,
+        layer: "walls",
+        locked: true,
+        materialId: null,
+      },
     },
     {
       id: `${roomId}_wall_left`,
       kind: "wall",
       label: "Parede esquerda",
-      params: { x1: 0, y1: depth, x2: 0, y2: 0, thickness, layer: "walls", locked: true, materialId: null },
+      params: {
+        x1: 0,
+        y1: depth,
+        x2: 0,
+        y2: 0,
+        thickness,
+        layer: "walls",
+        locked: true,
+        materialId: null,
+      },
     },
     {
       id: `${roomId}_window_main`,
@@ -108,22 +144,39 @@ export function ensureProjectRoomShells(project: PlannerProject): PlannerProject
   let changed = false;
   const roomType = project.briefing?.environmentType ?? "cozinha";
   const roomName = roomType === "cozinha" ? "Cozinha" : "Ambiente";
-  const bootEnvironments = project.environments.length > 0
-    ? project.environments
-    : [{ ...createEnvironment({ name: "Ambiente principal" }), rooms: [createRoom({ name: roomName, type: roomType, width: 4200, depth: 3200, height: 2700 })] }];
+  const bootEnvironments =
+    project.environments.length > 0
+      ? project.environments
+      : [
+          {
+            ...createEnvironment({ name: "Ambiente principal" }),
+            rooms: [
+              createRoom({
+                name: roomName,
+                type: roomType,
+                width: 4200,
+                depth: 3200,
+                height: 2700,
+              }),
+            ],
+          },
+        ];
   if (bootEnvironments !== project.environments) changed = true;
 
   const environments = bootEnvironments.map((environment) => {
-    const sourceRooms = environment.rooms.length > 0
-      ? environment.rooms
-      : [createRoom({ name: roomName, type: roomType, width: 4200, depth: 3200, height: 2700 })];
+    const sourceRooms =
+      environment.rooms.length > 0
+        ? environment.rooms
+        : [createRoom({ name: roomName, type: roomType, width: 4200, depth: 3200, height: 2700 })];
     if (sourceRooms !== environment.rooms) changed = true;
     const normalizedRooms = sourceRooms.map((room) => {
       const nextRoom = ensureRoomShell(room);
       if (nextRoom !== room) changed = true;
       return nextRoom;
     });
-    return normalizedRooms !== environment.rooms ? { ...environment, rooms: normalizedRooms } : environment;
+    return normalizedRooms !== environment.rooms
+      ? { ...environment, rooms: normalizedRooms }
+      : environment;
   });
   return changed ? { ...project, environments } : project;
 }
@@ -155,7 +208,10 @@ export function createRoom(input: {
   };
 }
 
-export function createEnvironment(input: { name: string; description?: string }): PlannerEnvironment {
+export function createEnvironment(input: {
+  name: string;
+  description?: string;
+}): PlannerEnvironment {
   const now = new Date().toISOString();
   return {
     id: uid("env"),

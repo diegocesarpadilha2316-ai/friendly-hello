@@ -63,11 +63,7 @@ import {
 } from "@/core/services/tenant.functions";
 import { useSecuritySnapshot, useRevokeSession } from "@/core/security/use-security";
 import { useAudit } from "@/core/observability/use-observability";
-import type {
-  CompanyMember,
-  CompanyInvitation,
-  TenantRole,
-} from "@/core/types/tenant";
+import type { CompanyMember, CompanyInvitation, TenantRole } from "@/core/types/tenant";
 
 export const Route = createFileRoute("/_authenticated/workspace/equipe")({
   head: () => ({
@@ -166,17 +162,39 @@ function TeamContent({ canManage }: { canManage: boolean }) {
   return (
     <div className="mt-6 space-y-6">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <MetricCard label="Total de membros" value={stats.total} icon={<Users className="h-4 w-4" />} />
-        <MetricCard label="Ativos" value={stats.active} icon={<ShieldCheck className="h-4 w-4" />} />
-        <MetricCard label="Administradores" value={stats.admins} icon={<ShieldCheck className="h-4 w-4" />} />
-        <MetricCard label="Convites pendentes" value={stats.pending} icon={<Mail className="h-4 w-4" />} />
-        <MetricCard label="Último ingresso" value={formatDate(stats.lastJoin ?? null)} icon={<Clock className="h-4 w-4" />} />
+        <MetricCard
+          label="Total de membros"
+          value={stats.total}
+          icon={<Users className="h-4 w-4" />}
+        />
+        <MetricCard
+          label="Ativos"
+          value={stats.active}
+          icon={<ShieldCheck className="h-4 w-4" />}
+        />
+        <MetricCard
+          label="Administradores"
+          value={stats.admins}
+          icon={<ShieldCheck className="h-4 w-4" />}
+        />
+        <MetricCard
+          label="Convites pendentes"
+          value={stats.pending}
+          icon={<Mail className="h-4 w-4" />}
+        />
+        <MetricCard
+          label="Último ingresso"
+          value={formatDate(stats.lastJoin ?? null)}
+          icon={<Clock className="h-4 w-4" />}
+        />
       </div>
 
       <Tabs defaultValue="members" className="w-full">
         <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="members">Membros</TabsTrigger>
-          <TabsTrigger value="invites">Convites {pendingInvites.length > 0 && `(${pendingInvites.length})`}</TabsTrigger>
+          <TabsTrigger value="invites">
+            Convites {pendingInvites.length > 0 && `(${pendingInvites.length})`}
+          </TabsTrigger>
           <TabsTrigger value="sessions">Sessões</TabsTrigger>
           <TabsTrigger value="audit">Auditoria</TabsTrigger>
         </TabsList>
@@ -254,9 +272,7 @@ function MembersTab({
           {
             id: "role",
             header: "Papel",
-            cell: (r) => (
-              <StatusBadge tone={ROLE_TONE[r.role]}>{ROLE_LABEL[r.role]}</StatusBadge>
-            ),
+            cell: (r) => <StatusBadge tone={ROLE_TONE[r.role]}>{ROLE_LABEL[r.role]}</StatusBadge>,
           },
           {
             id: "status",
@@ -411,10 +427,7 @@ function InviteDialog({
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button
-            onClick={() => mut.mutate()}
-            disabled={!email || mut.isPending}
-          >
+          <Button onClick={() => mut.mutate()} disabled={!email || mut.isPending}>
             {mut.isPending ? "Enviando…" : "Enviar convite"}
           </Button>
         </DialogFooter>
@@ -482,7 +495,11 @@ function InvitesTab({
         />
       }
       columns={[
-        { id: "email", header: "E-mail", cell: (r) => <span className="text-foreground">{r.email}</span> },
+        {
+          id: "email",
+          header: "E-mail",
+          cell: (r) => <span className="text-foreground">{r.email}</span>,
+        },
         {
           id: "role",
           header: "Papel",
@@ -645,7 +662,9 @@ function AuditTab() {
           header: "Alvo",
           cell: (r) => {
             const t = r as { targetType?: string | null; targetId?: string | null };
-            return t.targetType ? `${t.targetType}${t.targetId ? `:${t.targetId.slice(0, 8)}` : ""}` : "—";
+            return t.targetType
+              ? `${t.targetType}${t.targetId ? `:${t.targetId.slice(0, 8)}` : ""}`
+              : "—";
           },
         },
       ]}

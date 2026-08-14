@@ -17,22 +17,11 @@ import type {
 
 /** Categoria funcional do módulo (usada por filtros e pela UI futura). */
 export type InteriorCategory =
-  | "armazenagem"
-  | "organizacao"
-  | "penduracao"
-  | "estrutura"
-  | "especial";
+  "armazenagem" | "organizacao" | "penduracao" | "estrutura" | "especial";
 
 /** Natureza construtiva do módulo. */
 export type InteriorType =
-  | "prateleira"
-  | "divisoria"
-  | "gaveta"
-  | "cesto"
-  | "barra"
-  | "acessorio"
-  | "caixa"
-  | "nicho";
+  "prateleira" | "divisoria" | "gaveta" | "cesto" | "barra" | "acessorio" | "caixa" | "nicho";
 
 /** Onde o módulo precisa estar ancorado dentro do vão. */
 export type InteriorAnchor = "base" | "topo" | "livre" | "esquerda" | "direita";

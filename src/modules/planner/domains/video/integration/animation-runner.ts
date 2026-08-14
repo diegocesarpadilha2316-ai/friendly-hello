@@ -10,10 +10,7 @@ import { interpolateDrawerOffset } from "../local-engine/drawer-animation";
 import { sampleLedIntensity } from "../local-engine/led-animation";
 import { sampleLighting } from "../local-engine/lighting-animation";
 import { sampleSceneProgress } from "../local-engine/scene-animation";
-import type {
-  LocalObjectAnimation,
-  LocalObjectAnimationKind,
-} from "../local-engine/types";
+import type { LocalObjectAnimation, LocalObjectAnimationKind } from "../local-engine/types";
 
 export interface ResolvedAnimation {
   readonly id: string;
@@ -24,10 +21,7 @@ export interface ResolvedAnimation {
   readonly opacity: number;
 }
 
-function evaluate(
-  a: LocalObjectAnimation,
-  sec: number,
-): { value: number; opacity: number } {
+function evaluate(a: LocalObjectAnimation, sec: number): { value: number; opacity: number } {
   switch (a.kind) {
     case "door-open":
     case "door-close":

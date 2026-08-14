@@ -15,13 +15,13 @@ const DEFAULT_STATE: PlannerUIState = {
   mobileExplorerOpen: false,
   mobileCopilotOpen: false,
   mobileCopilotHeight: 50,
-  selectedFurnitureId: null
+  selectedFurnitureId: null,
 };
 
 export function usePlannerUIState(initial?: Partial<PlannerUIState>) {
   const [state, setState] = useState<PlannerUIState>({
     ...DEFAULT_STATE,
-    ...initial
+    ...initial,
   });
 
   const patch = (next: Partial<PlannerUIState>) =>

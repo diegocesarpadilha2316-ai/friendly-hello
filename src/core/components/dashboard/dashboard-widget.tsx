@@ -30,9 +30,7 @@ export function DashboardWidget({
   return (
     <DashboardCard {...cardProps}>
       {status === "loading" && (skeleton ?? <WidgetSkeleton />)}
-      {status === "empty" && (
-        <EmptyState title={emptyTitle} description={emptyDescription} />
-      )}
+      {status === "empty" && <EmptyState title={emptyTitle} description={emptyDescription} />}
       {status === "error" && (
         <EmptyState
           icon={<AlertCircle className="h-6 w-6 text-destructive" />}

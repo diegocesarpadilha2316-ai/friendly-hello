@@ -5,13 +5,7 @@
  * Zero providers/stores/managers/banco/migrations. 100% aditivo.
  */
 import { useState, type ReactNode } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useRealtime } from "../hooks/use-realtime";
@@ -68,8 +62,12 @@ export function RealtimeStudio() {
         ))}
         <div className="mt-3 rounded-md border border-border/50 bg-background/30 p-3 text-xs text-muted-foreground">
           <div className="mb-1 font-medium text-foreground">Hardware</div>
-          <div>GPU tier {rt.hardware.gpuTier} · {rt.hardware.logicalCores} cores</div>
-          <div>{rt.hardware.deviceMemoryGb} GB · {rt.hardware.mobile ? "mobile" : "desktop"}</div>
+          <div>
+            GPU tier {rt.hardware.gpuTier} · {rt.hardware.logicalCores} cores
+          </div>
+          <div>
+            {rt.hardware.deviceMemoryGb} GB · {rt.hardware.mobile ? "mobile" : "desktop"}
+          </div>
           <div className="mt-1">
             {rt.hardware.webgpu ? <Badge variant="secondary">WebGPU</Badge> : null}{" "}
             {rt.hardware.openxr ? <Badge variant="secondary">OpenXR</Badge> : null}
@@ -94,7 +92,15 @@ export function RealtimeStudio() {
 
 type RT = ReturnType<typeof useRealtime>;
 
-function Panel({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
+function Panel({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description?: string;
+  children: ReactNode;
+}) {
   return (
     <Card className="border-border/60 bg-card/40 backdrop-blur">
       <CardHeader>
@@ -122,12 +128,27 @@ function ViewportPanel({ rt }: { rt: RT }) {
         ))}
       </div>
       <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-        <div>Câmera: <span className="text-foreground">{rt.camera.mode}</span></div>
-        <div>FOV: <span className="text-foreground">{rt.camera.fovDeg}°</span></div>
-        <div>Grid: <span className="text-foreground">{rt.viewport.showGrid ? "on" : "off"}</span></div>
-        <div>Minimapa: <span className="text-foreground">{rt.viewport.showMinimap ? "on" : "off"}</span></div>
-        <div>Safe area: <span className="text-foreground">{rt.viewport.showSafeArea ? "on" : "off"}</span></div>
-        <div>Comparação: <span className="text-foreground">{rt.viewport.showCompare ? "on" : "off"}</span></div>
+        <div>
+          Câmera: <span className="text-foreground">{rt.camera.mode}</span>
+        </div>
+        <div>
+          FOV: <span className="text-foreground">{rt.camera.fovDeg}°</span>
+        </div>
+        <div>
+          Grid: <span className="text-foreground">{rt.viewport.showGrid ? "on" : "off"}</span>
+        </div>
+        <div>
+          Minimapa:{" "}
+          <span className="text-foreground">{rt.viewport.showMinimap ? "on" : "off"}</span>
+        </div>
+        <div>
+          Safe area:{" "}
+          <span className="text-foreground">{rt.viewport.showSafeArea ? "on" : "off"}</span>
+        </div>
+        <div>
+          Comparação:{" "}
+          <span className="text-foreground">{rt.viewport.showCompare ? "on" : "off"}</span>
+        </div>
       </div>
     </Panel>
   );
@@ -137,14 +158,30 @@ function MovementPanel({ rt }: { rt: RT }) {
   return (
     <Panel title="Movimentação" description="WASD, mouse, touch, joystick mobile e gamepad.">
       <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-        <div>Andar: <span className="text-foreground">{rt.movement.walkSpeedMs} m/s</span></div>
-        <div>Correr: <span className="text-foreground">{rt.movement.runSpeedMs} m/s</span></div>
-        <div>Agachar: <span className="text-foreground">{rt.movement.crouchSpeedMs} m/s</span></div>
-        <div>Pulo: <span className="text-foreground">{rt.movement.jumpMs} m/s</span></div>
-        <div>Gravidade: <span className="text-foreground">{rt.gravity.gravityMs2} m/s²</span></div>
-        <div>Raio colisão: <span className="text-foreground">{rt.collision.radiusMm} mm</span></div>
-        <div>Degrau: <span className="text-foreground">{rt.collision.stepHeightMm} mm</span></div>
-        <div>Rampa: <span className="text-foreground">{rt.collision.slopeLimitDeg}°</span></div>
+        <div>
+          Andar: <span className="text-foreground">{rt.movement.walkSpeedMs} m/s</span>
+        </div>
+        <div>
+          Correr: <span className="text-foreground">{rt.movement.runSpeedMs} m/s</span>
+        </div>
+        <div>
+          Agachar: <span className="text-foreground">{rt.movement.crouchSpeedMs} m/s</span>
+        </div>
+        <div>
+          Pulo: <span className="text-foreground">{rt.movement.jumpMs} m/s</span>
+        </div>
+        <div>
+          Gravidade: <span className="text-foreground">{rt.gravity.gravityMs2} m/s²</span>
+        </div>
+        <div>
+          Raio colisão: <span className="text-foreground">{rt.collision.radiusMm} mm</span>
+        </div>
+        <div>
+          Degrau: <span className="text-foreground">{rt.collision.stepHeightMm} mm</span>
+        </div>
+        <div>
+          Rampa: <span className="text-foreground">{rt.collision.slopeLimitDeg}°</span>
+        </div>
       </div>
     </Panel>
   );
@@ -188,9 +225,15 @@ function InteractionPanel({ rt }: { rt: RT }) {
         ))}
       </div>
       <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
-        <div>Portas: <span className="text-foreground">{rt.doors.length}</span></div>
-        <div>Gavetas: <span className="text-foreground">{rt.drawers.length}</span></div>
-        <div>LEDs: <span className="text-foreground">{rt.leds.filter((l) => l.on).length}</span></div>
+        <div>
+          Portas: <span className="text-foreground">{rt.doors.length}</span>
+        </div>
+        <div>
+          Gavetas: <span className="text-foreground">{rt.drawers.length}</span>
+        </div>
+        <div>
+          LEDs: <span className="text-foreground">{rt.leds.filter((l) => l.on).length}</span>
+        </div>
       </div>
     </Panel>
   );
@@ -212,10 +255,19 @@ function LightingPanel({ rt }: { rt: RT }) {
         ))}
       </div>
       <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-        <div>Intensidade: <span className="text-foreground">{rt.lighting.sunIntensity.toFixed(2)}</span></div>
-        <div>Temperatura: <span className="text-foreground">{rt.lighting.sunTemperatureK} K</span></div>
-        <div>HDRI: <span className="text-foreground">{rt.lighting.hdriId ?? "off"}</span></div>
-        <div>IES: <span className="text-foreground">{rt.lighting.iesEnabled ? "on" : "off"}</span></div>
+        <div>
+          Intensidade:{" "}
+          <span className="text-foreground">{rt.lighting.sunIntensity.toFixed(2)}</span>
+        </div>
+        <div>
+          Temperatura: <span className="text-foreground">{rt.lighting.sunTemperatureK} K</span>
+        </div>
+        <div>
+          HDRI: <span className="text-foreground">{rt.lighting.hdriId ?? "off"}</span>
+        </div>
+        <div>
+          IES: <span className="text-foreground">{rt.lighting.iesEnabled ? "on" : "off"}</span>
+        </div>
       </div>
     </Panel>
   );
@@ -272,8 +324,12 @@ function WeatherPanel({ rt }: { rt: RT }) {
         ))}
       </div>
       <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-        <div>Fog: <span className="text-foreground">{rt.environment.fogDensity.toFixed(2)}</span></div>
-        <div>Ambiente: <span className="text-foreground">{rt.environment.ambientHex}</span></div>
+        <div>
+          Fog: <span className="text-foreground">{rt.environment.fogDensity.toFixed(2)}</span>
+        </div>
+        <div>
+          Ambiente: <span className="text-foreground">{rt.environment.ambientHex}</span>
+        </div>
       </div>
     </Panel>
   );
@@ -295,9 +351,7 @@ function MeasurePanel({ rt }: { rt: RT }) {
             key={m.id}
             size="sm"
             variant="secondary"
-            onClick={() =>
-              rt.addMeasure(m.id, { x: 0, y: 0, z: 0 }, { x: 1000, y: 0, z: 1000 })
-            }
+            onClick={() => rt.addMeasure(m.id, { x: 0, y: 0, z: 0 }, { x: 1000, y: 0, z: 1000 })}
           >
             {m.label}
           </Button>
@@ -334,10 +388,19 @@ function QualityPanel({ rt }: { rt: RT }) {
         ))}
       </div>
       <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-        <div>Escala: <span className="text-foreground">{rt.performance.resolutionScale}</span></div>
-        <div>AA: <span className="text-foreground">{rt.performance.aa}</span></div>
-        <div>SSR: <span className="text-foreground">{rt.reflection.ssrEnabled ? "on" : "off"}</span></div>
-        <div>Sondas: <span className="text-foreground">{rt.reflection.probesEnabled ? "on" : "off"}</span></div>
+        <div>
+          Escala: <span className="text-foreground">{rt.performance.resolutionScale}</span>
+        </div>
+        <div>
+          AA: <span className="text-foreground">{rt.performance.aa}</span>
+        </div>
+        <div>
+          SSR: <span className="text-foreground">{rt.reflection.ssrEnabled ? "on" : "off"}</span>
+        </div>
+        <div>
+          Sondas:{" "}
+          <span className="text-foreground">{rt.reflection.probesEnabled ? "on" : "off"}</span>
+        </div>
       </div>
     </Panel>
   );
@@ -345,16 +408,43 @@ function QualityPanel({ rt }: { rt: RT }) {
 
 function PerformancePanel({ rt }: { rt: RT }) {
   return (
-    <Panel title="Performance" description="LOD, streaming, occlusion, instancing, mipmaps e compressão.">
+    <Panel
+      title="Performance"
+      description="LOD, streaming, occlusion, instancing, mipmaps e compressão."
+    >
       <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-        <div>Target: <span className="text-foreground">{rt.performance.targetFps} fps</span></div>
-        <div>LOD: <span className="text-foreground">{rt.performance.lodEnabled ? "on" : "off"}</span></div>
-        <div>Streaming: <span className="text-foreground">{rt.performance.streamingEnabled ? "on" : "off"}</span></div>
-        <div>Occlusion: <span className="text-foreground">{rt.performance.occlusionEnabled ? "on" : "off"}</span></div>
-        <div>Instancing: <span className="text-foreground">{rt.performance.instancingEnabled ? "on" : "off"}</span></div>
-        <div>Mipmaps: <span className="text-foreground">{rt.performance.mipmapsEnabled ? "on" : "off"}</span></div>
-        <div>Compressão: <span className="text-foreground">{rt.performance.textureCompression ? "on" : "off"}</span></div>
-        <div>Auto Quality: <span className="text-foreground">{rt.performance.autoQuality ? "on" : "off"}</span></div>
+        <div>
+          Target: <span className="text-foreground">{rt.performance.targetFps} fps</span>
+        </div>
+        <div>
+          LOD: <span className="text-foreground">{rt.performance.lodEnabled ? "on" : "off"}</span>
+        </div>
+        <div>
+          Streaming:{" "}
+          <span className="text-foreground">{rt.performance.streamingEnabled ? "on" : "off"}</span>
+        </div>
+        <div>
+          Occlusion:{" "}
+          <span className="text-foreground">{rt.performance.occlusionEnabled ? "on" : "off"}</span>
+        </div>
+        <div>
+          Instancing:{" "}
+          <span className="text-foreground">{rt.performance.instancingEnabled ? "on" : "off"}</span>
+        </div>
+        <div>
+          Mipmaps:{" "}
+          <span className="text-foreground">{rt.performance.mipmapsEnabled ? "on" : "off"}</span>
+        </div>
+        <div>
+          Compressão:{" "}
+          <span className="text-foreground">
+            {rt.performance.textureCompression ? "on" : "off"}
+          </span>
+        </div>
+        <div>
+          Auto Quality:{" "}
+          <span className="text-foreground">{rt.performance.autoQuality ? "on" : "off"}</span>
+        </div>
       </div>
     </Panel>
   );

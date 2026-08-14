@@ -9,14 +9,7 @@ import type { PlannerProject } from "@/modules/planner/shared/types/project";
 
 // ————— Qualidade / presets —————
 export type RenderPresetId =
-  | "rascunho"
-  | "baixa"
-  | "media"
-  | "alta"
-  | "ultra"
-  | "fotografica"
-  | "marketing"
-  | "cinema";
+  "rascunho" | "baixa" | "media" | "alta" | "ultra" | "fotografica" | "marketing" | "cinema";
 
 export type RenderQualityLevel = "off" | "baixa" | "media" | "alta" | "ultra";
 export type RenderAAMode = "off" | "fxaa" | "taa" | "msaa2x" | "msaa4x" | "msaa8x";
@@ -102,14 +95,7 @@ export type PbrMaterialFamily =
   | "espelho";
 
 export type PbrMapSlot =
-  | "albedo"
-  | "normal"
-  | "roughness"
-  | "metallic"
-  | "displacement"
-  | "ao"
-  | "opacity"
-  | "emission";
+  "albedo" | "normal" | "roughness" | "metallic" | "displacement" | "ao" | "opacity" | "emission";
 
 export interface PbrTextureMap {
   readonly slot: PbrMapSlot;
@@ -134,13 +120,7 @@ export interface PbrMaterial {
 
 // ————— Câmeras —————
 export type RenderCameraKind =
-  | "interior"
-  | "exterior"
-  | "top"
-  | "isometrica"
-  | "close"
-  | "detalhe"
-  | "automatica";
+  "interior" | "exterior" | "top" | "isometrica" | "close" | "detalhe" | "automatica";
 
 export interface RenderCameraPreset {
   readonly id: string;
@@ -180,11 +160,7 @@ export interface RenderPostProcessing {
 // ————— Fila / jobs —————
 export type RenderTargetKind = "still" | "video" | "panorama" | "ai" | "marketing";
 export type RenderProviderId =
-  | "dioris.local"
-  | "dioris.cloud"
-  | "dioris.ai"
-  | "dioris.video"
-  | "dioris.marketing";
+  "dioris.local" | "dioris.cloud" | "dioris.ai" | "dioris.video" | "dioris.marketing";
 
 export type RenderJobStatus =
   | "queued"

@@ -23,5 +23,7 @@ export function usePresentationCapture() {
 
 export function setPresentationCapture(active: boolean) {
   if (typeof window === "undefined") return;
-  window.dispatchEvent(new CustomEvent<PresentationCaptureDetail>(PRESENTATION_CAPTURE_EVENT, { detail: { active } }));
+  window.dispatchEvent(
+    new CustomEvent<PresentationCaptureDetail>(PRESENTATION_CAPTURE_EVENT, { detail: { active } }),
+  );
 }

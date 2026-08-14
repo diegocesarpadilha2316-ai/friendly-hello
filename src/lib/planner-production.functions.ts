@@ -11,12 +11,7 @@ import { z } from "zod";
 import { requireTenant } from "@/core/middleware/require-tenant";
 
 export type ProductionOrderStatus =
-  | "draft"
-  | "planned"
-  | "in_progress"
-  | "paused"
-  | "completed"
-  | "cancelled";
+  "draft" | "planned" | "in_progress" | "paused" | "completed" | "cancelled";
 
 export interface ProductionOrderRow {
   id: string;
@@ -47,7 +42,7 @@ function mapOrder(r: Record<string, unknown>): ProductionOrderRow {
     id: r.id as string,
     number: (r.number as string | null) ?? null,
     title: (r.title as string | null) ?? null,
-    status: ((r.status as ProductionOrderStatus) ?? "draft"),
+    status: (r.status as ProductionOrderStatus) ?? "draft",
     priority: num(r.priority),
     progressPercent: num(r.progress_percent),
     projectId: (r.project_id as string | null) ?? null,
@@ -101,9 +96,7 @@ export const listProductionOrders = createServerFn({ method: "GET" })
 
 export const getProductionOrder = createServerFn({ method: "GET" })
   .middleware([requireTenant])
-  .inputValidator((data: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const [orderRes, itemsRes, stagesRes, tasksRes, eventsRes] = await Promise.all([
       context.supabase
@@ -242,14 +235,13 @@ export const createProductionOrder = createServerFn({ method: "POST" })
       if (ins.error) throw new Response(ins.error.message, { status: 400 });
     }
 
-    const stagesToCreate =
-      (data.stages && data.stages.length > 0
-        ? data.stages
-        : DEFAULT_STAGES.map((name) => ({ name }))) as Array<{
-        position?: number;
-        name: string;
-        description?: string | null;
-      }>;
+    const stagesToCreate = (
+      data.stages && data.stages.length > 0 ? data.stages : DEFAULT_STAGES.map((name) => ({ name }))
+    ) as Array<{
+      position?: number;
+      name: string;
+      description?: string | null;
+    }>;
     const stagesIns = await context.supabase.from("production_stages").insert(
       stagesToCreate.map((s, idx) => ({
         production_order_id: order.id,
@@ -385,9 +377,7 @@ export const setStageStatus = createServerFn({ method: "POST" })
 
 export const deleteProductionOrder = createServerFn({ method: "POST" })
   .middleware([requireTenant])
-  .inputValidator((data: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("production_orders")
@@ -420,9 +410,7 @@ export const productionStats = createServerFn({ method: "GET" })
       cancelled: by("cancelled"),
       avgProgress:
         rows.length > 0
-          ? Math.round(
-              rows.reduce((a, r) => a + num(r.progress_percent), 0) / rows.length,
-            )
+          ? Math.round(rows.reduce((a, r) => a + num(r.progress_percent), 0) / rows.length)
           : 0,
     };
   });

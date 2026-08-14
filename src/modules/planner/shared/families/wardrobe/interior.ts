@@ -45,11 +45,7 @@ export interface WardrobeCaseMetrics {
 }
 
 export type WardrobeInteriorSource =
-  | "explicito"
-  | "legado"
-  | "preset-usuario"
-  | "preset-automatico"
-  | "fallback";
+  "explicito" | "legado" | "preset-usuario" | "preset-automatico" | "fallback";
 
 export interface WardrobeInteriorResult {
   readonly plan: InteriorPlan;
@@ -272,7 +268,10 @@ export function resolveWardrobeInterior(
   const chosen = conf?.presetId ? getInteriorPreset(conf.presetId) : undefined;
   if (chosen) candidates.push({ source: "preset-usuario", recipe: stripMaleiro(chosen) });
   if (conf?.mode === "preset" || (!hasManualInterior(spec) && !conf?.plan)) {
-    candidates.push({ source: "preset-automatico", recipe: stripMaleiro(pickPreset(family, cavity)) });
+    candidates.push({
+      source: "preset-automatico",
+      recipe: stripMaleiro(pickPreset(family, cavity)),
+    });
   }
   candidates.push({ source: "fallback", recipe: fallbackRecipe(spec) });
 
@@ -280,7 +279,9 @@ export function resolveWardrobeInterior(
 
   for (const c of candidates) {
     if (cavity.widthMm < 150 || cavity.heightMm < 150 || cavity.depthMm < 150) {
-      console.warn(`[resolveWardrobeInterior] Vão insuficiente (${cavity.widthMm}x${cavity.heightMm}x${cavity.depthMm}), pulando candidato ${c.source}`);
+      console.warn(
+        `[resolveWardrobeInterior] Vão insuficiente (${cavity.widthMm}x${cavity.heightMm}x${cavity.depthMm}), pulando candidato ${c.source}`,
+      );
       continue;
     }
 
@@ -294,7 +295,7 @@ export function resolveWardrobeInterior(
         validation: {
           ok: true,
           errors: [],
-          warnings: [...validation.warnings, ...validation.errors]
+          warnings: [...validation.warnings, ...validation.errors],
         },
         warnings: [...validation.warnings, ...validation.errors],
         requested: c.plan.placements.map((p) => p.moduleId),

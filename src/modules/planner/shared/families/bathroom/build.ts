@@ -11,11 +11,7 @@ import {
   type ConstructionHardwareRef,
 } from "../../construction";
 import type { FamilyBuildResult, FamilyRequirementSpec } from "../types";
-import {
-  normalizeBathroomModule,
-  type BathroomModuleInput,
-  type BathroomModuleSpec,
-} from "./spec";
+import { normalizeBathroomModule, type BathroomModuleInput, type BathroomModuleSpec } from "./spec";
 import {
   bathroomGeometry,
   bathroomModuleLabel,
@@ -37,7 +33,12 @@ export function bathroomExtraHardware(spec: BathroomModuleSpec): ConstructionHar
     });
   }
   if (spec.install === "pes") {
-    extra.push({ id: "pes", kind: "perfil", qty: 4, notes: `pé regulável ${spec.feetHeightMm} mm` });
+    extra.push({
+      id: "pes",
+      kind: "perfil",
+      qty: 4,
+      notes: `pé regulável ${spec.feetHeightMm} mm`,
+    });
   }
   if (spec.sink.type !== "nenhuma") {
     extra.push({ id: "sifao", kind: "perfil", qty: 1, notes: "sifão e ligações flexíveis" });
@@ -76,7 +77,7 @@ export interface BathroomBuildResult extends FamilyBuildResult<BathroomModuleSpe
 export const BATHROOM_REQUIREMENTS: FamilyRequirementSpec = {
   mandatory: ["base", "lateral-e", "lateral-d"],
   important: ["tampo", "fundo", "frente"],
-  optional: ["gaveta", "prateleira", "acessorio"]
+  optional: ["gaveta", "prateleira", "acessorio"],
 };
 
 /** Monta UM módulo de banheiro. Puro e determinístico. */

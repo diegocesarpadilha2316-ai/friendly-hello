@@ -213,17 +213,48 @@ export const jobsSnapshot = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<JobsSnapshot> => {
     const s = context.supabase;
     const t = context.tenantId;
-    const [jobs, queues, crons, history, metrics, workers, locks, dlq, retries] = await Promise.all([
-      s.from("jobs").select("*").eq("company_id", t).order("created_at", { ascending: false }).limit(200),
-      s.from("job_queue").select("*").eq("company_id", t),
-      s.from("cron_jobs").select("*").eq("company_id", t),
-      s.from("job_history").select("*").eq("company_id", t).order("finished_at", { ascending: false }).limit(100),
-      s.from("job_metrics").select("*").eq("company_id", t).order("bucket", { ascending: false }).limit(48),
-      s.from("worker_nodes").select("*").eq("company_id", t).order("last_heartbeat_at", { ascending: false }),
-      s.from("distributed_locks").select("*").eq("company_id", t),
-      s.from("dead_letter_queue").select("*").eq("company_id", t).order("moved_at", { ascending: false }).limit(100),
-      s.from("retry_queue").select("*").eq("company_id", t).order("next_run_at", { ascending: true }).limit(100),
-    ]);
+    const [jobs, queues, crons, history, metrics, workers, locks, dlq, retries] = await Promise.all(
+      [
+        s
+          .from("jobs")
+          .select("*")
+          .eq("company_id", t)
+          .order("created_at", { ascending: false })
+          .limit(200),
+        s.from("job_queue").select("*").eq("company_id", t),
+        s.from("cron_jobs").select("*").eq("company_id", t),
+        s
+          .from("job_history")
+          .select("*")
+          .eq("company_id", t)
+          .order("finished_at", { ascending: false })
+          .limit(100),
+        s
+          .from("job_metrics")
+          .select("*")
+          .eq("company_id", t)
+          .order("bucket", { ascending: false })
+          .limit(48),
+        s
+          .from("worker_nodes")
+          .select("*")
+          .eq("company_id", t)
+          .order("last_heartbeat_at", { ascending: false }),
+        s.from("distributed_locks").select("*").eq("company_id", t),
+        s
+          .from("dead_letter_queue")
+          .select("*")
+          .eq("company_id", t)
+          .order("moved_at", { ascending: false })
+          .limit(100),
+        s
+          .from("retry_queue")
+          .select("*")
+          .eq("company_id", t)
+          .order("next_run_at", { ascending: true })
+          .limit(100),
+      ],
+    );
     return {
       jobs: (jobs.data ?? []).map(mapJob),
       queues: (queues.data ?? []).map(mapQueue),
@@ -392,7 +423,17 @@ export const jobsExport = createServerFn({ method: "POST" })
       const header = "id,kind,queue,status,priority,attempts,progress,createdAt,finishedAt";
       const body = list
         .map((j) =>
-          [j.id, j.kind, j.queue, j.status, j.priority, j.attempts, j.progress, j.createdAt, j.finishedAt ?? ""].join(","),
+          [
+            j.id,
+            j.kind,
+            j.queue,
+            j.status,
+            j.priority,
+            j.attempts,
+            j.progress,
+            j.createdAt,
+            j.finishedAt ?? "",
+          ].join(","),
         )
         .join("\n");
       return { format: "csv", content: `${header}\n${body}` };

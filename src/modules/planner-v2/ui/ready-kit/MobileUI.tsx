@@ -15,7 +15,7 @@ export function MobileUI() {
   const setRightTab = usePlannerStore((s) => s.setRightTab);
   const messages = usePlannerStore((s) => s.messages);
   const sendMessage = usePlannerStore((s) => s.sendMessage);
-  
+
   const [draft, setDraft] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -35,12 +35,12 @@ export function MobileUI() {
 
   return (
     <>
-      <div 
-        className={`mobile-backdrop ${drawerOpen || sheetOpen ? "show" : ""}`} 
+      <div
+        className={`mobile-backdrop ${drawerOpen || sheetOpen ? "show" : ""}`}
         onClick={() => {
           setMobileDrawer(false);
           setMobileSheet(false);
-        }} 
+        }}
       />
 
       <div className={`mobile-drawer ${drawerOpen ? "open" : ""}`}>
@@ -53,23 +53,25 @@ export function MobileUI() {
       >
         <div className="sheet-handle" />
         <div className="sheet-head">
-          <strong>{rightTab === 'chat' ? 'IA Copiloto' : 'Inspetor'}</strong>
+          <strong>{rightTab === "chat" ? "IA Copiloto" : "Inspetor"}</strong>
           <div>
             {[25, 50, 100].map((height) => (
-              <button 
-                key={height} 
+              <button
+                key={height}
                 className={sheetHeight === height ? "active" : ""}
                 onClick={() => setMobileSheetHeight(height as 25 | 50 | 100)}
               >
                 {height === 25 ? "¼" : height === 50 ? "½" : "1"}
               </button>
             ))}
-            <button onClick={() => setMobileSheet(false)}><X size={16} /></button>
+            <button onClick={() => setMobileSheet(false)}>
+              <X size={16} />
+            </button>
           </div>
         </div>
-        
+
         <div className="sheet-body">
-          {rightTab === 'chat' ? (
+          {rightTab === "chat" ? (
             <div className="mobile-chat-container">
               <div className="mobile-messages">
                 {messages.map((msg: any) => (
@@ -100,19 +102,33 @@ export function MobileUI() {
       </div>
 
       <nav className="mobile-nav">
-        <button onClick={() => setMobileDrawer(true)}><Menu size={19} /><span>Projeto</span></button>
-        <button><Box size={19} /><span>3D</span></button>
-        <button 
-          className={sheetOpen && rightTab === "chat" ? "active" : ""}
-          onClick={() => { setRightTab("chat"); setMobileSheet(true); }}
-        >
-          <Bot size={19} /><span>IA</span>
+        <button onClick={() => setMobileDrawer(true)}>
+          <Menu size={19} />
+          <span>Projeto</span>
         </button>
-        <button 
-          className={sheetOpen && rightTab === "inspector" ? "active" : ""}
-          onClick={() => { setRightTab("inspector"); setMobileSheet(true); }}
+        <button>
+          <Box size={19} />
+          <span>3D</span>
+        </button>
+        <button
+          className={sheetOpen && rightTab === "chat" ? "active" : ""}
+          onClick={() => {
+            setRightTab("chat");
+            setMobileSheet(true);
+          }}
         >
-          <Settings2 size={19} /><span>Propriedades</span>
+          <Bot size={19} />
+          <span>IA</span>
+        </button>
+        <button
+          className={sheetOpen && rightTab === "inspector" ? "active" : ""}
+          onClick={() => {
+            setRightTab("inspector");
+            setMobileSheet(true);
+          }}
+        >
+          <Settings2 size={19} />
+          <span>Propriedades</span>
         </button>
       </nav>
     </>

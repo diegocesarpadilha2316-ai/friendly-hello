@@ -23,7 +23,11 @@ export function PlannerV2Layout() {
   const snapEnabled = usePlannerStore((s) => s.snapEnabled);
   const [fps, setFps] = useState<number | null>(null);
   const [renderFinalOpen, setRenderFinalOpen] = useState(false);
-  const [saved, setSaved] = useState(() => typeof window !== "undefined" && Boolean(window.localStorage.getItem("dioris.planner-v2.project.v4")));
+  const [saved, setSaved] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      Boolean(window.localStorage.getItem("dioris.planner-v2.project.v4")),
+  );
   const naturalIntegrationStarted = useRef(false);
 
   useEffect(() => {
@@ -35,9 +39,10 @@ export function PlannerV2Layout() {
       const timer = window.setTimeout(() => usePlannerStore.getState().applyPromobReference(), 700);
       return () => window.clearTimeout(timer);
     }
-    const naturalRequest = params.get("etapa1") === "1"
-      ? "Crie uma cozinha limpa — ETAPA 1 — somente módulos inferiores e bancada. Em uma parede limpa, da esquerda para a direita: balcão 800 mm com 2 portas, gaveteiro 600 mm com 4 gavetas, balcão de pia 1200 mm com 2 portas e balcão 800 mm com 2 portas. Todos em MDF 18 mm. Não inclua aéreos, torre, geladeira, coifa, cooktop ou decoração."
-      : "Crie uma cozinha nessa parede. Quero uma torre de forno e micro-ondas na esquerda, um balcão de 800 com duas portas, um gaveteiro de 600 com quatro gavetas, um balcão de pia de 1200 com duas portas e aéreos em cima. Use MDF 18 mm.";
+    const naturalRequest =
+      params.get("etapa1") === "1"
+        ? "Crie uma cozinha limpa — ETAPA 1 — somente módulos inferiores e bancada. Em uma parede limpa, da esquerda para a direita: balcão 800 mm com 2 portas, gaveteiro 600 mm com 4 gavetas, balcão de pia 1200 mm com 2 portas e balcão 800 mm com 2 portas. Todos em MDF 18 mm. Não inclua aéreos, torre, geladeira, coifa, cooktop ou decoração."
+        : "Crie uma cozinha nessa parede. Quero uma torre de forno e micro-ondas na esquerda, um balcão de 800 com duas portas, um gaveteiro de 600 com quatro gavetas, um balcão de pia de 1200 com duas portas e aéreos em cima. Use MDF 18 mm.";
     const timer = window.setTimeout(() => {
       const store = usePlannerStore.getState();
       store.newProject();
@@ -62,7 +67,8 @@ export function PlannerV2Layout() {
 
   const updateDragPosition = (event: DragEvent<HTMLElement>) => {
     event.preventDefault();
-    const moduleId = event.dataTransfer.getData("application/x-dioris-module") || dragPreview?.moduleId;
+    const moduleId =
+      event.dataTransfer.getData("application/x-dioris-module") || dragPreview?.moduleId;
     const element = viewportRef.current;
     if (!moduleId || !element) return;
     const rect = element.getBoundingClientRect();
@@ -85,7 +91,9 @@ export function PlannerV2Layout() {
   };
 
   return (
-    <div className={`app ${leftCollapsed ? "left-collapsed" : ""} ${rightCollapsed ? "right-collapsed" : ""}`}>
+    <div
+      className={`app ${leftCollapsed ? "left-collapsed" : ""} ${rightCollapsed ? "right-collapsed" : ""}`}
+    >
       <Topbar />
 
       <main className="workspace">
@@ -104,7 +112,8 @@ export function PlannerV2Layout() {
             if (event.pointerType === "touch" && dragPreview) dropDragPreview();
           }}
           onDragLeave={(event) => {
-            if (!event.currentTarget.contains(event.relatedTarget as Node | null)) clearDragPreview();
+            if (!event.currentTarget.contains(event.relatedTarget as Node | null))
+              clearDragPreview();
           }}
         >
           <RoomScene />
@@ -112,7 +121,11 @@ export function PlannerV2Layout() {
             <div className="drag-preview-feedback" role="status" aria-live="polite">
               <strong>{dragPreview.valid ? "Posição válida" : "Posição inválida"}</strong>
               <span>{dragPreview.message ?? "Solte para adicionar"}</span>
-              <div className="drag-guides">{dragPreview.guides.map((guide) => <span key={guide}>{guide}</span>)}</div>
+              <div className="drag-guides">
+                {dragPreview.guides.map((guide) => (
+                  <span key={guide}>{guide}</span>
+                ))}
+              </div>
             </div>
           )}
           <TransformGizmoOverlay />

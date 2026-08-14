@@ -52,7 +52,12 @@ export function runNesting(
         const orients: Orientation[] = candidates(part, options.rotation, options.grainMode)
           .filter((c) => grainCompatible(part, spec, c.rotated))
           .map((c) => ({ w: c.w, h: c.h, rotated: c.rotated }));
-        if (orients.length === 0) { unplaced.push(part); remaining.splice(i, 1); i--; continue; }
+        if (orients.length === 0) {
+          unplaced.push(part);
+          remaining.splice(i, 1);
+          i--;
+          continue;
+        }
         const packed = tryPack(ctx, orients, options.algorithm);
         if (!packed) continue;
         placements.push({
@@ -111,12 +116,16 @@ function pickCatalog(
 ): NestingBoardSpec {
   if (!catalog || catalog.length === 0) return pickBoardFor(material, thicknessMm);
   const found = catalog.find(
-    (b) => b.material.toLowerCase().includes(material.toLowerCase()) && b.thicknessMm === thicknessMm,
+    (b) =>
+      b.material.toLowerCase().includes(material.toLowerCase()) && b.thicknessMm === thicknessMm,
   );
   return found ?? pickBoardFor(material, thicknessMm);
 }
 
-function statistics(boards: readonly NestingBoard[], unplaced: readonly NestingPart[]): NestingStatistics {
+function statistics(
+  boards: readonly NestingBoard[],
+  unplaced: readonly NestingPart[],
+): NestingStatistics {
   const usedAreaM2 = boards.reduce((a, b) => a + b.usedM2, 0);
   const wasteAreaM2 = boards.reduce((a, b) => a + b.wasteM2, 0);
   const offcutAreaM2 = boards.reduce((a, b) => a + b.offcuts.reduce((s, o) => s + o.areaM2, 0), 0);

@@ -20,9 +20,7 @@ export class SupabaseStorageProvider extends BaseStorageProvider {
     expiresInSec?: number;
   }): Promise<SignedUrl> {
     const admin = getSupabaseAdmin();
-    const { data, error } = await admin.storage
-      .from(bucket)
-      .createSignedUploadUrl(objectKey);
+    const { data, error } = await admin.storage.from(bucket).createSignedUploadUrl(objectKey);
     if (error || !data) {
       throw new StorageError(error?.message ?? "sign upload failed", "provider_error", this.id);
     }
@@ -72,7 +70,9 @@ export class SupabaseStorageProvider extends BaseStorageProvider {
     const slash = objectKey.lastIndexOf("/");
     const prefix = slash === -1 ? "" : objectKey.slice(0, slash);
     const name = slash === -1 ? objectKey : objectKey.slice(slash + 1);
-    const { data, error } = await admin.storage.from(bucket).list(prefix, { search: name, limit: 1 });
+    const { data, error } = await admin.storage
+      .from(bucket)
+      .list(prefix, { search: name, limit: 1 });
     if (error || !data?.length) return null;
     const f = data[0];
     return {
@@ -84,7 +84,9 @@ export class SupabaseStorageProvider extends BaseStorageProvider {
   async health() {
     try {
       const admin = getSupabaseAdmin();
-      const { error } = await admin.storage.from(ASSETS_CONFIG.defaultBucket).list("", { limit: 1 });
+      const { error } = await admin.storage
+        .from(ASSETS_CONFIG.defaultBucket)
+        .list("", { limit: 1 });
       if (error) return { status: "degraded" as const, message: error.message };
       return { status: "healthy" as const };
     } catch (e) {

@@ -40,7 +40,8 @@ export function buildCaptureRequest(input: {
     scope: input.scope,
     qualityId: input.qualityId,
     output: input.output ?? DEFAULT_OUTPUT,
-    cameraIds: input.cameraIds && input.cameraIds.length > 0 ? input.cameraIds : [LOCAL_CAMERAS[0].id],
+    cameraIds:
+      input.cameraIds && input.cameraIds.length > 0 ? input.cameraIds : [LOCAL_CAMERAS[0].id],
     roomIds: input.roomIds ?? [],
     notes: input.notes,
   };

@@ -8,22 +8,40 @@
 import * as THREE from "three";
 
 export type ApplianceSubtype =
-  | "geladeira" | "frigobar"
-  | "fogao" | "cooktop"
-  | "forno" | "microondas"
-  | "coifa" | "depurador" | "exaustor"
-  | "lava-loucas" | "lava-roupas" | "lavadora"
-  | "cuba" | "pia"
-  | "torneira" | "misturador";
+  | "geladeira"
+  | "frigobar"
+  | "fogao"
+  | "cooktop"
+  | "forno"
+  | "microondas"
+  | "coifa"
+  | "depurador"
+  | "exaustor"
+  | "lava-loucas"
+  | "lava-roupas"
+  | "lavadora"
+  | "cuba"
+  | "pia"
+  | "torneira"
+  | "misturador";
 
 const APPLIANCE_SUBTYPES = new Set<ApplianceSubtype>([
-  "geladeira", "frigobar",
-  "fogao", "cooktop",
-  "forno", "microondas",
-  "coifa", "depurador", "exaustor",
-  "lava-loucas", "lava-roupas", "lavadora",
-  "cuba", "pia",
-  "torneira", "misturador",
+  "geladeira",
+  "frigobar",
+  "fogao",
+  "cooktop",
+  "forno",
+  "microondas",
+  "coifa",
+  "depurador",
+  "exaustor",
+  "lava-loucas",
+  "lava-roupas",
+  "lavadora",
+  "cuba",
+  "pia",
+  "torneira",
+  "misturador",
 ]);
 
 export function isApplianceSubtype(s: string | undefined): s is ApplianceSubtype {
@@ -47,7 +65,14 @@ const RUBBER = { color: "#1a1c22", roughness: 0.85, metalness: 0.05 } as const;
 const CERAMIC = { color: "#f4f5f7", roughness: 0.25, metalness: 0.05 } as const;
 const CHROME = { color: "#e8ecef", roughness: 0.1, metalness: 0.95 } as const;
 
-export function ApplianceMesh({ subtype, width: w, height: h, depth: d, color, selected }: ApplianceProps) {
+export function ApplianceMesh({
+  subtype,
+  width: w,
+  height: h,
+  depth: d,
+  color,
+  selected,
+}: ApplianceProps) {
   const outline = selected ? "#7c3aed" : undefined;
 
   switch (subtype) {
@@ -81,7 +106,19 @@ export function ApplianceMesh({ subtype, width: w, height: h, depth: d, color, s
 }
 
 // --- Geladeira: duas portas + puxadores verticais + rodapé ---------------
-function Fridge({ w, h, d, color, outline }: { w: number; h: number; d: number; color?: string; outline?: string }) {
+function Fridge({
+  w,
+  h,
+  d,
+  color,
+  outline,
+}: {
+  w: number;
+  h: number;
+  d: number;
+  color?: string;
+  outline?: string;
+}) {
   const body = color ?? INOX.color;
   const doorGap = 0.008;
   const doorH = h * 0.55;
@@ -131,7 +168,12 @@ function Range({ w, h, d, outline }: { w: number; h: number; d: number; outline?
         <meshStandardMaterial {...GLASS_BLACK} />
       </mesh>
       {/* Bocas (4 discos) */}
-      {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz], i) => (
+      {[
+        [-1, -1],
+        [1, -1],
+        [-1, 1],
+        [1, 1],
+      ].map(([sx, sz], i) => (
         <mesh key={i} position={[sx * w * 0.22, h / 2 + 0.004, sz * d * 0.22]}>
           <cylinderGeometry args={[Math.min(w, d) * 0.08, Math.min(w, d) * 0.08, 0.003, 24]} />
           <meshStandardMaterial color="#1a1a1a" roughness={0.7} metalness={0.2} />
@@ -164,7 +206,12 @@ function Cooktop({ w, h, d, outline }: { w: number; h: number; d: number; outlin
         <boxGeometry args={[w, h, d]} />
         <meshStandardMaterial {...GLASS_BLACK} />
       </mesh>
-      {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz], i) => (
+      {[
+        [-1, -1],
+        [1, -1],
+        [-1, 1],
+        [1, 1],
+      ].map(([sx, sz], i) => (
         <mesh key={i} position={[sx * w * 0.25, h / 2 + 0.001, sz * d * 0.22]}>
           <cylinderGeometry args={[Math.min(w, d) * 0.09, Math.min(w, d) * 0.09, 0.002, 32]} />
           <meshStandardMaterial color="#2a2a2a" roughness={0.6} metalness={0.3} />

@@ -52,7 +52,7 @@ function makeNoise(seed: number) {
   const values = new Float32Array(grid * grid);
   for (let i = 0; i < values.length; i++) values[i] = rnd();
   const at = (x: number, y: number) =>
-    values[((((y % grid) + grid) % grid) * grid) + (((x % grid) + grid) % grid)];
+    values[(((y % grid) + grid) % grid) * grid + (((x % grid) + grid) % grid)];
   const smooth = (x: number, y: number) => {
     const xi = Math.floor(x);
     const yi = Math.floor(y);
@@ -85,8 +85,7 @@ function makeNoise(seed: number) {
 function heightToNormal(height: Float32Array, size: number, strength: number) {
   const { c, ctx } = canvas2d(size);
   const img = ctx.createImageData(size, size);
-  const h = (x: number, y: number) =>
-    height[(((y + size) % size) * size) + ((x + size) % size)];
+  const h = (x: number, y: number) => height[((y + size) % size) * size + ((x + size) % size)];
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
       const dx = (h(x + 1, y) - h(x - 1, y)) * strength;
@@ -231,7 +230,8 @@ export function inferSurfaceKind(
 ): SurfaceKind {
   const id = (materialId ?? "").toLowerCase();
   if (/marmore|marble|granito|quartzo|quartz|silestone|pedra|stone/.test(id)) return "stone";
-  if (/madeira|wood|carvalho|oak|freijo|nogueira|walnut|louro|amendoa|ipe|cedro|noce|teka/.test(id)) return "wood";
+  if (/madeira|wood|carvalho|oak|freijo|nogueira|walnut|louro|amendoa|ipe|cedro|noce|teka/.test(id))
+    return "wood";
   if (/laca|lacca|pintur|paint|gloss|fosco|matte|acetinad/.test(id)) return "paint";
   if (/porcelanato|piso|ceramic|tile|vinil|laminado/.test(id)) return "floor";
   if (role === "wall" || role === "ceiling") return "wall";

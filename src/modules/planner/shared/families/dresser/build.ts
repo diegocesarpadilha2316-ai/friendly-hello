@@ -86,14 +86,26 @@ export function buildDresser(input: Partial<DresserSpec> = {}): FamilyBuildResul
       component: "lateral",
       at: [0, caseY0, 0],
       role: "lateral esquerda",
-      params: { heightMm: caseH, depthMm: D, thicknessMm: t, side: "esquerda", finishId: spec.finishId },
+      params: {
+        heightMm: caseH,
+        depthMm: D,
+        thicknessMm: t,
+        side: "esquerda",
+        finishId: spec.finishId,
+      },
     },
     {
       id: "lateral-d",
       component: "lateral",
       at: [W - t, caseY0, 0],
       role: "lateral direita",
-      params: { heightMm: caseH, depthMm: D, thicknessMm: t, side: "direita", finishId: spec.finishId },
+      params: {
+        heightMm: caseH,
+        depthMm: D,
+        thicknessMm: t,
+        side: "direita",
+        finishId: spec.finishId,
+      },
     },
     {
       id: "base",
@@ -127,7 +139,13 @@ export function buildDresser(input: Partial<DresserSpec> = {}): FamilyBuildResul
       component: "fundo",
       at: [0, caseY0, 0],
       role: "fundo",
-      params: { widthMm: W, heightMm: caseH, thicknessMm: bt, mounting: "encaixado", finishId: spec.finishId },
+      params: {
+        widthMm: W,
+        heightMm: caseH,
+        thicknessMm: bt,
+        mounting: "encaixado",
+        finishId: spec.finishId,
+      },
     },
   );
 
@@ -176,9 +194,7 @@ export function buildDresser(input: Partial<DresserSpec> = {}): FamilyBuildResul
    */
   if (spec.front === "sobreposta") {
     const pieces: ConstructionPiece[] = assembly.pieces.map((p) =>
-      p.partKind === "gaveta-frente"
-        ? { ...p, box: { ...p.box, x: 0, width: W } }
-        : p,
+      p.partKind === "gaveta-frente" ? { ...p, box: { ...p.box, x: 0, width: W } } : p,
     );
     assembly = { ...assembly, pieces };
   }

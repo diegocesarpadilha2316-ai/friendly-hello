@@ -8,7 +8,9 @@ export const MARKETPLACE_COLLECTIONS: readonly MarketplaceCollection[] = [
     name: "Coleção Arya",
     ownerKind: "fabricante",
     ownerId: "duratex",
-    itemIds: MARKETPLACE_ITEMS.filter((i) => i.collectionId === "col-duratex-arya").map((i) => i.id),
+    itemIds: MARKETPLACE_ITEMS.filter((i) => i.collectionId === "col-duratex-arya").map(
+      (i) => i.id,
+    ),
     description: "Coleção Duratex Arya — cozinhas e áreas úmidas.",
   },
   {
@@ -16,7 +18,9 @@ export const MARKETPLACE_COLLECTIONS: readonly MarketplaceCollection[] = [
     name: "Coleção Innova",
     ownerKind: "fabricante",
     ownerId: "arauco",
-    itemIds: MARKETPLACE_ITEMS.filter((i) => i.collectionId === "col-arauco-innova").map((i) => i.id),
+    itemIds: MARKETPLACE_ITEMS.filter((i) => i.collectionId === "col-arauco-innova").map(
+      (i) => i.id,
+    ),
     description: "Coleção Arauco Innova — closets premium.",
   },
   {
@@ -24,7 +28,9 @@ export const MARKETPLACE_COLLECTIONS: readonly MarketplaceCollection[] = [
     name: "Tandembox Antaro",
     ownerKind: "fabricante",
     ownerId: "blum",
-    itemIds: MARKETPLACE_ITEMS.filter((i) => i.collectionId === "col-blum-tandembox").map((i) => i.id),
+    itemIds: MARKETPLACE_ITEMS.filter((i) => i.collectionId === "col-blum-tandembox").map(
+      (i) => i.id,
+    ),
     description: "Sistema Blum Tandembox completo.",
   },
   {

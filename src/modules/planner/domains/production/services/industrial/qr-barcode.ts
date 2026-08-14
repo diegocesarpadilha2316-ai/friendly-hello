@@ -27,10 +27,7 @@ export function pseudoQrMatrix(payload: string, size = 21): boolean[][] {
   let h = hashString(payload);
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
-      const inFinder =
-        (x < 8 && y < 8) ||
-        (x >= size - 8 && y < 8) ||
-        (x < 8 && y >= size - 8);
+      const inFinder = (x < 8 && y < 8) || (x >= size - 8 && y < 8) || (x < 8 && y >= size - 8);
       if (inFinder) continue;
       h = (Math.imul(h, 1664525) + 1013904223) >>> 0;
       m[y][x] = (h & 1) === 1;

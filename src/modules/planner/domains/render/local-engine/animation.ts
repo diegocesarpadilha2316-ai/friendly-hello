@@ -23,7 +23,10 @@ export function interpolateCameraSequence(
     let bestDist = Math.abs(keyframes[0].t - t);
     for (const k of keyframes) {
       const d = Math.abs(k.t - t);
-      if (d < bestDist) { best = k; bestDist = d; }
+      if (d < bestDist) {
+        best = k;
+        bestDist = d;
+      }
     }
     out.push(best.cameraId);
   }

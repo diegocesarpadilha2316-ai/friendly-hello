@@ -260,7 +260,12 @@ function EnvironmentBranch({
                 ...p,
                 environments: [
                   ...p.environments,
-                  { ...env, id: cryptoRandom(), name: `${env.name} (cópia)`, rooms: env.rooms.map((r) => ({ ...r, id: cryptoRandom() })) },
+                  {
+                    ...env,
+                    id: cryptoRandom(),
+                    name: `${env.name} (cópia)`,
+                    rooms: env.rooms.map((r) => ({ ...r, id: cryptoRandom() })),
+                  },
                 ],
               }))
             }
@@ -361,9 +366,7 @@ function RoomBranch({
     onUpdate((p) => ({
       ...p,
       environments: p.environments.map((e) =>
-        e.id === env.id
-          ? { ...e, rooms: e.rooms.map((r) => (r.id === room.id ? fn(r) : r)) }
-          : e,
+        e.id === env.id ? { ...e, rooms: e.rooms.map((r) => (r.id === room.id ? fn(r) : r)) } : e,
       ),
     }));
 
@@ -693,7 +696,11 @@ function NodeRow({
             }}
             className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
           >
-            {meta.locked ? <Lock className="h-3.5 w-3.5 text-amber-400" /> : <Unlock className="h-3.5 w-3.5" />}
+            {meta.locked ? (
+              <Lock className="h-3.5 w-3.5 text-amber-400" />
+            ) : (
+              <Unlock className="h-3.5 w-3.5" />
+            )}
           </button>
           <ItemActionsMenu
             compact
@@ -791,9 +798,7 @@ function TreeRow({
           className="rounded p-0.5 text-muted-foreground hover:text-foreground"
           aria-label={collapsed ? "Expandir" : "Recolher"}
         >
-          <ChevronRight
-            className={cn("h-3 w-3 transition-transform", !collapsed && "rotate-90")}
-          />
+          <ChevronRight className={cn("h-3 w-3 transition-transform", !collapsed && "rotate-90")} />
         </button>
       ) : (
         <span className="w-4" />
@@ -820,9 +825,7 @@ function TreeRow({
           {hint}
         </span>
       )}
-      {alwaysVisibleActions && (
-        <div className="flex items-center">{alwaysVisibleActions}</div>
-      )}
+      {alwaysVisibleActions && <div className="flex items-center">{alwaysVisibleActions}</div>}
       {actions && (
         <div className="opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
           {actions}
@@ -946,9 +949,7 @@ function MenuItem({
       onClick={onClick}
       className={cn(
         "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left transition-colors",
-        danger
-          ? "text-destructive hover:bg-destructive/10"
-          : "hover:bg-muted",
+        danger ? "text-destructive hover:bg-destructive/10" : "hover:bg-muted",
       )}
     >
       {icon}
@@ -973,7 +974,7 @@ export const NODE_META_KEYS = {
   locked: "__locked",
   color: "__color",
 } as const;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 function _keepImports() {
   return <Lightbulb className="hidden" />;
 }

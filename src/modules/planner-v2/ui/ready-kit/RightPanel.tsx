@@ -7,7 +7,7 @@ const tabs: { id: RightTab; label: string }[] = [
   { id: "chat", label: "IA" },
   { id: "inspector", label: "Inspetor" },
   { id: "materials", label: "Materiais" },
-  { id: "hardware", label: "Ferragens" }
+  { id: "hardware", label: "Ferragens" },
 ];
 
 export function RightPanel() {
@@ -32,7 +32,6 @@ export function RightPanel() {
   const isV2 = !!instance;
   const current = instance || selected;
 
-
   return (
     <aside className={`right-panel ${collapsed ? "collapsed" : ""}`}>
       <div className="panel-head">
@@ -43,7 +42,9 @@ export function RightPanel() {
       </div>
 
       {collapsed ? (
-        <div className="collapsed-icons"><Bot size={19} /></div>
+        <div className="collapsed-icons">
+          <Bot size={19} />
+        </div>
       ) : (
         <div className="right-tabs">
           {tabs.map((tab) => (
@@ -73,12 +74,15 @@ export function RightPanel() {
               </div>
 
               <div className="quick-actions">
-                <button onClick={() => usePlannerStore.getState().closeAllAnimations()}>Fechar Tudo</button>
-                <button onClick={() => usePlannerStore.getState().showAllInstances()}>Mostrar Tudo</button>
+                <button onClick={() => usePlannerStore.getState().closeAllAnimations()}>
+                  Fechar Tudo
+                </button>
+                <button onClick={() => usePlannerStore.getState().showAllInstances()}>
+                  Mostrar Tudo
+                </button>
                 <button>+ Iluminação</button>
                 <button>+ Render</button>
               </div>
-
 
               <div className="composer">
                 <input
@@ -112,11 +116,14 @@ export function RightPanel() {
                 <input value={current?.name ?? "Nenhum"} readOnly />
               </label>
               {isV2 && (
-                <div className="form-actions" style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                   <button 
-                    type="button" 
+                <div
+                  className="form-actions"
+                  style={{ display: "flex", gap: "8px", marginBottom: "12px" }}
+                >
+                  <button
+                    type="button"
                     className="secondary"
-                    style={{ flex: 1, padding: '8px', fontSize: '12px' }}
+                    style={{ flex: 1, padding: "8px", fontSize: "12px" }}
                     onClick={() => {
                       const states = instance.openStates || {};
                       const allOpen = Object.values(states).some((v: any) => v > 0);
@@ -126,52 +133,68 @@ export function RightPanel() {
                         toggleAnim(selectedId);
                       }
                     }}
-                   >
-                    {((Object.values(instance.openStates || {}).some((v: any) => v > 0)) || instance.isOpen) ? 'Fechar Tudo' : 'Abrir Tudo'}
-
-
-                   </button>
-                   <button 
-                    type="button" 
+                  >
+                    {Object.values(instance.openStates || {}).some((v: any) => v > 0) ||
+                    instance.isOpen
+                      ? "Fechar Tudo"
+                      : "Abrir Tudo"}
+                  </button>
+                  <button
+                    type="button"
                     className="danger"
-                    style={{ flex: 1, padding: '8px', fontSize: '12px', background: '#ef4444', color: 'white' }}
+                    style={{
+                      flex: 1,
+                      padding: "8px",
+                      fontSize: "12px",
+                      background: "#ef4444",
+                      color: "white",
+                    }}
                     onClick={() => deleteInstance(selectedId)}
-                   >
+                  >
                     Excluir
-                   </button>
-                 </div>
+                  </button>
+                </div>
               )}
-              
+
               {isV2 && (
-                <div className="form-actions" style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                   <button 
-                    type="button" 
+                <div
+                  className="form-actions"
+                  style={{ display: "flex", gap: "8px", marginBottom: "12px" }}
+                >
+                  <button
+                    type="button"
                     className={instance.isIsolated ? "active" : ""}
-                    style={{ flex: 1, padding: '8px', fontSize: '10px' }}
-                    onClick={() => usePlannerStore.getState().setInstanceIsolated(instance.isIsolated ? null : selectedId)}
-                   >
+                    style={{ flex: 1, padding: "8px", fontSize: "10px" }}
+                    onClick={() =>
+                      usePlannerStore
+                        .getState()
+                        .setInstanceIsolated(instance.isIsolated ? null : selectedId)
+                    }
+                  >
                     Isolar
-                   </button>
-                   <button 
-                    type="button" 
+                  </button>
+                  <button
+                    type="button"
                     className={instance.isXRay ? "active" : ""}
-                    style={{ flex: 1, padding: '8px', fontSize: '10px' }}
+                    style={{ flex: 1, padding: "8px", fontSize: "10px" }}
                     onClick={() => usePlannerStore.getState().toggleInstanceXRay(selectedId)}
-                   >
+                  >
                     Raio-X
-                   </button>
-                   <button 
-                    type="button" 
-                    style={{ flex: 1, padding: '8px', fontSize: '10px' }}
-                    onClick={() => usePlannerStore.getState().duplicateFurnitureInstance(selectedId)}
-                   >
+                  </button>
+                  <button
+                    type="button"
+                    style={{ flex: 1, padding: "8px", fontSize: "10px" }}
+                    onClick={() =>
+                      usePlannerStore.getState().duplicateFurnitureInstance(selectedId)
+                    }
+                  >
                     Duplicar
-                   </button>
+                  </button>
                 </div>
               )}
 
               <label>
-                Largura ({isV2 ? 'mm' : 'm'})
+                Largura ({isV2 ? "mm" : "m"})
                 <input
                   type="number"
                   step={isV2 ? 10 : 0.05}
@@ -179,7 +202,9 @@ export function RightPanel() {
                   onChange={(event: any) => {
                     const val = Number(event.target.value);
                     if (isV2) {
-                      updateInstance(selectedId, { dimensionsMm: { ...instance.dimensionsMm, width: val } });
+                      updateInstance(selectedId, {
+                        dimensionsMm: { ...instance.dimensionsMm, width: val },
+                      });
                     } else if (selected) {
                       updateSelected({ size: [val, selected.size[1], selected.size[2]] });
                     }
@@ -187,7 +212,7 @@ export function RightPanel() {
                 />
               </label>
               <label>
-                Altura ({isV2 ? 'mm' : 'm'})
+                Altura ({isV2 ? "mm" : "m"})
                 <input
                   type="number"
                   step={isV2 ? 10 : 0.05}
@@ -195,7 +220,9 @@ export function RightPanel() {
                   onChange={(event: any) => {
                     const val = Number(event.target.value);
                     if (isV2) {
-                      updateInstance(selectedId, { dimensionsMm: { ...instance.dimensionsMm, height: val } });
+                      updateInstance(selectedId, {
+                        dimensionsMm: { ...instance.dimensionsMm, height: val },
+                      });
                     } else if (selected) {
                       updateSelected({ size: [selected.size[0], val, selected.size[2]] });
                     }
@@ -203,7 +230,7 @@ export function RightPanel() {
                 />
               </label>
               <label>
-                Profundidade ({isV2 ? 'mm' : 'm'})
+                Profundidade ({isV2 ? "mm" : "m"})
                 <input
                   type="number"
                   step={isV2 ? 10 : 0.05}
@@ -211,7 +238,9 @@ export function RightPanel() {
                   onChange={(event: any) => {
                     const val = Number(event.target.value);
                     if (isV2) {
-                      updateInstance(selectedId, { dimensionsMm: { ...instance.dimensionsMm, depth: val } });
+                      updateInstance(selectedId, {
+                        dimensionsMm: { ...instance.dimensionsMm, depth: val },
+                      });
                     } else if (selected) {
                       updateSelected({ size: [selected.size[0], selected.size[1], val] });
                     }
@@ -219,7 +248,7 @@ export function RightPanel() {
                 />
               </label>
               <label>
-                Posição X ({isV2 ? 'mm' : 'm'})
+                Posição X ({isV2 ? "mm" : "m"})
                 <input
                   type="number"
                   step={isV2 ? 50 : 0.05}
@@ -227,9 +256,13 @@ export function RightPanel() {
                   onChange={(event: any) => {
                     const val = Number(event.target.value);
                     if (isV2) {
-                      updateInstance(selectedId, { positionMm: { ...instance.positionMm, x: val } });
+                      updateInstance(selectedId, {
+                        positionMm: { ...instance.positionMm, x: val },
+                      });
                     } else {
-                      updateSelected({ position: [val, selected.position[1], selected.position[2]] });
+                      updateSelected({
+                        position: [val, selected.position[1], selected.position[2]],
+                      });
                     }
                   }}
                 />
@@ -242,7 +275,11 @@ export function RightPanel() {
                       type="number"
                       step={50}
                       value={instance.positionMm.y}
-                      onChange={(event: any) => updateInstance(selectedId, { positionMm: { ...instance.positionMm, y: Number(event.target.value) } })}
+                      onChange={(event: any) =>
+                        updateInstance(selectedId, {
+                          positionMm: { ...instance.positionMm, y: Number(event.target.value) },
+                        })
+                      }
                     />
                   </label>
                   <label>
@@ -251,12 +288,15 @@ export function RightPanel() {
                       type="number"
                       step={50}
                       value={instance.positionMm.z}
-                      onChange={(event: any) => updateInstance(selectedId, { positionMm: { ...instance.positionMm, z: Number(event.target.value) } })}
+                      onChange={(event: any) =>
+                        updateInstance(selectedId, {
+                          positionMm: { ...instance.positionMm, z: Number(event.target.value) },
+                        })
+                      }
                     />
                   </label>
                 </>
               )}
-
 
               <label>
                 Rotação
@@ -267,14 +307,15 @@ export function RightPanel() {
                   onChange={(event: any) => {
                     const val = Number(event.target.value);
                     if (isV2) {
-                      updateInstance(selectedId, { rotationDeg: { ...instance.rotationDeg, y: val } });
+                      updateInstance(selectedId, {
+                        rotationDeg: { ...instance.rotationDeg, y: val },
+                      });
                     } else {
                       updateSelected({ rotationY: val });
                     }
                   }}
                 />
               </label>
-
             </div>
           )}
 
@@ -285,16 +326,16 @@ export function RightPanel() {
                 ["Freijó", "mdf-wood-natural", "#7a4f2c"],
                 ["Verde", "mdf-green", "#4f6f52"],
                 ["Grafite", "mdf-graphite", "#4a4745"],
-                ["Taupe", "mdf-taupe", "#8b7564"]
+                ["Taupe", "mdf-taupe", "#8b7564"],
               ].map(([label, id, color]) => (
                 <button
                   type="button"
                   key={id}
-                  className={`swatch ${isV2 && instance.materialOverrides['*'] === id ? 'active' : ''}`}
+                  className={`swatch ${isV2 && instance.materialOverrides["*"] === id ? "active" : ""}`}
                   style={{ background: color }}
                   onClick={() => {
                     if (isV2) {
-                      updateInstance(selectedId, { materialOverrides: { '*': id } });
+                      updateInstance(selectedId, { materialOverrides: { "*": id } });
                     } else {
                       updateSelected({ material: id });
                     }
@@ -306,15 +347,32 @@ export function RightPanel() {
             </div>
           )}
 
-
           {rightTab === "hardware" && (
             <div className="form">
-              <label>Puxador<select><option>Barra Alumínio</option><option>Gola</option><option>Cava</option></select></label>
-              <label>Corrediças<select><option>Telescópica</option><option>Invisível</option></select></label>
-              <label>Dobradiças<select><option>Standard</option><option>Amortecedor</option></select></label>
+              <label>
+                Puxador
+                <select>
+                  <option>Barra Alumínio</option>
+                  <option>Gola</option>
+                  <option>Cava</option>
+                </select>
+              </label>
+              <label>
+                Corrediças
+                <select>
+                  <option>Telescópica</option>
+                  <option>Invisível</option>
+                </select>
+              </label>
+              <label>
+                Dobradiças
+                <select>
+                  <option>Standard</option>
+                  <option>Amortecedor</option>
+                </select>
+              </label>
             </div>
           )}
-
         </div>
       )}
     </aside>

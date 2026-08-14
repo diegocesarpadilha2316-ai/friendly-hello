@@ -50,7 +50,10 @@ export function CutListPreview() {
       <div className="grid grid-cols-3 gap-3">
         <Metric label="Móveis" value={String(rows.length)} />
         <Metric label="Peças totais" value={String(totals.parts)} />
-        <Metric label="Área m² · Fita m" value={`${totals.area.toFixed(2)} · ${totals.edge.toFixed(2)}`} />
+        <Metric
+          label="Área m² · Fita m"
+          value={`${totals.area.toFixed(2)} · ${totals.edge.toFixed(2)}`}
+        />
       </div>
       <div className="overflow-hidden rounded-xl border border-border/60 bg-background/60 backdrop-blur">
         <table className="w-full text-xs">
@@ -70,7 +73,9 @@ export function CutListPreview() {
             {rows.flatMap((r) =>
               r.parts.map((p) => (
                 <tr key={p.id} className="border-t border-border/40">
-                  <td className="px-3 py-1.5 text-muted-foreground">{r.furnitureId.slice(0, 10)}…</td>
+                  <td className="px-3 py-1.5 text-muted-foreground">
+                    {r.furnitureId.slice(0, 10)}…
+                  </td>
                   <td className="px-3 py-1.5">{p.label}</td>
                   <td className="px-3 py-1.5 text-right tabular-nums">{p.qty}</td>
                   <td className="px-3 py-1.5 text-right tabular-nums">
@@ -87,7 +92,8 @@ export function CutListPreview() {
         </table>
       </div>
       <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-        <Scissors className="h-3 w-3" /> Fase 3.5 — dados prontos para o Plano de Corte, Orçamento e Produção.
+        <Scissors className="h-3 w-3" /> Fase 3.5 — dados prontos para o Plano de Corte, Orçamento e
+        Produção.
       </p>
     </div>
   );

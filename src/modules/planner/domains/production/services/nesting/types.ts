@@ -4,12 +4,7 @@
  * Toda persistência de mutações continua via `updateProject()`.
  */
 export type NestingAlgorithm =
-  | "best-fit"
-  | "first-fit"
-  | "guillotine"
-  | "skyline"
-  | "max-rects"
-  | "bin-packing";
+  "best-fit" | "first-fit" | "guillotine" | "skyline" | "max-rects" | "bin-packing";
 
 export type GrainMode = "respect" | "ignore";
 export type RotationMode = "auto" | "locked";

@@ -6,13 +6,7 @@
  * fica ruim, a composicao e reorganizada automaticamente (poda de
  * decoracao e realocacao para o quadrante mais vazio) e medida de novo.
  */
-import type {
-  DecorPlacement,
-  QualityIssue,
-  QualityReport,
-  Rect,
-  RoomAnalysis,
-} from "./types";
+import type { DecorPlacement, QualityIssue, QualityReport, Rect, RoomAnalysis } from "./types";
 import { styleProfile } from "./styles";
 
 function quadrantOf(x: number, y: number, a: RoomAnalysis): number {
@@ -95,9 +89,7 @@ export function evaluateComposition(
   const pools = styleProfile(analysis.style).pools;
   const allowed = new Set(Object.values(pools).flat());
   const foreign = decor.filter((d) => !allowed.has(d.catalogItemId));
-  const coherence = Math.round(
-    (1 - foreign.length / Math.max(1, decor.length)) * 100,
-  );
+  const coherence = Math.round((1 - foreign.length / Math.max(1, decor.length)) * 100);
   if (foreign.length > 0)
     issues.push({
       metric: "coerencia",
@@ -106,11 +98,7 @@ export function evaluateComposition(
     });
 
   const score = Math.round(
-    balance * 0.25 +
-      proportion * 0.2 +
-      circulation * 0.25 +
-      organization * 0.15 +
-      coherence * 0.15,
+    balance * 0.25 + proportion * 0.2 + circulation * 0.25 + organization * 0.15 + coherence * 0.15,
   );
 
   return {

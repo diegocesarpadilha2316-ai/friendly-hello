@@ -1,15 +1,29 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
-  cicdApprovalDecide, cicdArtifactRecord, cicdBuildRecord,
-  cicdDeployRecord, cicdDeployRollback, cicdEnvironmentDelete,
-  cicdEnvironmentUpsert, cicdPipelineDelete, cicdPipelineUpsert,
-  cicdReleaseDelete, cicdReleaseUpsert,
+  cicdApprovalDecide,
+  cicdArtifactRecord,
+  cicdBuildRecord,
+  cicdDeployRecord,
+  cicdDeployRollback,
+  cicdEnvironmentDelete,
+  cicdEnvironmentUpsert,
+  cicdPipelineDelete,
+  cicdPipelineUpsert,
+  cicdReleaseDelete,
+  cicdReleaseUpsert,
 } from "./cicd.functions";
 import { cicdKeys, cicdSnapshotQuery } from "./queries";
 import type {
-  ArtifactKind, BuildStatus, BuildTrigger, DeployStatus, DeployStrategy,
-  EnvironmentKind, PipelineProvider, PipelineStage, ReleaseChannel,
+  ArtifactKind,
+  BuildStatus,
+  BuildTrigger,
+  DeployStatus,
+  DeployStrategy,
+  EnvironmentKind,
+  PipelineProvider,
+  PipelineStage,
+  ReleaseChannel,
 } from "./types";
 
 export function useCicdSnapshot() {
@@ -22,8 +36,13 @@ function useInvalidate() {
 }
 
 export type EnvironmentInput = {
-  id?: string; slug: string; name: string; kind: EnvironmentKind;
-  url?: string | null; protected?: boolean; requiresApproval?: boolean;
+  id?: string;
+  slug: string;
+  name: string;
+  kind: EnvironmentKind;
+  url?: string | null;
+  protected?: boolean;
+  requiresApproval?: boolean;
 };
 
 export function useUpsertEnvironment() {
@@ -45,9 +64,14 @@ export function useDeleteEnvironment() {
 }
 
 export type PipelineInput = {
-  id?: string; slug: string; name: string; module?: string | null;
-  provider?: PipelineProvider; stages?: PipelineStage[];
-  enabled?: boolean; description?: string | null;
+  id?: string;
+  slug: string;
+  name: string;
+  module?: string | null;
+  provider?: PipelineProvider;
+  stages?: PipelineStage[];
+  enabled?: boolean;
+  description?: string | null;
 };
 
 export function useUpsertPipeline() {
@@ -69,10 +93,16 @@ export function useDeletePipeline() {
 }
 
 export type BuildInput = {
-  pipelineSlug: string; pipelineId?: string | null;
-  version?: string | null; commitSha?: string | null; branch?: string | null;
-  trigger?: BuildTrigger; status?: BuildStatus;
-  durationMs?: number | null; logsUrl?: string | null; correlationId?: string | null;
+  pipelineSlug: string;
+  pipelineId?: string | null;
+  version?: string | null;
+  commitSha?: string | null;
+  branch?: string | null;
+  trigger?: BuildTrigger;
+  status?: BuildStatus;
+  durationMs?: number | null;
+  logsUrl?: string | null;
+  correlationId?: string | null;
 };
 
 export function useRecordBuild() {
@@ -85,9 +115,14 @@ export function useRecordBuild() {
 }
 
 export type DeployInput = {
-  environmentSlug: string; buildId?: string | null; environmentId?: string | null;
-  version?: string | null; status?: DeployStatus; strategy?: DeployStrategy;
-  durationMs?: number | null; correlationId?: string | null;
+  environmentSlug: string;
+  buildId?: string | null;
+  environmentId?: string | null;
+  version?: string | null;
+  status?: DeployStatus;
+  strategy?: DeployStrategy;
+  durationMs?: number | null;
+  correlationId?: string | null;
 };
 
 export function useRecordDeploy() {
@@ -109,9 +144,14 @@ export function useRollbackDeploy() {
 }
 
 export type ReleaseInput = {
-  id?: string; version: string; channel?: ReleaseChannel;
-  tag?: string | null; changelog?: string | null; notes?: string | null;
-  buildId?: string | null; publish?: boolean;
+  id?: string;
+  version: string;
+  channel?: ReleaseChannel;
+  tag?: string | null;
+  changelog?: string | null;
+  notes?: string | null;
+  buildId?: string | null;
+  publish?: boolean;
 };
 
 export function useUpsertRelease() {
@@ -133,9 +173,14 @@ export function useDeleteRelease() {
 }
 
 export type ArtifactInput = {
-  buildId?: string | null; releaseId?: string | null;
-  kind: ArtifactKind; name: string; uri?: string | null;
-  sizeBytes?: number | null; checksum?: string | null; contentType?: string | null;
+  buildId?: string | null;
+  releaseId?: string | null;
+  kind: ArtifactKind;
+  name: string;
+  uri?: string | null;
+  sizeBytes?: number | null;
+  checksum?: string | null;
+  contentType?: string | null;
 };
 
 export function useRecordArtifact() {
@@ -148,7 +193,9 @@ export function useRecordArtifact() {
 }
 
 export type ApprovalDecisionInput = {
-  id: string; status: "approved" | "rejected"; reason?: string | null;
+  id: string;
+  status: "approved" | "rejected";
+  reason?: string | null;
 };
 
 export function useDecideApproval() {

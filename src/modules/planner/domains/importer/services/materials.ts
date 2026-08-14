@@ -4,7 +4,9 @@ import type { ImporterEntity, ImporterMaterialRef } from "../types";
  * Deriva referências de material a partir da meta dos entities.
  * Formato-agnóstico: qualquer parser pode setar `meta.material` / `meta.color`.
  */
-export function extractMaterials(entities: readonly ImporterEntity[]): readonly ImporterMaterialRef[] {
+export function extractMaterials(
+  entities: readonly ImporterEntity[],
+): readonly ImporterMaterialRef[] {
   const map = new Map<string, ImporterMaterialRef>();
   for (const e of entities) {
     const m = e.meta as Record<string, unknown> | undefined;

@@ -7,41 +7,15 @@
  */
 
 export type RealtimeNavigationMode =
-  | "walk"
-  | "fps"
-  | "orbit"
-  | "drone"
-  | "cliente"
-  | "apresentacao"
-  | "livre";
+  "walk" | "fps" | "orbit" | "drone" | "cliente" | "apresentacao" | "livre";
 
-export type RealtimeQualityTier =
-  | "eco"
-  | "baixa"
-  | "media"
-  | "alta"
-  | "ultra"
-  | "cinema";
+export type RealtimeQualityTier = "eco" | "baixa" | "media" | "alta" | "ultra" | "cinema";
 
 export type RealtimeWeatherId =
-  | "sol"
-  | "nublado"
-  | "chuva"
-  | "blue-hour"
-  | "noite"
-  | "nascer-sol"
-  | "por-sol";
+  "sol" | "nublado" | "chuva" | "blue-hour" | "noite" | "nascer-sol" | "por-sol";
 
 export type RealtimeTimeOfDay =
-  | "06h"
-  | "08h"
-  | "10h"
-  | "12h"
-  | "15h"
-  | "17h"
-  | "18h"
-  | "20h"
-  | "22h";
+  "06h" | "08h" | "10h" | "12h" | "15h" | "17h" | "18h" | "20h" | "22h";
 
 export type RealtimeInputSource = "keyboard" | "mouse" | "touch" | "joystick" | "gamepad";
 
@@ -176,12 +150,7 @@ export interface RealtimeHotspot {
   readonly value: string;
 }
 
-export type RealtimeMeasureMode =
-  | "distance"
-  | "area"
-  | "height"
-  | "width"
-  | "depth";
+export type RealtimeMeasureMode = "distance" | "area" | "height" | "width" | "depth";
 
 export interface RealtimeMeasurePoint {
   readonly id: string;

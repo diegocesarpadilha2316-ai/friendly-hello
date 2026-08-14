@@ -18,19 +18,21 @@ export const LOCAL_STAGES: readonly {
 export function estimateDurationMs(job: LocalRenderJob): number {
   const px = job.output.resolution.width * job.output.resolution.height;
   const factor =
-    job.qualityId === "rascunho" ? 0.4 :
-    job.qualityId === "baixa" ? 0.7 :
-    job.qualityId === "media" ? 1 :
-    job.qualityId === "alta" ? 1.6 :
-    job.qualityId === "ultra" ? 2.4 : 3.2;
+    job.qualityId === "rascunho"
+      ? 0.4
+      : job.qualityId === "baixa"
+        ? 0.7
+        : job.qualityId === "media"
+          ? 1
+          : job.qualityId === "alta"
+            ? 1.6
+            : job.qualityId === "ultra"
+              ? 2.4
+              : 3.2;
   return Math.round(1200 + (px / 1_000_000) * 800 * factor);
 }
 
-export function advance(
-  job: LocalRenderJob,
-  stageIndex: number,
-  fraction: number,
-): LocalRenderJob {
+export function advance(job: LocalRenderJob, stageIndex: number, fraction: number): LocalRenderJob {
   const stage = LOCAL_STAGES[stageIndex] ?? LOCAL_STAGES[0];
   let acc = 0;
   for (let i = 0; i < stageIndex; i += 1) acc += LOCAL_STAGES[i].weight;
@@ -68,9 +70,21 @@ export function complete(job: LocalRenderJob): LocalRenderJob {
 }
 
 export function markStart(job: LocalRenderJob): LocalRenderJob {
-  return { ...job, status: "preparing", stage: "Preparação", startedAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+  return {
+    ...job,
+    status: "preparing",
+    stage: "Preparação",
+    startedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
 }
 
 export function markCancelled(job: LocalRenderJob): LocalRenderJob {
-  return { ...job, status: "cancelled", stage: "Cancelado", finishedAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+  return {
+    ...job,
+    status: "cancelled",
+    stage: "Cancelado",
+    finishedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
 }

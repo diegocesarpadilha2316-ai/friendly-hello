@@ -47,16 +47,13 @@ export function dresserSpecFromLegacy(f: LegacyDresser): DresserSpec {
     depthMm: f.depthMm,
     drawers: asNumber(pick(p, "mod:drawers", "drawers", "eng:drawers", "gavetas", "drawersCount")),
     distribution: asText(pick(p, "mod:drawerDistribution", "drawerDistribution")) as
-      | DresserSpec["distribution"]
-      | undefined,
+      DresserSpec["distribution"] | undefined,
     front: asText(pick(p, "mod:frontMount", "frontMount", "eng:front", "frontType")) as
-      | DresserSpec["front"]
-      | undefined,
+      DresserSpec["front"] | undefined,
     handle: asText(pick(p, "mod:handle", "handle", "puxador")),
     slide: asText(pick(p, "eng:slide", "slide", "corredica")) as DresserSpec["slide"] | undefined,
     opening: asText(pick(p, "mod:opening", "opening", "abertura")) as
-      | DresserSpec["opening"]
-      | undefined,
+      DresserSpec["opening"] | undefined,
     base: asText(pick(p, "mod:base", "base", "apoio")) as DresserSpec["base"] | undefined,
     plinthHeightMm: asNumber(pick(p, "eng:plinthHeightMm", "plinthHeightMm")),
     topOverhangMm: asNumber(pick(p, "eng:topOverhangMm", "topOverhangMm")),

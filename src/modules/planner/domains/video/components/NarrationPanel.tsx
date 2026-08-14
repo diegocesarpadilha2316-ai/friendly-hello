@@ -32,12 +32,16 @@ export function NarrationPanel({ narration, onChange }: NarrationPanelProps) {
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Provider de voz</span>
+        <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+          Provider de voz
+        </span>
         <select
           className="rounded-md border border-border/60 bg-background/60 px-2 py-1"
           value={narration.voiceProvider ?? ""}
           onChange={(e) =>
-            onChange({ voiceProvider: (e.target.value || undefined) as VideoNarration["voiceProvider"] })
+            onChange({
+              voiceProvider: (e.target.value || undefined) as VideoNarration["voiceProvider"],
+            })
           }
         >
           <option value="">(nenhum)</option>
@@ -88,7 +92,10 @@ export function NarrationPanel({ narration, onChange }: NarrationPanelProps) {
             value={narration.music.mood}
             onChange={(e) =>
               onChange({
-                music: { ...narration.music, mood: e.target.value as VideoNarration["music"]["mood"] },
+                music: {
+                  ...narration.music,
+                  mood: e.target.value as VideoNarration["music"]["mood"],
+                },
               })
             }
           >

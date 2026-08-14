@@ -10,13 +10,7 @@ import { z } from "zod";
 import { requireTenant } from "@/core/middleware/require-tenant";
 
 export type QuoteStatus =
-  | "draft"
-  | "sent"
-  | "viewed"
-  | "approved"
-  | "rejected"
-  | "expired"
-  | "converted";
+  "draft" | "sent" | "viewed" | "approved" | "rejected" | "expired" | "converted";
 
 export interface QuoteRow {
   id: string;
@@ -117,9 +111,7 @@ export const listQuotes = createServerFn({ method: "GET" })
 
 export const getQuote = createServerFn({ method: "GET" })
   .middleware([requireTenant])
-  .inputValidator((data: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const [quoteRes, itemsRes] = await Promise.all([
       context.supabase
@@ -206,12 +198,8 @@ function computeTotals(
     const tax = net * ((it.taxPercent ?? 0) / 100);
     return { ...it, position: it.position ?? idx, total: Number((net + tax).toFixed(2)) };
   });
-  const subtotal = Number(
-    enriched.reduce((s, it) => s + it.total, 0).toFixed(2),
-  );
-  const total = Number(
-    (subtotal - discountValue + taxValue + shippingValue).toFixed(2),
-  );
+  const subtotal = Number(enriched.reduce((s, it) => s + it.total, 0).toFixed(2));
+  const total = Number((subtotal - discountValue + taxValue + shippingValue).toFixed(2));
   return { enriched, subtotal, total };
 }
 
@@ -260,25 +248,23 @@ export const createQuote = createServerFn({ method: "POST" })
     if (error) throw new Response(error.message, { status: 400 });
 
     if (enriched.length > 0) {
-      const { error: itemsError } = await context.supabase
-        .from("quote_items")
-        .insert(
-          enriched.map((it) => ({
-            quote_id: quote.id,
-            position: it.position,
-            item_type: it.itemType ?? "custom",
-            reference_id: it.referenceId ?? null,
-            sku: it.sku ?? null,
-            name: it.name,
-            description: it.description ?? null,
-            quantity: it.quantity,
-            unit: it.unit ?? null,
-            unit_price: it.unitPrice,
-            discount_percent: it.discountPercent ?? 0,
-            tax_percent: it.taxPercent ?? 0,
-            total: it.total,
-          })),
-        );
+      const { error: itemsError } = await context.supabase.from("quote_items").insert(
+        enriched.map((it) => ({
+          quote_id: quote.id,
+          position: it.position,
+          item_type: it.itemType ?? "custom",
+          reference_id: it.referenceId ?? null,
+          sku: it.sku ?? null,
+          name: it.name,
+          description: it.description ?? null,
+          quantity: it.quantity,
+          unit: it.unit ?? null,
+          unit_price: it.unitPrice,
+          discount_percent: it.discountPercent ?? 0,
+          tax_percent: it.taxPercent ?? 0,
+          total: it.total,
+        })),
+      );
       if (itemsError) throw new Response(itemsError.message, { status: 400 });
     }
 
@@ -322,10 +308,7 @@ export const updateQuote = createServerFn({ method: "POST" })
       patch.subtotal = subtotal;
       patch.total = total;
 
-      const del = await context.supabase
-        .from("quote_items")
-        .delete()
-        .eq("quote_id", data.id);
+      const del = await context.supabase.from("quote_items").delete().eq("quote_id", data.id);
       if (del.error) throw new Response(del.error.message, { status: 400 });
       if (enriched.length > 0) {
         const ins = await context.supabase.from("quote_items").insert(
@@ -392,9 +375,7 @@ export const setQuoteStatus = createServerFn({ method: "POST" })
 
 export const deleteQuote = createServerFn({ method: "POST" })
   .middleware([requireTenant])
-  .inputValidator((data: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("quotes")
@@ -479,8 +460,7 @@ export const quotesStats = createServerFn({ method: "GET" })
     if (error) throw new Response(error.message, { status: 400 });
     const rows = data ?? [];
     const by = (s: string) => rows.filter((r) => r.status === s);
-    const sum = (arr: typeof rows) =>
-      Number(arr.reduce((a, r) => a + num(r.total), 0).toFixed(2));
+    const sum = (arr: typeof rows) => Number(arr.reduce((a, r) => a + num(r.total), 0).toFixed(2));
     return {
       total: rows.length,
       draft: by("draft").length,
@@ -488,7 +468,9 @@ export const quotesStats = createServerFn({ method: "GET" })
       approved: by("approved").length,
       rejected: by("rejected").length,
       converted: by("converted").length,
-      pipelineValue: sum(rows.filter((r) => ["draft", "sent", "viewed"].includes(r.status as string))),
+      pipelineValue: sum(
+        rows.filter((r) => ["draft", "sent", "viewed"].includes(r.status as string)),
+      ),
       approvedValue: sum(by("approved")),
     };
   });

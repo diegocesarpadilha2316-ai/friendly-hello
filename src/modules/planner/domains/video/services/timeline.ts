@@ -96,10 +96,7 @@ export function createTimeline(
 
 /** Deriva a duração total (máximo entre sequências + tracks). */
 export function totalDuration(timeline: VideoTimeline): number {
-  const tEnd = timeline.tracks.reduce(
-    (acc, t) => Math.max(acc, t.startSec + t.durationSec),
-    0,
-  );
+  const tEnd = timeline.tracks.reduce((acc, t) => Math.max(acc, t.startSec + t.durationSec), 0);
   const sEnd = timeline.sequences.reduce(
     (acc, s) => Math.max(acc, s.startSec + s.durationSec + s.pauseAfterSec),
     0,

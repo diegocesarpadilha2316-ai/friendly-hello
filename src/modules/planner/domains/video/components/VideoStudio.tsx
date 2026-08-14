@@ -54,7 +54,9 @@ export function VideoStudio() {
   const [sceneKind, setSceneKind] = useState<VideoSceneKind>("apresentacao");
   const [presetId, setPresetId] = useState<VideoPresetId>(DEFAULT_VIDEO_PRESET_ID);
   const [engineId, setEngineId] = useState<VideoEngineId>(DEFAULT_VIDEO_ENGINE_ID);
-  const [formatId, setFormatId] = useState<string>(getVideoPreset(DEFAULT_VIDEO_PRESET_ID).formatId);
+  const [formatId, setFormatId] = useState<string>(
+    getVideoPreset(DEFAULT_VIDEO_PRESET_ID).formatId,
+  );
   const [branding, setBranding] = useState<VideoBranding>(DEFAULT_BRANDING);
   const [narration, setNarration] = useState<VideoNarration>(DEFAULT_NARRATION);
   const [tab, setTab] = useState<Tab>("cenas");
@@ -63,10 +65,12 @@ export function VideoStudio() {
 
   const modeTabs = (
     <div className="mb-4 inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/40 p-1 backdrop-blur">
-      {([
-        { id: "studio", label: "Video Studio" },
-        { id: "local", label: "Vídeo Local" },
-      ] as const).map((m) => (
+      {(
+        [
+          { id: "studio", label: "Video Studio" },
+          { id: "local", label: "Vídeo Local" },
+        ] as const
+      ).map((m) => (
         <button
           key={m.id}
           type="button"
@@ -124,168 +128,179 @@ export function VideoStudio() {
 
   return (
     <>
-    {modeTabs}
-    <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
-      {/* Coluna central: viewport + timeline */}
-      <section className="space-y-4">
-        <div className="flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-border/60 bg-[radial-gradient(120%_80%_at_50%_-10%,hsl(var(--primary)/0.15),transparent),linear-gradient(180deg,#0b0e1a,#05060a)]">
-          <header className="flex flex-wrap items-center justify-between gap-2 border-b border-border/50 px-4 py-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <StatusBadge tone="info">{scene.label}</StatusBadge>
-              <StatusBadge tone="neutral">{preset.label}</StatusBadge>
-              <StatusBadge tone="neutral">{format.label}</StatusBadge>
-              <StatusBadge tone="neutral">{timeline.fps}fps</StatusBadge>
-              <StatusBadge tone="neutral">{timeline.durationSec.toFixed(1)}s</StatusBadge>
-            </div>
-            <div className="flex items-center gap-1.5">
-              {engine.tier === "free" ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] text-emerald-300 ring-1 ring-inset ring-emerald-500/30">
-                  <Zap className="h-3 w-3" /> Motor Gratuito
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] text-primary ring-1 ring-inset ring-primary/30">
-                  <Sparkles className="h-3 w-3" /> Motor Premium
-                </span>
-              )}
-            </div>
-          </header>
-          <div className="relative flex flex-1 items-center justify-center px-6 py-6">
-            <VideoPreview
-              active={!!active}
-              stage={active?.stage}
-              progress={active?.progress ?? 0}
-              aspect={scene.aspectRatio}
-            />
-          </div>
-          <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-border/50 bg-background/40 px-4 py-2.5 backdrop-blur">
-            <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
-              {videoScene ? (
-                <>
-                  <span>{videoScene.summary.roomCount} cômodo(s)</span>
-                  <span>·</span>
-                  <span>{videoScene.summary.moduleNodeCount} módulos</span>
-                  <span>·</span>
-                  <span>{videoScene.summary.openableNodeCount} aberturas</span>
-                  <span>·</span>
-                  <span>{videoScene.summary.lightNodeCount} luzes</span>
-                  <span>·</span>
-                  <span>{videoScene.summary.estimatedFrameCount} frames</span>
-                </>
-              ) : (
-                <span>Nenhum projeto carregado. Abra em /planner/projetos.</span>
-              )}
-            </div>
-            <Button onClick={submit} disabled={!project}>
-              <Play className="mr-1.5 h-4 w-4" /> Gerar vídeo
-            </Button>
-          </footer>
-        </div>
-
-        <Timeline timeline={timeline} />
-      </section>
-
-      {/* Sidebar direita: controles */}
-      <aside className="space-y-4">
-        <FormSection title="Preset de qualidade" description="Combina render + duração + formato.">
-          <div className="grid grid-cols-1 gap-1.5">
-            {VIDEO_PRESETS.map((p) => (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => {
-                  setPresetId(p.id);
-                  setFormatId(p.formatId);
-                }}
-                className={cn(
-                  "flex flex-col gap-0.5 rounded-lg border px-2.5 py-1.5 text-left text-[11px] transition",
-                  presetId === p.id
-                    ? "border-primary/60 bg-primary/10"
-                    : "border-border/50 bg-muted/10 hover:border-primary/30",
-                )}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold">{p.label}</span>
-                  <span className="text-[9px] uppercase tracking-widest text-muted-foreground">
-                    {p.durationSec}s
+      {modeTabs}
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
+        {/* Coluna central: viewport + timeline */}
+        <section className="space-y-4">
+          <div className="flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-border/60 bg-[radial-gradient(120%_80%_at_50%_-10%,hsl(var(--primary)/0.15),transparent),linear-gradient(180deg,#0b0e1a,#05060a)]">
+            <header className="flex flex-wrap items-center justify-between gap-2 border-b border-border/50 px-4 py-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <StatusBadge tone="info">{scene.label}</StatusBadge>
+                <StatusBadge tone="neutral">{preset.label}</StatusBadge>
+                <StatusBadge tone="neutral">{format.label}</StatusBadge>
+                <StatusBadge tone="neutral">{timeline.fps}fps</StatusBadge>
+                <StatusBadge tone="neutral">{timeline.durationSec.toFixed(1)}s</StatusBadge>
+              </div>
+              <div className="flex items-center gap-1.5">
+                {engine.tier === "free" ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] text-emerald-300 ring-1 ring-inset ring-emerald-500/30">
+                    <Zap className="h-3 w-3" /> Motor Gratuito
                   </span>
-                </div>
-                <p className="line-clamp-2 text-[10px] text-muted-foreground">{p.description}</p>
-              </button>
-            ))}
-          </div>
-        </FormSection>
-
-        <div className="rounded-2xl border border-border/60 bg-background/40 backdrop-blur">
-          <div className="flex flex-wrap items-center gap-0.5 border-b border-border/50 px-2 pt-2">
-            {(
-              [
-                { id: "cenas", label: "Cenas" },
-                { id: "motor", label: "Motor" },
-                { id: "camera", label: "Câmeras" },
-                { id: "animacoes", label: "Anim." },
-                { id: "export", label: "Export" },
-                { id: "marca", label: "Marca" },
-                { id: "narracao", label: "Áudio" },
-              ] as const
-            ).map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setTab(t.id)}
-                className={cn(
-                  "rounded-t-lg px-2.5 py-1.5 text-[11px] transition",
-                  tab === t.id
-                    ? "bg-primary/10 text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] text-primary ring-1 ring-inset ring-primary/30">
+                    <Sparkles className="h-3 w-3" /> Motor Premium
+                  </span>
                 )}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-          <div className="max-h-[540px] overflow-auto p-3">
-            {tab === "cenas" && <SceneGrid selectedKind={sceneKind} onSelect={setSceneKind} />}
-            {tab === "motor" && <EnginePanel engineId={engineId} onSelect={setEngineId} />}
-            {tab === "camera" && <CameraMovePanel selectedKinds={[]} onToggle={() => undefined} />}
-            {tab === "animacoes" && <AnimationsPanel selectedKinds={[]} onToggle={() => undefined} />}
-            {tab === "export" && <ExportPanel formatId={formatId} onSelect={setFormatId} />}
-            {tab === "marca" && (
-              <BrandingPanel branding={branding} onChange={(p) => setBranding((b) => ({ ...b, ...p }))} />
-            )}
-            {tab === "narracao" && (
-              <NarrationPanel
-                narration={narration}
-                onChange={(p) => setNarration((n) => ({ ...n, ...p }))}
+              </div>
+            </header>
+            <div className="relative flex flex-1 items-center justify-center px-6 py-6">
+              <VideoPreview
+                active={!!active}
+                stage={active?.stage}
+                progress={active?.progress ?? 0}
+                aspect={scene.aspectRatio}
               />
-            )}
+            </div>
+            <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-border/50 bg-background/40 px-4 py-2.5 backdrop-blur">
+              <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
+                {videoScene ? (
+                  <>
+                    <span>{videoScene.summary.roomCount} cômodo(s)</span>
+                    <span>·</span>
+                    <span>{videoScene.summary.moduleNodeCount} módulos</span>
+                    <span>·</span>
+                    <span>{videoScene.summary.openableNodeCount} aberturas</span>
+                    <span>·</span>
+                    <span>{videoScene.summary.lightNodeCount} luzes</span>
+                    <span>·</span>
+                    <span>{videoScene.summary.estimatedFrameCount} frames</span>
+                  </>
+                ) : (
+                  <span>Nenhum projeto carregado. Abra em /planner/projetos.</span>
+                )}
+              </div>
+              <Button onClick={submit} disabled={!project}>
+                <Play className="mr-1.5 h-4 w-4" /> Gerar vídeo
+              </Button>
+            </footer>
           </div>
-        </div>
 
-        <div className="rounded-2xl border border-border/60 bg-background/40 p-3 text-[11px] text-muted-foreground backdrop-blur">
-          <div className="flex items-center gap-2">
-            <Film className="h-4 w-4 text-primary" />
-            <span>
-              {VIDEO_ENGINES.length} motores declarados · Motor gratuito ativo · Premium em breve.
-            </span>
-          </div>
-          <div className="mt-1 text-[10px] opacity-80">
-            Pipeline de {VIDEO_PIPELINE.length} estágios · frames renderizados pelo Render Engine (Fase 3.9).
-          </div>
-        </div>
-      </aside>
+          <Timeline timeline={timeline} />
+        </section>
 
-      <section className="xl:col-span-2">
-        <FormSection title="Fila & histórico" description="Status, progresso, cancelar, repetir.">
-          <VideoQueue
-            queue={queue}
-            history={history}
-            onCancel={cancel}
-            onRetry={retry}
-            onClearHistory={clearHistory}
-          />
-        </FormSection>
-      </section>
-    </div>
+        {/* Sidebar direita: controles */}
+        <aside className="space-y-4">
+          <FormSection
+            title="Preset de qualidade"
+            description="Combina render + duração + formato."
+          >
+            <div className="grid grid-cols-1 gap-1.5">
+              {VIDEO_PRESETS.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => {
+                    setPresetId(p.id);
+                    setFormatId(p.formatId);
+                  }}
+                  className={cn(
+                    "flex flex-col gap-0.5 rounded-lg border px-2.5 py-1.5 text-left text-[11px] transition",
+                    presetId === p.id
+                      ? "border-primary/60 bg-primary/10"
+                      : "border-border/50 bg-muted/10 hover:border-primary/30",
+                  )}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold">{p.label}</span>
+                    <span className="text-[9px] uppercase tracking-widest text-muted-foreground">
+                      {p.durationSec}s
+                    </span>
+                  </div>
+                  <p className="line-clamp-2 text-[10px] text-muted-foreground">{p.description}</p>
+                </button>
+              ))}
+            </div>
+          </FormSection>
+
+          <div className="rounded-2xl border border-border/60 bg-background/40 backdrop-blur">
+            <div className="flex flex-wrap items-center gap-0.5 border-b border-border/50 px-2 pt-2">
+              {(
+                [
+                  { id: "cenas", label: "Cenas" },
+                  { id: "motor", label: "Motor" },
+                  { id: "camera", label: "Câmeras" },
+                  { id: "animacoes", label: "Anim." },
+                  { id: "export", label: "Export" },
+                  { id: "marca", label: "Marca" },
+                  { id: "narracao", label: "Áudio" },
+                ] as const
+              ).map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setTab(t.id)}
+                  className={cn(
+                    "rounded-t-lg px-2.5 py-1.5 text-[11px] transition",
+                    tab === t.id
+                      ? "bg-primary/10 text-foreground"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <div className="max-h-[540px] overflow-auto p-3">
+              {tab === "cenas" && <SceneGrid selectedKind={sceneKind} onSelect={setSceneKind} />}
+              {tab === "motor" && <EnginePanel engineId={engineId} onSelect={setEngineId} />}
+              {tab === "camera" && (
+                <CameraMovePanel selectedKinds={[]} onToggle={() => undefined} />
+              )}
+              {tab === "animacoes" && (
+                <AnimationsPanel selectedKinds={[]} onToggle={() => undefined} />
+              )}
+              {tab === "export" && <ExportPanel formatId={formatId} onSelect={setFormatId} />}
+              {tab === "marca" && (
+                <BrandingPanel
+                  branding={branding}
+                  onChange={(p) => setBranding((b) => ({ ...b, ...p }))}
+                />
+              )}
+              {tab === "narracao" && (
+                <NarrationPanel
+                  narration={narration}
+                  onChange={(p) => setNarration((n) => ({ ...n, ...p }))}
+                />
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-border/60 bg-background/40 p-3 text-[11px] text-muted-foreground backdrop-blur">
+            <div className="flex items-center gap-2">
+              <Film className="h-4 w-4 text-primary" />
+              <span>
+                {VIDEO_ENGINES.length} motores declarados · Motor gratuito ativo · Premium em breve.
+              </span>
+            </div>
+            <div className="mt-1 text-[10px] opacity-80">
+              Pipeline de {VIDEO_PIPELINE.length} estágios · frames renderizados pelo Render Engine
+              (Fase 3.9).
+            </div>
+          </div>
+        </aside>
+
+        <section className="xl:col-span-2">
+          <FormSection title="Fila & histórico" description="Status, progresso, cancelar, repetir.">
+            <VideoQueue
+              queue={queue}
+              history={history}
+              onCancel={cancel}
+              onRetry={retry}
+              onClearHistory={clearHistory}
+            />
+          </FormSection>
+        </section>
+      </div>
     </>
   );
 }
@@ -318,8 +333,8 @@ function VideoPreview({
           {active ? stage : "Viewport pronto para gerar vídeo"}
         </h3>
         <p className="max-w-md text-xs text-muted-foreground">
-          Motor gratuito por algoritmo próprio. Motor premium preparado para
-          Runway, Pika, Luma, Kling, OpenAI, Gemini — sem depender de IA.
+          Motor gratuito por algoritmo próprio. Motor premium preparado para Runway, Pika, Luma,
+          Kling, OpenAI, Gemini — sem depender de IA.
         </p>
         <div className="mt-2 h-1.5 w-64 overflow-hidden rounded-full bg-background/50 ring-1 ring-inset ring-border/60">
           <div

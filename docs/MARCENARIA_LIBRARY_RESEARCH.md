@@ -18,14 +18,14 @@ Não há uma biblioteca pronta que possa ser simplesmente instalada e transforme
 
 ## Escopo de implementação prioritário
 
-| Camada | Entrega necessária |
-|---|---|
-| Catálogo | Módulos inferiores, aéreos, torres, cantos, gaveteiros, pias, cooktop, painéis e acabamentos com dimensões mínimas/máximas e passos. |
-| Engenharia | MDF, espessuras, folgas, rodapé, pés, fundo, bordas, prateleiras, caixas de gaveta, dobradiças, corrediças, furações e zonas técnicas. |
-| Fabricação | Lista de peças por módulo, orientação de veio, fita de borda por lado, ferragens, cortes, furos e exportação. |
-| Layout | Âncoras de parede/piso, encontros em L, cantos, colisões, portas/janelas e tolerâncias de montagem. |
-| IA | Parser de intenção que entende ambiente, medidas, sequência, materiais, ferragens e restrições; saída deve ser um CompositionSpec validável. |
-| Visual | Frentes, puxadores cava/gola/perfil, materiais com textura e iluminação, portas/gavetas abertas e vistas comparáveis ao Promob. |
+| Camada     | Entrega necessária                                                                                                                           |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Catálogo   | Módulos inferiores, aéreos, torres, cantos, gaveteiros, pias, cooktop, painéis e acabamentos com dimensões mínimas/máximas e passos.         |
+| Engenharia | MDF, espessuras, folgas, rodapé, pés, fundo, bordas, prateleiras, caixas de gaveta, dobradiças, corrediças, furações e zonas técnicas.       |
+| Fabricação | Lista de peças por módulo, orientação de veio, fita de borda por lado, ferragens, cortes, furos e exportação.                                |
+| Layout     | Âncoras de parede/piso, encontros em L, cantos, colisões, portas/janelas e tolerâncias de montagem.                                          |
+| IA         | Parser de intenção que entende ambiente, medidas, sequência, materiais, ferragens e restrições; saída deve ser um CompositionSpec validável. |
+| Visual     | Frentes, puxadores cava/gola/perfil, materiais com textura e iluminação, portas/gavetas abertas e vistas comparáveis ao Promob.              |
 
 ## Auditoria dos projetos indicados pelo usuário
 
@@ -63,16 +63,16 @@ O repositório [JeromeL63/Wood-Frame](https://github.com/JeromeL63/Wood-Frame) �
 
 ## Matriz preliminar de decisão
 
-| Projeto | Licença observada | Stack/escopo | Decisão para o Dioris |
-|---|---|---|---|
-| WoodworkingShop | MIT | React/TypeScript, cabinet planner, 3D, MaxRects, BOM, PDF/DXF/G-code | Clonar isolado e estudar profundamente; candidato a portabilidade seletiva de algoritmos/contratos. |
-| FreeCAD Woodworking | MIT | Python/FreeCAD, engenharia de móveis, furação, cut-list, custos | Reimplementar conceitos de fabricação em TypeScript; não portar FreeCAD. |
-| FreeCAD | LGPLv2.1 observada no repositório | Kernel CAD paramétrico C++/Python | Referência de precisão, constraints e coordenadas; sem integração direta. |
-| Blueprint3D Modern | MIT | TypeScript/Three.js/React, planta e ambiente | Comparar Room/Wall/Snap/Measurement; não colar a aplicação. |
-| Aedifex | Licença ainda precisa ser confirmada no LICENSE | React/Three.js/WebGPU, editor arquitetônico e IA natural-language | Principal referência para DesignIntent, ferramentas estruturadas e ghost preview; auditar licença antes de código. |
-| OpenCutList | GPLv3 | SketchUp extension, cut-list, diagramas, etiquetas, custo/peso | Reimplementar conceitos; não copiar código GPL sem estratégia de licenciamento. |
-| Sweet Home 3D | GPL e licenças de terceiros | Java/SWT, ambiente/interiores/catalogo | Referência conceitual histórica; não integrar código/ativos. |
-| Wood-Frame | GPLv3 | Python/FreeCAD, painéis/vigas, atributos, produção/DXF | Usar ideia de metadados de produção; não integrar código. |
+| Projeto             | Licença observada                               | Stack/escopo                                                         | Decisão para o Dioris                                                                                              |
+| ------------------- | ----------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| WoodworkingShop     | MIT                                             | React/TypeScript, cabinet planner, 3D, MaxRects, BOM, PDF/DXF/G-code | Clonar isolado e estudar profundamente; candidato a portabilidade seletiva de algoritmos/contratos.                |
+| FreeCAD Woodworking | MIT                                             | Python/FreeCAD, engenharia de móveis, furação, cut-list, custos      | Reimplementar conceitos de fabricação em TypeScript; não portar FreeCAD.                                           |
+| FreeCAD             | LGPLv2.1 observada no repositório               | Kernel CAD paramétrico C++/Python                                    | Referência de precisão, constraints e coordenadas; sem integração direta.                                          |
+| Blueprint3D Modern  | MIT                                             | TypeScript/Three.js/React, planta e ambiente                         | Comparar Room/Wall/Snap/Measurement; não colar a aplicação.                                                        |
+| Aedifex             | Licença ainda precisa ser confirmada no LICENSE | React/Three.js/WebGPU, editor arquitetônico e IA natural-language    | Principal referência para DesignIntent, ferramentas estruturadas e ghost preview; auditar licença antes de código. |
+| OpenCutList         | GPLv3                                           | SketchUp extension, cut-list, diagramas, etiquetas, custo/peso       | Reimplementar conceitos; não copiar código GPL sem estratégia de licenciamento.                                    |
+| Sweet Home 3D       | GPL e licenças de terceiros                     | Java/SWT, ambiente/interiores/catalogo                               | Referência conceitual histórica; não integrar código/ativos.                                                       |
+| Wood-Frame          | GPLv3                                           | Python/FreeCAD, painéis/vigas, atributos, produção/DXF               | Usar ideia de metadados de produção; não integrar código.                                                          |
 
 ## Conclusão da auditoria
 

@@ -5,17 +5,28 @@ import { getRenderPreset } from "../services/presets";
 import type { LocalQualityPreset, LocalQualityId } from "./types";
 
 const LOCAL_IDS: readonly LocalQualityId[] = [
-  "rascunho", "baixa", "media", "alta", "ultra", "cinema",
+  "rascunho",
+  "baixa",
+  "media",
+  "alta",
+  "ultra",
+  "cinema",
 ];
 
 function tune(id: LocalQualityId): LocalQualityPreset {
   const base = getRenderPreset(id);
   const tier =
-    id === "rascunho" ? 0 :
-    id === "baixa" ? 1 :
-    id === "media" ? 2 :
-    id === "alta" ? 3 :
-    id === "ultra" ? 4 : 5;
+    id === "rascunho"
+      ? 0
+      : id === "baixa"
+        ? 1
+        : id === "media"
+          ? 2
+          : id === "alta"
+            ? 3
+            : id === "ultra"
+              ? 4
+              : 5;
   return {
     id,
     label: base.label,

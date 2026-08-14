@@ -11,7 +11,11 @@ export function buildCutList(parts: readonly ProductionPart[]): readonly CutList
     .filter((p) => p.kind !== "fita-borda")
     .forEach((p, idx) => {
       const brand = (p.material.split(" ")[0] ?? "").trim();
-      const hasEdge = p.category === "porta" || p.category === "frente" || p.category === "tampo" || p.category === "bancada";
+      const hasEdge =
+        p.category === "porta" ||
+        p.category === "frente" ||
+        p.category === "tampo" ||
+        p.category === "bancada";
       rows.push({
         code: shortId(p.id, idx),
         name: `${p.furnitureLabel} · ${p.label}`,

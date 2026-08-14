@@ -13,12 +13,7 @@ import { debitCreditsOrThrow } from "@/core/billing/debit.server";
 import { priceRenderJob } from "@/core/billing/pricing";
 
 export type RenderKind = "image" | "video" | "panorama" | "turntable";
-export type RenderStatus =
-  | "queued"
-  | "running"
-  | "succeeded"
-  | "failed"
-  | "cancelled";
+export type RenderStatus = "queued" | "running" | "succeeded" | "failed" | "cancelled";
 
 export interface RenderJobRow {
   id: string;
@@ -52,10 +47,10 @@ function mapJob(r: Record<string, unknown>): RenderJobRow {
     id: r.id as string,
     projectId: (r.project_id as string | null) ?? null,
     roomId: (r.room_id as string | null) ?? null,
-    kind: ((r.kind as RenderKind) ?? "image"),
+    kind: (r.kind as RenderKind) ?? "image",
     engine: (r.engine as string | null) ?? null,
     quality: (r.quality as string | null) ?? null,
-    status: ((r.status as RenderStatus) ?? "queued"),
+    status: (r.status as RenderStatus) ?? "queued",
     width: (r.width as number | null) ?? null,
     height: (r.height as number | null) ?? null,
     durationSec: (r.duration_sec as number | null) ?? null,
@@ -75,9 +70,7 @@ function mapJob(r: Record<string, unknown>): RenderJobRow {
 const listInput = z.object({
   projectId: z.string().uuid().optional(),
   kind: z.enum(["image", "video", "panorama", "turntable"]).optional(),
-  status: z
-    .enum(["queued", "running", "succeeded", "failed", "cancelled"])
-    .optional(),
+  status: z.enum(["queued", "running", "succeeded", "failed", "cancelled"]).optional(),
   limit: z.number().int().min(1).max(200).optional(),
 });
 
@@ -105,9 +98,7 @@ export const listRenderJobs = createServerFn({ method: "GET" })
 
 export const getRenderJob = createServerFn({ method: "GET" })
   .middleware([requireTenant])
-  .inputValidator((data: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const [jobRes, assetsRes, scenesRes] = await Promise.all([
       context.supabase
@@ -199,7 +190,8 @@ export const enqueueRenderJob = createServerFn({ method: "POST" })
     // Débito de créditos ANTES de enfileirar (rejeita se saldo insuficiente).
     const charge = priceRenderJob({
       kind: data.kind,
-      durationSec: data.durationSec ?? (data.kind === "video" || data.kind === "turntable" ? 8 : null),
+      durationSec:
+        data.durationSec ?? (data.kind === "video" || data.kind === "turntable" ? 8 : null),
       quality,
     });
     await debitCreditsOrThrow(context.supabase, context.tenantId, context.userId, {
@@ -223,8 +215,7 @@ export const enqueueRenderJob = createServerFn({ method: "POST" })
         width: data.width ?? size.w,
         height: data.height ?? size.h,
         duration_sec:
-          data.durationSec ??
-          (data.kind === "video" || data.kind === "turntable" ? 8 : null),
+          data.durationSec ?? (data.kind === "video" || data.kind === "turntable" ? 8 : null),
         fps: data.fps ?? (data.kind === "video" ? 30 : null),
         camera: data.camera ?? null,
         settings,
@@ -256,9 +247,7 @@ export const enqueueRenderJob = createServerFn({ method: "POST" })
 
 export const cancelRenderJob = createServerFn({ method: "POST" })
   .middleware([requireTenant])
-  .inputValidator((data: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const { data: row, error } = await context.supabase
       .from("render_jobs")
@@ -274,9 +263,7 @@ export const cancelRenderJob = createServerFn({ method: "POST" })
 
 export const deleteRenderJob = createServerFn({ method: "POST" })
   .middleware([requireTenant])
-  .inputValidator((data: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("render_jobs")
@@ -343,9 +330,7 @@ export const renderStats = createServerFn({ method: "GET" })
 const progressInput = z.object({
   id: z.string().uuid(),
   progress: z.number().min(0).max(100),
-  status: z
-    .enum(["queued", "running", "succeeded", "failed", "cancelled"])
-    .optional(),
+  status: z.enum(["queued", "running", "succeeded", "failed", "cancelled"]).optional(),
   error: z.string().max(2000).optional(),
 });
 
@@ -362,8 +347,7 @@ export const updateRenderProgress = createServerFn({ method: "POST" })
     if (data.status) {
       patch.status = data.status;
       if (data.status === "running" && !patch.started_at) patch.started_at = now;
-      if (["succeeded", "failed", "cancelled"].includes(data.status))
-        patch.finished_at = now;
+      if (["succeeded", "failed", "cancelled"].includes(data.status)) patch.finished_at = now;
     }
     if (data.error !== undefined) patch.error = data.error;
     const { error } = await context.supabase

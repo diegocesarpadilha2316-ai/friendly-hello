@@ -9,10 +9,20 @@ export const VOICE_PROVIDERS: readonly {
   description: string;
   available: boolean;
 }[] = [
-  { id: "elevenlabs", label: "ElevenLabs", description: "Vozes hiper-realistas pt-BR/en-US.", available: false },
+  {
+    id: "elevenlabs",
+    label: "ElevenLabs",
+    description: "Vozes hiper-realistas pt-BR/en-US.",
+    available: false,
+  },
   { id: "openai", label: "OpenAI TTS", description: "TTS da OpenAI.", available: false },
   { id: "google", label: "Google Cloud TTS", description: "Wavenet / Neural2.", available: false },
-  { id: "azure", label: "Azure Speech", description: "Vozes neurais multilíngues.", available: false },
+  {
+    id: "azure",
+    label: "Azure Speech",
+    description: "Vozes neurais multilíngues.",
+    available: false,
+  },
   { id: "custom", label: "Personalizado", description: "Adaptador próprio.", available: false },
 ];
 

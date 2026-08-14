@@ -26,8 +26,6 @@ export function findRealtimeMaterial(id: string): PbrMaterial | undefined {
   return REALTIME_MATERIALS.find((m) => m.id === id);
 }
 
-export function realtimeMaterialsByFamily(
-  family: PbrMaterialFamily,
-): readonly PbrMaterial[] {
+export function realtimeMaterialsByFamily(family: PbrMaterialFamily): readonly PbrMaterial[] {
   return REALTIME_MATERIALS.filter((m) => m.family === family);
 }

@@ -16,7 +16,10 @@ export interface OperatorLoad {
   skills: readonly string[];
 }
 
-export function computeOperatorLoad(totalHours: number, windowDays: number): readonly OperatorLoad[] {
+export function computeOperatorLoad(
+  totalHours: number,
+  windowDays: number,
+): readonly OperatorLoad[] {
   const ops = listOperators();
   const perOperator = ops.length > 0 ? totalHours / ops.length : 0;
   return ops.map((o) => {
@@ -40,7 +43,10 @@ export function findFreeOperators(loads: readonly OperatorLoad[]): readonly Oper
   return loads.filter((l) => l.free).sort((a, b) => a.loadPct - b.loadPct);
 }
 
-export function assignOperator(loads: readonly OperatorLoad[], skill: string): OperatorLoad | undefined {
+export function assignOperator(
+  loads: readonly OperatorLoad[],
+  skill: string,
+): OperatorLoad | undefined {
   const eligible = loads
     .filter((l) => l.skills.length === 0 || l.skills.includes(skill))
     .sort((a, b) => a.loadPct - b.loadPct);

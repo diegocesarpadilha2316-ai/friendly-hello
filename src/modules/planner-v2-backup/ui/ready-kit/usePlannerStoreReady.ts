@@ -16,7 +16,7 @@ export const usePlannerStore = create<any>((set, get) => ({
   toolMode: "orbit",
   gridVisible: false,
   lightsEnabled: true,
-  
+
   // Reais do V2 - transformados em estado plano para evitar getters circulares/loops
   furniture: [],
   selectedId: null,
@@ -26,8 +26,8 @@ export const usePlannerStore = create<any>((set, get) => ({
       id: "m1",
       role: "assistant",
       content: "Planner V2 Conectado. Como posso ajudar com seu projeto real?",
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    }
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    },
   ],
 
   // Actions
@@ -41,7 +41,7 @@ export const usePlannerStore = create<any>((set, get) => ({
   setToolMode: (mode: ToolMode) => set({ toolMode: mode }),
   setGridVisible: (value: boolean) => set({ gridVisible: value }),
   setLightsEnabled: (value: boolean) => set({ lightsEnabled: value }),
-  setViewMode: (mode: 'technical' | 'presentation') => {
+  setViewMode: (mode: "technical" | "presentation") => {
     usePlannerV2Store.getState().setViewMode(mode);
   },
   setCameraAction: (action: string) => {
@@ -64,7 +64,7 @@ export const usePlannerStore = create<any>((set, get) => ({
         updates.depthMm = patch.size[2] * 1000;
       }
       if (patch.rotationY !== undefined) updates.rotation = patch.rotationY;
-      
+
       usePlannerV2Store.getState().updateItem(selectedId, updates);
     }
   },
@@ -80,34 +80,34 @@ export const usePlannerStore = create<any>((set, get) => ({
   },
 
   toggleVisibility: (id: string) => {
-    const item = usePlannerV2Store.getState().items.find(i => i.id === id);
+    const item = usePlannerV2Store.getState().items.find((i) => i.id === id);
     if (item) usePlannerV2Store.getState().updateItem(id, { visible: !item.visible });
   },
 
   sendMessage: (content: string) => {
     // Integração futura com o agente real
     const now = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-    set((s: any) => ({ 
-      messages: [...s.messages, { id: Date.now().toString(), role: 'user', content, time: now }] 
+    set((s: any) => ({
+      messages: [...s.messages, { id: Date.now().toString(), role: "user", content, time: now }],
     }));
-  }
+  },
 }));
 
 // Sincronização reativa otimizada
 const syncFromV2 = () => {
   const v2State = usePlannerV2Store.getState();
-  
+
   // Mapeia apenas o necessário para a UI
-  const mappedFurniture = v2State.items.map(item => ({
+  const mappedFurniture = v2State.items.map((item) => ({
     id: item.id,
     name: item.name,
-    kind: item.family === 'kitchen-base-cabinet' ? 'base' : 'tower',
+    kind: item.family === "kitchen-base-cabinet" ? "base" : "tower",
     visible: item.visible,
     selected: item.selected,
     position: [item.position.x / 1000, item.position.y / 1000, item.position.z / 1000],
     rotationY: item.rotation,
     size: [item.widthMm / 1000, item.heightMm / 1000, item.depthMm / 1000],
-    material: item.parameters.bodyMaterialId || 'taupe'
+    material: item.parameters.bodyMaterialId || "taupe",
   }));
 
   // Compara para evitar atualizações idênticas (evita loops se houver algum subscribe circular)
@@ -117,10 +117,10 @@ const syncFromV2 = () => {
     currentStore.selectedId !== v2State.selectedId ||
     currentStore.viewMode !== v2State.viewMode
   ) {
-    usePlannerStore.setState({ 
+    usePlannerStore.setState({
       furniture: mappedFurniture,
       selectedId: v2State.selectedId,
-      viewMode: v2State.viewMode
+      viewMode: v2State.viewMode,
     });
   }
 };

@@ -2,9 +2,15 @@
  * Fase 3.22 — Performance tiers (cache, streaming, render incremental,
  * frame skip, compressão, paralelismo).
  */
-import type { LocalVideoPerformanceConfig, LocalVideoPerformanceTier, LocalVideoScene } from "./types";
+import type {
+  LocalVideoPerformanceConfig,
+  LocalVideoPerformanceTier,
+  LocalVideoScene,
+} from "./types";
 
-export function videoPerformanceForTier(tier: LocalVideoPerformanceTier): LocalVideoPerformanceConfig {
+export function videoPerformanceForTier(
+  tier: LocalVideoPerformanceTier,
+): LocalVideoPerformanceConfig {
   return {
     tier,
     cache: tier !== "extremo",

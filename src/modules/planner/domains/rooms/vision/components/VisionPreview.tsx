@@ -58,7 +58,8 @@ function VisionSvg({ model, style }: { model: VisionRoomModel; style: "wire" | "
       ))}
       {openings.map((entry) => {
         if (!entry) return null;
-        const color = entry.op.role === "door" ? "hsl(var(--accent))" : "hsl(var(--chart-3, var(--primary)))";
+        const color =
+          entry.op.role === "door" ? "hsl(var(--accent))" : "hsl(var(--chart-3, var(--primary)))";
         return (
           <g
             key={entry.op.id}
@@ -72,12 +73,7 @@ function VisionSvg({ model, style }: { model: VisionRoomModel; style: "wire" | "
               fill={color}
               opacity={0.9}
             />
-            <text
-              y={-90}
-              textAnchor="middle"
-              fontSize={110}
-              fill="hsl(var(--muted-foreground))"
-            >
+            <text y={-90} textAnchor="middle" fontSize={110} fill="hsl(var(--muted-foreground))">
               {entry.op.role === "door" ? "P" : "J"}
             </text>
           </g>
@@ -91,23 +87,31 @@ export function VisionPreview({ model, photoUrl }: Props) {
   return (
     <div className="grid gap-3 md:grid-cols-3">
       <div className="space-y-2">
-        <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Foto original</div>
+        <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          Foto original
+        </div>
         <div className="aspect-[4/3] overflow-hidden rounded-xl border border-border/60 bg-muted/20">
           {photoUrl ? (
             <img src={photoUrl} alt="Foto do ambiente" className="h-full w-full object-cover" />
           ) : (
-            <div className="flex h-full items-center justify-center text-xs text-muted-foreground">Sem foto</div>
+            <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
+              Sem foto
+            </div>
           )}
         </div>
       </div>
       <div className="space-y-2">
-        <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Estrutura detectada</div>
+        <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          Estrutura detectada
+        </div>
         <div className="aspect-[4/3] overflow-hidden rounded-xl border border-border/60 bg-background">
           <VisionSvg model={model} style="wire" />
         </div>
       </div>
       <div className="space-y-2">
-        <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Prévia do ambiente</div>
+        <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          Prévia do ambiente
+        </div>
         <div className="aspect-[4/3] overflow-hidden rounded-xl border border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5">
           <VisionSvg model={model} style="solid" />
         </div>

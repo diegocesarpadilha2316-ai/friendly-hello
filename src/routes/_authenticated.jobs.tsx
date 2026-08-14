@@ -29,15 +29,7 @@ import {
   type WorkerNode,
 } from "@/core/jobs";
 
-type TabKey =
-  | "dashboard"
-  | "queue"
-  | "workers"
-  | "cron"
-  | "history"
-  | "dead"
-  | "retry"
-  | "metrics";
+type TabKey = "dashboard" | "queue" | "workers" | "cron" | "history" | "dead" | "retry" | "metrics";
 
 const TABS: readonly { key: TabKey; label: string }[] = [
   { key: "dashboard", label: "Dashboard" },
@@ -155,7 +147,10 @@ function JobsPage() {
           <MetricCard label="Concluídos" value={String(completed)} />
           <MetricCard label="Falhas / Dead" value={String(failed)} />
           <MetricCard label="Workers" value={String(data.workers.length)} />
-          <MetricCard label="Crons ativos" value={String(data.crons.filter((c) => c.active).length)} />
+          <MetricCard
+            label="Crons ativos"
+            value={String(data.crons.filter((c) => c.active).length)}
+          />
           <MetricCard label="Dead Letter" value={String(data.deadLetter.length)} />
           <MetricCard label="Retries" value={String(data.retries.length)} />
         </div>
@@ -295,7 +290,9 @@ function CronTab({ data }: { data: readonly CronJob[] }) {
       id: "active",
       header: "Ativo",
       cell: (r) => (
-        <StatusBadge tone={r.active ? "success" : "neutral"}>{r.active ? "Sim" : "Não"}</StatusBadge>
+        <StatusBadge tone={r.active ? "success" : "neutral"}>
+          {r.active ? "Sim" : "Não"}
+        </StatusBadge>
       ),
     },
     {

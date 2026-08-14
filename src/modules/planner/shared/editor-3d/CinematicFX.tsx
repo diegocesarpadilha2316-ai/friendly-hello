@@ -21,13 +21,7 @@ export function CinematicFX() {
   return (
     <EffectComposer multisampling={0}>
       {/* Oclusão de ambiente: quinas de armário, vãos, junta piso/parede. */}
-      <N8AO
-        aoRadius={0.55}
-        intensity={2.1}
-        distanceFalloff={0.8}
-        halfRes
-        color="#0a0c12"
-      />
+      <N8AO aoRadius={0.55} intensity={2.1} distanceFalloff={0.8} halfRes color="#0a0c12" />
       <Bloom
         intensity={0.5}
         luminanceThreshold={0.86}

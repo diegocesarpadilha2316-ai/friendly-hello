@@ -23,7 +23,14 @@ export function useProduction(): UseProductionResult {
   return useMemo(() => {
     const project = state.project;
     if (!project) {
-      return { report: null, orders: [], hasProject: false, isEmpty: true, projectName: "—", clientName: "—" };
+      return {
+        report: null,
+        orders: [],
+        hasProject: false,
+        isEmpty: true,
+        projectName: "—",
+        clientName: "—",
+      };
     }
     const rules = loadRules(tenantId);
     const report = buildProductionReport(project, rules);

@@ -14,7 +14,12 @@ const STANDARD_BOARD: CuttingBoardSpec = {
   widthMm: 1850,
 };
 
-interface Slot { code: string; w: number; h: number; grain: string }
+interface Slot {
+  code: string;
+  w: number;
+  h: number;
+  grain: string;
+}
 
 function toSlots(rows: readonly CutListRow[]): Slot[] {
   const slots: Slot[] = [];
@@ -34,7 +39,11 @@ export function buildCuttingPlan(rows: readonly CutListRow[]): CuttingPlan {
   const groupHeight = STANDARD_BOARD.widthMm;
   const boardAreaM2 = (groupWidth * groupHeight) / 1_000_000;
 
-  interface Shelf { y: number; height: number; x: number }
+  interface Shelf {
+    y: number;
+    height: number;
+    x: number;
+  }
   let currentPlacements: CuttingPlacement[] = [];
   let shelves: Shelf[] = [{ y: 0, height: 0, x: 0 }];
 
@@ -57,9 +66,10 @@ export function buildCuttingPlan(rows: readonly CutListRow[]): CuttingPlan {
     if (slot.w > groupWidth && slot.h > groupWidth) continue;
     let placed = false;
     for (const shelf of shelves) {
-      const fits = slot.w + shelf.x <= groupWidth
-        && (shelf.y + Math.max(shelf.height, slot.h)) <= groupHeight
-        && (shelf.height === 0 || slot.h <= shelf.height);
+      const fits =
+        slot.w + shelf.x <= groupWidth &&
+        shelf.y + Math.max(shelf.height, slot.h) <= groupHeight &&
+        (shelf.height === 0 || slot.h <= shelf.height);
       if (!fits) continue;
       currentPlacements.push({
         code: slot.code,
@@ -80,13 +90,25 @@ export function buildCuttingPlan(rows: readonly CutListRow[]): CuttingPlan {
     const newY = lastShelf.y + lastShelf.height + kerf;
     if (newY + slot.h <= groupHeight && slot.w <= groupWidth) {
       currentPlacements.push({
-        code: slot.code, x: 0, y: newY, w: slot.w, h: slot.h, rotated: false, grainRespected: true,
+        code: slot.code,
+        x: 0,
+        y: newY,
+        w: slot.w,
+        h: slot.h,
+        rotated: false,
+        grainRespected: true,
       });
       shelves.push({ y: newY, height: slot.h, x: slot.w + kerf });
     } else {
       flush();
       currentPlacements.push({
-        code: slot.code, x: 0, y: 0, w: slot.w, h: slot.h, rotated: false, grainRespected: true,
+        code: slot.code,
+        x: 0,
+        y: 0,
+        w: slot.w,
+        h: slot.h,
+        rotated: false,
+        grainRespected: true,
       });
       shelves = [{ y: 0, height: slot.h, x: slot.w + kerf }];
     }
@@ -95,7 +117,9 @@ export function buildCuttingPlan(rows: readonly CutListRow[]): CuttingPlan {
 
   const usedTotal = boards.reduce((acc, b) => acc + b.usedM2, 0);
   const wasteTotal = boards.reduce((acc, b) => acc + b.wasteM2, 0);
-  const avgUsage = boards.length ? boards.reduce((acc, b) => acc + b.usageRatio, 0) / boards.length : 0;
+  const avgUsage = boards.length
+    ? boards.reduce((acc, b) => acc + b.usageRatio, 0) / boards.length
+    : 0;
   return {
     boards,
     totals: {

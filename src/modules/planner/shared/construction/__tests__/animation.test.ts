@@ -48,7 +48,9 @@ describe("Comandos da interface → mecanismos", () => {
       // O eixo tem de cair sobre uma das bordas verticais da própria folha.
       const left = d.box.x;
       const right = d.box.x + d.box.width;
-      expect(Math.min(Math.abs(pivot[0] - left), Math.abs(pivot[0] - right))).toBeLessThanOrEqual(4);
+      expect(Math.min(Math.abs(pivot[0] - left), Math.abs(pivot[0] - right))).toBeLessThanOrEqual(
+        4,
+      );
       // E no plano da folha, não no fundo do móvel.
       expect(Math.abs(pivot[2] - d.box.z)).toBeLessThanOrEqual(4);
     }

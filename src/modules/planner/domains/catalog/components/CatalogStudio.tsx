@@ -25,15 +25,15 @@ type Tab =
   | "exportar";
 
 const TABS: ReadonlyArray<{ id: Tab; label: string }> = [
-  { id: "catalogo",    label: "Catálogo" },
-  { id: "colecoes",    label: "Coleções" },
-  { id: "favoritos",   label: "Favoritos" },
-  { id: "recentes",    label: "Recentes" },
+  { id: "catalogo", label: "Catálogo" },
+  { id: "colecoes", label: "Coleções" },
+  { id: "favoritos", label: "Favoritos" },
+  { id: "recentes", label: "Recentes" },
   { id: "fabricantes", label: "Fabricantes" },
-  { id: "materiais",   label: "Materiais" },
-  { id: "ferragens",   label: "Ferragens" },
-  { id: "importar",    label: "Importar" },
-  { id: "exportar",    label: "Exportar" },
+  { id: "materiais", label: "Materiais" },
+  { id: "ferragens", label: "Ferragens" },
+  { id: "importar", label: "Importar" },
+  { id: "exportar", label: "Exportar" },
 ];
 
 export function CatalogStudio(): ReactNode {
@@ -62,7 +62,9 @@ export function CatalogStudio(): ReactNode {
             key={t.id}
             onClick={() => setTab(t.id)}
             className={`rounded-md px-3 py-2 text-left text-sm transition-colors ${
-              tab === t.id ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-muted/40"
+              tab === t.id
+                ? "bg-primary/15 text-primary"
+                : "text-muted-foreground hover:bg-muted/40"
             }`}
           >
             {t.label}
@@ -106,7 +108,9 @@ export function CatalogStudio(): ReactNode {
                         key={item.id}
                         onClick={() => cat.select(item.id)}
                         className={`flex w-full items-center justify-between rounded-md border px-3 py-2 text-left text-sm transition ${
-                          active ? "border-primary/70 bg-primary/10" : "border-border/50 bg-background/30 hover:border-border"
+                          active
+                            ? "border-primary/70 bg-primary/10"
+                            : "border-border/50 bg-background/30 hover:border-border"
                         }`}
                       >
                         <div>
@@ -118,8 +122,16 @@ export function CatalogStudio(): ReactNode {
                         <span
                           role="button"
                           tabIndex={0}
-                          onClick={(e) => { e.stopPropagation(); cat.toggleFavorite(item.id); }}
-                          onKeyDown={(e) => { if (e.key === "Enter") { e.stopPropagation(); cat.toggleFavorite(item.id); } }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            cat.toggleFavorite(item.id);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.stopPropagation();
+                              cat.toggleFavorite(item.id);
+                            }
+                          }}
                           className={`text-xs ${fav ? "text-amber-400" : "text-muted-foreground"}`}
                         >
                           ★
@@ -142,15 +154,29 @@ export function CatalogStudio(): ReactNode {
                       <div className="grid grid-cols-3 gap-2">
                         <label className="text-xs">
                           <span className="mb-1 block text-muted-foreground">L (mm)</span>
-                          <Input type="number" value={cat.variant.widthMm} onChange={(e) => cat.updateVariant({ widthMm: Number(e.target.value) })} />
+                          <Input
+                            type="number"
+                            value={cat.variant.widthMm}
+                            onChange={(e) => cat.updateVariant({ widthMm: Number(e.target.value) })}
+                          />
                         </label>
                         <label className="text-xs">
                           <span className="mb-1 block text-muted-foreground">A (mm)</span>
-                          <Input type="number" value={cat.variant.heightMm} onChange={(e) => cat.updateVariant({ heightMm: Number(e.target.value) })} />
+                          <Input
+                            type="number"
+                            value={cat.variant.heightMm}
+                            onChange={(e) =>
+                              cat.updateVariant({ heightMm: Number(e.target.value) })
+                            }
+                          />
                         </label>
                         <label className="text-xs">
                           <span className="mb-1 block text-muted-foreground">P (mm)</span>
-                          <Input type="number" value={cat.variant.depthMm} onChange={(e) => cat.updateVariant({ depthMm: Number(e.target.value) })} />
+                          <Input
+                            type="number"
+                            value={cat.variant.depthMm}
+                            onChange={(e) => cat.updateVariant({ depthMm: Number(e.target.value) })}
+                          />
                         </label>
                       </div>
                       <div>
@@ -158,11 +184,15 @@ export function CatalogStudio(): ReactNode {
                         <select
                           className="w-full rounded-md border border-border/60 bg-background/40 px-2 py-1 text-sm"
                           value={cat.variant.materialId ?? ""}
-                          onChange={(e) => cat.updateVariant({ materialId: e.target.value || undefined })}
+                          onChange={(e) =>
+                            cat.updateVariant({ materialId: e.target.value || undefined })
+                          }
                         >
                           <option value="">— nenhum —</option>
                           {cat.materials.map((m) => (
-                            <option key={m.id} value={m.id}>{m.name}</option>
+                            <option key={m.id} value={m.id}>
+                              {m.name}
+                            </option>
                           ))}
                         </select>
                       </div>
@@ -171,11 +201,15 @@ export function CatalogStudio(): ReactNode {
                         <select
                           className="w-full rounded-md border border-border/60 bg-background/40 px-2 py-1 text-sm"
                           value={cat.variant.handleId ?? ""}
-                          onChange={(e) => cat.updateVariant({ handleId: e.target.value || undefined })}
+                          onChange={(e) =>
+                            cat.updateVariant({ handleId: e.target.value || undefined })
+                          }
                         >
                           <option value="">— nenhum —</option>
                           {cat.handles.map((h) => (
-                            <option key={h.id} value={h.id}>{h.name}</option>
+                            <option key={h.id} value={h.id}>
+                              {h.name}
+                            </option>
                           ))}
                         </select>
                       </div>
@@ -184,24 +218,37 @@ export function CatalogStudio(): ReactNode {
                           <div>Base: {formatBRL(price.base)}</div>
                           <div>Material: {formatBRL(price.material)}</div>
                           <div>Ferragens: {formatBRL(price.hardware)}</div>
-                          <div className="mt-1 font-medium text-foreground">Total: {formatBRL(price.total)}</div>
+                          <div className="mt-1 font-medium text-foreground">
+                            Total: {formatBRL(price.total)}
+                          </div>
                         </div>
                       )}
                       {warnings.length > 0 && (
                         <ul className="space-y-1 text-xs">
                           {warnings.map((w) => (
-                            <li key={w.id} className={w.severity === "error" ? "text-destructive" : "text-amber-500"}>
+                            <li
+                              key={w.id}
+                              className={
+                                w.severity === "error" ? "text-destructive" : "text-amber-500"
+                              }
+                            >
                               • {w.message}
                             </li>
                           ))}
                         </ul>
                       )}
-                      <Button size="sm" disabled={!cat.canInsert} onClick={() => cat.insertSelected()}>
+                      <Button
+                        size="sm"
+                        disabled={!cat.canInsert}
+                        onClick={() => cat.insertSelected()}
+                      >
                         Inserir no cômodo ativo
                       </Button>
                     </div>
                   ) : (
-                    <div className="text-xs text-muted-foreground">Selecione um item para configurar.</div>
+                    <div className="text-xs text-muted-foreground">
+                      Selecione um item para configurar.
+                    </div>
                   )}
                 </aside>
               </div>
@@ -211,14 +258,25 @@ export function CatalogStudio(): ReactNode {
 
         {tab === "colecoes" && (
           <Card className="border-border/60 bg-card/40 backdrop-blur">
-            <CardHeader><CardTitle>Coleções</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>Coleções</CardTitle>
+            </CardHeader>
             <CardContent className="grid gap-2 md:grid-cols-2">
               {cat.collections.map((c) => (
-                <div key={c.id} className="rounded-md border border-border/50 bg-background/30 p-3 text-sm">
+                <div
+                  key={c.id}
+                  className="rounded-md border border-border/50 bg-background/30 p-3 text-sm"
+                >
                   <div className="font-medium">{c.name}</div>
-                  <div className="text-xs text-muted-foreground">{c.manufacturer} · {c.line} · {c.year}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {c.manufacturer} · {c.line} · {c.year}
+                  </div>
                   <div className="mt-1 flex flex-wrap gap-1">
-                    {c.tags.map((t) => <Badge key={t} variant="outline" className="text-[10px]">{t}</Badge>)}
+                    {c.tags.map((t) => (
+                      <Badge key={t} variant="outline" className="text-[10px]">
+                        {t}
+                      </Badge>
+                    ))}
                   </div>
                 </div>
               ))}
@@ -229,16 +287,26 @@ export function CatalogStudio(): ReactNode {
         {tab === "favoritos" && (
           <Card className="border-border/60 bg-card/40 backdrop-blur">
             <CardHeader className="flex flex-row items-center justify-between">
-              <div><CardTitle>Favoritos</CardTitle></div>
-              <Button size="sm" variant="ghost" onClick={cat.clearFavorites}>Limpar</Button>
+              <div>
+                <CardTitle>Favoritos</CardTitle>
+              </div>
+              <Button size="sm" variant="ghost" onClick={cat.clearFavorites}>
+                Limpar
+              </Button>
             </CardHeader>
             <CardContent className="space-y-1 text-sm">
-              {cat.favorites.itemIds.length === 0 && <div className="text-xs text-muted-foreground">Nenhum favorito ainda.</div>}
+              {cat.favorites.itemIds.length === 0 && (
+                <div className="text-xs text-muted-foreground">Nenhum favorito ainda.</div>
+              )}
               {cat.favorites.itemIds.map((id) => {
                 const item = cat.items.find((i) => i.id === id);
                 if (!item) return null;
                 return (
-                  <button key={id} onClick={() => cat.select(id)} className="block w-full rounded-md border border-border/50 bg-background/30 px-3 py-2 text-left text-sm hover:border-border">
+                  <button
+                    key={id}
+                    onClick={() => cat.select(id)}
+                    className="block w-full rounded-md border border-border/50 bg-background/30 px-3 py-2 text-left text-sm hover:border-border"
+                  >
                     {item.name}
                   </button>
                 );
@@ -250,16 +318,26 @@ export function CatalogStudio(): ReactNode {
         {tab === "recentes" && (
           <Card className="border-border/60 bg-card/40 backdrop-blur">
             <CardHeader className="flex flex-row items-center justify-between">
-              <div><CardTitle>Recentes</CardTitle></div>
-              <Button size="sm" variant="ghost" onClick={cat.clearRecents}>Limpar</Button>
+              <div>
+                <CardTitle>Recentes</CardTitle>
+              </div>
+              <Button size="sm" variant="ghost" onClick={cat.clearRecents}>
+                Limpar
+              </Button>
             </CardHeader>
             <CardContent className="space-y-1 text-sm">
-              {cat.recents.itemIds.length === 0 && <div className="text-xs text-muted-foreground">Nenhum item recente.</div>}
+              {cat.recents.itemIds.length === 0 && (
+                <div className="text-xs text-muted-foreground">Nenhum item recente.</div>
+              )}
               {cat.recents.itemIds.map((id) => {
                 const item = cat.items.find((i) => i.id === id);
                 if (!item) return null;
                 return (
-                  <button key={id} onClick={() => cat.select(id)} className="block w-full rounded-md border border-border/50 bg-background/30 px-3 py-2 text-left text-sm hover:border-border">
+                  <button
+                    key={id}
+                    onClick={() => cat.select(id)}
+                    className="block w-full rounded-md border border-border/50 bg-background/30 px-3 py-2 text-left text-sm hover:border-border"
+                  >
                     {item.name}
                   </button>
                 );
@@ -270,15 +348,22 @@ export function CatalogStudio(): ReactNode {
 
         {tab === "fabricantes" && (
           <Card className="border-border/60 bg-card/40 backdrop-blur">
-            <CardHeader><CardTitle>Fabricantes homologados</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>Fabricantes homologados</CardTitle>
+            </CardHeader>
             <CardContent className="grid gap-2 md:grid-cols-2">
               {cat.manufacturers.map((m) => (
-                <div key={m.id} className="rounded-md border border-border/50 bg-background/30 p-3 text-sm">
+                <div
+                  key={m.id}
+                  className="rounded-md border border-border/50 bg-background/30 p-3 text-sm"
+                >
                   <div className="flex items-center justify-between">
                     <div className="font-medium">{m.name}</div>
                     {m.premium && <Badge variant="secondary">premium</Badge>}
                   </div>
-                  <div className="text-xs text-muted-foreground">{m.country} · {m.categories.length} categorias</div>
+                  <div className="text-xs text-muted-foreground">
+                    {m.country} · {m.categories.length} categorias
+                  </div>
                 </div>
               ))}
             </CardContent>
@@ -287,16 +372,24 @@ export function CatalogStudio(): ReactNode {
 
         {tab === "materiais" && (
           <Card className="border-border/60 bg-card/40 backdrop-blur">
-            <CardHeader><CardTitle>Materiais</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>Materiais</CardTitle>
+            </CardHeader>
             <CardContent className="space-y-1 text-sm">
               {cat.materials.map((m) => (
-                <div key={m.id} className="rounded-md border border-border/50 bg-background/30 px-3 py-2">
+                <div
+                  key={m.id}
+                  className="rounded-md border border-border/50 bg-background/30 px-3 py-2"
+                >
                   <div className="flex items-center justify-between">
                     <div className="font-medium">{m.name}</div>
-                    <div className="text-xs text-muted-foreground">{formatBRL(m.pricePerM2)} / m²</div>
+                    <div className="text-xs text-muted-foreground">
+                      {formatBRL(m.pricePerM2)} / m²
+                    </div>
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {m.manufacturer} · {m.kind.toUpperCase()} · {m.thicknessesMm.join(", ")}mm · {m.finish}
+                    {m.manufacturer} · {m.kind.toUpperCase()} · {m.thicknessesMm.join(", ")}mm ·{" "}
+                    {m.finish}
                   </div>
                 </div>
               ))}
@@ -306,19 +399,42 @@ export function CatalogStudio(): ReactNode {
 
         {tab === "ferragens" && (
           <Card className="border-border/60 bg-card/40 backdrop-blur">
-            <CardHeader><CardTitle>Ferragens</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>Ferragens</CardTitle>
+            </CardHeader>
             <CardContent className="grid gap-2 md:grid-cols-3">
               <div>
                 <div className="mb-1 text-xs font-medium text-muted-foreground">Puxadores</div>
-                {cat.handles.map((h) => <div key={h.id} className="rounded-md border border-border/50 bg-background/30 px-2 py-1 text-xs">{h.name} · {formatBRL(h.price)}</div>)}
+                {cat.handles.map((h) => (
+                  <div
+                    key={h.id}
+                    className="rounded-md border border-border/50 bg-background/30 px-2 py-1 text-xs"
+                  >
+                    {h.name} · {formatBRL(h.price)}
+                  </div>
+                ))}
               </div>
               <div>
                 <div className="mb-1 text-xs font-medium text-muted-foreground">Dobradiças</div>
-                {cat.hinges.map((h) => <div key={h.id} className="rounded-md border border-border/50 bg-background/30 px-2 py-1 text-xs">{h.name} · {formatBRL(h.price)}</div>)}
+                {cat.hinges.map((h) => (
+                  <div
+                    key={h.id}
+                    className="rounded-md border border-border/50 bg-background/30 px-2 py-1 text-xs"
+                  >
+                    {h.name} · {formatBRL(h.price)}
+                  </div>
+                ))}
               </div>
               <div>
                 <div className="mb-1 text-xs font-medium text-muted-foreground">Corrediças</div>
-                {cat.slides.map((s) => <div key={s.id} className="rounded-md border border-border/50 bg-background/30 px-2 py-1 text-xs">{s.name} · {formatBRL(s.price)}</div>)}
+                {cat.slides.map((s) => (
+                  <div
+                    key={s.id}
+                    className="rounded-md border border-border/50 bg-background/30 px-2 py-1 text-xs"
+                  >
+                    {s.name} · {formatBRL(s.price)}
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
@@ -328,12 +444,21 @@ export function CatalogStudio(): ReactNode {
           <Card className="border-border/60 bg-card/40 backdrop-blur">
             <CardHeader>
               <CardTitle>Importar catálogo</CardTitle>
-              <CardDescription>CSV, JSON ou XML. Preview local — não persiste no banco.</CardDescription>
+              <CardDescription>
+                CSV, JSON ou XML. Preview local — não persiste no banco.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="flex gap-2">
                 {(["csv", "json", "xml", "excel"] as const).map((f) => (
-                  <Button key={f} size="sm" variant={importFmt === f ? "default" : "outline"} onClick={() => setImportFmt(f)}>{f.toUpperCase()}</Button>
+                  <Button
+                    key={f}
+                    size="sm"
+                    variant={importFmt === f ? "default" : "outline"}
+                    onClick={() => setImportFmt(f)}
+                  >
+                    {f.toUpperCase()}
+                  </Button>
                 ))}
               </div>
               <textarea
@@ -352,7 +477,9 @@ export function CatalogStudio(): ReactNode {
                 >
                   Processar
                 </Button>
-                {importResult && <div className="text-xs text-muted-foreground self-center">{importResult}</div>}
+                {importResult && (
+                  <div className="text-xs text-muted-foreground self-center">{importResult}</div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -367,7 +494,14 @@ export function CatalogStudio(): ReactNode {
             <CardContent className="space-y-2">
               <div className="flex gap-2">
                 {(["csv", "json", "xml", "excel"] as const).map((f) => (
-                  <Button key={f} size="sm" variant={exportFmt === f ? "default" : "outline"} onClick={() => setExportFmt(f)}>{f.toUpperCase()}</Button>
+                  <Button
+                    key={f}
+                    size="sm"
+                    variant={exportFmt === f ? "default" : "outline"}
+                    onClick={() => setExportFmt(f)}
+                  >
+                    {f.toUpperCase()}
+                  </Button>
                 ))}
               </div>
               <textarea

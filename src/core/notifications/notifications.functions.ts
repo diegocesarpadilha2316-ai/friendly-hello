@@ -13,10 +13,21 @@ import type {
 } from "./types";
 
 const CHANNELS: readonly NotificationChannel[] = [
-  "in_app","email","whatsapp","sms","push","webhook","discord","slack","teams","telegram",
+  "in_app",
+  "email",
+  "whatsapp",
+  "sms",
+  "push",
+  "webhook",
+  "discord",
+  "slack",
+  "teams",
+  "telegram",
 ];
-const channelSchema = z.enum(CHANNELS as unknown as [NotificationChannel, ...NotificationChannel[]]);
-const prioritySchema = z.enum(["low","normal","high","critical"]);
+const channelSchema = z.enum(
+  CHANNELS as unknown as [NotificationChannel, ...NotificationChannel[]],
+);
+const prioritySchema = z.enum(["low", "normal", "high", "critical"]);
 
 export const notificationsList = createServerFn({ method: "GET" })
   .middleware([requireTenant])
@@ -48,7 +59,9 @@ export const notificationsMetrics = createServerFn({ method: "GET" })
         .limit(1000),
     ]);
     const total = notifs?.length ?? 0;
-    const unread = (notifs ?? []).filter((n) => n.status !== "read" && n.status !== "archived").length;
+    const unread = (notifs ?? []).filter(
+      (n) => n.status !== "read" && n.status !== "archived",
+    ).length;
     const deliveriesPending = (deliveries ?? []).filter((d) => d.status === "pending").length;
     const deliveriesFailed = (deliveries ?? []).filter((d) => d.status === "failed").length;
     return { total, unread, deliveriesPending, deliveriesFailed };
@@ -83,16 +96,18 @@ export const notificationsArchive = createServerFn({ method: "POST" })
 export const notificationsSendDirect = createServerFn({ method: "POST" })
   .middleware([requireTenant])
   .inputValidator((raw: unknown) =>
-    z.object({
-      userId: z.string().uuid().nullable().optional(),
-      category: z.string().max(80).optional(),
-      priority: prioritySchema.optional(),
-      title: z.string().min(1).max(200),
-      body: z.string().max(4000).optional(),
-      icon: z.string().max(80).optional(),
-      link: z.string().max(500).optional(),
-      channels: z.array(channelSchema).optional(),
-    }).parse(raw),
+    z
+      .object({
+        userId: z.string().uuid().nullable().optional(),
+        category: z.string().max(80).optional(),
+        priority: prioritySchema.optional(),
+        title: z.string().min(1).max(200),
+        body: z.string().max(4000).optional(),
+        icon: z.string().max(80).optional(),
+        link: z.string().max(500).optional(),
+        channels: z.array(channelSchema).optional(),
+      })
+      .parse(raw),
   )
   .handler(async ({ context, data }) => {
     const { NotificationManager } = await import("./manager.server");

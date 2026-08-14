@@ -120,7 +120,8 @@ export function VisionUploader({ uploads, onAdd, onRemove, onClear, disabled }: 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div className="text-sm text-muted-foreground">
-              {uploads.length} foto(s) — {(uploads.reduce((s, u) => s + u.sizeBytes, 0) / 1024 / 1024).toFixed(1)} MB
+              {uploads.length} foto(s) —{" "}
+              {(uploads.reduce((s, u) => s + u.sizeBytes, 0) / 1024 / 1024).toFixed(1)} MB
             </div>
             <Button variant="ghost" size="sm" onClick={onClear} disabled={disabled}>
               <Trash2 className="mr-2 h-4 w-4" /> Limpar
@@ -133,11 +134,7 @@ export function VisionUploader({ uploads, onAdd, onRemove, onClear, disabled }: 
                 className="group relative overflow-hidden rounded-xl border border-border/60 bg-background"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={u.previewUrl}
-                  alt={u.name}
-                  className="aspect-[4/3] w-full object-cover"
-                />
+                <img src={u.previewUrl} alt={u.name} className="aspect-[4/3] w-full object-cover" />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/90 to-transparent p-2 text-xs">
                   <div className="truncate font-medium">{u.name}</div>
                   <div className="text-muted-foreground">

@@ -3,9 +3,11 @@ name: Planner — estabilidade antes de novas features
 description: Ciclo obrigatório implementar→integrar→testar→corrigir→validar UX→otimizar→não-regressão antes de qualquer nova tarefa
 type: preference
 ---
+
 Regra obrigatória no Dioris Planner: NUNCA iniciar nova funcionalidade enquanto a anterior não estiver 100% estável.
 
 Ciclo obrigatório para cada tarefa:
+
 1. Implementar
 2. Integrar com a arquitetura existente (Core, Providers, EventBus)
 3. Testar (auditoria real, não só "compila")

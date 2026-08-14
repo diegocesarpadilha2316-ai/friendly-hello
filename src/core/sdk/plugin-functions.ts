@@ -144,9 +144,19 @@ export const sdkSnapshot = createServerFn({ method: "GET" })
     const t = context.tenantId;
     const [plugins, logs, perms, updates, market] = await Promise.all([
       s.from("plugins").select("*").eq("company_id", t),
-      s.from("plugin_logs").select("*").eq("company_id", t).order("created_at", { ascending: false }).limit(100),
+      s
+        .from("plugin_logs")
+        .select("*")
+        .eq("company_id", t)
+        .order("created_at", { ascending: false })
+        .limit(100),
       s.from("plugin_permissions").select("*").eq("company_id", t),
-      s.from("plugin_updates").select("*").eq("company_id", t).order("scheduled_at", { ascending: false }).limit(50),
+      s
+        .from("plugin_updates")
+        .select("*")
+        .eq("company_id", t)
+        .order("scheduled_at", { ascending: false })
+        .limit(50),
       s.from("plugin_marketplace").select("*").order("featured", { ascending: false }).limit(100),
     ]);
     return {
@@ -271,7 +281,12 @@ export const marketplaceInstall = createServerFn({ method: "POST" })
       .from("plugin_marketplace")
       .update({ downloads: (item.downloads ?? 0) + 1 })
       .eq("id", item.id);
-    await PluginManager.log(context, row.id, "marketplace_install", `Instalado de marketplace: ${item.slug}`);
+    await PluginManager.log(
+      context,
+      row.id,
+      "marketplace_install",
+      `Instalado de marketplace: ${item.slug}`,
+    );
     return mapPlugin(row);
   });
 
@@ -289,7 +304,9 @@ export const sdkExport = createServerFn({ method: "POST" })
     if (data.format === "csv") {
       const header = "id,slug,name,category,version,status,enabled,updatedAt";
       const body = list
-        .map((p) => [p.id, p.slug, p.name, p.category, p.version, p.status, p.enabled, p.updatedAt].join(","))
+        .map((p) =>
+          [p.id, p.slug, p.name, p.category, p.version, p.status, p.enabled, p.updatedAt].join(","),
+        )
         .join("\n");
       return { format: "csv", content: `${header}\n${body}` };
     }

@@ -120,9 +120,7 @@ export const INTERIOR_MODULES: readonly InteriorModuleDef[] = [
     limits: { maxPerCavity: 0, requiresBack: false, tiltable: false },
     incompatibleWith: [],
     families: [...ALL_FAMILIES],
-    parts: [
-      { key: "chapa", component: "prateleira", params: (fit, def) => shelfParams(fit, def) },
-    ],
+    parts: [{ key: "chapa", component: "prateleira", params: (fit, def) => shelfParams(fit, def) }],
   },
   {
     id: "divisoria-vertical",
@@ -192,7 +190,11 @@ export const INTERIOR_MODULES: readonly InteriorModuleDef[] = [
     incompatibleWith: [],
     families: ["roupeiro", "closet", "lavanderia", "escritorio"],
     parts: [
-      { key: "barra", component: "cabideiro", params: (fit) => rodParams(fit, { profile: "oval" }) },
+      {
+        key: "barra",
+        component: "cabideiro",
+        params: (fit) => rodParams(fit, { profile: "oval" }),
+      },
     ],
   },
   {

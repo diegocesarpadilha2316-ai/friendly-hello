@@ -18,12 +18,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/core/components/ui-kit";
 import { usePlannerEditor } from "../state/editor-context";
 import type { PlannerProject } from "../types/project";
-import {
-  CATALOG_CATEGORIES,
-  CATALOG_COLLECTIONS,
-  CATALOG_ITEMS,
-  findCatalogItem,
-} from "./catalog";
+import { CATALOG_CATEGORIES, CATALOG_COLLECTIONS, CATALOG_ITEMS, findCatalogItem } from "./catalog";
 import type { CatalogItem } from "./types";
 import { useLibraryFavorites } from "./use-favorites";
 import { insertItemIntoProject } from "./insert";
@@ -51,7 +46,8 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
   const roomId = state.selectedRoomId;
   const compact = variant === "compact";
 
-  const { favorites, recents, mostUsed, toggleFavorite, registerRecent, clearRecents } = useLibraryFavorites();
+  const { favorites, recents, mostUsed, toggleFavorite, registerRecent, clearRecents } =
+    useLibraryFavorites();
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState<TabId>("all");
   const [bucketId, setBucketId] = useState<string | null>(null);
@@ -66,8 +62,10 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
   const items = useMemo(() => {
     let base: readonly CatalogItem[];
     if (tab === "favorites") base = CATALOG_ITEMS.filter((i) => favorites.includes(i.id));
-    else if (tab === "recents") base = recents.map((id) => findCatalogItem(id)).filter((x): x is CatalogItem => x !== null);
-    else if (tab === "most") base = mostUsed.map((id) => findCatalogItem(id)).filter((x): x is CatalogItem => x !== null);
+    else if (tab === "recents")
+      base = recents.map((id) => findCatalogItem(id)).filter((x): x is CatalogItem => x !== null);
+    else if (tab === "most")
+      base = mostUsed.map((id) => findCatalogItem(id)).filter((x): x is CatalogItem => x !== null);
     else base = CATALOG_ITEMS;
     const filtered = applyFilters(base, bucketId ? { ...filters, bucketId } : filters);
     if (!query.trim()) return filtered;
@@ -84,7 +82,9 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
 
   function insert(item: CatalogItem) {
     if (!project || !envId || !roomId) return;
-    updateProject((p: PlannerProject) => insertItemIntoProject(p, { environmentId: envId, roomId }, item));
+    updateProject((p: PlannerProject) =>
+      insertItemIntoProject(p, { environmentId: envId, roomId }, item),
+    );
     registerRecent(item.id);
   }
 
@@ -93,7 +93,9 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
       e.dataTransfer.setData("application/x-dioris-catalog-item", item.id);
       e.dataTransfer.setData("text/plain", item.name);
       e.dataTransfer.effectAllowed = "copy";
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
   const tabs: readonly { id: TabId; label: string; icon: typeof Boxes; count: number }[] = [
@@ -102,7 +104,9 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
     { id: "recents", label: "Recentes", icon: Clock, count: recents.length },
     { id: "most", label: "Mais usados", icon: TrendingUp, count: mostUsed.length },
   ];
-  const activeFilterCount = Object.values(filters).filter((v) => v !== undefined && v !== "" && v !== null).length;
+  const activeFilterCount = Object.values(filters).filter(
+    (v) => v !== undefined && v !== "" && v !== null,
+  ).length;
 
   return (
     <div
@@ -113,7 +117,9 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
     >
       <div className="flex flex-wrap items-center gap-2 border-b border-border/60 px-3 py-2">
         <Sparkles className="h-4 w-4 text-primary" />
-        <span className={cn("font-semibold", compact ? "text-xs" : "text-sm")}>Biblioteca Inteligente</span>
+        <span className={cn("font-semibold", compact ? "text-xs" : "text-sm")}>
+          Biblioteca Inteligente
+        </span>
         <div className="ml-2 flex items-center gap-1">
           {tabs.map((t) => {
             const Icon = t.icon;
@@ -125,7 +131,9 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
                 onClick={() => setTab(t.id)}
                 className={cn(
                   "inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] transition-colors",
-                  active ? "bg-primary/20 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  active
+                    ? "bg-primary/20 text-primary"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
                 title={`${t.label} (${t.count})`}
               >
@@ -154,13 +162,20 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
           >
             <Filter className="h-3.5 w-3.5" /> Filtros
             {activeFilterCount > 0 ? (
-              <span className="rounded bg-primary/30 px-1 text-[10px] tabular-nums">{activeFilterCount}</span>
+              <span className="rounded bg-primary/30 px-1 text-[10px] tabular-nums">
+                {activeFilterCount}
+              </span>
             ) : null}
           </Button>
         </div>
       </div>
 
-      <div className={cn("grid min-h-0 flex-1", compact ? "grid-cols-[160px_1fr]" : "grid-cols-[220px_1fr_280px]")}>
+      <div
+        className={cn(
+          "grid min-h-0 flex-1",
+          compact ? "grid-cols-[160px_1fr]" : "grid-cols-[220px_1fr_280px]",
+        )}
+      >
         <aside className="flex min-h-0 flex-col overflow-auto border-r border-border/60 p-2">
           <div className="mb-1 flex items-center gap-1 px-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
             <Home className="h-3 w-3" /> Ambientes / Tipos
@@ -172,10 +187,14 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
                 onClick={() => setBucketId(null)}
                 className={cn(
                   "flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left transition-colors",
-                  bucketId === null ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  bucketId === null
+                    ? "bg-primary/15 text-primary"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
-                <span className="inline-flex items-center gap-1.5 truncate"><Boxes className="h-3.5 w-3.5" /> Tudo</span>
+                <span className="inline-flex items-center gap-1.5 truncate">
+                  <Boxes className="h-3.5 w-3.5" /> Tudo
+                </span>
                 <span className="rounded bg-background/70 px-1.5 text-[10px] tabular-nums text-muted-foreground">
                   {CATALOG_ITEMS.length}
                 </span>
@@ -192,7 +211,9 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
                     onClick={() => setBucketId(active ? null : b.id)}
                     className={cn(
                       "flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left transition-colors",
-                      active ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                      active
+                        ? "bg-primary/15 text-primary"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     )}
                   >
                     <span className="inline-flex items-center gap-1.5 truncate">
@@ -220,10 +241,14 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
                     <li key={c.id}>
                       <button
                         type="button"
-                        onClick={() => setFilters((prev) => ({ ...prev, category: active ? undefined : c.id }))}
+                        onClick={() =>
+                          setFilters((prev) => ({ ...prev, category: active ? undefined : c.id }))
+                        }
                         className={cn(
                           "flex w-full items-center justify-between rounded-md px-2 py-1 text-left text-[11px] transition-colors",
-                          active ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                          active
+                            ? "bg-primary/15 text-primary"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
                         )}
                         title={c.description}
                       >
@@ -254,7 +279,12 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
               </ul>
 
               {recents.length > 0 ? (
-                <Button size="sm" variant="ghost" className="mt-3 justify-start" onClick={clearRecents}>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="mt-3 justify-start"
+                  onClick={clearRecents}
+                >
                   <Clock className="mr-1.5 h-3.5 w-3.5" /> Limpar recentes
                 </Button>
               ) : null}
@@ -264,7 +294,12 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
 
         <div className="flex min-h-0 flex-col overflow-hidden">
           {showFilters ? (
-            <FiltersBar filters={filters} onChange={setFilters} onClear={() => setFilters({})} options={filterOptions} />
+            <FiltersBar
+              filters={filters}
+              onChange={setFilters}
+              onClear={() => setFilters({})}
+              options={filterOptions}
+            />
           ) : null}
           {activeFilterCount > 0 && !showFilters ? (
             <ActiveFilterChips
@@ -278,15 +313,25 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
               <div className="grid h-full place-items-center rounded-md border border-dashed border-border/60 p-6 text-center text-xs text-muted-foreground">
                 <div>
                   <p className="mb-2">Nenhum item corresponde aos filtros atuais.</p>
-                  {(activeFilterCount > 0 || query) ? (
-                    <Button size="sm" variant="ghost" onClick={() => { setFilters({}); setQuery(""); setBucketId(null); }}>
+                  {activeFilterCount > 0 || query ? (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        setFilters({});
+                        setQuery("");
+                        setBucketId(null);
+                      }}
+                    >
                       Limpar filtros
                     </Button>
                   ) : null}
                 </div>
               </div>
             ) : (
-              <ul className={cn("grid gap-2", compact ? "grid-cols-2" : "grid-cols-3 xl:grid-cols-4")}>
+              <ul
+                className={cn("grid gap-2", compact ? "grid-cols-2" : "grid-cols-3 xl:grid-cols-4")}
+              >
                 {items.map((item) => {
                   const isFav = favorites.includes(item.id);
                   const active = preview?.id === item.id;
@@ -301,7 +346,9 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
                         onDragStart={(e) => onDragStart(e, item)}
                         onClick={() => setPreview(item)}
                         onDoubleClick={() => insert(item)}
-                        onKeyDown={(e) => { if (e.key === "Enter") insert(item); }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") insert(item);
+                        }}
                         className={cn(
                           "group relative flex h-full flex-col rounded-lg border bg-card p-2 text-left transition-all",
                           "hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lg",
@@ -315,29 +362,48 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
                           <div className="min-w-0">
                             <p className="truncate text-xs font-semibold">{item.name}</p>
                             <p className="truncate text-[10px] uppercase tracking-wide text-muted-foreground">
-                              {item.subtype}{item.brand ? ` · ${item.brand}` : ""}
+                              {item.subtype}
+                              {item.brand ? ` · ${item.brand}` : ""}
                             </p>
                           </div>
                           <button
                             type="button"
-                            onClick={(e) => { e.stopPropagation(); toggleFavorite(item.id); }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleFavorite(item.id);
+                            }}
                             className={cn(
                               "shrink-0 rounded p-1 transition-colors",
-                              isFav ? "text-primary" : "text-muted-foreground hover:text-foreground",
+                              isFav
+                                ? "text-primary"
+                                : "text-muted-foreground hover:text-foreground",
                             )}
                             title={isFav ? "Remover dos favoritos" : "Marcar como favorito"}
                           >
-                            {isFav ? <Star className="h-3.5 w-3.5 fill-current" /> : <StarOff className="h-3.5 w-3.5" />}
+                            {isFav ? (
+                              <Star className="h-3.5 w-3.5 fill-current" />
+                            ) : (
+                              <StarOff className="h-3.5 w-3.5" />
+                            )}
                           </button>
                         </div>
                         <div className="mt-1 text-[10px] text-muted-foreground">
-                          {item.parametric.defaults.width}×{item.parametric.defaults.depth}×{item.parametric.defaults.height} mm
+                          {item.parametric.defaults.width}×{item.parametric.defaults.depth}×
+                          {item.parametric.defaults.height} mm
                         </div>
-                        {(nDoors > 0 || nDrawers > 0 || item.code) ? (
+                        {nDoors > 0 || nDrawers > 0 || item.code ? (
                           <div className="mt-1 flex flex-wrap gap-1 text-[9px]">
-                            {nDoors > 0 ? <span className="rounded bg-muted px-1.5 py-0.5">{nDoors}P</span> : null}
-                            {nDrawers > 0 ? <span className="rounded bg-muted px-1.5 py-0.5">{nDrawers}G</span> : null}
-                            {item.code ? <span className="truncate rounded bg-muted/60 px-1.5 py-0.5 text-muted-foreground">{item.code}</span> : null}
+                            {nDoors > 0 ? (
+                              <span className="rounded bg-muted px-1.5 py-0.5">{nDoors}P</span>
+                            ) : null}
+                            {nDrawers > 0 ? (
+                              <span className="rounded bg-muted px-1.5 py-0.5">{nDrawers}G</span>
+                            ) : null}
+                            {item.code ? (
+                              <span className="truncate rounded bg-muted/60 px-1.5 py-0.5 text-muted-foreground">
+                                {item.code}
+                              </span>
+                            ) : null}
                           </div>
                         ) : null}
                         <div className="mt-2 flex items-center gap-1">
@@ -345,9 +411,16 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
                             size="sm"
                             variant="ghost"
                             disabled={!canInsert}
-                            onClick={(e) => { e.stopPropagation(); insert(item); }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              insert(item);
+                            }}
                             className="h-7 flex-1 justify-center text-[11px]"
-                            title={canInsert ? "Inserir no cômodo (Duplo clique / Enter)" : "Selecione um cômodo para inserir"}
+                            title={
+                              canInsert
+                                ? "Inserir no cômodo (Duplo clique / Enter)"
+                                : "Selecione um cômodo para inserir"
+                            }
                           >
                             <Plus className="mr-1 h-3 w-3" /> Inserir
                           </Button>
@@ -399,9 +472,15 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
                     Faixa paramétrica
                   </p>
                   <ul className="text-[11px] text-muted-foreground">
-                    <li>largura: {preview.parametric.width.min}–{preview.parametric.width.max} mm</li>
-                    <li>profundidade: {preview.parametric.depth.min}–{preview.parametric.depth.max} mm</li>
-                    <li>altura: {preview.parametric.height.min}–{preview.parametric.height.max} mm</li>
+                    <li>
+                      largura: {preview.parametric.width.min}–{preview.parametric.width.max} mm
+                    </li>
+                    <li>
+                      profundidade: {preview.parametric.depth.min}–{preview.parametric.depth.max} mm
+                    </li>
+                    <li>
+                      altura: {preview.parametric.height.min}–{preview.parametric.height.max} mm
+                    </li>
                   </ul>
                 </div>
 
@@ -411,7 +490,10 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
                   </p>
                   <div className="flex flex-wrap gap-1">
                     {preview.ai.semanticTags.map((t) => (
-                      <span key={t} className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] text-primary">
+                      <span
+                        key={t}
+                        className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] text-primary"
+                      >
                         {t}
                       </span>
                     ))}
@@ -419,7 +501,12 @@ export function LibraryPanel({ variant = "full" }: LibraryPanelProps) {
                   <p className="mt-1 text-[10px] text-muted-foreground">{preview.ai.narrative}</p>
                 </div>
 
-                <Button size="sm" className="mt-1" disabled={!canInsert} onClick={() => insert(preview)}>
+                <Button
+                  size="sm"
+                  className="mt-1"
+                  disabled={!canInsert}
+                  onClick={() => insert(preview)}
+                >
                   <Plus className="mr-1 h-3.5 w-3.5" /> Inserir no cômodo
                 </Button>
               </div>
@@ -450,7 +537,15 @@ function FiltersBar({ filters, onChange, onClear, options }: FiltersBarProps) {
   function upd<K extends keyof LibraryFilterState>(k: K, v: LibraryFilterState[K]) {
     onChange({ ...filters, [k]: v });
   }
-  const Select = ({ k, label, opts }: { k: "brand" | "line" | "material" | "color"; label: string; opts: readonly string[] }) => (
+  const Select = ({
+    k,
+    label,
+    opts,
+  }: {
+    k: "brand" | "line" | "material" | "color";
+    label: string;
+    opts: readonly string[];
+  }) => (
     <label className="flex items-center gap-1 text-[10px] text-muted-foreground">
       <span>{label}</span>
       <select
@@ -459,7 +554,11 @@ function FiltersBar({ filters, onChange, onClear, options }: FiltersBarProps) {
         className="h-7 rounded border border-input bg-background px-1 text-[11px] text-foreground"
       >
         <option value="">Todos</option>
-        {opts.map((o) => <option key={o} value={o}>{o}</option>)}
+        {opts.map((o) => (
+          <option key={o} value={o}>
+            {o}
+          </option>
+        ))}
       </select>
     </label>
   );
@@ -473,12 +572,22 @@ function FiltersBar({ filters, onChange, onClear, options }: FiltersBarProps) {
       >
         <option value="">—</option>
         {Array.from({ length: max + 1 }, (_, i) => i).map((n) => (
-          <option key={n} value={n}>{n}</option>
+          <option key={n} value={n}>
+            {n}
+          </option>
         ))}
       </select>
     </label>
   );
-  const Range = ({ minK, maxK, label }: { minK: "minWidth" | "minHeight" | "minDepth"; maxK: "maxWidth" | "maxHeight" | "maxDepth"; label: string }) => (
+  const Range = ({
+    minK,
+    maxK,
+    label,
+  }: {
+    minK: "minWidth" | "minHeight" | "minDepth";
+    maxK: "maxWidth" | "maxHeight" | "maxDepth";
+    label: string;
+  }) => (
     <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
       <span>{label} (mm)</span>
       <input
@@ -509,7 +618,12 @@ function FiltersBar({ filters, onChange, onClear, options }: FiltersBarProps) {
       <Range minK="minHeight" maxK="maxHeight" label="Altura" />
       <Range minK="minDepth" maxK="maxDepth" label="Profundidade" />
       {hasActiveFilters(filters) ? (
-        <Button size="sm" variant="ghost" className="ml-auto h-7 gap-1 text-[11px]" onClick={onClear}>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="ml-auto h-7 gap-1 text-[11px]"
+          onClick={onClear}
+        >
           <X className="h-3 w-3" /> Limpar
         </Button>
       ) : null}
@@ -526,8 +640,9 @@ function ActiveFilterChips({
   onRemove: (k: keyof LibraryFilterState) => void;
   onClear: () => void;
 }) {
-  const entries = (Object.entries(filters) as [keyof LibraryFilterState, unknown][])
-    .filter(([, v]) => v !== undefined && v !== "" && v !== null);
+  const entries = (Object.entries(filters) as [keyof LibraryFilterState, unknown][]).filter(
+    ([, v]) => v !== undefined && v !== "" && v !== null,
+  );
   if (entries.length === 0) return null;
   return (
     <div className="flex flex-wrap items-center gap-1 border-b border-border/60 bg-muted/10 px-3 py-1.5 text-[10px]">
@@ -539,11 +654,16 @@ function ActiveFilterChips({
           className="inline-flex items-center gap-1 rounded bg-primary/15 px-1.5 py-0.5 text-primary hover:bg-primary/25"
           title="Remover filtro"
         >
-          <span className="uppercase tracking-wide opacity-70">{String(k)}</span>: <span>{String(v)}</span>
+          <span className="uppercase tracking-wide opacity-70">{String(k)}</span>:{" "}
+          <span>{String(v)}</span>
           <X className="h-2.5 w-2.5" />
         </button>
       ))}
-      <button type="button" onClick={onClear} className="ml-auto text-muted-foreground hover:text-foreground">
+      <button
+        type="button"
+        onClick={onClear}
+        className="ml-auto text-muted-foreground hover:text-foreground"
+      >
         limpar todos
       </button>
     </div>

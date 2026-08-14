@@ -43,11 +43,13 @@ export interface WardrobeLayout extends Record<string, number> {
 export const WARDROBE_REQUIREMENTS: FamilyRequirementSpec = {
   mandatory: ["lateral-e", "lateral-d", "base", "tampo"],
   important: ["fundo", "divisoria"],
-  optional: ["gaveta", "cabideiro", "sapateira", "nicho"]
+  optional: ["gaveta", "cabideiro", "sapateira", "nicho"],
 };
 
 /** Monta o roupeiro. Puro e determinístico. */
-export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildResult<WardrobeSpec> & {
+export function buildWardrobe(
+  input: Partial<WardrobeSpec> = {},
+): FamilyBuildResult<WardrobeSpec> & {
   layout: WardrobeLayout;
   interior: WardrobeInteriorResult;
   requirements: FamilyRequirementSpec;
@@ -100,21 +102,39 @@ export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildRes
       component: "lateral",
       at: [0, caseY0, 0],
       role: "lateral esquerda",
-      params: { heightMm: caseH, depthMm: caseD, thicknessMm: t, side: "esquerda", finishId: spec.finishId },
+      params: {
+        heightMm: caseH,
+        depthMm: caseD,
+        thicknessMm: t,
+        side: "esquerda",
+        finishId: spec.finishId,
+      },
     },
     {
       id: "lateral-d",
       component: "lateral",
       at: [W - t, caseY0, 0],
       role: "lateral direita",
-      params: { heightMm: caseH, depthMm: caseD, thicknessMm: t, side: "direita", finishId: spec.finishId },
+      params: {
+        heightMm: caseH,
+        depthMm: caseD,
+        thicknessMm: t,
+        side: "direita",
+        finishId: spec.finishId,
+      },
     },
     {
       id: "base",
       component: "base",
       at: [t, caseY0, 0],
       role: "base",
-      params: { widthMm: innerW, depthMm: interiorD, thicknessMm: t, support: "rodape", finishId: spec.finishId },
+      params: {
+        widthMm: innerW,
+        depthMm: interiorD,
+        thicknessMm: t,
+        support: "rodape",
+        finishId: spec.finishId,
+      },
     },
     {
       id: "tampo",
@@ -135,7 +155,13 @@ export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildRes
       component: "fundo",
       at: [0, caseY0, 0],
       role: "fundo",
-      params: { widthMm: W, heightMm: caseH, thicknessMm: bt, mounting: "encaixado", finishId: spec.finishId },
+      params: {
+        widthMm: W,
+        heightMm: caseH,
+        thicknessMm: bt,
+        mounting: "encaixado",
+        finishId: spec.finishId,
+      },
     },
   );
 
@@ -251,7 +277,9 @@ export function buildWardrobe(input: Partial<WardrobeSpec> = {}): FamilyBuildRes
     const pieces: ConstructionPiece[] = assembly.pieces.map((p) => {
       if (p.partKind !== "porta") return p;
       leaf += 1;
-      return mirrored.has(leaf) ? { ...p, substrate: "espelho" as const, label: `${p.label} espelhada` } : p;
+      return mirrored.has(leaf)
+        ? { ...p, substrate: "espelho" as const, label: `${p.label} espelhada` }
+        : p;
     });
     assembly = { ...assembly, pieces };
   }

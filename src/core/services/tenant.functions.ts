@@ -2,12 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireAuth } from "@/core/middleware/require-auth";
 import { requireTenant } from "@/core/middleware/require-tenant";
-import type {
-  Company,
-  CompanyMember,
-  CompanyWithRole,
-  TenantRole,
-} from "@/core/types/tenant";
+import type { Company, CompanyMember, CompanyWithRole, TenantRole } from "@/core/types/tenant";
 
 const slugify = (s: string) =>
   s
@@ -141,17 +136,15 @@ export const ensureDefaultCompany = createServerFn({ method: "POST" })
       .single();
     if (adminInsertError) throw new Error(adminInsertError.message);
 
-    const { error: memberError } = await admin
-      .from("company_members")
-      .upsert(
-        {
-          company_id: createdByAdmin.id,
-          user_id: userId,
-          role: "owner",
-          active: true,
-        },
-        { onConflict: "company_id,user_id" },
-      );
+    const { error: memberError } = await admin.from("company_members").upsert(
+      {
+        company_id: createdByAdmin.id,
+        user_id: userId,
+        role: "owner",
+        active: true,
+      },
+      { onConflict: "company_id,user_id" },
+    );
     if (memberError) throw new Error(memberError.message);
     await ensureFreePlanAndGrant(String(createdByAdmin.id));
     await sendWelcomeIfNew(String(createdByAdmin.id), userId, email);
@@ -191,20 +184,18 @@ async function ensureFreePlanAndGrant(companyId: string): Promise<void> {
     const admin = getSupabaseAdmin();
 
     // Garante que o plano "free" exista (idempotente).
-    await admin
-      .from("plans")
-      .upsert(
-        {
-          key: "free",
-          label: "Free",
-          monthly_credits: 100,
-          price_cents: 0,
-          currency: "BRL",
-          is_public: true,
-          sort_order: 1,
-        },
-        { onConflict: "key", ignoreDuplicates: true },
-      );
+    await admin.from("plans").upsert(
+      {
+        key: "free",
+        label: "Free",
+        monthly_credits: 100,
+        price_cents: 0,
+        currency: "BRL",
+        is_public: true,
+        sort_order: 1,
+      },
+      { onConflict: "key", ignoreDuplicates: true },
+    );
 
     const { data: planRow } = await admin
       .from("plans")

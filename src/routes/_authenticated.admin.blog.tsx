@@ -16,12 +16,7 @@ import {
   X,
 } from "lucide-react";
 import { app } from "@/core/config";
-import {
-  PageContainer,
-  PageHeader,
-  StatusBadge,
-  EmptyState,
-} from "@/core/components/ui-kit";
+import { PageContainer, PageHeader, StatusBadge, EmptyState } from "@/core/components/ui-kit";
 import { useIsPlatformAdmin } from "@/core/hooks";
 import {
   listAdminBlogPosts,
@@ -334,9 +329,7 @@ function EditorDrawer({
             <div className="text-xs text-muted-foreground">
               {state.id ? "Editar artigo" : "Novo artigo"}
             </div>
-            <div className="text-base font-semibold">
-              {state.title || "Sem título"}
-            </div>
+            <div className="text-base font-semibold">{state.title || "Sem título"}</div>
           </div>
           <button
             type="button"
@@ -465,11 +458,7 @@ function EditorDrawer({
             disabled={saving || !state.title || !state.slug}
             className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
           >
-            {saving ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Save className="h-4 w-4" />
-            )}
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             Salvar
           </button>
         </div>
@@ -481,9 +470,7 @@ function EditorDrawer({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-xs font-medium text-muted-foreground">
-        {label}
-      </span>
+      <span className="mb-1 block text-xs font-medium text-muted-foreground">{label}</span>
       {children}
     </label>
   );

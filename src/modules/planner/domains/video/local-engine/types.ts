@@ -31,13 +31,7 @@ export type LocalCameraMoveKind =
   | "apresentacao"
   | "livre";
 
-export type LocalEasing =
-  | "linear"
-  | "ease-in"
-  | "ease-out"
-  | "ease-in-out"
-  | "cinematic"
-  | "snap";
+export type LocalEasing = "linear" | "ease-in" | "ease-out" | "ease-in-out" | "cinematic" | "snap";
 
 export interface LocalCameraMove {
   readonly id: LocalCameraMoveKind;
@@ -101,14 +95,7 @@ export interface LocalObjectAnimation {
 export type LocalFps = 24 | 25 | 30 | 48 | 50 | 60;
 
 export type LocalTrackKind =
-  | "camera"
-  | "object"
-  | "lighting"
-  | "led"
-  | "narration"
-  | "music"
-  | "subtitle"
-  | "branding";
+  "camera" | "object" | "lighting" | "led" | "narration" | "music" | "subtitle" | "branding";
 
 export interface LocalKeyframe {
   readonly id: string;
@@ -134,13 +121,7 @@ export interface LocalTrack {
 }
 
 // ————— Transições —————
-export type LocalTransitionKind =
-  | "cut"
-  | "fade"
-  | "zoom"
-  | "slide"
-  | "blur"
-  | "cinema";
+export type LocalTransitionKind = "cut" | "fade" | "zoom" | "slide" | "blur" | "cinema";
 
 export interface LocalTransition {
   readonly id: string;
@@ -211,11 +192,7 @@ export interface LocalVideoOutputSpec {
 
 // ————— Captura —————
 export type LocalVideoScope =
-  | "project"
-  | "current-environment"
-  | "selection"
-  | "all-environments"
-  | "batch";
+  "project" | "current-environment" | "selection" | "all-environments" | "batch";
 
 export interface LocalVideoCaptureRequest {
   readonly scope: LocalVideoScope;
@@ -288,11 +265,7 @@ export interface LocalVideoPerformanceConfig {
 
 // ————— Viewport local —————
 export type LocalVideoViewportMode =
-  | "realtime"
-  | "preview"
-  | "before-after"
-  | "fullscreen"
-  | "compare";
+  "realtime" | "preview" | "before-after" | "fullscreen" | "compare";
 
 export interface LocalVideoViewportState {
   readonly mode: LocalVideoViewportMode;

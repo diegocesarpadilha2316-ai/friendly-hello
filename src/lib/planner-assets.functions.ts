@@ -13,15 +13,7 @@ import { z } from "zod";
 import { requireTenant } from "@/core/middleware/require-tenant";
 
 export type AssetKind =
-  | "image"
-  | "video"
-  | "audio"
-  | "document"
-  | "model3d"
-  | "texture"
-  | "hdri"
-  | "render"
-  | "other";
+  "image" | "video" | "audio" | "document" | "model3d" | "texture" | "hdri" | "render" | "other";
 
 export type AssetVisibility = "private" | "tenant" | "public";
 
@@ -36,9 +28,7 @@ function num(v: unknown, d = 0): number {
 export const listAssetFolders = createServerFn({ method: "GET" })
   .middleware([requireTenant])
   .inputValidator((data: unknown) =>
-    z
-      .object({ parentId: z.string().uuid().nullish() })
-      .parse(data ?? {}),
+    z.object({ parentId: z.string().uuid().nullish() }).parse(data ?? {}),
   )
   .handler(async ({ data, context }) => {
     let q = context.supabase
@@ -129,9 +119,7 @@ export const listAssets = createServerFn({ method: "GET" })
 
 export const getAsset = createServerFn({ method: "GET" })
   .middleware([requireTenant])
-  .inputValidator((data: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const [assetRes, versionsRes, thumbsRes, permsRes] = await Promise.all([
       context.supabase
@@ -142,9 +130,7 @@ export const getAsset = createServerFn({ method: "GET" })
         .maybeSingle(),
       context.supabase
         .from("asset_versions")
-        .select(
-          "id,version,storage_path,size_bytes,checksum_sha256,metadata,created_at",
-        )
+        .select("id,version,storage_path,size_bytes,checksum_sha256,metadata,created_at")
         .eq("asset_id", data.id)
         .order("version", { ascending: false }),
       context.supabase
@@ -337,7 +323,12 @@ export const failAssetUpload = createServerFn({ method: "POST" })
 
 const signInput = z.object({
   id: z.string().uuid(),
-  ttlSeconds: z.number().int().min(30).max(60 * 60 * 24).optional(),
+  ttlSeconds: z
+    .number()
+    .int()
+    .min(30)
+    .max(60 * 60 * 24)
+    .optional(),
   versionId: z.string().uuid().nullish(),
 });
 
@@ -433,9 +424,7 @@ export const setAssetPermission = createServerFn({ method: "POST" })
 
 export const softDeleteAsset = createServerFn({ method: "POST" })
   .middleware([requireTenant])
-  .inputValidator((data: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("assets")
@@ -455,9 +444,7 @@ export const softDeleteAsset = createServerFn({ method: "POST" })
 
 export const restoreAsset = createServerFn({ method: "POST" })
   .middleware([requireTenant])
-  .inputValidator((data: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("assets")

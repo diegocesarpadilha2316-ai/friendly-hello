@@ -1,11 +1,4 @@
-import {
-  Bot,
-  Box,
-  ChevronLeft,
-  ChevronRight,
-  Menu,
-  Settings2
-} from "lucide-react";
+import { Bot, Box, ChevronLeft, ChevronRight, Menu, Settings2 } from "lucide-react";
 import { useMemo } from "react";
 import { usePlannerUIState } from "./use-planner-ui-state";
 import type { PlannerV2ShellProps } from "./planner-ui";
@@ -28,21 +21,15 @@ export function PlannerV2Shell({
 }: PlannerV2ShellProps) {
   const { state, patch } = usePlannerUIState();
 
-  const selectedId =
-    selectedFurniture?.id ?? state.selectedFurnitureId ?? null;
+  const selectedId = selectedFurniture?.id ?? state.selectedFurnitureId ?? null;
 
   const shellStyle = useMemo(
     () =>
       ({
         "--dioris-left-panel-width": `${state.leftCollapsed ? 0 : 320}px`,
-        "--dioris-right-panel-width": `${state.rightCollapsed ? 0 : 360}px`
+        "--dioris-right-panel-width": `${state.rightCollapsed ? 0 : 360}px`,
       }) as React.CSSProperties,
-    [
-      state.leftCollapsed,
-      state.leftWidth,
-      state.rightCollapsed,
-      state.rightWidth
-    ]
+    [state.leftCollapsed, state.leftWidth, state.rightCollapsed, state.rightWidth],
   );
 
   return (
@@ -61,7 +48,7 @@ export function PlannerV2Shell({
       />
 
       <main className="dioris-workspace">
-        <aside className={`dioris-left-panel ${state.leftCollapsed ? 'is-collapsed' : ''}`}>
+        <aside className={`dioris-left-panel ${state.leftCollapsed ? "is-collapsed" : ""}`}>
           <div className="dioris-panel-head">
             {!state.leftCollapsed && <strong>PROJETO</strong>}
             <button
@@ -158,15 +145,13 @@ export function PlannerV2Shell({
             onSelectTreeItem={events.onSelectTreeItem}
             onToggleTreeVisibility={events.onToggleTreeVisibility}
             onTabChange={(rightTab) => patch({ rightTab })}
-            onHeightChange={(mobileCopilotHeight) =>
-              patch({ mobileCopilotHeight })
-            }
+            onHeightChange={(mobileCopilotHeight) => patch({ mobileCopilotHeight })}
             onSendMessage={events.onSendMessage}
             onUpdateSelected={events.onUpdateSelected}
           />
         </section>
 
-        <aside className={`dioris-right-panel ${state.rightCollapsed ? 'is-collapsed' : ''}`}>
+        <aside className={`dioris-right-panel ${state.rightCollapsed ? "is-collapsed" : ""}`}>
           <div className="dioris-panel-head">
             {!state.rightCollapsed && <strong>INSPETOR</strong>}
             <button
@@ -208,10 +193,7 @@ export function PlannerV2Shell({
       </footer>
 
       <nav className="dioris-mobile-nav">
-        <button
-          type="button"
-          onClick={() => patch({ mobileExplorerOpen: true })}
-        >
+        <button type="button" onClick={() => patch({ mobileExplorerOpen: true })}>
           <Menu size={18} />
           <span>Projeto</span>
         </button>
@@ -219,18 +201,13 @@ export function PlannerV2Shell({
           <Box size={18} />
           <span>3D</span>
         </button>
-        <button
-          type="button"
-          onClick={() => patch({ mobileCopilotOpen: true })}
-        >
+        <button type="button" onClick={() => patch({ mobileCopilotOpen: true })}>
           <Bot size={18} />
           <span>IA</span>
         </button>
         <button
           type="button"
-          onClick={() =>
-            patch({ mobileCopilotOpen: true, rightTab: "inspector" })
-          }
+          onClick={() => patch({ mobileCopilotOpen: true, rightTab: "inspector" })}
         >
           <Settings2 size={18} />
           <span>Propriedades</span>

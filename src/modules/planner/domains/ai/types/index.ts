@@ -7,13 +7,7 @@
  */
 
 export type AIProviderId =
-  | "lovable"
-  | "deepseek"
-  | "openai"
-  | "gemini"
-  | "claude"
-  | "mistral"
-  | "oss";
+  "lovable" | "deepseek" | "openai" | "gemini" | "claude" | "mistral" | "oss";
 
 export type AIRole = "system" | "developer" | "user" | "assistant" | "tool";
 
@@ -109,16 +103,7 @@ export interface AIConversationState {
 }
 
 export type AIVisionMediaKind =
-  | "image"
-  | "photo"
-  | "pdf"
-  | "dwg"
-  | "dxf"
-  | "ifc"
-  | "obj"
-  | "fbx"
-  | "glb"
-  | "gltf";
+  "image" | "photo" | "pdf" | "dwg" | "dxf" | "ifc" | "obj" | "fbx" | "glb" | "gltf";
 
 export interface AIVisionAttachment {
   readonly kind: AIVisionMediaKind;

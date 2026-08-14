@@ -15,27 +15,22 @@
  */
 
 export type CabinetStyleId =
-  | "moderno"
-  | "contemporaneo"
-  | "minimalista"
-  | "industrial"
-  | "classico"
-  | "luxo";
+  "moderno" | "contemporaneo" | "minimalista" | "industrial" | "classico" | "luxo";
 
 /** Tratamento da frente (porta/gaveta). */
 export type FrontStyle =
-  | "liso"       // painel único, junta-sombra — linha moderna/minimalista
-  | "shaker"     // moldura de 4 réguas protruída — linha clássica
-  | "ripado"     // réguas verticais — painéis, torres, linha contemporânea
-  | "canelado";  // ripas finas e densas — linha luxo
+  | "liso" // painel único, junta-sombra — linha moderna/minimalista
+  | "shaker" // moldura de 4 réguas protruída — linha clássica
+  | "ripado" // réguas verticais — painéis, torres, linha contemporânea
+  | "canelado"; // ripas finas e densas — linha luxo
 
 /** Tipo de pega. */
 export type HandleStyle =
-  | "tubular"      // barra cilíndrica + afastadores
-  | "perfil-gola"  // perfil de alumínio embutido no rasgo (gola)
-  | "cava"         // usinagem na frente, sem peça aparente
-  | "botao"        // puxador ponto (clássico)
-  | "none";        // push-to-open
+  | "tubular" // barra cilíndrica + afastadores
+  | "perfil-gola" // perfil de alumínio embutido no rasgo (gola)
+  | "cava" // usinagem na frente, sem peça aparente
+  | "botao" // puxador ponto (clássico)
+  | "none"; // push-to-open
 
 export type HardwareFinish = "inox" | "preto" | "latao" | "aluminio";
 
@@ -61,18 +56,27 @@ export interface CabinetStyleSpec {
 }
 
 const HARDWARE: Record<HardwareFinish, { color: string; metalness: number; roughness: number }> = {
-  inox:     { color: "#d4d7dc", metalness: 0.95, roughness: 0.18 },
-  preto:    { color: "#2a2c30", metalness: 0.7,  roughness: 0.38 },
-  latao:    { color: "#c9a227", metalness: 0.9,  roughness: 0.26 },
-  aluminio: { color: "#b9bec6", metalness: 0.85, roughness: 0.3  },
+  inox: { color: "#d4d7dc", metalness: 0.95, roughness: 0.18 },
+  preto: { color: "#2a2c30", metalness: 0.7, roughness: 0.38 },
+  latao: { color: "#c9a227", metalness: 0.9, roughness: 0.26 },
+  aluminio: { color: "#b9bec6", metalness: 0.85, roughness: 0.3 },
 };
 
 const STYLE_IDS: readonly CabinetStyleId[] = [
-  "moderno", "contemporaneo", "minimalista", "industrial", "classico", "luxo",
+  "moderno",
+  "contemporaneo",
+  "minimalista",
+  "industrial",
+  "classico",
+  "luxo",
 ];
 
 function normalize(s: string): string {
-  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
 }
 
 export function parseStyleId(input?: string | null): CabinetStyleId | undefined {
@@ -122,13 +126,54 @@ function roleOf(subtype: string): Role {
 }
 
 /** Linha base de cada estilo (a "identidade" da marcenaria). */
-const STYLE_BASE: Record<CabinetStyleId, Pick<CabinetStyleSpec, "front" | "handle" | "reveal" | "frontThickness"> & { finish: HardwareFinish }> = {
-  moderno:        { front: "liso",     handle: "perfil-gola", reveal: 0.004, frontThickness: 0.018, finish: "aluminio" },
-  contemporaneo:  { front: "liso",     handle: "cava",        reveal: 0.005, frontThickness: 0.018, finish: "preto" },
-  minimalista:    { front: "liso",     handle: "none",        reveal: 0.006, frontThickness: 0.018, finish: "aluminio" },
-  industrial:     { front: "liso",     handle: "tubular",     reveal: 0.005, frontThickness: 0.018, finish: "preto" },
-  classico:       { front: "shaker",   handle: "botao",       reveal: 0.003, frontThickness: 0.020, finish: "latao" },
-  luxo:           { front: "canelado", handle: "perfil-gola", reveal: 0.004, frontThickness: 0.020, finish: "latao" },
+const STYLE_BASE: Record<
+  CabinetStyleId,
+  Pick<CabinetStyleSpec, "front" | "handle" | "reveal" | "frontThickness"> & {
+    finish: HardwareFinish;
+  }
+> = {
+  moderno: {
+    front: "liso",
+    handle: "perfil-gola",
+    reveal: 0.004,
+    frontThickness: 0.018,
+    finish: "aluminio",
+  },
+  contemporaneo: {
+    front: "liso",
+    handle: "cava",
+    reveal: 0.005,
+    frontThickness: 0.018,
+    finish: "preto",
+  },
+  minimalista: {
+    front: "liso",
+    handle: "none",
+    reveal: 0.006,
+    frontThickness: 0.018,
+    finish: "aluminio",
+  },
+  industrial: {
+    front: "liso",
+    handle: "tubular",
+    reveal: 0.005,
+    frontThickness: 0.018,
+    finish: "preto",
+  },
+  classico: {
+    front: "shaker",
+    handle: "botao",
+    reveal: 0.003,
+    frontThickness: 0.02,
+    finish: "latao",
+  },
+  luxo: {
+    front: "canelado",
+    handle: "perfil-gola",
+    reveal: 0.004,
+    frontThickness: 0.02,
+    finish: "latao",
+  },
 };
 
 export interface ResolveStyleInput {

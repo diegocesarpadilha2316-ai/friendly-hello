@@ -18,13 +18,7 @@ export const DemoBaseCabinet: ModuleDefinition = {
     acceptsUpperModule: true,
   },
   defaultMaterialId: "mdf-white",
-  allowedMaterialIds: [
-    "mdf-white",
-    "mdf-wood-natural",
-    "mdf-graphite",
-    "mdf-green",
-    "mdf-taupe",
-  ],
+  allowedMaterialIds: ["mdf-white", "mdf-wood-natural", "mdf-graphite", "mdf-green", "mdf-taupe"],
   defaultHardwareIds: ["slide-hidden", "handle-bar", "leg-adjustable"],
   build: ({ dimensionsMm, materialId }) => {
     const moduleId = DemoBaseCabinet.id;

@@ -88,7 +88,10 @@ export function CompanyRulesEditor() {
           label="Marca preferencial"
           value={rules.defaults.brandId}
           onChange={(v) => setDefaults("brandId", v)}
-          options={MATERIAL_BRANDS.map((b) => ({ value: b.id, label: `${b.label} (${b.category})` }))}
+          options={MATERIAL_BRANDS.map((b) => ({
+            value: b.id,
+            label: `${b.label} (${b.category})`,
+          }))}
         />
         <SelectRow
           label="Acabamento default"
@@ -117,7 +120,9 @@ export function CompanyRulesEditor() {
         <SelectRow
           label="Sentido do veio"
           value={rules.defaults.grain}
-          onChange={(v) => setDefaults("grain", v as CompanyManufacturingRules["defaults"]["grain"])}
+          onChange={(v) =>
+            setDefaults("grain", v as CompanyManufacturingRules["defaults"]["grain"])
+          }
           options={GRAIN_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
         />
       </Panel>
@@ -138,7 +143,9 @@ export function CompanyRulesEditor() {
         <SelectRow
           label="Montagem"
           value={rules.defaults.assembly}
-          onChange={(v) => setDefaults("assembly", v as CompanyManufacturingRules["defaults"]["assembly"])}
+          onChange={(v) =>
+            setDefaults("assembly", v as CompanyManufacturingRules["defaults"]["assembly"])
+          }
           options={ASSEMBLY_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
         />
         <SelectRow
@@ -150,32 +157,45 @@ export function CompanyRulesEditor() {
         <SelectRow
           label="Gaveta"
           value={rules.defaults.drawer}
-          onChange={(v) => setDefaults("drawer", v as CompanyManufacturingRules["defaults"]["drawer"])}
+          onChange={(v) =>
+            setDefaults("drawer", v as CompanyManufacturingRules["defaults"]["drawer"])
+          }
           options={DRAWER_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
         />
         <SelectRow
           label="Puxador"
           value={rules.defaults.handle}
-          onChange={(v) => setDefaults("handle", v as CompanyManufacturingRules["defaults"]["handle"])}
+          onChange={(v) =>
+            setDefaults("handle", v as CompanyManufacturingRules["defaults"]["handle"])
+          }
           options={HANDLE_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
         />
       </Panel>
 
       <Panel title="Ferragens preferenciais">
-        {(["dobradica", "corredica", "pistao", "trilho", "cabideiro", "perfil", "puxador", "amortecedor"] as HardwareKind[]).map(
-          (kind) => (
-            <SelectRow
-              key={kind}
-              label={kind}
-              value={rules.defaults.hardware[kind] ?? ""}
-              onChange={(v) => setHardware(kind, v)}
-              options={[
-                { value: "", label: "— nenhum —" },
-                ...listHardware(kind).map((h) => ({ value: h.id, label: `${h.brand} · ${h.label}` })),
-              ]}
-            />
-          ),
-        )}
+        {(
+          [
+            "dobradica",
+            "corredica",
+            "pistao",
+            "trilho",
+            "cabideiro",
+            "perfil",
+            "puxador",
+            "amortecedor",
+          ] as HardwareKind[]
+        ).map((kind) => (
+          <SelectRow
+            key={kind}
+            label={kind}
+            value={rules.defaults.hardware[kind] ?? ""}
+            onChange={(v) => setHardware(kind, v)}
+            options={[
+              { value: "", label: "— nenhum —" },
+              ...listHardware(kind).map((h) => ({ value: h.id, label: `${h.brand} · ${h.label}` })),
+            ]}
+          />
+        ))}
       </Panel>
 
       {(() => {

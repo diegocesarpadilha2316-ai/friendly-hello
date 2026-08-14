@@ -1,4 +1,5 @@
-export type DesignIntentModuleKind = "base" | "drawer" | "sink" | "tower" | "upper" | "cooktop" | "hood" | "island";
+export type DesignIntentModuleKind =
+  "base" | "drawer" | "sink" | "tower" | "upper" | "cooktop" | "hood" | "island";
 
 export interface DesignIntentModule {
   id: string;

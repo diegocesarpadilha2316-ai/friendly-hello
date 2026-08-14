@@ -29,20 +29,14 @@ export type AICapability =
   | "multimodal"
   | "mcp";
 
-export type AITaskType =
-  | "text"
-  | "json"
-  | "image"
-  | "embedding"
-  | "audio"
-  | "video";
+export type AITaskType = "text" | "json" | "image" | "embedding" | "audio" | "video";
 
 export type AIQuality = "draft" | "standard" | "premium" | "frontier";
 export type AISpeed = "fast" | "balanced" | "slow";
 export type AICost = "cheap" | "balanced" | "premium";
 
 export interface AIModel {
-  readonly id: string;                // ex: "google/gemini-3.6-flash"
+  readonly id: string; // ex: "google/gemini-3.6-flash"
   readonly provider: AIProviderId;
   readonly label: string;
   readonly capabilities: readonly AICapability[];
@@ -121,7 +115,7 @@ export interface AIProvider {
   readonly id: AIProviderId;
   readonly label: string;
   readonly enabled: boolean;
-  readonly priority: number;      // menor = maior prioridade
+  readonly priority: number; // menor = maior prioridade
   readonly models: readonly AIModel[];
   supports(capability: AICapability): boolean;
   health(): Promise<AIProviderHealth>;

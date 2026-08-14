@@ -5,7 +5,11 @@
  * receita do módulo (`modules.ts`) e entrega ao `AssemblyComposer`.
  * Peças, ferragens, folgas e rigs vêm dos componentes.
  */
-import { buildAssembly, type AssemblyResult, type ConstructionHardwareRef } from "../../construction";
+import {
+  buildAssembly,
+  type AssemblyResult,
+  type ConstructionHardwareRef,
+} from "../../construction";
 import type { FamilyBuildResult, FamilyRequirementSpec } from "../types";
 import { normalizeKitchenModule, type KitchenModuleInput, type KitchenModuleSpec } from "./spec";
 import {
@@ -42,7 +46,12 @@ export function kitchenExtraHardware(spec: KitchenModuleSpec): ConstructionHardw
     extra.push({ id: "lixeira", kind: "trilho", qty: 1, notes: "suporte de lixeira embutida" });
   }
   if (spec.kind === "torre-quente") {
-    extra.push({ id: "tomada", kind: "perfil", qty: 2, notes: "ponto elétrico para forno/micro-ondas" });
+    extra.push({
+      id: "tomada",
+      kind: "perfil",
+      qty: 2,
+      notes: "ponto elétrico para forno/micro-ondas",
+    });
   }
   if (spec.led) {
     extra.push({ id: "led", kind: "perfil", qty: 1, notes: "fita LED + perfil de alumínio" });
@@ -68,7 +77,7 @@ export interface KitchenBuildResult extends FamilyBuildResult<KitchenModuleSpec>
 export const KITCHEN_REQUIREMENTS: FamilyRequirementSpec = {
   mandatory: ["base", "lateral-e", "lateral-d"],
   important: ["tampo", "fundo", "frente"],
-  optional: ["gaveta", "prateleira", "led", "acessorio"]
+  optional: ["gaveta", "prateleira", "led", "acessorio"],
 };
 
 /** Monta UM módulo de cozinha. Puro e determinístico. */
@@ -100,7 +109,13 @@ export function buildKitchenModule(input: KitchenModuleInput = {}): KitchenBuild
       }
     : base;
 
-  return { spec, assembly, layout: g, reservations: kitchenReservedVolumes(spec, g), requirements: KITCHEN_REQUIREMENTS };
+  return {
+    spec,
+    assembly,
+    layout: g,
+    reservations: kitchenReservedVolumes(spec, g),
+    requirements: KITCHEN_REQUIREMENTS,
+  };
 }
 
 /** A peça invade algum volume técnico reservado? Usado na auditoria. */

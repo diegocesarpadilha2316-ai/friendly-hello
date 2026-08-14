@@ -13,20 +13,40 @@ interface DrillSpec {
   readonly estimatedSec: number;
 }
 
-const MINIFIX: DrillSpec  = { kind: "minifix", toolId: "drill-15", diameterMm: 15, depthMm: 12, estimatedSec: 8 };
-const CAVILHA: DrillSpec  = { kind: "cavilha", toolId: "drill-8",  diameterMm: 8,  depthMm: 12, estimatedSec: 5 };
-const HINGE:   DrillSpec  = { kind: "hinge",   toolId: "drill-35", diameterMm: 35, depthMm: 12, estimatedSec: 12 };
+const MINIFIX: DrillSpec = {
+  kind: "minifix",
+  toolId: "drill-15",
+  diameterMm: 15,
+  depthMm: 12,
+  estimatedSec: 8,
+};
+const CAVILHA: DrillSpec = {
+  kind: "cavilha",
+  toolId: "drill-8",
+  diameterMm: 8,
+  depthMm: 12,
+  estimatedSec: 5,
+};
+const HINGE: DrillSpec = {
+  kind: "hinge",
+  toolId: "drill-35",
+  diameterMm: 35,
+  depthMm: 12,
+  estimatedSec: 12,
+};
 
 export function deriveDrills(row: CutListRow): readonly CncOperation[] {
   const ops: CncOperation[] = [];
-  const L = row.lengthMm, W = row.widthMm;
+  const L = row.lengthMm,
+    W = row.widthMm;
   const push = (spec: DrillSpec, x: number, y: number, i: number) =>
     ops.push({
       id: `${row.code}-${spec.kind}-${i}`,
       partId: row.code,
       partCode: row.code,
       kind: spec.kind,
-      x, y,
+      x,
+      y,
       z: 0,
       diameterMm: spec.diameterMm,
       depthMm: spec.depthMm,
@@ -46,7 +66,12 @@ export function deriveDrills(row: CutListRow): readonly CncOperation[] {
   // Minifix nos cantos superiores/inferiores para bases e tampos
   const isHorizontal = /base|tampo|prateleira|fundo/i.test(row.name);
   if (isHorizontal) {
-    [ [50, 9], [L - 50, 9], [50, W - 9], [L - 50, W - 9] ].forEach(([x, y], i) => push(MINIFIX, x, y, i));
+    [
+      [50, 9],
+      [L - 50, 9],
+      [50, W - 9],
+      [L - 50, W - 9],
+    ].forEach(([x, y], i) => push(MINIFIX, x, y, i));
   }
 
   // Dobradiças para portas

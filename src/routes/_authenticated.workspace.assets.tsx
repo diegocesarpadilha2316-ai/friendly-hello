@@ -32,8 +32,14 @@ function WorkspaceAssets() {
         <MetricCard
           icon={<HardDrive className="h-4 w-4" />}
           label="Espaço usado"
-          value={stats.data ? `${((stats.data.usedBytes ?? 0) / (1024 * 1024)).toFixed(1)} MB` : "—"}
-          hint={stats.data?.quotaBytes ? `Cota: ${(stats.data.quotaBytes / (1024 * 1024)).toFixed(0)} MB` : undefined}
+          value={
+            stats.data ? `${((stats.data.usedBytes ?? 0) / (1024 * 1024)).toFixed(1)} MB` : "—"
+          }
+          hint={
+            stats.data?.quotaBytes
+              ? `Cota: ${(stats.data.quotaBytes / (1024 * 1024)).toFixed(0)} MB`
+              : undefined
+          }
         />
         <MetricCard label="Arquivos" value={String(stats.data?.assetCount ?? 0)} />
         <MetricCard label="Listados" value={String(files.length)} />
@@ -47,7 +53,11 @@ function WorkspaceAssets() {
             columns={[
               { id: "filename", header: "Nome", cell: (r) => r.filename },
               { id: "kind", header: "Tipo", cell: (r) => r.kind },
-              { id: "size", header: "Tamanho", cell: (r) => `${(r.sizeBytes / 1024).toFixed(1)} KB` },
+              {
+                id: "size",
+                header: "Tamanho",
+                cell: (r) => `${(r.sizeBytes / 1024).toFixed(1)} KB`,
+              },
             ]}
           />
         )}

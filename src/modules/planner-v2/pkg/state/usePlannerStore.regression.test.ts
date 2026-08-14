@@ -22,7 +22,7 @@ describe("FurnitureInstance V7 — regressões de interação", () => {
     expect(id).toBeTruthy();
     const before = usePlannerStore.getState().instances.find((item) => item.id === id)!;
     const accepted = usePlannerStore.getState().updateFurnitureInstance(id!, {
-      rotationDeg: { ...before.rotationDeg, y: before.rotationDeg.y + 5 }
+      rotationDeg: { ...before.rotationDeg, y: before.rotationDeg.y + 5 },
     });
     expect(accepted).toBe(true);
     expect(usePlannerStore.getState().canUndo()).toBe(true);
@@ -31,7 +31,9 @@ describe("FurnitureInstance V7 — regressões de interação", () => {
     expect(undone.rotationDeg).toEqual(before.rotationDeg);
     expect(usePlannerStore.getState().canRedo()).toBe(true);
     usePlannerStore.getState().redo();
-    expect(usePlannerStore.getState().instances.find((item) => item.id === id)?.rotationDeg.y).toBe(before.rotationDeg.y + 5);
+    expect(usePlannerStore.getState().instances.find((item) => item.id === id)?.rotationDeg.y).toBe(
+      before.rotationDeg.y + 5,
+    );
   });
 
   it("oculta, mostra, isola e restaura somente FurnitureInstance", () => {
@@ -39,14 +41,18 @@ describe("FurnitureInstance V7 — regressões de interação", () => {
     const second = usePlannerStore.getState().addFurnitureInstance("kitchen-base-1-door");
     expect(first && second).toBeTruthy();
     usePlannerStore.getState().hideFurnitureInstance(first!);
-    expect(usePlannerStore.getState().instances.find((item) => item.id === first)?.visible).toBe(false);
+    expect(usePlannerStore.getState().instances.find((item) => item.id === first)?.visible).toBe(
+      false,
+    );
     usePlannerStore.getState().showFurnitureInstance(first!);
     usePlannerStore.getState().setInstanceIsolated(second!);
     const isolated = usePlannerStore.getState().instances;
     expect(isolated.find((item) => item.id === second)?.visible).toBe(true);
     expect(isolated.find((item) => item.id === first)?.visible).toBe(false);
     usePlannerStore.getState().showAllInstances();
-    expect(usePlannerStore.getState().instances.every((item) => item.visible && !item.isIsolated)).toBe(true);
+    expect(
+      usePlannerStore.getState().instances.every((item) => item.visible && !item.isIsolated),
+    ).toBe(true);
   });
 
   it("alterna uma porta em grupo sem perder o FurnitureInstance pai", () => {
@@ -78,7 +84,9 @@ describe("FurnitureInstance V7 — regressões de interação", () => {
   });
 
   it("calcula drag preview com Snap e mantém instâncias como fonte de verdade", () => {
-    const id = usePlannerStore.getState().addFurnitureInstance("kitchen-base-2-doors", { x: 0, y: 0, z: -1200 });
+    const id = usePlannerStore
+      .getState()
+      .addFurnitureInstance("kitchen-base-2-doors", { x: 0, y: 0, z: -1200 });
     expect(id).toBeTruthy();
     usePlannerStore.getState().setDragPreview("kitchen-base-2-doors", { x: 815, y: 0, z: -1200 });
     const preview = usePlannerStore.getState().dragPreview;

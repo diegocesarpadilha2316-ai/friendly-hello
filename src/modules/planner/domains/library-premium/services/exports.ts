@@ -6,7 +6,11 @@ export interface PremiumExportInput {
   readonly hardware?: readonly LibraryHardware[];
 }
 
-export function exportPremium(input: PremiumExportInput): { readonly content: string; readonly mime: string; readonly filename: string } {
+export function exportPremium(input: PremiumExportInput): {
+  readonly content: string;
+  readonly mime: string;
+  readonly filename: string;
+} {
   const { format } = input;
   const materials = input.materials ?? [];
   const hardware = input.hardware ?? [];
@@ -21,10 +25,21 @@ export function exportPremium(input: PremiumExportInput): { readonly content: st
     case "excel": {
       const lines: string[] = ["kind,id,manufacturer,category,name,price"];
       for (const m of materials) {
-        lines.push(["material", m.id, m.manufacturer, m.category, m.colorName ?? "", m.pricePerM2 ?? ""].join(","));
+        lines.push(
+          [
+            "material",
+            m.id,
+            m.manufacturer,
+            m.category,
+            m.colorName ?? "",
+            m.pricePerM2 ?? "",
+          ].join(","),
+        );
       }
       for (const h of hardware) {
-        lines.push(["hardware", h.id, h.manufacturer, h.category, h.model, h.unitPrice ?? ""].join(","));
+        lines.push(
+          ["hardware", h.id, h.manufacturer, h.category, h.model, h.unitPrice ?? ""].join(","),
+        );
       }
       return {
         content: lines.join("\n"),
@@ -33,11 +48,22 @@ export function exportPremium(input: PremiumExportInput): { readonly content: st
       };
     }
     case "xml": {
-      const esc = (s: string) => s.replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]!));
+      const esc = (s: string) =>
+        s.replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" })[c]!);
       const body =
-        materials.map((m) => `  <material id="${esc(m.id)}" mfr="${esc(m.manufacturer)}" cat="${esc(m.category)}"/>`).join("\n") +
+        materials
+          .map(
+            (m) =>
+              `  <material id="${esc(m.id)}" mfr="${esc(m.manufacturer)}" cat="${esc(m.category)}"/>`,
+          )
+          .join("\n") +
         "\n" +
-        hardware.map((h) => `  <hardware id="${esc(h.id)}" mfr="${esc(h.manufacturer)}" cat="${esc(h.category)}"/>`).join("\n");
+        hardware
+          .map(
+            (h) =>
+              `  <hardware id="${esc(h.id)}" mfr="${esc(h.manufacturer)}" cat="${esc(h.category)}"/>`,
+          )
+          .join("\n");
       return {
         content: `<?xml version="1.0" encoding="UTF-8"?>\n<library>\n${body}\n</library>`,
         mime: "application/xml",

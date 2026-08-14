@@ -9,7 +9,14 @@ import { useMemo } from "react";
 import { useVideoReal } from "../hooks/use-video-real";
 import type { RealVideoEncoderId } from "../types";
 
-const ENCODERS: readonly RealVideoEncoderId[] = ["auto", "webcodecs", "mediarecorder", "ffmpeg-wasm", "gif-encoder", "png-sequence"];
+const ENCODERS: readonly RealVideoEncoderId[] = [
+  "auto",
+  "webcodecs",
+  "mediarecorder",
+  "ffmpeg-wasm",
+  "gif-encoder",
+  "png-sequence",
+];
 
 export function VideoRealPanel() {
   const real = useVideoReal();
@@ -54,7 +61,11 @@ export function VideoRealPanel() {
         <StatCard k="Frames" v={budget?.frameCount ?? 0} />
         <StatCard k="Duração (s)" v={budget?.durationSec ?? 0} />
         <StatCard k="Paralelismo" v={budget?.parallelFrames ?? 0} />
-        <StatCard k="Bytes~" v={Math.round((budget?.bytesEstimate ?? 0) / 1024 / 1024)} suffix=" MB" />
+        <StatCard
+          k="Bytes~"
+          v={Math.round((budget?.bytesEstimate ?? 0) / 1024 / 1024)}
+          suffix=" MB"
+        />
       </section>
 
       <section className="rounded-xl border border-white/10 bg-white/5 p-3">

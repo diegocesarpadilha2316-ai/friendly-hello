@@ -28,7 +28,11 @@ function WorkspaceInteg() {
       <PageHeader eyebrow="Workspace" title="Integrações" description="Serviços conectados" />
       <div className="mt-6">
         {rows.length === 0 ? (
-          <EmptyState icon={<Plug className="h-6 w-6" />} title="Nenhuma integração" description="Conecte serviços no Centro de Configurações." />
+          <EmptyState
+            icon={<Plug className="h-6 w-6" />}
+            title="Nenhuma integração"
+            description="Conecte serviços no Centro de Configurações."
+          />
         ) : (
           <DataTable
             data={rows}
@@ -39,7 +43,17 @@ function WorkspaceInteg() {
                 id: "status",
                 header: "Status",
                 cell: (r) => (
-                  <StatusBadge tone={r.status === "healthy" ? "success" : r.status === "degraded" ? "warning" : r.status === "down" ? "danger" : "neutral"}>
+                  <StatusBadge
+                    tone={
+                      r.status === "healthy"
+                        ? "success"
+                        : r.status === "degraded"
+                          ? "warning"
+                          : r.status === "down"
+                            ? "danger"
+                            : "neutral"
+                    }
+                  >
                     {r.status}
                   </StatusBadge>
                 ),

@@ -124,10 +124,7 @@ class AIManagerImpl {
     return [...all].sort((a, b) => {
       const ai = order.indexOf(a.id);
       const bi = order.indexOf(b.id);
-      return (
-        (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi) +
-        (a.priority - b.priority) * 0.01
-      );
+      return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi) + (a.priority - b.priority) * 0.01;
     });
   }
 
@@ -162,9 +159,7 @@ class AIManagerImpl {
         }
         this.recordFailure(provider.id);
         if (attempt < AI_GATEWAY_CONFIG.retryAttempts) {
-          await new Promise((r) =>
-            setTimeout(r, AI_GATEWAY_CONFIG.retryBackoffMs * (attempt + 1)),
-          );
+          await new Promise((r) => setTimeout(r, AI_GATEWAY_CONFIG.retryBackoffMs * (attempt + 1)));
         }
       }
     }
@@ -176,8 +171,7 @@ class AIManagerImpl {
     call: (p: AIProvider) => Promise<AIResponse<T>>,
   ): Promise<AIResponse<T>> {
     const providers = this.pickProviders(req);
-    if (!providers.length)
-      throw new AIGatewayError("Nenhum provider disponível", "no_provider");
+    if (!providers.length) throw new AIGatewayError("Nenhum provider disponível", "no_provider");
 
     const release = await this.acquire();
     const started = Date.now();
@@ -240,8 +234,7 @@ class AIManagerImpl {
 
   async *stream(req: AIRequest): AsyncIterable<AIStreamChunk> {
     const providers = this.pickProviders(req);
-    if (!providers.length)
-      throw new AIGatewayError("Nenhum provider disponível", "no_provider");
+    if (!providers.length) throw new AIGatewayError("Nenhum provider disponível", "no_provider");
     for (const p of providers) {
       if (this.isOpen(p.id)) continue;
       try {

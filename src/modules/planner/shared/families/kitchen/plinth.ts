@@ -15,12 +15,54 @@ export interface PlinthProfileDef {
 }
 
 export const PLINTHS: Readonly<Record<PlinthKind, PlinthProfileDef>> = {
-  pvc: { id: "pvc", label: "Rodapé PVC", heightMm: 100, recessMm: 50, finishId: "pvc-preto", removable: true },
-  aluminio: { id: "aluminio", label: "Rodapé alumínio", heightMm: 100, recessMm: 50, finishId: "aluminio-anodizado", removable: true },
-  madeira: { id: "madeira", label: "Rodapé em MDF", heightMm: 150, recessMm: 40, finishId: "branco-tx", removable: true },
-  recuado: { id: "recuado", label: "Recuado (pé-palito)", heightMm: 150, recessMm: 90, finishId: "preto-tx", removable: false },
-  espelhado: { id: "espelhado", label: "Rodapé espelhado", heightMm: 100, recessMm: 50, finishId: "espelho-prata", removable: true },
-  nenhum: { id: "nenhum", label: "Sem rodapé", heightMm: 0, recessMm: 0, finishId: "", removable: false },
+  pvc: {
+    id: "pvc",
+    label: "Rodapé PVC",
+    heightMm: 100,
+    recessMm: 50,
+    finishId: "pvc-preto",
+    removable: true,
+  },
+  aluminio: {
+    id: "aluminio",
+    label: "Rodapé alumínio",
+    heightMm: 100,
+    recessMm: 50,
+    finishId: "aluminio-anodizado",
+    removable: true,
+  },
+  madeira: {
+    id: "madeira",
+    label: "Rodapé em MDF",
+    heightMm: 150,
+    recessMm: 40,
+    finishId: "branco-tx",
+    removable: true,
+  },
+  recuado: {
+    id: "recuado",
+    label: "Recuado (pé-palito)",
+    heightMm: 150,
+    recessMm: 90,
+    finishId: "preto-tx",
+    removable: false,
+  },
+  espelhado: {
+    id: "espelhado",
+    label: "Rodapé espelhado",
+    heightMm: 100,
+    recessMm: 50,
+    finishId: "espelho-prata",
+    removable: true,
+  },
+  nenhum: {
+    id: "nenhum",
+    label: "Sem rodapé",
+    heightMm: 0,
+    recessMm: 0,
+    finishId: "",
+    removable: false,
+  },
 };
 
 export interface KitchenPlinth {

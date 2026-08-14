@@ -1,17 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Workflow } from "lucide-react";
-import {
-  PageContainer,
-  PageHeader,
-  EmptyState,
-  StatusBadge,
-} from "@/core/components/ui-kit";
+import { PageContainer, PageHeader, EmptyState, StatusBadge } from "@/core/components/ui-kit";
 
 export const Route = createFileRoute("/_authenticated/automacao")({
   head: () => ({
     meta: [
       { title: "Automação — Dioris Hub" },
-      { name: "description", content: "Fluxos, gatilhos e orquestração de processos na Dioris Hub." },
+      {
+        name: "description",
+        content: "Fluxos, gatilhos e orquestração de processos na Dioris Hub.",
+      },
       { property: "og:title", content: "Automação — Dioris Hub" },
       { property: "og:description", content: "Fluxos, gatilhos e orquestração de processos." },
       { property: "og:type", content: "website" },

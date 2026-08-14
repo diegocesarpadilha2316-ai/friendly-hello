@@ -17,13 +17,26 @@ export interface MachineLoad {
 
 export function computeMachineLoad(totalHours: number, windowDays: number): readonly MachineLoad[] {
   const machines = listMachines();
-  const share: Record<string, number> = { Corte: 0.28, Usinagem: 0.32, Acabamento: 0.25, Montagem: 0.15 };
+  const share: Record<string, number> = {
+    Corte: 0.28,
+    Usinagem: 0.32,
+    Acabamento: 0.25,
+    Montagem: 0.15,
+  };
   return machines.map((m) => {
     const capacityH = m.hoursPerDay * windowDays;
     const s = share[m.sector] ?? 0.2;
     const loadH = +(totalHours * s).toFixed(1);
     const loadPct = capacityH > 0 ? +((loadH / capacityH) * 100).toFixed(1) : 0;
-    return { resourceId: m.id, label: m.label, sector: m.sector, capacityH, loadH, loadPct, overloaded: loadPct > 100 };
+    return {
+      resourceId: m.id,
+      label: m.label,
+      sector: m.sector,
+      capacityH,
+      loadH,
+      loadPct,
+      overloaded: loadPct > 100,
+    };
   });
 }
 

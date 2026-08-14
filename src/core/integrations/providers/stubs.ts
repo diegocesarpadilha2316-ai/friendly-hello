@@ -65,5 +65,4 @@ export const PROVIDER_CATALOG: readonly IntegrationProviderDescriptor[] = PROVID
   }),
 );
 
-export const PROVIDER_STUBS: readonly IntegrationProvider[] =
-  PROVIDER_CATALOG.map(defineProvider);
+export const PROVIDER_STUBS: readonly IntegrationProvider[] = PROVIDER_CATALOG.map(defineProvider);

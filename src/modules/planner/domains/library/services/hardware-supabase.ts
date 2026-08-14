@@ -92,9 +92,12 @@ export async function searchHardware(params: {
   return out;
 }
 
-export async function fetchHardwareByIds(ids: readonly string[]): Promise<readonly LibraryHardware[]> {
+export async function fetchHardwareByIds(
+  ids: readonly string[],
+): Promise<readonly LibraryHardware[]> {
   const missing = ids.filter((id) => !cache.has(id));
-  if (missing.length === 0) return ids.map((id) => cache.get(id)!).filter(Boolean) as LibraryHardware[];
+  if (missing.length === 0)
+    return ids.map((id) => cache.get(id)!).filter(Boolean) as LibraryHardware[];
   const supabase = getSupabaseBrowser();
   const { data, error } = await supabase
     .from("planner_hardware")

@@ -38,10 +38,7 @@ export function priceRenderJob(input: {
   return Math.max(1, Math.ceil(base * qualityMult));
 }
 
-export function priceAiAssistantMessage(input: {
-  tokensIn?: number;
-  tokensOut?: number;
-}): number {
+export function priceAiAssistantMessage(input: { tokensIn?: number; tokensOut?: number }): number {
   const totalTokens = (input.tokensIn ?? 0) + (input.tokensOut ?? 0);
   const tokenCost = Math.ceil(totalTokens / 1000) * CREDIT_PRICES["ai.message.tokens_per_1k"];
   return CREDIT_PRICES["ai.message.assistant"] + tokenCost;

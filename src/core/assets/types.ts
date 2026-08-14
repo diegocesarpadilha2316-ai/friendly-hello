@@ -2,34 +2,13 @@
  * Assets Enterprise — contratos canônicos.
  * Todos os módulos consomem storage exclusivamente por este barrel.
  */
-export type StorageProviderId =
-  | "supabase"
-  | "r2"
-  | "s3"
-  | "gcs"
-  | "azure"
-  | "b2"
-  | "local";
+export type StorageProviderId = "supabase" | "r2" | "s3" | "gcs" | "azure" | "b2" | "local";
 
 export type AssetKind =
-  | "image"
-  | "video"
-  | "audio"
-  | "document"
-  | "pdf"
-  | "cad"
-  | "model3d"
-  | "archive"
-  | "other";
+  "image" | "video" | "audio" | "document" | "pdf" | "cad" | "model3d" | "archive" | "other";
 
 export type AssetVisibility = "private" | "tenant" | "public";
-export type UploadStatus =
-  | "pending"
-  | "uploading"
-  | "processing"
-  | "ready"
-  | "failed"
-  | "canceled";
+export type UploadStatus = "pending" | "uploading" | "processing" | "ready" | "failed" | "canceled";
 
 export interface AssetFolder {
   readonly id: string;

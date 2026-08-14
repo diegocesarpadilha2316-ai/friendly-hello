@@ -12,12 +12,7 @@ import {
   securityUpdatePolicy,
 } from "./security.functions";
 import { securityKeys, securitySnapshotQuery } from "./queries";
-import type {
-  IncidentSeverity,
-  IncidentStatus,
-  MfaMethod,
-  SecurityPolicy,
-} from "./types";
+import type { IncidentSeverity, IncidentStatus, MfaMethod, SecurityPolicy } from "./types";
 
 export function useSecuritySnapshot() {
   return useSuspenseQuery(securitySnapshotQuery());
@@ -43,8 +38,7 @@ export function useRevokeSession() {
   const fn = useServerFn(securityRevokeSession);
   const invalidate = useInvalidate();
   return useMutation({
-    mutationFn: (data: { sessionId: string; reason?: string }) =>
-      fn({ data } as never),
+    mutationFn: (data: { sessionId: string; reason?: string }) => fn({ data } as never),
     onSuccess: () => invalidate(),
   });
 }
@@ -62,8 +56,7 @@ export function useSetDeviceTrust() {
   const fn = useServerFn(securitySetDeviceTrust);
   const invalidate = useInvalidate();
   return useMutation({
-    mutationFn: (data: { deviceId: string; trusted: boolean }) =>
-      fn({ data } as never),
+    mutationFn: (data: { deviceId: string; trusted: boolean }) => fn({ data } as never),
     onSuccess: () => invalidate(),
   });
 }
@@ -72,8 +65,7 @@ export function useEnrollMfa() {
   const fn = useServerFn(securityEnrollMfa);
   const invalidate = useInvalidate();
   return useMutation({
-    mutationFn: (data: { method: MfaMethod; label?: string }) =>
-      fn({ data } as never),
+    mutationFn: (data: { method: MfaMethod; label?: string }) => fn({ data } as never),
     onSuccess: () => invalidate(),
   });
 }
@@ -115,8 +107,7 @@ export function useUpdateIncident() {
   const fn = useServerFn(securityUpdateIncident);
   const invalidate = useInvalidate();
   return useMutation({
-    mutationFn: (data: { id: string; status: IncidentStatus }) =>
-      fn({ data } as never),
+    mutationFn: (data: { id: string; status: IncidentStatus }) => fn({ data } as never),
     onSuccess: () => invalidate(),
   });
 }

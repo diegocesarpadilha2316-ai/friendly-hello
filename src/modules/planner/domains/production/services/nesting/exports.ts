@@ -5,10 +5,22 @@
 import type { NestingBoard, NestingPlan } from "./types";
 
 export function toCsv(plan: NestingPlan): string {
-  const header = ["board", "code", "x", "y", "w", "h", "rotated", "material", "thickness"].join(",");
+  const header = ["board", "code", "x", "y", "w", "h", "rotated", "material", "thickness"].join(
+    ",",
+  );
   const rows = plan.boards.flatMap((b) =>
     b.placements.map((p) =>
-      [b.index, p.code, p.x, p.y, p.w, p.h, p.rotated ? 1 : 0, b.spec.material, b.spec.thicknessMm].join(","),
+      [
+        b.index,
+        p.code,
+        p.x,
+        p.y,
+        p.w,
+        p.h,
+        p.rotated ? 1 : 0,
+        b.spec.material,
+        b.spec.thicknessMm,
+      ].join(","),
     ),
   );
   return [header, ...rows].join("\n");
@@ -30,9 +42,30 @@ export function toSvg(board: NestingBoard): string {
 export function toDxf(board: NestingBoard): string {
   const lines: string[] = ["0", "SECTION", "2", "ENTITIES"];
   for (const p of board.placements) {
-    const x1 = p.x, y1 = p.y, x2 = p.x + p.w, y2 = p.y + p.h;
-    for (const [a, b, c, d] of [[x1, y1, x2, y1], [x2, y1, x2, y2], [x2, y2, x1, y2], [x1, y2, x1, y1]] as const) {
-      lines.push("0", "LINE", "8", "CUT", "10", String(a), "20", String(b), "11", String(c), "21", String(d));
+    const x1 = p.x,
+      y1 = p.y,
+      x2 = p.x + p.w,
+      y2 = p.y + p.h;
+    for (const [a, b, c, d] of [
+      [x1, y1, x2, y1],
+      [x2, y1, x2, y2],
+      [x2, y2, x1, y2],
+      [x1, y2, x1, y1],
+    ] as const) {
+      lines.push(
+        "0",
+        "LINE",
+        "8",
+        "CUT",
+        "10",
+        String(a),
+        "20",
+        String(b),
+        "11",
+        String(c),
+        "21",
+        String(d),
+      );
     }
   }
   lines.push("0", "ENDSEC", "0", "EOF");
@@ -55,7 +88,10 @@ export function toPdfText(plan: NestingPlan): string {
   const header = `Plano de Corte · ${plan.algorithm} · ${plan.generatedAt}`;
   const stats = `Chapas ${plan.statistics.boardsCount} · Aproveitamento ${(plan.statistics.avgUsageRatio * 100).toFixed(1)}%`;
   const boards = plan.boards
-    .map((b) => `Chapa ${b.index} — ${b.spec.material} ${b.spec.thicknessMm}mm — ${b.placements.length} peças`)
+    .map(
+      (b) =>
+        `Chapa ${b.index} — ${b.spec.material} ${b.spec.thicknessMm}mm — ${b.placements.length} peças`,
+    )
     .join("\n");
   return [header, stats, boards].join("\n");
 }

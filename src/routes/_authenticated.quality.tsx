@@ -148,9 +148,7 @@ function QualityPage() {
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`px-3 py-2 text-sm ${
-              tab === t.key
-                ? "border-b-2 border-primary font-semibold"
-                : "text-muted-foreground"
+              tab === t.key ? "border-b-2 border-primary font-semibold" : "text-muted-foreground"
             }`}
           >
             {t.label}
@@ -160,9 +158,7 @@ function QualityPage() {
 
       {tab === "dashboard" && <DashboardTab data={data} />}
       {tab === "coverage" && <CoverageTab data={data.coverage} />}
-      {tab === "tests" && (
-        <TestsTab suites={data.suites} runs={data.runs} cases={data.cases} />
-      )}
+      {tab === "tests" && <TestsTab suites={data.suites} runs={data.runs} cases={data.cases} />}
       {tab === "build" && (
         <GatesTab
           gates={[
@@ -262,8 +258,16 @@ function TestsTab({
       cell: (r) => <StatusBadge tone={runTone(r.status)}>{r.status}</StatusBadge>,
     },
     { id: "totals", header: "P/F/S", cell: (r) => `${r.passed}/${r.failed}/${r.skipped}` },
-    { id: "cov", header: "Cobertura", cell: (r) => (r.coveragePct == null ? "—" : `${r.coveragePct}%`) },
-    { id: "dur", header: "Duração", cell: (r) => (r.durationMs == null ? "—" : `${r.durationMs} ms`) },
+    {
+      id: "cov",
+      header: "Cobertura",
+      cell: (r) => (r.coveragePct == null ? "—" : `${r.coveragePct}%`),
+    },
+    {
+      id: "dur",
+      header: "Duração",
+      cell: (r) => (r.durationMs == null ? "—" : `${r.durationMs} ms`),
+    },
     { id: "at", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString() },
   ];
 
@@ -325,7 +329,11 @@ function TestsTab({
 
 function CoverageTab({ data }: { data: readonly QualityCoverage[] }) {
   const cols: DataTableColumn<QualityCoverage>[] = [
-    { id: "scope", header: "Escopo", cell: (r) => <StatusBadge tone="info">{r.scope}</StatusBadge> },
+    {
+      id: "scope",
+      header: "Escopo",
+      cell: (r) => <StatusBadge tone="info">{r.scope}</StatusBadge>,
+    },
     { id: "target", header: "Alvo", cell: (r) => <code className="text-xs">{r.target}</code> },
     { id: "lines", header: "Linhas", cell: (r) => `${r.linesPct}%` },
     { id: "branches", header: "Branches", cell: (r) => `${r.branchesPct}%` },
@@ -337,13 +345,7 @@ function CoverageTab({ data }: { data: readonly QualityCoverage[] }) {
   return <DataTable data={[...data]} columns={cols} getRowKey={(r) => r.id} />;
 }
 
-function GatesTab({
-  gates,
-  empty,
-}: {
-  gates: readonly QualityGate[];
-  empty: string;
-}) {
+function GatesTab({ gates, empty }: { gates: readonly QualityGate[]; empty: string }) {
   const del = useDeleteGate();
   const cols: DataTableColumn<QualityGate>[] = [
     { id: "slug", header: "Slug", cell: (r) => <code className="text-xs">{r.slug}</code> },
@@ -380,7 +382,11 @@ function RegressionTab({ runs }: { runs: readonly QualityRun[] }) {
       cell: (r) => <StatusBadge tone={runTone(r.status)}>{r.status}</StatusBadge>,
     },
     { id: "totals", header: "P/F/S", cell: (r) => `${r.passed}/${r.failed}/${r.skipped}` },
-    { id: "dur", header: "Duração", cell: (r) => (r.durationMs == null ? "—" : `${r.durationMs} ms`) },
+    {
+      id: "dur",
+      header: "Duração",
+      cell: (r) => (r.durationMs == null ? "—" : `${r.durationMs} ms`),
+    },
     { id: "at", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString() },
   ];
   if (!runs.length) return <EmptyState title="Sem execuções de regressão" />;
@@ -393,7 +399,11 @@ function HistoryTab({ points }: { points: readonly QualityHistoryPoint[] }) {
     { id: "runs", header: "Execuções", cell: (r) => r.runs },
     { id: "passed", header: "Passou", cell: (r) => r.passed },
     { id: "failed", header: "Falhou", cell: (r) => r.failed },
-    { id: "cov", header: "Cobertura", cell: (r) => (r.coveragePct == null ? "—" : `${r.coveragePct}%`) },
+    {
+      id: "cov",
+      header: "Cobertura",
+      cell: (r) => (r.coveragePct == null ? "—" : `${r.coveragePct}%`),
+    },
     { id: "gp", header: "Gates OK", cell: (r) => r.gatesPass },
     { id: "gf", header: "Gates fail", cell: (r) => r.gatesFail },
   ];

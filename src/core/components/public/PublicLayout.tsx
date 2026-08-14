@@ -24,13 +24,55 @@ import { CookieConsent } from "./CookieConsent";
 import { Analytics } from "./Analytics";
 
 const productLinks = [
-  { to: "/produtos/planner", label: "Planner", icon: Layers, badge: "Em breve", desc: "Projeto 3D + IA + Produção" },
-  { to: "/produtos/criador", label: "Criador Universal", icon: Wand2, badge: "Em breve", desc: "Sites, sistemas e apps com IA" },
-  { to: "/produtos#crm", label: "CRM", icon: Users, badge: "Em desenvolvimento", desc: "Clientes e pipeline" },
-  { to: "/produtos#financeiro", label: "Financeiro", icon: Wallet, badge: "Em desenvolvimento", desc: "Faturamento e fluxo" },
-  { to: "/produtos#marketplace", label: "Marketplace", icon: Store, badge: "Em desenvolvimento", desc: "Ecossistema de plugins" },
-  { to: "/produtos#automacao", label: "Automação", icon: Workflow, badge: "Em desenvolvimento", desc: "Workflows inteligentes" },
-  { to: "/produtos#ia", label: "IA", icon: Brain, badge: "Ativo", desc: "Gateway central multi-modelo" },
+  {
+    to: "/produtos/planner",
+    label: "Planner",
+    icon: Layers,
+    badge: "Em breve",
+    desc: "Projeto 3D + IA + Produção",
+  },
+  {
+    to: "/produtos/criador",
+    label: "Criador Universal",
+    icon: Wand2,
+    badge: "Em breve",
+    desc: "Sites, sistemas e apps com IA",
+  },
+  {
+    to: "/produtos#crm",
+    label: "CRM",
+    icon: Users,
+    badge: "Em desenvolvimento",
+    desc: "Clientes e pipeline",
+  },
+  {
+    to: "/produtos#financeiro",
+    label: "Financeiro",
+    icon: Wallet,
+    badge: "Em desenvolvimento",
+    desc: "Faturamento e fluxo",
+  },
+  {
+    to: "/produtos#marketplace",
+    label: "Marketplace",
+    icon: Store,
+    badge: "Em desenvolvimento",
+    desc: "Ecossistema de plugins",
+  },
+  {
+    to: "/produtos#automacao",
+    label: "Automação",
+    icon: Workflow,
+    badge: "Em desenvolvimento",
+    desc: "Workflows inteligentes",
+  },
+  {
+    to: "/produtos#ia",
+    label: "IA",
+    icon: Brain,
+    badge: "Ativo",
+    desc: "Gateway central multi-modelo",
+  },
 ];
 
 const primaryNav = [
@@ -111,7 +153,9 @@ export function PublicHeader() {
                               </div>
                               <div className="min-w-0">
                                 <div className="flex items-center gap-2">
-                                  <span className="text-sm font-semibold text-foreground">{p.label}</span>
+                                  <span className="text-sm font-semibold text-foreground">
+                                    {p.label}
+                                  </span>
                                   <span className="rounded-full border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
                                     {p.badge}
                                   </span>
@@ -255,7 +299,7 @@ export function PublicFooter() {
         { to: "/termos", label: "Termos de uso" },
         { to: "/privacidade", label: "Privacidade" },
         { to: "/privacidade", label: "LGPD" },
-      { to: "/cookies", label: "Cookies" },
+        { to: "/cookies", label: "Cookies" },
         { to: "/reembolso", label: "Reembolso" },
         { to: "/seguranca", label: "Segurança" },
       ],
@@ -278,8 +322,8 @@ export function PublicFooter() {
           <div className="lg:col-span-2">
             <img src={diorisLogo} alt="Dioris" className="h-9 w-auto" />
             <p className="mt-4 max-w-sm text-sm text-muted-foreground">
-              Inteligência que conecta tudo. A Dioris é um ecossistema modular para
-              projetar, criar, vender, gerir e automatizar — impulsionado por IA.
+              Inteligência que conecta tudo. A Dioris é um ecossistema modular para projetar, criar,
+              vender, gerir e automatizar — impulsionado por IA.
             </p>
             <div className="mt-6 flex gap-2">
               {social.map((s, i) => (
@@ -301,7 +345,10 @@ export function PublicFooter() {
               <ul className="mt-4 space-y-2.5">
                 {col.links.map((l, i) => (
                   <li key={i}>
-                    <Link to={l.to} className="text-sm text-foreground/70 transition-colors hover:text-foreground">
+                    <Link
+                      to={l.to}
+                      className="text-sm text-foreground/70 transition-colors hover:text-foreground"
+                    >
                       {l.label}
                     </Link>
                   </li>
@@ -314,9 +361,7 @@ export function PublicFooter() {
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} Dioris. Todos os direitos reservados.
           </p>
-          <p className="text-xs text-muted-foreground">
-            Inteligência que conecta tudo.
-          </p>
+          <p className="text-xs text-muted-foreground">Inteligência que conecta tudo.</p>
         </div>
       </div>
     </footer>

@@ -72,7 +72,14 @@ const G = mechanismGroupId;
 
 describe("Intertravamento de mecanismos", () => {
   it("porta de abrir FECHADA bloqueia a gaveta da mesma coluna", () => {
-    const s = scene({ widthMm: 1800, doors: 2, opening: "abrir", drawers: 2, columns: 2, drawerColumn: 0 });
+    const s = scene({
+      widthMm: 1800,
+      doors: 2,
+      opening: "abrir",
+      drawers: 2,
+      columns: 2,
+      drawerColumn: 0,
+    });
     const r = s.solve({ openDrawers: true }, {});
     for (const d of s.drawers) expect(r.allowed[d.id]).toBe(0);
     expect(r.blocked.length).toBeGreaterThan(0);
@@ -81,7 +88,14 @@ describe("Intertravamento de mecanismos", () => {
   });
 
   it("porta ACIMA do ângulo seguro libera a gaveta", () => {
-    const s = scene({ widthMm: 1800, doors: 2, opening: "abrir", drawers: 2, columns: 2, drawerColumn: 0 });
+    const s = scene({
+      widthMm: 1800,
+      doors: 2,
+      opening: "abrir",
+      drawers: 2,
+      columns: 2,
+      drawerColumn: 0,
+    });
     const open: Record<string, number> = {};
     for (const d of s.doors) open[d.id] = 1; // 90°
     const r = s.solve({ openDoors: true, openDrawers: true }, open);
@@ -90,7 +104,14 @@ describe("Intertravamento de mecanismos", () => {
   });
 
   it("porta PARCIALMENTE aberta mantém o bloqueio", () => {
-    const s = scene({ widthMm: 1800, doors: 2, opening: "abrir", drawers: 2, columns: 2, drawerColumn: 0 });
+    const s = scene({
+      widthMm: 1800,
+      doors: 2,
+      opening: "abrir",
+      drawers: 2,
+      columns: 2,
+      drawerColumn: 0,
+    });
     // Estados cujo ângulo real ainda está abaixo do limite seguro (80°).
     for (const frac of [0.03, 0.1, 0.2]) {
       const partial: Record<string, number> = {};
@@ -105,21 +126,37 @@ describe("Intertravamento de mecanismos", () => {
     // Assim que o ângulo cruza o limite, o vão é liberado.
     const safe: Record<string, number> = {};
     for (const d of s.doors) safe[d.id] = 0.45;
-    const angleSafe = Math.abs(resolveMotion(s.motionByPiece.get(s.doors[0].id)!, 0.45).rotateDeg[1]);
+    const angleSafe = Math.abs(
+      resolveMotion(s.motionByPiece.get(s.doors[0].id)!, 0.45).rotateDeg[1],
+    );
     expect(angleSafe).toBeGreaterThanOrEqual(80);
     const free = s.solve({ openDoors: true, openDrawers: true }, safe);
     for (const d of s.drawers) expect(free.allowed[d.id]).toBe(1);
   });
 
   it("folha de correr COBRINDO a coluna bloqueia a gaveta", () => {
-    const s = scene({ widthMm: 2400, doors: 2, opening: "correr", drawers: 2, columns: 2, drawerColumn: 0 });
+    const s = scene({
+      widthMm: 2400,
+      doors: 2,
+      opening: "correr",
+      drawers: 2,
+      columns: 2,
+      drawerColumn: 0,
+    });
     const r = s.solve({ openDrawers: true }, {});
     for (const d of s.drawers) expect(r.allowed[d.id]).toBe(0);
     expect(r.blocked[0].reason).toBe("folha-cobrindo");
   });
 
   it("folha de correr FORA da coluna libera a gaveta", () => {
-    const s = scene({ widthMm: 2400, doors: 2, opening: "correr", drawers: 2, columns: 2, drawerColumn: 0 });
+    const s = scene({
+      widthMm: 2400,
+      doors: 2,
+      opening: "correr",
+      drawers: 2,
+      columns: 2,
+      drawerColumn: 0,
+    });
     const open: Record<string, number> = {};
     for (const d of s.doors) open[d.id] = 1;
     const r = s.solve({ openDoors: true, openDrawers: true }, open);
@@ -127,10 +164,19 @@ describe("Intertravamento de mecanismos", () => {
   });
 
   it("uma coluna livre NÃO desbloqueia a coluna vizinha", () => {
-    const s = scene({ widthMm: 1800, doors: 2, opening: "abrir", drawers: 2, columns: 2, drawerColumn: 0 });
+    const s = scene({
+      widthMm: 1800,
+      doors: 2,
+      opening: "abrir",
+      drawers: 2,
+      columns: 2,
+      drawerColumn: 0,
+    });
     // Abre apenas a folha que NÃO cobre a coluna da gaveta.
     const drawerSpan = [s.drawers[0].box.x, s.drawers[0].box.x + s.drawers[0].box.width];
-    const other = s.doors.find((d) => d.box.x + d.box.width <= drawerSpan[0] + 1 || d.box.x >= drawerSpan[1] - 1)!;
+    const other = s.doors.find(
+      (d) => d.box.x + d.box.width <= drawerSpan[0] + 1 || d.box.x >= drawerSpan[1] - 1,
+    )!;
     const own = s.doors.find((d) => d.id !== other.id)!;
     const r = s.solve({ openDoors: true, openDrawers: true }, { [other.id]: 1, [own.id]: 0 });
     for (const d of s.drawers) expect(r.allowed[d.id]).toBe(0);
@@ -139,7 +185,14 @@ describe("Intertravamento de mecanismos", () => {
 
   it("botão Abrir gavetas abre só o que tem acesso livre", () => {
     // 2 colunas, gaveteiro na coluna 0; abrimos apenas a porta da coluna 0.
-    const s = scene({ widthMm: 1800, doors: 2, opening: "abrir", drawers: 2, columns: 2, drawerColumn: 0 });
+    const s = scene({
+      widthMm: 1800,
+      doors: 2,
+      opening: "abrir",
+      drawers: 2,
+      columns: 2,
+      drawerColumn: 0,
+    });
     const own = s.doors.find((d) => d.box.x < s.drawers[0].box.x + s.drawers[0].box.width - 30)!;
     const r = s.solve({ openDoors: true, openDrawers: true }, { [own.id]: 1 });
     for (const d of s.drawers) expect(r.allowed[d.id]).toBe(1);
@@ -147,7 +200,14 @@ describe("Intertravamento de mecanismos", () => {
   });
 
   it("a porta NÃO fecha atravessando a gaveta aberta", () => {
-    const s = scene({ widthMm: 1800, doors: 2, opening: "abrir", drawers: 2, columns: 2, drawerColumn: 0 });
+    const s = scene({
+      widthMm: 1800,
+      doors: 2,
+      opening: "abrir",
+      drawers: 2,
+      columns: 2,
+      drawerColumn: 0,
+    });
     const cur: Record<string, number> = {};
     for (const d of s.doors) cur[d.id] = 1;
     for (const d of s.drawers) cur[d.id] = 1; // tudo aberto
@@ -159,7 +219,14 @@ describe("Intertravamento de mecanismos", () => {
   });
 
   it("ao fechar tudo, a sequência recolhe as gavetas ANTES das portas", () => {
-    const s = scene({ widthMm: 1800, doors: 2, opening: "abrir", drawers: 2, columns: 2, drawerColumn: 0 });
+    const s = scene({
+      widthMm: 1800,
+      doors: 2,
+      opening: "abrir",
+      drawers: 2,
+      columns: 2,
+      drawerColumn: 0,
+    });
     const start = s.simulate({ openDoors: true, openDrawers: true }).cur;
     for (const d of s.drawers) expect(start[d.id]).toBeGreaterThan(0.95);
 
@@ -173,7 +240,14 @@ describe("Intertravamento de mecanismos", () => {
   });
 
   it("nenhuma peça atravessa outra durante a animação", () => {
-    const s = scene({ widthMm: 1800, doors: 2, opening: "abrir", drawers: 3, columns: 2, drawerColumn: 0 });
+    const s = scene({
+      widthMm: 1800,
+      doors: 2,
+      opening: "abrir",
+      drawers: 3,
+      columns: 2,
+      drawerColumn: 0,
+    });
     const sequences: Array<[Ctrl, Record<string, number>]> = [];
     const opened = s.simulate({ openDoors: true, openDrawers: true }).cur;
     sequences.push([{ openDoors: true, openDrawers: true }, {}]);
@@ -188,7 +262,8 @@ describe("Intertravamento de mecanismos", () => {
           const drawerFront = db.z + db.depth;
           for (const door of s.doors) {
             const pb = s.boxAt(door, frame[door.id] ?? 0);
-            const sameColumn = Math.min(pb.x + pb.width, db.x + db.width) - Math.max(pb.x, db.x) > 30;
+            const sameColumn =
+              Math.min(pb.x + pb.width, db.x + db.width) - Math.max(pb.x, db.x) > 30;
             if (!sameColumn) continue;
             // Se a folha ainda tapa a coluna, a gaveta não pode ter avançado.
             expect(drawerFront).toBeLessThanOrEqual(pb.z + pb.depth + 1);
@@ -199,8 +274,22 @@ describe("Intertravamento de mecanismos", () => {
   });
 
   it("gavetas de colunas diferentes são avaliadas de forma independente", () => {
-    const a = scene({ widthMm: 2400, doors: 2, opening: "abrir", drawers: 2, columns: 2, drawerColumn: 0 });
-    const b = scene({ widthMm: 2400, doors: 2, opening: "abrir", drawers: 2, columns: 2, drawerColumn: 1 });
+    const a = scene({
+      widthMm: 2400,
+      doors: 2,
+      opening: "abrir",
+      drawers: 2,
+      columns: 2,
+      drawerColumn: 0,
+    });
+    const b = scene({
+      widthMm: 2400,
+      doors: 2,
+      opening: "abrir",
+      drawers: 2,
+      columns: 2,
+      drawerColumn: 1,
+    });
     const groupsA = new Set(a.drawers.map((d) => G(d.id)));
     const groupsB = new Set(b.drawers.map((d) => G(d.id)));
     expect(groupsA.size).toBe(2);
@@ -212,7 +301,14 @@ describe("Intertravamento de mecanismos", () => {
   });
 
   it("todas as peças de uma gaveta bloqueada ficam paradas juntas", () => {
-    const s = scene({ widthMm: 1800, doors: 2, opening: "abrir", drawers: 2, columns: 2, drawerColumn: 0 });
+    const s = scene({
+      widthMm: 1800,
+      doors: 2,
+      opening: "abrir",
+      drawers: 2,
+      columns: 2,
+      drawerColumn: 0,
+    });
     const r = s.solve({ openDrawers: true }, {});
     const byGroup = new Map<string, number[]>();
     for (const d of s.drawers) {

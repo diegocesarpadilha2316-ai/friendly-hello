@@ -14,9 +14,10 @@ export function listModules(project: PlannerProject | null): readonly PlannerPar
   return acc;
 }
 
-export function findNode(project: PlannerProject | null, nodeId: string):
-  | { node: PlannerParametricNode; room: PlannerRoom; envId: string }
-  | null {
+export function findNode(
+  project: PlannerProject | null,
+  nodeId: string,
+): { node: PlannerParametricNode; room: PlannerRoom; envId: string } | null {
   if (!project) return null;
   for (const env of project.environments) {
     for (const room of env.rooms) {

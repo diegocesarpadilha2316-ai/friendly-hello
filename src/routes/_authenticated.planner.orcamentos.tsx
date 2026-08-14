@@ -123,8 +123,7 @@ function OrcamentosPage() {
       // opcional: navegar para detalhe — mantemos lista pura por simplicidade
       void row;
     },
-    onError: (e: unknown) =>
-      toast.error(e instanceof Error ? e.message : "Falha ao criar"),
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Falha ao criar"),
   });
 
   const statusMutation = useMutation({
@@ -134,8 +133,7 @@ function OrcamentosPage() {
       toast.success("Status atualizado");
       invalidate();
     },
-    onError: (e: unknown) =>
-      toast.error(e instanceof Error ? e.message : "Falha ao atualizar"),
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Falha ao atualizar"),
   });
 
   const removeMutation = useMutation({
@@ -144,8 +142,7 @@ function OrcamentosPage() {
       toast.success("Orçamento removido");
       invalidate();
     },
-    onError: (e: unknown) =>
-      toast.error(e instanceof Error ? e.message : "Falha ao remover"),
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Falha ao remover"),
   });
 
   const rows = listQuery.data ?? [];
@@ -258,9 +255,7 @@ function OrcamentosPage() {
                   <QuoteRowView
                     key={r.id}
                     row={r}
-                    onStatus={(status) =>
-                      statusMutation.mutate({ id: r.id, status })
-                    }
+                    onStatus={(status) => statusMutation.mutate({ id: r.id, status })}
                     onRemove={() => {
                       if (confirm(`Remover orçamento "${r.title ?? r.number ?? r.id}"?`)) {
                         removeMutation.mutate(r.id);
@@ -309,9 +304,7 @@ function QuoteRowView({
           atualizado {new Date(row.updatedAt || row.createdAt).toLocaleDateString("pt-BR")}
         </div>
       </td>
-      <td className="px-3 py-2 text-xs text-muted-foreground">
-        {row.clientName ?? "—"}
-      </td>
+      <td className="px-3 py-2 text-xs text-muted-foreground">{row.clientName ?? "—"}</td>
       <td className="px-3 py-2">
         <StatusBadge tone={STATUS_TONE[row.status]}>{STATUS_LABEL[row.status]}</StatusBadge>
       </td>
@@ -396,9 +389,7 @@ function QuickCreateDialog({
           </Button>
           <Button
             size="sm"
-            onClick={() =>
-              onCreate({ title: title.trim(), clientName: clientName.trim() })
-            }
+            onClick={() => onCreate({ title: title.trim(), clientName: clientName.trim() })}
             disabled={saving || !title.trim()}
           >
             {saving ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : null}

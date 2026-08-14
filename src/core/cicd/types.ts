@@ -1,24 +1,40 @@
 export type EnvironmentKind = "local" | "development" | "staging" | "production" | "preview";
 export type PipelineProvider =
-  | "internal" | "github_actions" | "gitlab_ci" | "azure_devops" | "jenkins"
-  | "vercel" | "cloudflare" | "supabase" | "docker" | "kubernetes" | "custom";
+  | "internal"
+  | "github_actions"
+  | "gitlab_ci"
+  | "azure_devops"
+  | "jenkins"
+  | "vercel"
+  | "cloudflare"
+  | "supabase"
+  | "docker"
+  | "kubernetes"
+  | "custom";
 export type BuildTrigger =
-  | "manual" | "push" | "pr" | "tag" | "cron" | "event" | "webhook" | "rollback";
-export type BuildStatus =
-  | "queued" | "running" | "passed" | "failed" | "cancelled" | "skipped";
+  "manual" | "push" | "pr" | "tag" | "cron" | "event" | "webhook" | "rollback";
+export type BuildStatus = "queued" | "running" | "passed" | "failed" | "cancelled" | "skipped";
 export type DeployStatus =
-  | "queued" | "running" | "succeeded" | "failed" | "cancelled" | "rolled_back";
+  "queued" | "running" | "succeeded" | "failed" | "cancelled" | "rolled_back";
 export type DeployStrategy = "rolling" | "blue_green" | "canary" | "recreate" | "preview";
 export type ReleaseChannel = "stable" | "beta" | "alpha" | "preview" | "hotfix";
-export type ArtifactKind = "asset" | "log" | "package" | "container" | "export" | "snapshot" | "other";
+export type ArtifactKind =
+  "asset" | "log" | "package" | "container" | "export" | "snapshot" | "other";
 export type ApprovalStatus = "pending" | "approved" | "rejected" | "expired";
 
 export interface PipelineStage {
   key: string;
   name: string;
   kind:
-    | "build" | "test" | "quality" | "security" | "performance"
-    | "deploy" | "release" | "rollback" | "custom";
+    | "build"
+    | "test"
+    | "quality"
+    | "security"
+    | "performance"
+    | "deploy"
+    | "release"
+    | "rollback"
+    | "custom";
   enabled?: boolean;
 }
 

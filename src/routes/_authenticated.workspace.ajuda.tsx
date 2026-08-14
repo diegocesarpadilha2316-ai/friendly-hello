@@ -1,10 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LifeBuoy, Book, MessageCircle, Mail } from "lucide-react";
-import {
-  PageContainer,
-  PageHeader,
-  ModuleCard,
-} from "@/core/components/ui-kit";
+import { PageContainer, PageHeader, ModuleCard } from "@/core/components/ui-kit";
 import {
   Accordion,
   AccordionContent,
@@ -49,16 +45,39 @@ const FAQ: ReadonlyArray<{ q: string; a: string }> = [
 function WorkspaceAjuda() {
   return (
     <PageContainer>
-      <PageHeader eyebrow="Workspace" title="Central de Ajuda" description="Documentação e suporte" />
+      <PageHeader
+        eyebrow="Workspace"
+        title="Central de Ajuda"
+        description="Documentação e suporte"
+      />
       <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <ModuleCard icon={<Book className="h-4 w-4" />} name="Documentação" description="Guias e referência de módulos" />
-        <ModuleCard icon={<MessageCircle className="h-4 w-4" />} name="Suporte" description="Fale com o time Dioris" />
-        <ModuleCard icon={<Mail className="h-4 w-4" />} name="Contato" description="contato@dioris.com" />
-        <ModuleCard icon={<LifeBuoy className="h-4 w-4" />} name="Status da plataforma" description="Uptime, incidentes e manutenção" href="/observabilidade" />
+        <ModuleCard
+          icon={<Book className="h-4 w-4" />}
+          name="Documentação"
+          description="Guias e referência de módulos"
+        />
+        <ModuleCard
+          icon={<MessageCircle className="h-4 w-4" />}
+          name="Suporte"
+          description="Fale com o time Dioris"
+        />
+        <ModuleCard
+          icon={<Mail className="h-4 w-4" />}
+          name="Contato"
+          description="contato@dioris.com"
+        />
+        <ModuleCard
+          icon={<LifeBuoy className="h-4 w-4" />}
+          name="Status da plataforma"
+          description="Uptime, incidentes e manutenção"
+          href="/observabilidade"
+        />
       </div>
 
       <div className="mt-8">
-        <p className="text-xs uppercase tracking-wider text-muted-foreground">Perguntas frequentes</p>
+        <p className="text-xs uppercase tracking-wider text-muted-foreground">
+          Perguntas frequentes
+        </p>
         <h3 className="mt-1 text-lg font-semibold">FAQ</h3>
         <Accordion type="single" collapsible className="mt-4">
           {FAQ.map((item, i) => (

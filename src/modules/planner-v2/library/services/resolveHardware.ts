@@ -3,7 +3,7 @@ import { HardwareRegistry } from "../registry/HardwareRegistry";
 
 export function resolveHardware(
   hardwareIds: string[],
-  overrides?: Record<string, string>
+  overrides?: Record<string, string>,
 ): HardwareDefinition[] {
   return hardwareIds
     .map((id) => overrides?.[id] ?? id)

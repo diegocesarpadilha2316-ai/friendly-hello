@@ -87,7 +87,9 @@ export function UltraPanel({ presetId }: { presetId: RenderPresetId }) {
                   }}
                 />
                 <div className="mt-1.5 text-[11px] font-medium leading-tight">{m.label}</div>
-                <div className="text-[9px] uppercase tracking-widest text-muted-foreground">{m.family}</div>
+                <div className="text-[9px] uppercase tracking-widest text-muted-foreground">
+                  {m.family}
+                </div>
               </div>
             ))}
           </div>
@@ -96,7 +98,10 @@ export function UltraPanel({ presetId }: { presetId: RenderPresetId }) {
         {tab === "hdri" && (
           <ul className="space-y-1">
             {ULTRA_HDRIS.map((h) => (
-              <li key={h.id} className="flex items-center justify-between rounded-lg border border-border/40 bg-muted/10 px-2 py-1.5">
+              <li
+                key={h.id}
+                className="flex items-center justify-between rounded-lg border border-border/40 bg-muted/10 px-2 py-1.5"
+              >
                 <span>{h.label}</span>
                 <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
                   {h.category} · {h.temperatureK}K
@@ -109,7 +114,10 @@ export function UltraPanel({ presetId }: { presetId: RenderPresetId }) {
         {tab === "ceu" && (
           <ul className="space-y-1">
             {SKY_PRESETS.map((s) => (
-              <li key={s.id} className="flex items-center justify-between rounded-lg border border-border/40 bg-muted/10 px-2 py-1.5">
+              <li
+                key={s.id}
+                className="flex items-center justify-between rounded-lg border border-border/40 bg-muted/10 px-2 py-1.5"
+              >
                 <span>{s.label}</span>
                 <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
                   sol {s.sunElevationDeg}° · {s.temperatureK}K
@@ -138,7 +146,10 @@ export function UltraPanel({ presetId }: { presetId: RenderPresetId }) {
         {tab === "cameras" && (
           <ul className="space-y-1">
             {ULTRA_CAMERAS.map((c) => (
-              <li key={c.id} className="flex items-center justify-between rounded-lg border border-border/40 bg-muted/10 px-2 py-1.5">
+              <li
+                key={c.id}
+                className="flex items-center justify-between rounded-lg border border-border/40 bg-muted/10 px-2 py-1.5"
+              >
                 <span>{c.label}</span>
                 <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
                   {c.focalLengthMm}mm · f/{c.apertureF}
@@ -153,7 +164,9 @@ export function UltraPanel({ presetId }: { presetId: RenderPresetId }) {
             {VEGETATION_ASSETS.map((v) => (
               <li key={v.id} className="rounded-lg border border-border/40 bg-muted/10 px-2 py-1.5">
                 <div className="text-[11px] font-medium">{v.label}</div>
-                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{v.kind}</div>
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                  {v.kind}
+                </div>
               </li>
             ))}
           </ul>
@@ -164,7 +177,9 @@ export function UltraPanel({ presetId }: { presetId: RenderPresetId }) {
             {PEOPLE_ASSETS.map((p) => (
               <li key={p.id} className="rounded-lg border border-border/40 bg-muted/10 px-2 py-1.5">
                 <div className="text-[11px] font-medium">{p.label}</div>
-                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{p.age} · {p.pose}</div>
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                  {p.age} · {p.pose}
+                </div>
               </li>
             ))}
           </ul>
@@ -175,7 +190,9 @@ export function UltraPanel({ presetId }: { presetId: RenderPresetId }) {
             {PROP_ASSETS.map((p) => (
               <li key={p.id} className="rounded-lg border border-border/40 bg-muted/10 px-2 py-1.5">
                 <div className="text-[11px] font-medium">{p.label}</div>
-                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{p.category}</div>
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                  {p.category}
+                </div>
               </li>
             ))}
           </ul>
@@ -184,7 +201,10 @@ export function UltraPanel({ presetId }: { presetId: RenderPresetId }) {
         {tab === "features" && (
           <div className="space-y-1">
             {Object.entries(features).map(([k, v]) => (
-              <div key={k} className="flex items-center justify-between rounded-md border border-border/40 bg-muted/10 px-2 py-1.5">
+              <div
+                key={k}
+                className="flex items-center justify-between rounded-md border border-border/40 bg-muted/10 px-2 py-1.5"
+              >
                 <span className="text-[11px] capitalize">{k.replace(/([A-Z])/g, " $1")}</span>
                 <StatusBadge tone={v === false ? "neutral" : v === "off" ? "neutral" : "success"}>
                   {String(v)}
@@ -197,9 +217,14 @@ export function UltraPanel({ presetId }: { presetId: RenderPresetId }) {
         {tab === "performance" && (
           <div className="space-y-1">
             {Object.entries(perf).map(([k, v]) => (
-              <div key={k} className="flex items-center justify-between rounded-md border border-border/40 bg-muted/10 px-2 py-1.5">
+              <div
+                key={k}
+                className="flex items-center justify-between rounded-md border border-border/40 bg-muted/10 px-2 py-1.5"
+              >
                 <span className="text-[11px] capitalize">{k.replace(/([A-Z])/g, " $1")}</span>
-                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">{String(v)}</span>
+                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                  {String(v)}
+                </span>
               </div>
             ))}
           </div>

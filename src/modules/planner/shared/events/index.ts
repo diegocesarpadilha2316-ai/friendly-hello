@@ -90,7 +90,10 @@ export function getPlannerEventBus(): PlannerEventBus {
  * que ainda consomem `CustomEvent`. Chamado internamente pelo Provider.
  * Não deve ser usado para NOVO código: assine o bus diretamente.
  */
-export function bridgeToWindow<K extends PlannerEventName>(event: K, payload: PlannerEventMap[K]): void {
+export function bridgeToWindow<K extends PlannerEventName>(
+  event: K,
+  payload: PlannerEventMap[K],
+): void {
   if (typeof window === "undefined") return;
   window.dispatchEvent(new CustomEvent(event, { detail: payload }));
 }

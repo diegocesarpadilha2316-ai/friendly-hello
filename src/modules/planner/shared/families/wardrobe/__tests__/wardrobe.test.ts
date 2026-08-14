@@ -165,7 +165,8 @@ describe("Família roupeiro — cenários reais", () => {
     expect(hinges(b)).toHaveLength(3);
     // Interior idêntico em quantidade de peças internas.
     const interior = (x: typeof a) =>
-      x.pieces.filter((p) => ["prateleira", "gaveta-base", "divisoria"].includes(p.partKind)).length;
+      x.pieces.filter((p) => ["prateleira", "gaveta-base", "divisoria"].includes(p.partKind))
+        .length;
     expect(interior(b)).toBe(interior(a));
   });
 });

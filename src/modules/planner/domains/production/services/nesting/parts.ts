@@ -46,7 +46,5 @@ export function groupByMaterial(
 }
 
 export function sortForPacking(parts: readonly NestingPart[]): readonly NestingPart[] {
-  return [...parts].sort(
-    (a, b) => b.heightMm - a.heightMm || b.widthMm - a.widthMm,
-  );
+  return [...parts].sort((a, b) => b.heightMm - a.heightMm || b.widthMm - a.widthMm);
 }

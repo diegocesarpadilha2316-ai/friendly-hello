@@ -35,7 +35,9 @@ export function DataTable<T>({
   className,
 }: DataTableProps<T>) {
   if (data.length === 0) {
-    return <>{empty ?? <EmptyState title="Sem dados" description="Nenhum registro encontrado." />}</>;
+    return (
+      <>{empty ?? <EmptyState title="Sem dados" description="Nenhum registro encontrado." />}</>
+    );
   }
   return (
     <div className={cn("overflow-hidden rounded-lg border border-border bg-card", className)}>
@@ -72,7 +74,11 @@ export function DataTable<T>({
                 {columns.map((col) => (
                   <td
                     key={col.id}
-                    className={cn("px-4 py-3 text-foreground", ALIGN[col.align ?? "left"], col.className)}
+                    className={cn(
+                      "px-4 py-3 text-foreground",
+                      ALIGN[col.align ?? "left"],
+                      col.className,
+                    )}
                   >
                     {col.cell(row, i)}
                   </td>

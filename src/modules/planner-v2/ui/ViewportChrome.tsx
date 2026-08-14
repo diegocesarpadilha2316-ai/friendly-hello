@@ -8,7 +8,7 @@ import {
   MousePointer2,
   Move3D,
   Rotate3D,
-  ZoomIn
+  ZoomIn,
 } from "lucide-react";
 import type { ToolMode, ViewMode } from "./planner-ui";
 
@@ -37,31 +37,49 @@ export function ViewportChrome(props: Props) {
           type="button"
           className={props.toolMode === "orbit" ? "is-active" : ""}
           onClick={() => props.onToolModeChange("orbit")}
-        ><Crosshair size={16} /> Orbit</button>
+        >
+          <Crosshair size={16} /> Orbit
+        </button>
         <button
           type="button"
           className={props.toolMode === "pan" ? "is-active" : ""}
           onClick={() => props.onToolModeChange("pan")}
-        ><Hand size={16} /> Pan</button>
+        >
+          <Hand size={16} /> Pan
+        </button>
         <button
           type="button"
           className={props.toolMode === "zoom" ? "is-active" : ""}
           onClick={() => props.onToolModeChange("zoom")}
-        ><ZoomIn size={16} /> Zoom</button>
+        >
+          <ZoomIn size={16} /> Zoom
+        </button>
         <button
           type="button"
           className={props.toolMode === "select" ? "is-active" : ""}
           onClick={() => props.onToolModeChange("select")}
-        ><MousePointer2 size={16} /> Selecionar</button>
+        >
+          <MousePointer2 size={16} /> Selecionar
+        </button>
       </div>
 
       {props.selected && (
         <div className="dioris-object-toolbar">
-          <button type="button" onClick={props.onMove}><Move3D size={17} /></button>
-          <button type="button" onClick={props.onRotate}><Rotate3D size={17} /></button>
-          <button type="button" onClick={props.onFocus}><Focus size={17} /></button>
-          <button type="button" onClick={props.onDuplicate}>⧉</button>
-          <button type="button" onClick={props.onDelete}>⌫</button>
+          <button type="button" onClick={props.onMove}>
+            <Move3D size={17} />
+          </button>
+          <button type="button" onClick={props.onRotate}>
+            <Rotate3D size={17} />
+          </button>
+          <button type="button" onClick={props.onFocus}>
+            <Focus size={17} />
+          </button>
+          <button type="button" onClick={props.onDuplicate}>
+            ⧉
+          </button>
+          <button type="button" onClick={props.onDelete}>
+            ⌫
+          </button>
         </div>
       )}
 

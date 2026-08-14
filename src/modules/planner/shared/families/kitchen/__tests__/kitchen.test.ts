@@ -132,7 +132,10 @@ describe("Kitchen Layout Engine", () => {
   it("divide um trecho livre em módulos legais", () => {
     for (const L of [1200, 2350, 3000, 4870]) {
       const parts = splitRun(L, KITCHEN_DEFAULT_CONFIG);
-      expect(parts.reduce((a, b) => a + b, 0), String(L)).toBe(L);
+      expect(
+        parts.reduce((a, b) => a + b, 0),
+        String(L),
+      ).toBe(L);
       for (const w of parts) {
         expect(w, `${L} → ${w}`).toBeGreaterThanOrEqual(KITCHEN_DEFAULT_CONFIG.minModuleWidthMm);
         expect(w).toBeLessThanOrEqual(KITCHEN_DEFAULT_CONFIG.maxModuleWidthMm);
@@ -192,8 +195,18 @@ describe("Kitchen Layout Engine", () => {
     const result = planKitchen({
       shape: "L",
       walls: [
-        { id: "a", lengthMm: 3200, cornerEnd: true, fixtures: [{ id: "pia", kind: "pia", atMm: 600 }] },
-        { id: "b", lengthMm: 2400, cornerStart: true, fixtures: [{ id: "ck", kind: "cooktop", atMm: 1200 }] },
+        {
+          id: "a",
+          lengthMm: 3200,
+          cornerEnd: true,
+          fixtures: [{ id: "pia", kind: "pia", atMm: 600 }],
+        },
+        {
+          id: "b",
+          lengthMm: 2400,
+          cornerStart: true,
+          fixtures: [{ id: "ck", kind: "cooktop", atMm: 1200 }],
+        },
       ],
     });
     // o canto tem UM dono; a outra parede apenas reserva o retorno
@@ -218,7 +231,13 @@ describe("Kitchen Layout Engine", () => {
   it("aparelho maior que a parede é descartado com erro", () => {
     const result = planKitchen({
       shape: "reta",
-      walls: [{ id: "p1", lengthMm: 1000, fixtures: [{ id: "pia", kind: "pia", atMm: 200, widthMm: 1200 }] }],
+      walls: [
+        {
+          id: "p1",
+          lengthMm: 1000,
+          fixtures: [{ id: "pia", kind: "pia", atMm: 200, widthMm: 1200 }],
+        },
+      ],
     });
     expect(result.dropped.length).toBeGreaterThan(0);
     expect(validateKitchenLayout(result).ok).toBe(false);
@@ -228,8 +247,18 @@ describe("Kitchen Layout Engine", () => {
     const result = planKitchen({
       shape: "L",
       walls: [
-        { id: "a", lengthMm: 3400, cornerEnd: true, fixtures: [{ id: "pia", kind: "pia", atMm: 700 }] },
-        { id: "b", lengthMm: 2600, cornerStart: true, fixtures: [{ id: "tq", kind: "torre-quente", atMm: 1800 }] },
+        {
+          id: "a",
+          lengthMm: 3400,
+          cornerEnd: true,
+          fixtures: [{ id: "pia", kind: "pia", atMm: 700 }],
+        },
+        {
+          id: "b",
+          lengthMm: 2600,
+          cornerStart: true,
+          fixtures: [{ id: "tq", kind: "torre-quente", atMm: 1800 }],
+        },
       ],
     });
     for (const p of result.placements) {

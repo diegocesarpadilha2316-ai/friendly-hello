@@ -44,8 +44,7 @@ export const Route = createFileRoute("/_authenticated/notificacoes")({
       { property: "og:title", content: "Notificações & Eventos — Dioris Hub" },
       {
         property: "og:description",
-        content:
-          "Motor único de eventos e notificações multi-canal com RLS por tenant.",
+        content: "Motor único de eventos e notificações multi-canal com RLS por tenant.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -70,11 +69,23 @@ function NotificationsPage() {
   const archive = useArchiveNotification();
 
   const notifCols: DataTableColumn<Notification>[] = [
-    { id: "createdAt", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR") },
+    {
+      id: "createdAt",
+      header: "Quando",
+      cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR"),
+    },
     { id: "title", header: "Título", cell: (r) => r.title },
     { id: "category", header: "Categoria", cell: (r) => r.category },
-    { id: "priority", header: "Prioridade", cell: (r) => <StatusBadge tone={tone(r.priority)}>{r.priority}</StatusBadge> },
-    { id: "status", header: "Status", cell: (r) => <StatusBadge tone={statusTone(r.status)}>{r.status}</StatusBadge> },
+    {
+      id: "priority",
+      header: "Prioridade",
+      cell: (r) => <StatusBadge tone={tone(r.priority)}>{r.priority}</StatusBadge>,
+    },
+    {
+      id: "status",
+      header: "Status",
+      cell: (r) => <StatusBadge tone={statusTone(r.status)}>{r.status}</StatusBadge>,
+    },
     {
       id: "actions",
       header: "",
@@ -104,11 +115,23 @@ function NotificationsPage() {
   ];
 
   const eventCols: DataTableColumn<Event>[] = [
-    { id: "createdAt", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR") },
+    {
+      id: "createdAt",
+      header: "Quando",
+      cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR"),
+    },
     { id: "type", header: "Tipo", cell: (r) => r.type },
     { id: "source", header: "Origem", cell: (r) => r.source },
-    { id: "priority", header: "Prioridade", cell: (r) => <StatusBadge tone={tone(r.priority)}>{r.priority}</StatusBadge> },
-    { id: "status", header: "Status", cell: (r) => <StatusBadge tone={statusTone(r.status)}>{r.status}</StatusBadge> },
+    {
+      id: "priority",
+      header: "Prioridade",
+      cell: (r) => <StatusBadge tone={tone(r.priority)}>{r.priority}</StatusBadge>,
+    },
+    {
+      id: "status",
+      header: "Status",
+      cell: (r) => <StatusBadge tone={statusTone(r.status)}>{r.status}</StatusBadge>,
+    },
     { id: "attempts", header: "Tentativas", cell: (r) => `${r.attempts}/${r.maxAttempts}` },
   ];
 
@@ -117,7 +140,15 @@ function NotificationsPage() {
     { id: "eventType", header: "Evento", cell: (r) => r.eventType },
     { id: "channels", header: "Canais", cell: (r) => r.channels.join(", ") },
     { id: "category", header: "Categoria", cell: (r) => r.category },
-    { id: "enabled", header: "Ativa", cell: (r) => <StatusBadge tone={r.enabled ? "success" : "neutral"}>{r.enabled ? "sim" : "não"}</StatusBadge> },
+    {
+      id: "enabled",
+      header: "Ativa",
+      cell: (r) => (
+        <StatusBadge tone={r.enabled ? "success" : "neutral"}>
+          {r.enabled ? "sim" : "não"}
+        </StatusBadge>
+      ),
+    },
   ];
 
   const tplCols: DataTableColumn<NotificationTemplate>[] = [
@@ -125,26 +156,54 @@ function NotificationsPage() {
     { id: "channel", header: "Canal", cell: (r) => r.channel },
     { id: "locale", header: "Locale", cell: (r) => r.locale },
     { id: "scope", header: "Escopo", cell: (r) => (r.companyId ? "tenant" : "global") },
-    { id: "enabled", header: "Ativo", cell: (r) => <StatusBadge tone={r.enabled ? "success" : "neutral"}>{r.enabled ? "sim" : "não"}</StatusBadge> },
+    {
+      id: "enabled",
+      header: "Ativo",
+      cell: (r) => (
+        <StatusBadge tone={r.enabled ? "success" : "neutral"}>
+          {r.enabled ? "sim" : "não"}
+        </StatusBadge>
+      ),
+    },
   ];
 
   const delCols: DataTableColumn<NotificationDelivery>[] = [
-    { id: "createdAt", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR") },
+    {
+      id: "createdAt",
+      header: "Quando",
+      cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR"),
+    },
     { id: "channel", header: "Canal", cell: (r) => r.channel },
     { id: "target", header: "Destino", cell: (r) => r.target },
-    { id: "status", header: "Status", cell: (r) => <StatusBadge tone={statusTone(r.status)}>{r.status}</StatusBadge> },
+    {
+      id: "status",
+      header: "Status",
+      cell: (r) => <StatusBadge tone={statusTone(r.status)}>{r.status}</StatusBadge>,
+    },
     { id: "attempts", header: "Tentativas", cell: (r) => `${r.attempts}/${r.maxAttempts}` },
   ];
 
   const evtDelCols: DataTableColumn<EventDelivery>[] = [
-    { id: "createdAt", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR") },
+    {
+      id: "createdAt",
+      header: "Quando",
+      cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR"),
+    },
     { id: "subscriber", header: "Subscriber", cell: (r) => r.subscriber },
-    { id: "status", header: "Status", cell: (r) => <StatusBadge tone={statusTone(r.status)}>{r.status}</StatusBadge> },
+    {
+      id: "status",
+      header: "Status",
+      cell: (r) => <StatusBadge tone={statusTone(r.status)}>{r.status}</StatusBadge>,
+    },
     { id: "attempts", header: "Tentativas", cell: (r) => `${r.attempts}/${r.maxAttempts}` },
   ];
 
   const auditCols: DataTableColumn<NotificationAuditEntry>[] = [
-    { id: "createdAt", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR") },
+    {
+      id: "createdAt",
+      header: "Quando",
+      cell: (r) => new Date(r.createdAt).toLocaleString("pt-BR"),
+    },
     { id: "entity", header: "Entidade", cell: (r) => r.entity },
     { id: "action", header: "Ação", cell: (r) => r.action },
     { id: "actorId", header: "Ator", cell: (r) => r.actorId ?? "sistema" },
@@ -177,7 +236,11 @@ function NotificationsPage() {
       <section className="mt-10 space-y-3">
         <h2 className="text-lg font-semibold">Inbox</h2>
         {notifs.data && notifs.data.length > 0 ? (
-          <DataTable data={notifs.data as Notification[]} columns={notifCols} getRowKey={(r) => r.id} />
+          <DataTable
+            data={notifs.data as Notification[]}
+            columns={notifCols}
+            getRowKey={(r) => r.id}
+          />
         ) : (
           <EmptyState
             title="Sem notificações"
@@ -188,29 +251,59 @@ function NotificationsPage() {
 
       <section className="mt-10 space-y-3">
         <h2 className="text-lg font-semibold">Regras & Templates</h2>
-        <DataTable data={(rules.data ?? []) as NotificationRule[]} columns={ruleCols} getRowKey={(r) => r.id} empty="Nenhuma regra configurada." />
-        <DataTable data={(templates.data ?? []) as NotificationTemplate[]} columns={tplCols} getRowKey={(r) => r.id} empty="Nenhum template disponível." />
+        <DataTable
+          data={(rules.data ?? []) as NotificationRule[]}
+          columns={ruleCols}
+          getRowKey={(r) => r.id}
+          empty="Nenhuma regra configurada."
+        />
+        <DataTable
+          data={(templates.data ?? []) as NotificationTemplate[]}
+          columns={tplCols}
+          getRowKey={(r) => r.id}
+          empty="Nenhum template disponível."
+        />
       </section>
 
       <section className="mt-10 space-y-3">
         <h2 className="text-lg font-semibold">Eventos recentes</h2>
-        <DataTable data={(events.data ?? []) as Event[]} columns={eventCols} getRowKey={(r) => r.id} empty="Sem eventos publicados." />
+        <DataTable
+          data={(events.data ?? []) as Event[]}
+          columns={eventCols}
+          getRowKey={(r) => r.id}
+          empty="Sem eventos publicados."
+        />
       </section>
 
       <section className="mt-10 grid gap-8 md:grid-cols-2">
         <div className="space-y-3">
           <h2 className="text-lg font-semibold">Entregas de notificação</h2>
-          <DataTable data={(notifDeliveries.data ?? []) as NotificationDelivery[]} columns={delCols} getRowKey={(r) => r.id} empty="Sem entregas." />
+          <DataTable
+            data={(notifDeliveries.data ?? []) as NotificationDelivery[]}
+            columns={delCols}
+            getRowKey={(r) => r.id}
+            empty="Sem entregas."
+          />
         </div>
         <div className="space-y-3">
           <h2 className="text-lg font-semibold">Entregas de evento</h2>
-          <DataTable data={(eventDeliveries.data ?? []) as EventDelivery[]} columns={evtDelCols} getRowKey={(r) => r.id} empty="Sem entregas." />
+          <DataTable
+            data={(eventDeliveries.data ?? []) as EventDelivery[]}
+            columns={evtDelCols}
+            getRowKey={(r) => r.id}
+            empty="Sem entregas."
+          />
         </div>
       </section>
 
       <section className="mt-10 space-y-3">
         <h2 className="text-lg font-semibold">Auditoria</h2>
-        <DataTable data={(audit.data ?? []) as NotificationAuditEntry[]} columns={auditCols} getRowKey={(r) => r.id} empty="Sem eventos de auditoria." />
+        <DataTable
+          data={(audit.data ?? []) as NotificationAuditEntry[]}
+          columns={auditCols}
+          getRowKey={(r) => r.id}
+          empty="Sem eventos de auditoria."
+        />
       </section>
     </PageContainer>
   );

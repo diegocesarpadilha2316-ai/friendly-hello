@@ -1,8 +1,14 @@
 import type { LibraryHardware, LibraryMaterial } from "../types";
 
-export interface ValidationResult<T> { readonly valid: T | null; readonly errors: readonly string[] }
+export interface ValidationResult<T> {
+  readonly valid: T | null;
+  readonly errors: readonly string[];
+}
 
-export function validateMaterialRow(row: Record<string, unknown>, line: number): ValidationResult<LibraryMaterial> {
+export function validateMaterialRow(
+  row: Record<string, unknown>,
+  line: number,
+): ValidationResult<LibraryMaterial> {
   const errors: string[] = [];
   const id = String(row.id ?? row.codigo ?? "").trim();
   const manufacturer = String(row.fabricante ?? row.marca ?? "").trim();
@@ -11,11 +17,15 @@ export function validateMaterialRow(row: Record<string, unknown>, line: number):
   if (!id) errors.push(`linha ${line}: codigo ausente`);
   if (!manufacturer) errors.push(`linha ${line}: fabricante ausente`);
   if (!category) errors.push(`linha ${line}: categoria ausente`);
-  if (!Number.isFinite(thickness) || thickness <= 0) errors.push(`linha ${line}: espessura invalida`);
+  if (!Number.isFinite(thickness) || thickness <= 0)
+    errors.push(`linha ${line}: espessura invalida`);
   if (errors.length) return { valid: null, errors };
   const price = Number(row.preco_m2 ?? row.preco ?? 0);
-  const g = String(row.sentido_veio ?? "").trim().toLowerCase();
-  const grain: LibraryMaterial["grain"] = g === "vertical" || g === "horizontal" || g === "livre" ? g : null;
+  const g = String(row.sentido_veio ?? "")
+    .trim()
+    .toLowerCase();
+  const grain: LibraryMaterial["grain"] =
+    g === "vertical" || g === "horizontal" || g === "livre" ? g : null;
   const mat: LibraryMaterial = {
     id,
     name: String(row.nome ?? row.padrao ?? id).trim(),
@@ -35,7 +45,10 @@ export function validateMaterialRow(row: Record<string, unknown>, line: number):
   return { valid: mat, errors: [] };
 }
 
-export function validateHardwareRow(row: Record<string, unknown>, line: number): ValidationResult<LibraryHardware> {
+export function validateHardwareRow(
+  row: Record<string, unknown>,
+  line: number,
+): ValidationResult<LibraryHardware> {
   const errors: string[] = [];
   const id = String(row.id ?? row.codigo ?? "").trim();
   const manufacturer = String(row.fabricante ?? row.marca ?? "").trim();

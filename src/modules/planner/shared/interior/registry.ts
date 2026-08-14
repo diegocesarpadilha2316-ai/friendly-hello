@@ -17,7 +17,10 @@ export interface InteriorModuleFilter {
   readonly query?: string;
 }
 
-export function registerInteriorModule(def: InteriorModuleDef, override = false): InteriorModuleDef {
+export function registerInteriorModule(
+  def: InteriorModuleDef,
+  override = false,
+): InteriorModuleDef {
   if (!override && REGISTRY.has(def.id)) {
     throw new Error(`Módulo interno "${def.id}" já registrado.`);
   }
@@ -33,7 +36,9 @@ export function getInteriorModule(id: string): InteriorModuleDef | undefined {
   return REGISTRY.get(id);
 }
 
-export function listInteriorModules(filter: InteriorModuleFilter = {}): readonly InteriorModuleDef[] {
+export function listInteriorModules(
+  filter: InteriorModuleFilter = {},
+): readonly InteriorModuleDef[] {
   const q = filter.query?.trim().toLowerCase();
   return [...REGISTRY.values()].filter(
     (m) =>

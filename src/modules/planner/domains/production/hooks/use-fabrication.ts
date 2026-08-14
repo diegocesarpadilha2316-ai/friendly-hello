@@ -22,9 +22,7 @@ export interface UseFabricationResult {
   constraints: OptimizerConstraints;
 }
 
-export function useFabrication(
-  overrides?: Partial<OptimizerConstraints>,
-): UseFabricationResult {
+export function useFabrication(overrides?: Partial<OptimizerConstraints>): UseFabricationResult {
   const { report, hasProject } = useProduction();
   const constraints = useMemo(
     () => ({ ...DEFAULT_OPTIMIZER_CONSTRAINTS, ...overrides }),

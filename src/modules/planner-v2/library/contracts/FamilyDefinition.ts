@@ -1,13 +1,6 @@
 /** Contrato único de família do Planner V2. Nenhuma família fora deste contrato. */
 export type FamilyId =
-  | "kitchen"
-  | "bedroom"
-  | "wardrobe"
-  | "bathroom"
-  | "laundry"
-  | "living"
-  | "office"
-  | "generic";
+  "kitchen" | "bedroom" | "wardrobe" | "bathroom" | "laundry" | "living" | "office" | "generic";
 
 export interface FamilyDefinition {
   id: FamilyId;

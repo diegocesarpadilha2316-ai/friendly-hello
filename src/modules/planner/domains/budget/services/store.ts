@@ -117,7 +117,11 @@ export function commitRevision(
     final: budget.totals.final,
     snapshot: budget,
   };
-  const next: ProjectBudget = { ...budget, revision: budget.revision + 1, updatedAt: entry.createdAt };
+  const next: ProjectBudget = {
+    ...budget,
+    revision: budget.revision + 1,
+    updatedAt: entry.createdAt,
+  };
   return persist(tenantId, projectId, {
     ...prev,
     current: next,

@@ -1,14 +1,14 @@
-import React, { useMemo } from 'react';
-import { FurnitureItem } from '../furniture/types';
-import { AssemblyMesh } from '../../planner/shared/editor-3d/AssemblyMesh';
-import { mmToScene } from '../core/units';
-import { 
-  wardrobeFamily, 
-  kitchenFamily, 
-  bathroomFamily, 
+import React, { useMemo } from "react";
+import { FurnitureItem } from "../furniture/types";
+import { AssemblyMesh } from "../../planner/shared/editor-3d/AssemblyMesh";
+import { mmToScene } from "../core/units";
+import {
+  wardrobeFamily,
+  kitchenFamily,
+  bathroomFamily,
   laundryFamily,
-  dresserFamily 
-} from '../../planner/shared/families';
+  dresserFamily,
+} from "../../planner/shared/families";
 
 interface LegacyAssemblyRendererProps {
   item: FurnitureItem;
@@ -19,8 +19,22 @@ interface LegacyAssemblyRendererProps {
  * BRIDGE COMPONENT
  * Conecta o FurnitureItem do V2 aos motores paramétricos aprovados do V1.
  */
-export const LegacyAssemblyRenderer: React.FC<LegacyAssemblyRendererProps> = ({ item, onSelect }) => {
-  const { family, widthMm, heightMm, depthMm, parameters, isOpen, position, rotation, id, selected } = item;
+export const LegacyAssemblyRenderer: React.FC<LegacyAssemblyRendererProps> = ({
+  item,
+  onSelect,
+}) => {
+  const {
+    family,
+    widthMm,
+    heightMm,
+    depthMm,
+    parameters,
+    isOpen,
+    position,
+    rotation,
+    id,
+    selected,
+  } = item;
 
   const assemblyResult = useMemo(() => {
     const commonSpec = {
@@ -35,94 +49,143 @@ export const LegacyAssemblyRenderer: React.FC<LegacyAssemblyRendererProps> = ({ 
     try {
       let result: any = null;
       switch (family) {
-        case 'wardrobe':
+        case "wardrobe":
           result = wardrobeFamily.build({
             ...commonSpec,
-            opening: 'abrir',
+            opening: "abrir",
             doors: Math.max(1, Math.round(widthMm / 500)),
-            finishId: 'branco-tx',
+            finishId: "branco-tx",
           });
           break;
-        case 'kitchen':
+        case "kitchen":
           result = kitchenFamily.build({
             ...commonSpec,
-            kind: (parameters as any).kind || 'balcao',
-            finishId: 'branco-tx',
+            kind: (parameters as any).kind || "balcao",
+            finishId: "branco-tx",
           } as any);
           break;
-        case 'kitchen-tower':
+        case "kitchen-tower":
           result = wardrobeFamily.build({
             ...commonSpec,
-            opening: 'abrir',
+            opening: "abrir",
             doors: 1,
-            finishId: 'grafite-tx',
+            finishId: "grafite-tx",
           });
           break;
-        case 'kitchen-wall-cabinet':
+        case "kitchen-wall-cabinet":
           result = kitchenFamily.build({
             ...commonSpec,
-            kind: 'aereo',
-            finishId: 'branco-tx',
+            kind: "aereo",
+            finishId: "branco-tx",
           } as any);
           break;
-        case 'kitchen-counter':
+        case "kitchen-counter":
           result = {
             assembly: {
-              id: 'counter-' + id,
-              label: 'Bancada',
-              envelope: { x: 0, y: 0, z: 0, width: widthMm, height: heightMm, depth: depthMm },
-              pieces: [{
-                id: 'counter-stone',
-                label: 'Pedra',
-                box: { x: 0, y: 0, z: 0, width: widthMm, height: heightMm, depth: depthMm },
-                partKind: 'tampo',
-                substrate: 'pedra',
-                thicknessMm: heightMm,
-                grain: 'none'
-              }],
-              motions: [],
-              hardware: [],
-              warnings: [],
-              totals: { slotCount: 1, pieceCount: 1, boardAreaM2: 0, hardwareCount: 0 }
-            }
-          };
-          break;
-        case 'kitchen-stool':
-          result = {
-            assembly: {
-              id: 'stool-' + id,
-              label: 'Banqueta',
+              id: "counter-" + id,
+              label: "Bancada",
               envelope: { x: 0, y: 0, z: 0, width: widthMm, height: heightMm, depth: depthMm },
               pieces: [
-                { id: 'seat', label: 'Assento', box: { x: 0, y: heightMm - 40, z: 0, width: widthMm, height: 40, depth: depthMm }, partKind: 'tampo', substrate: 'madeira', thicknessMm: 40, grain: 'horizontal' },
-                { id: 'leg-1', label: 'Pé 1', box: { x: 0, y: 0, z: 0, width: 40, height: heightMm - 40, depth: 40 }, partKind: 'travessa', substrate: 'metal', thicknessMm: 40, grain: 'vertical' },
-                { id: 'leg-2', label: 'Pé 2', box: { x: widthMm - 40, y: 0, z: 0, width: 40, height: heightMm - 40, depth: 40 }, partKind: 'travessa', substrate: 'metal', thicknessMm: 40, grain: 'vertical' },
-                { id: 'leg-3', label: 'Pé 3', box: { x: 0, y: 0, z: depthMm - 40, width: 40, height: heightMm - 40, depth: 40 }, partKind: 'travessa', substrate: 'metal', thicknessMm: 40, grain: 'vertical' },
-                { id: 'leg-4', label: 'Pé 4', box: { x: widthMm - 40, y: 0, z: depthMm - 40, width: 40, height: heightMm - 40, depth: 40 }, partKind: 'travessa', substrate: 'metal', thicknessMm: 40, grain: 'vertical' },
+                {
+                  id: "counter-stone",
+                  label: "Pedra",
+                  box: { x: 0, y: 0, z: 0, width: widthMm, height: heightMm, depth: depthMm },
+                  partKind: "tampo",
+                  substrate: "pedra",
+                  thicknessMm: heightMm,
+                  grain: "none",
+                },
               ],
               motions: [],
               hardware: [],
               warnings: [],
-              totals: { slotCount: 1, pieceCount: 5, boardAreaM2: 0, hardwareCount: 0 }
-            }
+              totals: { slotCount: 1, pieceCount: 1, boardAreaM2: 0, hardwareCount: 0 },
+            },
           };
           break;
-        case 'bathroom':
+        case "kitchen-stool":
+          result = {
+            assembly: {
+              id: "stool-" + id,
+              label: "Banqueta",
+              envelope: { x: 0, y: 0, z: 0, width: widthMm, height: heightMm, depth: depthMm },
+              pieces: [
+                {
+                  id: "seat",
+                  label: "Assento",
+                  box: { x: 0, y: heightMm - 40, z: 0, width: widthMm, height: 40, depth: depthMm },
+                  partKind: "tampo",
+                  substrate: "madeira",
+                  thicknessMm: 40,
+                  grain: "horizontal",
+                },
+                {
+                  id: "leg-1",
+                  label: "Pé 1",
+                  box: { x: 0, y: 0, z: 0, width: 40, height: heightMm - 40, depth: 40 },
+                  partKind: "travessa",
+                  substrate: "metal",
+                  thicknessMm: 40,
+                  grain: "vertical",
+                },
+                {
+                  id: "leg-2",
+                  label: "Pé 2",
+                  box: { x: widthMm - 40, y: 0, z: 0, width: 40, height: heightMm - 40, depth: 40 },
+                  partKind: "travessa",
+                  substrate: "metal",
+                  thicknessMm: 40,
+                  grain: "vertical",
+                },
+                {
+                  id: "leg-3",
+                  label: "Pé 3",
+                  box: { x: 0, y: 0, z: depthMm - 40, width: 40, height: heightMm - 40, depth: 40 },
+                  partKind: "travessa",
+                  substrate: "metal",
+                  thicknessMm: 40,
+                  grain: "vertical",
+                },
+                {
+                  id: "leg-4",
+                  label: "Pé 4",
+                  box: {
+                    x: widthMm - 40,
+                    y: 0,
+                    z: depthMm - 40,
+                    width: 40,
+                    height: heightMm - 40,
+                    depth: 40,
+                  },
+                  partKind: "travessa",
+                  substrate: "metal",
+                  thicknessMm: 40,
+                  grain: "vertical",
+                },
+              ],
+              motions: [],
+              hardware: [],
+              warnings: [],
+              totals: { slotCount: 1, pieceCount: 5, boardAreaM2: 0, hardwareCount: 0 },
+            },
+          };
+          break;
+        case "bathroom":
           result = bathroomFamily.build({
             ...commonSpec,
-            finishId: 'branco-tx',
+            finishId: "branco-tx",
           });
           break;
-        case 'laundry':
+        case "laundry":
           result = laundryFamily.build({
             ...commonSpec,
-            finishId: 'branco-tx',
+            finishId: "branco-tx",
           });
           break;
-        case 'dresser':
+        case "dresser":
           result = dresserFamily.build({
             ...commonSpec,
-            finishId: 'branco-tx',
+            finishId: "branco-tx",
           });
           break;
       }
@@ -136,15 +199,19 @@ export const LegacyAssemblyRenderer: React.FC<LegacyAssemblyRendererProps> = ({ 
   if (!assemblyResult || !assemblyResult.assembly) return null;
 
   return (
-    <group 
-      position={[mmToScene(item.position.x), mmToScene(item.position.y), mmToScene(item.position.z)]}
+    <group
+      position={[
+        mmToScene(item.position.x),
+        mmToScene(item.position.y),
+        mmToScene(item.position.z),
+      ]}
       rotation={[0, rotation, 0]}
       onClick={(e) => {
         e.stopPropagation();
         onSelect(id);
       }}
     >
-      <AssemblyMesh 
+      <AssemblyMesh
         assembly={assemblyResult.assembly}
         sizeMm={{ widthMm, heightMm, depthMm }}
         selected={selected}

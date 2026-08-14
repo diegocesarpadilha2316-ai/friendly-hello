@@ -146,14 +146,28 @@ export function bathroomReservedVolumes(
     out.push({
       id: `agua${sfx}`,
       kind: "agua",
-      box: { x: Math.round(cx - 150), y: g.caseY0, z: 0, width: 300, height: g.caseHeightMm, depth: 100 },
+      box: {
+        x: Math.round(cx - 150),
+        y: g.caseY0,
+        z: 0,
+        width: 300,
+        height: g.caseHeightMm,
+        depth: 100,
+      },
       note: "entrada de água (registro/parede)",
     });
 
     out.push({
       id: `esgoto${sfx}`,
       kind: "esgoto",
-      box: { x: sifX - 20, y: g.caseY0, z: 0, width: s.siphonMm + 40, height: g.caseHeightMm, depth: 120 },
+      box: {
+        x: sifX - 20,
+        y: g.caseY0,
+        z: 0,
+        width: s.siphonMm + 40,
+        height: g.caseHeightMm,
+        depth: 120,
+      },
       note: "saída de esgoto na parede",
     });
   });
@@ -162,9 +176,7 @@ export function bathroomReservedVolumes(
 }
 
 /** Faixa em X ocupada pelo sifão (usada pelo interior e pela gaveta em U). */
-export function siphonSpansMm(
-  spec: BathroomModuleSpec,
-): readonly { x0: number; x1: number }[] {
+export function siphonSpansMm(spec: BathroomModuleSpec): readonly { x0: number; x1: number }[] {
   if (spec.sink.type === "nenhuma") return [];
   return sinkCentersMm(spec.sink, spec.widthMm).map((cx) => ({
     x0: Math.round(cx - spec.sink.siphonMm / 2),
@@ -274,14 +286,26 @@ function caseSlots(
       component: "lateral",
       at: [0, g.caseY0, 0],
       role: "lateral esquerda",
-      params: { heightMm: g.caseHeightMm, depthMm: g.caseDepthMm, thicknessMm: t, side: "esquerda", finishId },
+      params: {
+        heightMm: g.caseHeightMm,
+        depthMm: g.caseDepthMm,
+        thicknessMm: t,
+        side: "esquerda",
+        finishId,
+      },
     },
     {
       id: "lateral-d",
       component: "lateral",
       at: [W - t, g.caseY0, 0],
       role: "lateral direita",
-      params: { heightMm: g.caseHeightMm, depthMm: g.caseDepthMm, thicknessMm: t, side: "direita", finishId },
+      params: {
+        heightMm: g.caseHeightMm,
+        depthMm: g.caseDepthMm,
+        thicknessMm: t,
+        side: "direita",
+        finishId,
+      },
     },
     {
       id: "base",
@@ -310,7 +334,13 @@ function caseSlots(
         component: "fundo",
         at: [0, g.caseY0, 0],
         role: "fundo",
-        params: { widthMm: W, heightMm: g.caseHeightMm, thicknessMm: bt, mounting: "encaixado", finishId },
+        params: {
+          widthMm: W,
+          heightMm: g.caseHeightMm,
+          thicknessMm: bt,
+          mounting: "encaixado",
+          finishId,
+        },
       });
     } else {
       const cuts = [{ x0: 0, x1: W }];
@@ -497,8 +527,7 @@ function shelfSlots(
 ): AssemblySlot[] {
   if (count <= 0) return [];
   const zone = hydraulicBackZoneMm(spec, g);
-  const depthMm =
-    depthOverrideMm ?? Math.max(100, g.interiorDepthMm - 20 - zone);
+  const depthMm = depthOverrideMm ?? Math.max(100, g.interiorDepthMm - 20 - zone);
   const pitch = region.heightMm / (count + 1);
   return Array.from({ length: count }, (_, i) => ({
     id: `prateleira-${i + 1}`,
@@ -521,7 +550,10 @@ export function bathroomDrawerHeights(count: number, regionMm: number, gapMm = 3
   if (count <= 0) return [];
   const usable = Math.max(60 * count, regionMm - gapMm * (count - 1));
   if (count === 1) return [usable];
-  const weights = Array.from({ length: count }, (_, i) => 1 + (0.7 * (count - 1 - i)) / (count - 1));
+  const weights = Array.from(
+    { length: count },
+    (_, i) => 1 + (0.7 * (count - 1 - i)) / (count - 1),
+  );
   const total = weights.reduce((a, b) => a + b, 0);
   return weights.map((w) => (usable * w) / total);
 }
@@ -586,7 +618,20 @@ function drawerSlots(
     const hit = inReserve ? spans[0] : undefined;
 
     if (!hit) {
-      out.slots.push(plainDrawer(spec, g, id, `gaveta ${i + 1}`, interiorX0, g.innerWidthMm, y, h, fullDepth, handle));
+      out.slots.push(
+        plainDrawer(
+          spec,
+          g,
+          id,
+          `gaveta ${i + 1}`,
+          interiorX0,
+          g.innerWidthMm,
+          y,
+          h,
+          fullDepth,
+          handle,
+        ),
+      );
       y += h + gap;
       return;
     }
@@ -619,24 +664,21 @@ function drawerSlots(
           finishId: spec.finishId,
         },
       }));
-      out.slots.push(
-        ...boxSlots,
-        {
-          id: `${groupId}-frente`,
-          component: "frente-gaveta",
-          at: [0, y, g.frontZMm],
-          role: `gaveta em U ${i + 1} — frente única`,
-          params: {
-            widthMm: spec.widthMm,
-            heightMm: h,
-            thicknessMm: t,
-            handle,
-            substrate: "mdf",
-            mounting: "sobreposta",
-            finishId: spec.finishId,
-          },
+      out.slots.push(...boxSlots, {
+        id: `${groupId}-frente`,
+        component: "frente-gaveta",
+        at: [0, y, g.frontZMm],
+        role: `gaveta em U ${i + 1} — frente única`,
+        params: {
+          widthMm: spec.widthMm,
+          heightMm: h,
+          thicknessMm: t,
+          handle,
+          substrate: "mdf",
+          mounting: "sobreposta",
+          finishId: spec.finishId,
         },
-      );
+      });
       out.mechanisms.push({
         groupId,
         slotIds: [...boxSlots.map((s) => s.id), `${groupId}-frente`],
@@ -652,7 +694,18 @@ function drawerSlots(
 
     if (shallow >= 250) {
       out.slots.push(
-        plainDrawer(spec, g, id, `gaveta ${i + 1} (reduzida)`, interiorX0, g.innerWidthMm, y, h, shallow, handle),
+        plainDrawer(
+          spec,
+          g,
+          id,
+          `gaveta ${i + 1} (reduzida)`,
+          interiorX0,
+          g.innerWidthMm,
+          y,
+          h,
+          shallow,
+          handle,
+        ),
       );
       out.decisions.push({
         id,
@@ -714,7 +767,11 @@ function plainDrawer(
 function mirrorSlots(spec: BathroomModuleSpec, g: BathroomGeometry): AssemblySlot[] {
   if (spec.mirror === "nenhum" || spec.mirror === "porta") return [];
   const role =
-    spec.mirror === "fixo" ? "espelho fixo" : spec.mirror === "painel" ? "painel espelhado" : "fundo de espelho";
+    spec.mirror === "fixo"
+      ? "espelho fixo"
+      : spec.mirror === "painel"
+        ? "painel espelhado"
+        : "fundo de espelho";
   return [
     {
       id: `espelho-${spec.mirror}`,
@@ -893,9 +950,17 @@ export function bathroomModuleSlots(
     decisions.push(...d.decisions);
     if (d.doorsInstead > 0) {
       slots.push(
-        ...doorSlots(spec, g, d.doorsInstead, { y0: g.caseY0, heightMm: drawerRegionH }, "porta-sob-cuba"),
+        ...doorSlots(
+          spec,
+          g,
+          d.doorsInstead,
+          { y0: g.caseY0, heightMm: drawerRegionH },
+          "porta-sob-cuba",
+        ),
       );
-      warnings.push(`${d.doorsInstead} gaveta(s) substituída(s) por porta devido ao volume hidráulico`);
+      warnings.push(
+        `${d.doorsInstead} gaveta(s) substituída(s) por porta devido ao volume hidráulico`,
+      );
     }
   }
 

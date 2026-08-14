@@ -21,8 +21,18 @@ export interface PreviewPlacement extends NestingPlacement {
 }
 
 const PALETTE = [
-  "#7c3aed", "#2563eb", "#06b6d4", "#0891b2", "#0d9488", "#059669",
-  "#65a30d", "#ca8a04", "#ea580c", "#dc2626", "#db2777", "#9333ea",
+  "#7c3aed",
+  "#2563eb",
+  "#06b6d4",
+  "#0891b2",
+  "#0d9488",
+  "#059669",
+  "#65a30d",
+  "#ca8a04",
+  "#ea580c",
+  "#dc2626",
+  "#db2777",
+  "#9333ea",
 ];
 
 function hashColor(code: string): string {

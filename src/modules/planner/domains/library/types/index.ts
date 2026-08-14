@@ -12,7 +12,7 @@ export interface LibraryHardware {
   readonly id: string;
   readonly manufacturer: string;
   readonly brand: string;
-  readonly category: string;      // Dobradiça, Corrediça, Puxador, LED, Perfil, Vidro, Espelho...
+  readonly category: string; // Dobradiça, Corrediça, Puxador, LED, Perfil, Vidro, Espelho...
   readonly model: string;
   readonly description: string | null;
   readonly imageUrl: string | null;

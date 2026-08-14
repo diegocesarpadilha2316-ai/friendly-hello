@@ -5,7 +5,9 @@ Você pediu um relatório objetivo, não apenas "os testes passaram". Para isso 
 ## O que será feito
 
 ### 1. Execução real dos quatro comandos
+
 Automação de navegador contra o app rodando, autenticada, entrando em `/planner/ia` e enviando um comando por sessão:
+
 - Crie um closet de casal
 - Crie uma cozinha em L
 - Crie um banheiro com gabinete suspenso
@@ -14,7 +16,9 @@ Automação de navegador contra o app rodando, autenticada, entrando em `/planne
 Para cada comando: screenshot do viewport, leitura dos diagnósticos de runtime (`__DIORIS_ROOM__`, evidência de cena, contagem de meshes) e registro de erros de console. Resultado por comando: apareceu / não apareceu / apareceu incompleto.
 
 ### 2. Medições antes/depois
+
 Coleta instrumentada, com valores reais e método declarado para cada um:
+
 - FPS médio e mínimo em 10s de órbita
 - quantidade de meshes e draw calls
 - número de renders React dos componentes do viewport
@@ -25,13 +29,16 @@ Coleta instrumentada, com valores reais e método declarado para cada um:
 Onde um número "antes" não puder ser reconstruído com confiança, o relatório dirá explicitamente "não medido" em vez de estimar.
 
 ### 3. Causas raiz documentadas com evidência
+
 - Invisibilidade: apontar o ponto exato do fluxo (interpretação da IA, blueprint, decomposer, montagem, publicação de evidência de cena ou câmera) com o arquivo e a linha que provam a causa.
 - Lentidão: apontar o cálculo por frame ou re-render responsável, com a medição que o sustenta.
 
 ### 4. Correções somente do que a validação reprovar
+
 Nenhuma funcionalidade nova. Se um dos quatro comandos falhar, o defeito é corrigido no ponto identificado e o comando é reexecutado até passar visualmente.
 
 ### 5. Relatório final
+
 Documento com: causas raiz, lista de arquivos alterados, resultado prático dos quatro comandos, tabela antes/depois, cálculos contínuos removidos, como ficou a validação de sucesso da IA, contagem final de testes e saída do typecheck.
 
 ## Detalhes técnicos

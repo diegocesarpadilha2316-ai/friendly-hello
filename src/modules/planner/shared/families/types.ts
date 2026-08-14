@@ -10,20 +10,13 @@ import type { AssemblyResult } from "../construction";
 
 /** Papel de cada peça dentro do móvel — usado pelo render e pela produção. */
 export type FamilyPieceRole =
-  | "estrutura"
-  | "frente"
-  | "interno"
-  | "acessorio"
-  | "rodape"
-  | "espelho"
-  | "tecnico";
+  "estrutura" | "frente" | "interno" | "acessorio" | "rodape" | "espelho" | "tecnico";
 
 export interface FamilyRequirementSpec {
   readonly mandatory: readonly string[];
   readonly important: readonly string[];
   readonly optional: readonly string[];
 }
-
 
 export interface FamilyBuildResult<TSpec> {
   /** Ficha normalizada efetivamente usada (auditável). */

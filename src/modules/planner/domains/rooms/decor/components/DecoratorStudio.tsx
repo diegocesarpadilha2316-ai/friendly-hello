@@ -1,11 +1,6 @@
 import { useMemo } from "react";
 import { Play, RotateCcw, Sparkles, Square, Undo2, Wand2 } from "lucide-react";
-import {
-  Button,
-  EmptyState,
-  FormSection,
-  StatusBadge,
-} from "@/core/components/ui-kit";
+import { Button, EmptyState, FormSection, StatusBadge } from "@/core/components/ui-kit";
 import { usePlannerEditor } from "@/modules/planner/shared/state/editor-context";
 import { DECORATOR_PROVIDERS } from "../providers";
 import { StyleGallery } from "./StyleGallery";
@@ -28,7 +23,10 @@ export function DecoratorStudio() {
   return (
     <div className="grid gap-6 lg:grid-cols-[380px,1fr]">
       <aside className="space-y-4">
-        <FormSection title="Modelo decorador" description="Nesta fase, todos os providers usam o motor heurístico local.">
+        <FormSection
+          title="Modelo decorador"
+          description="Nesta fase, todos os providers usam o motor heurístico local."
+        >
           <select
             value={ds.session.providerId}
             onChange={(e) => ds.setProviderId(e.target.value)}
@@ -52,7 +50,9 @@ export function DecoratorStudio() {
 
         <FormSection title="Execução" description="Analise o cômodo ativo e gere sugestões.">
           {!currentRoom ? (
-            <p className="text-xs text-muted-foreground">Selecione um cômodo em Projetos para começar.</p>
+            <p className="text-xs text-muted-foreground">
+              Selecione um cômodo em Projetos para começar.
+            </p>
           ) : (
             <div className="flex flex-wrap items-center gap-2">
               {ds.isBusy ? (
@@ -75,13 +75,46 @@ export function DecoratorStudio() {
         {ds.session.plan && (
           <FormSection title="Contexto detectado" description="Insumos considerados pela IA.">
             <ul className="space-y-1 text-xs text-muted-foreground">
-              <li>Tipo: <strong className="text-foreground">{ds.session.plan.context.roomType}</strong></li>
-              <li>Área: <strong className="text-foreground">{ds.session.plan.context.areaM2.toFixed(1)} m²</strong></li>
-              <li>Circulação livre: <strong className="text-foreground">{ds.session.plan.context.circulationMm} mm</strong></li>
-              <li>Móveis existentes: <strong className="text-foreground">{ds.session.plan.context.existingFurnitureCount}</strong></li>
-              <li>Luminárias existentes: <strong className="text-foreground">{ds.session.plan.context.existingLightingCount}</strong></li>
-              <li>Portas: <strong className="text-foreground">{ds.session.plan.context.hasDoors ? "sim" : "não"}</strong></li>
-              <li>Janelas: <strong className="text-foreground">{ds.session.plan.context.hasWindows ? "sim" : "não"}</strong></li>
+              <li>
+                Tipo:{" "}
+                <strong className="text-foreground">{ds.session.plan.context.roomType}</strong>
+              </li>
+              <li>
+                Área:{" "}
+                <strong className="text-foreground">
+                  {ds.session.plan.context.areaM2.toFixed(1)} m²
+                </strong>
+              </li>
+              <li>
+                Circulação livre:{" "}
+                <strong className="text-foreground">
+                  {ds.session.plan.context.circulationMm} mm
+                </strong>
+              </li>
+              <li>
+                Móveis existentes:{" "}
+                <strong className="text-foreground">
+                  {ds.session.plan.context.existingFurnitureCount}
+                </strong>
+              </li>
+              <li>
+                Luminárias existentes:{" "}
+                <strong className="text-foreground">
+                  {ds.session.plan.context.existingLightingCount}
+                </strong>
+              </li>
+              <li>
+                Portas:{" "}
+                <strong className="text-foreground">
+                  {ds.session.plan.context.hasDoors ? "sim" : "não"}
+                </strong>
+              </li>
+              <li>
+                Janelas:{" "}
+                <strong className="text-foreground">
+                  {ds.session.plan.context.hasWindows ? "sim" : "não"}
+                </strong>
+              </li>
             </ul>
           </FormSection>
         )}
@@ -111,10 +144,20 @@ export function DecoratorStudio() {
             >
               {ds.session.status}
             </StatusBadge>
-            <Button variant="outline" size="sm" onClick={ds.acceptAll} disabled={!ds.session.plan || ds.isBusy}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={ds.acceptAll}
+              disabled={!ds.session.plan || ds.isBusy}
+            >
               Aceitar todas
             </Button>
-            <Button variant="ghost" size="sm" onClick={ds.rejectAll} disabled={!ds.session.plan || ds.isBusy}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={ds.rejectAll}
+              disabled={!ds.session.plan || ds.isBusy}
+            >
               Rejeitar todas
             </Button>
             {ds.session.appliedNodeIds.length > 0 && (
@@ -143,11 +186,15 @@ export function DecoratorStudio() {
             />
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <div className="text-sm font-medium text-muted-foreground">Pendentes ({ds.pending.length})</div>
+                <div className="text-sm font-medium text-muted-foreground">
+                  Pendentes ({ds.pending.length})
+                </div>
                 <SuggestionList suggestions={ds.pending} onStatus={ds.setSuggestionStatus} />
               </div>
               <div className="space-y-2">
-                <div className="text-sm font-medium text-muted-foreground">Decisões ({ds.accepted.length + ds.rejected.length})</div>
+                <div className="text-sm font-medium text-muted-foreground">
+                  Decisões ({ds.accepted.length + ds.rejected.length})
+                </div>
                 <SuggestionList
                   suggestions={[...ds.accepted, ...ds.rejected]}
                   onStatus={ds.setSuggestionStatus}

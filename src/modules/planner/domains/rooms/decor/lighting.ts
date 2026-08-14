@@ -50,7 +50,8 @@ export const DECOR_LIGHTING_SCENES: readonly DecorLightingScene[] = [
   {
     id: "scene.cenografica.luxo",
     name: "Cenografia luxo",
-    description: "Sequência dramática — perfil retroiluminado, pendente escultural e fita indireta.",
+    description:
+      "Sequência dramática — perfil retroiluminado, pendente escultural e fita indireta.",
     emitters: [
       { kind: "perfil_led", role: "destaque", temperature: "quente", wattage: 20 },
       { kind: "pendente", role: "decorativa", temperature: "quente", wattage: 24 },

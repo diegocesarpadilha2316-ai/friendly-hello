@@ -41,14 +41,24 @@ export function balanceMachines(routings: readonly RoutingPlan[]): MachineBalanc
     const util = capacityMinutes === 0 ? 0 : Math.round((loadMinutes / capacityMinutes) * 100);
     const status: MachineLoad["status"] =
       util >= 100 ? "sobrecarregada" : util >= 80 ? "atenção" : util <= 20 ? "ociosa" : "ok";
-    return { machineId: m.id, label: m.label, kind: m.kind, loadMinutes, capacityMinutes, utilizationPct: util, status };
+    return {
+      machineId: m.id,
+      label: m.label,
+      kind: m.kind,
+      loadMinutes,
+      capacityMinutes,
+      utilizationPct: util,
+      status,
+    };
   });
 
   const bottleneck = [...loads].sort((a, b) => b.utilizationPct - a.utilizationPct)[0] ?? null;
   const idle = loads.filter((l) => l.status === "ociosa").map((l) => l.machineId);
   const suggestions: string[] = [];
-  if (bottleneck && bottleneck.utilizationPct >= 80) suggestions.push(`Adicionar turno em ${bottleneck.label} ou terceirizar excedente.`);
-  if (idle.length > 0) suggestions.push(`Máquinas ociosas (${idle.length}) podem absorver picos de demanda.`);
+  if (bottleneck && bottleneck.utilizationPct >= 80)
+    suggestions.push(`Adicionar turno em ${bottleneck.label} ou terceirizar excedente.`);
+  if (idle.length > 0)
+    suggestions.push(`Máquinas ociosas (${idle.length}) podem absorver picos de demanda.`);
   if (suggestions.length === 0) suggestions.push("Carga equilibrada — mantenha ritmo atual.");
 
   return {

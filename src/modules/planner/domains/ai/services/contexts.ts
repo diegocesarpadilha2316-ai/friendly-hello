@@ -14,7 +14,11 @@ export function projectContext(project: PlannerProject | null): string | undefin
   return `Projeto "${project.name ?? "sem nome"}" — ${env} ambiente(s), ${rooms} cômodo(s).`;
 }
 
-export function roomContext(project: PlannerProject | null, environmentId: string | null, roomId: string | null): string | undefined {
+export function roomContext(
+  project: PlannerProject | null,
+  environmentId: string | null,
+  roomId: string | null,
+): string | undefined {
   if (!project || !environmentId || !roomId) return undefined;
   const env = project.environments?.find((e) => e.id === environmentId);
   const room = env?.rooms?.find((r) => r.id === roomId);

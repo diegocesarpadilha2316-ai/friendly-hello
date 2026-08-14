@@ -6,7 +6,14 @@ import type { Editor2DPrimitive } from "../editor-2d/types";
 import type { CompanyManufacturingRules, FurnitureEngineeringParams, HardwareKind } from "./types";
 
 const HARDWARE_KEYS: readonly HardwareKind[] = [
-  "dobradica", "corredica", "pistao", "trilho", "cabideiro", "perfil", "puxador", "amortecedor",
+  "dobradica",
+  "corredica",
+  "pistao",
+  "trilho",
+  "cabideiro",
+  "perfil",
+  "puxador",
+  "amortecedor",
 ];
 
 function num(v: unknown, def: number): number {
@@ -18,10 +25,7 @@ function str<T extends string>(v: unknown, def: T): T {
 function bool(v: unknown, def: boolean): boolean {
   return typeof v === "boolean" ? v : def;
 }
-function pick(
-  params: Readonly<Record<string, string | number | boolean | null>>,
-  key: string,
-) {
+function pick(params: Readonly<Record<string, string | number | boolean | null>>, key: string) {
   return params[`eng:${key}`] ?? params[key];
 }
 

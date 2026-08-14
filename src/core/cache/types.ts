@@ -2,11 +2,7 @@
 export type JsonValue = any;
 
 export type CacheStrategy =
-  | "cache_aside"
-  | "read_through"
-  | "write_through"
-  | "write_behind"
-  | "swr";
+  "cache_aside" | "read_through" | "write_through" | "write_behind" | "swr";
 
 export interface CacheEntry {
   id: string;

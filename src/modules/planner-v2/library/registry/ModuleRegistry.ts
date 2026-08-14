@@ -27,9 +27,7 @@ export const ModuleRegistry = {
     const term = query.trim().toLowerCase();
     if (!term) return [...modules.values()];
     return [...modules.values()].filter((module) =>
-      `${module.name} ${module.category} ${module.description ?? ""}`
-        .toLowerCase()
-        .includes(term)
+      `${module.name} ${module.category} ${module.description ?? ""}`.toLowerCase().includes(term),
     );
   },
 };

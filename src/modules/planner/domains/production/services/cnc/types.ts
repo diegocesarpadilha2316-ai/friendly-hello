@@ -4,25 +4,9 @@
  * Mutações no projeto continuam via updateProject().
  */
 export type CncBrand =
-  | "homag"
-  | "biesse"
-  | "scm"
-  | "rover"
-  | "morbidelli"
-  | "weeke"
-  | "holzher"
-  | "vitap"
-  | "generic";
+  "homag" | "biesse" | "scm" | "rover" | "morbidelli" | "weeke" | "holzher" | "vitap" | "generic";
 
-export type CncFormat =
-  | "gcode"
-  | "bpp"
-  | "cix"
-  | "cid3"
-  | "dxf"
-  | "nc"
-  | "mpr"
-  | "xml";
+export type CncFormat = "gcode" | "bpp" | "cix" | "cid3" | "dxf" | "nc" | "mpr" | "xml";
 
 export type CncOperationKind =
   | "drill-through"
@@ -53,14 +37,7 @@ export type CncOperationKind =
   | "custom";
 
 export type CncToolKind =
-  | "drill"
-  | "end-mill"
-  | "ball-mill"
-  | "vee-mill"
-  | "saw"
-  | "disc"
-  | "countersink-tool"
-  | "special";
+  "drill" | "end-mill" | "ball-mill" | "vee-mill" | "saw" | "disc" | "countersink-tool" | "special";
 
 export interface CncMachine {
   readonly id: string;

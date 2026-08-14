@@ -70,8 +70,7 @@ function MateriaisEmpresaPage() {
 
   const listQuery = useQuery({
     queryKey: ["planner", "company-materials", query, onlyAvailable],
-    queryFn: () =>
-      list({ data: { query: query || undefined, onlyAvailable, limit: 300 } }),
+    queryFn: () => list({ data: { query: query || undefined, onlyAvailable, limit: 300 } }),
     staleTime: 15_000,
   });
 
@@ -95,8 +94,7 @@ function MateriaisEmpresaPage() {
       setEditing(null);
       invalidate();
     },
-    onError: (e: unknown) =>
-      toast.error(e instanceof Error ? e.message : "Falha ao salvar"),
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Falha ao salvar"),
   });
 
   const removeMutation = useMutation({
@@ -105,8 +103,7 @@ function MateriaisEmpresaPage() {
       toast.success("Preço removido");
       invalidate();
     },
-    onError: (e: unknown) =>
-      toast.error(e instanceof Error ? e.message : "Falha ao remover"),
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Falha ao remover"),
   });
 
   const rows = listQuery.data ?? [];
@@ -192,18 +189,13 @@ function MateriaisEmpresaPage() {
               </thead>
               <tbody>
                 {grouped.map((r) => (
-                  <tr
-                    key={r.materialId}
-                    className="border-t border-border/40 hover:bg-muted/30"
-                  >
+                  <tr key={r.materialId} className="border-t border-border/40 hover:bg-muted/30">
                     <td className="px-3 py-2">
                       <div className="flex items-center gap-2">
                         <div
                           className="h-8 w-8 rounded border border-border/60 bg-cover bg-center"
                           style={{
-                            backgroundImage: r.imageUrl
-                              ? `url(${r.imageUrl})`
-                              : undefined,
+                            backgroundImage: r.imageUrl ? `url(${r.imageUrl})` : undefined,
                             backgroundColor: r.colorHex ?? "hsl(var(--muted))",
                           }}
                         />
@@ -226,9 +218,7 @@ function MateriaisEmpresaPage() {
                       {fmtCurrency(r.salePrice, r.currency)}
                     </td>
                     <td className="px-3 py-2 text-right tabular-nums text-muted-foreground">
-                      {r.markupPercent != null
-                        ? `${r.markupPercent.toFixed(1)}%`
-                        : "—"}
+                      {r.markupPercent != null ? `${r.markupPercent.toFixed(1)}%` : "—"}
                     </td>
                     <td className="px-3 py-2 text-right tabular-nums text-muted-foreground">
                       {r.stockQuantity ?? "—"}
@@ -241,11 +231,7 @@ function MateriaisEmpresaPage() {
                       )}
                     </td>
                     <td className="px-3 py-2 text-right">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => setEditing(r)}
-                      >
+                      <Button size="sm" variant="ghost" onClick={() => setEditing(r)}>
                         Editar
                       </Button>
                     </td>
@@ -372,12 +358,7 @@ function EditDrawer({ row, onClose, onSave, onRemove, saving, removing }: EditDr
         </div>
 
         <div className="mt-auto flex items-center justify-between gap-2 pt-6">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={onRemove}
-            disabled={removing || saving}
-          >
+          <Button size="sm" variant="ghost" onClick={onRemove} disabled={removing || saving}>
             <Trash2 className="mr-1.5 h-4 w-4" /> Remover
           </Button>
           <Button

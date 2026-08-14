@@ -104,7 +104,11 @@ describe("Família gaveteiro — Biblioteca Construtiva", () => {
     const drawers = assembly.pieces.filter((p) => p.partKind.startsWith("gaveta"));
     for (const d of drawers) expect(open[d.id]).toBe(1);
 
-    const r = resolveInterlock({ pieces: assembly.pieces, motions: assembly.motions, desired: open });
+    const r = resolveInterlock({
+      pieces: assembly.pieces,
+      motions: assembly.motions,
+      desired: open,
+    });
     // Gaveteiro não tem frente cobrindo: nada é bloqueado.
     expect(r.blocked).toHaveLength(0);
     for (const d of drawers) expect(r.allowed[d.id]).toBe(1);

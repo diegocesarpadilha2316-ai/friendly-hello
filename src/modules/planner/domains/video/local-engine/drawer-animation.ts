@@ -3,7 +3,11 @@
  */
 import type { LocalObjectAnimation } from "./types";
 
-export function drawerOpen(nodeId: string, startSec: number, durationSec = 1.0): LocalObjectAnimation {
+export function drawerOpen(
+  nodeId: string,
+  startSec: number,
+  durationSec = 1.0,
+): LocalObjectAnimation {
   return {
     id: `drawer.open.${nodeId}.${startSec.toFixed(2)}`,
     kind: "drawer-open",
@@ -16,7 +20,11 @@ export function drawerOpen(nodeId: string, startSec: number, durationSec = 1.0):
   };
 }
 
-export function drawerClose(nodeId: string, startSec: number, durationSec = 0.9): LocalObjectAnimation {
+export function drawerClose(
+  nodeId: string,
+  startSec: number,
+  durationSec = 0.9,
+): LocalObjectAnimation {
   return {
     id: `drawer.close.${nodeId}.${startSec.toFixed(2)}`,
     kind: "drawer-close",

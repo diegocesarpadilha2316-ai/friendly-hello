@@ -1,28 +1,28 @@
-export type FurnitureFamily = 
-  | 'kitchen-base-cabinet' 
-  | 'kitchen-wall-cabinet'
-  | 'kitchen-tower'
-  | 'kitchen-island'
-  | 'kitchen-counter'
-  | 'kitchen-stool'
-  | 'wardrobe' 
-  | 'kitchen' 
-  | 'bathroom' 
-  | 'laundry' 
-  | 'dresser'
-  | 'decoration';
+export type FurnitureFamily =
+  | "kitchen-base-cabinet"
+  | "kitchen-wall-cabinet"
+  | "kitchen-tower"
+  | "kitchen-island"
+  | "kitchen-counter"
+  | "kitchen-stool"
+  | "wardrobe"
+  | "kitchen"
+  | "bathroom"
+  | "laundry"
+  | "dresser"
+  | "decoration";
 
-export type KitchenBaseVariant = 
-  | 'one-door' 
-  | 'two-doors' 
-  | 'three-drawers' 
-  | 'two-big-drawers' 
-  | 'door-drawer'
-  | 'tower'
-  | 'wall-cabinet'
-  | 'counter'
-  | 'stool'
-  | 'default';
+export type KitchenBaseVariant =
+  | "one-door"
+  | "two-doors"
+  | "three-drawers"
+  | "two-big-drawers"
+  | "door-drawer"
+  | "tower"
+  | "wall-cabinet"
+  | "counter"
+  | "stool"
+  | "default";
 
 export interface FurnitureMaterial {
   id: string;
@@ -40,7 +40,7 @@ export interface CabinetParameters {
   drawerCount: number;
   bodyMaterialId: string;
   frontMaterialId: string;
-  handleType: 'simple' | 'none';
+  handleType: "simple" | "none";
   shelfCount: number;
   kind?: string;
 }

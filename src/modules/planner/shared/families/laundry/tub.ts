@@ -16,13 +16,7 @@ import {
 } from "../bathroom/sink";
 
 export type TubType =
-  | "nenhum"
-  | "embutido"
-  | "sobrepor"
-  | "esculpido"
-  | "independente"
-  | "com-gabinete"
-  | "compacto";
+  "nenhum" | "embutido" | "sobrepor" | "esculpido" | "independente" | "com-gabinete" | "compacto";
 
 export type TubPosition = "central" | "esquerda" | "direita";
 
@@ -39,13 +33,76 @@ export interface TubProfileDef {
 }
 
 export const TUBS: Readonly<Record<TubType, TubProfileDef>> = {
-  nenhum: { id: "nenhum", label: "Sem tanque", widthMm: 0, depthMm: 0, heightMm: 0, dropMm: 0, cutout: false, capacityL: 0 },
-  embutido: { id: "embutido", label: "Tanque embutido", widthMm: 520, depthMm: 460, heightMm: 300, dropMm: 300, cutout: true, capacityL: 22 },
-  sobrepor: { id: "sobrepor", label: "Tanque de sobrepor", widthMm: 550, depthMm: 470, heightMm: 300, dropMm: 120, cutout: true, capacityL: 24 },
-  esculpido: { id: "esculpido", label: "Tanque esculpido", widthMm: 600, depthMm: 500, heightMm: 250, dropMm: 250, cutout: true, capacityL: 26 },
-  independente: { id: "independente", label: "Tanque independente", widthMm: 550, depthMm: 500, heightMm: 900, dropMm: 0, cutout: false, capacityL: 22 },
-  "com-gabinete": { id: "com-gabinete", label: "Tanque com gabinete", widthMm: 560, depthMm: 480, heightMm: 320, dropMm: 320, cutout: true, capacityL: 24 },
-  compacto: { id: "compacto", label: "Tanque compacto", widthMm: 400, depthMm: 380, heightMm: 240, dropMm: 240, cutout: true, capacityL: 14 },
+  nenhum: {
+    id: "nenhum",
+    label: "Sem tanque",
+    widthMm: 0,
+    depthMm: 0,
+    heightMm: 0,
+    dropMm: 0,
+    cutout: false,
+    capacityL: 0,
+  },
+  embutido: {
+    id: "embutido",
+    label: "Tanque embutido",
+    widthMm: 520,
+    depthMm: 460,
+    heightMm: 300,
+    dropMm: 300,
+    cutout: true,
+    capacityL: 22,
+  },
+  sobrepor: {
+    id: "sobrepor",
+    label: "Tanque de sobrepor",
+    widthMm: 550,
+    depthMm: 470,
+    heightMm: 300,
+    dropMm: 120,
+    cutout: true,
+    capacityL: 24,
+  },
+  esculpido: {
+    id: "esculpido",
+    label: "Tanque esculpido",
+    widthMm: 600,
+    depthMm: 500,
+    heightMm: 250,
+    dropMm: 250,
+    cutout: true,
+    capacityL: 26,
+  },
+  independente: {
+    id: "independente",
+    label: "Tanque independente",
+    widthMm: 550,
+    depthMm: 500,
+    heightMm: 900,
+    dropMm: 0,
+    cutout: false,
+    capacityL: 22,
+  },
+  "com-gabinete": {
+    id: "com-gabinete",
+    label: "Tanque com gabinete",
+    widthMm: 560,
+    depthMm: 480,
+    heightMm: 320,
+    dropMm: 320,
+    cutout: true,
+    capacityL: 24,
+  },
+  compacto: {
+    id: "compacto",
+    label: "Tanque compacto",
+    widthMm: 400,
+    depthMm: 380,
+    heightMm: 240,
+    dropMm: 240,
+    cutout: true,
+    capacityL: 14,
+  },
 };
 
 export interface LaundryTub {
@@ -130,10 +187,16 @@ export function normalizeTub(
     depthMm: depth,
     heightMm: off ? 0 : clampNum(input?.heightMm, def.heightMm, 120, 1000),
     xMm:
-      typeof input?.xMm === "number" && Number.isFinite(input.xMm) ? Math.round(input.xMm) : undefined,
+      typeof input?.xMm === "number" && Number.isFinite(input.xMm)
+        ? Math.round(input.xMm)
+        : undefined,
     zMm: off ? 0 : clampNum(input?.zMm, 60, 0, 400),
-    cutoutWidthMm: def.cutout ? clampNum(input?.cutoutWidthMm, Math.max(200, width - 60), 150, 900) : 0,
-    cutoutDepthMm: def.cutout ? clampNum(input?.cutoutDepthMm, Math.max(200, depth - 60), 150, 700) : 0,
+    cutoutWidthMm: def.cutout
+      ? clampNum(input?.cutoutWidthMm, Math.max(200, width - 60), 150, 900)
+      : 0,
+    cutoutDepthMm: def.cutout
+      ? clampNum(input?.cutoutDepthMm, Math.max(200, depth - 60), 150, 700)
+      : 0,
     faucetCutout: input?.faucetCutout ?? !off,
     siphonMm: off ? 0 : clampNum(input?.siphonMm, 240, 120, 400),
     hydraulicHeightMm: off

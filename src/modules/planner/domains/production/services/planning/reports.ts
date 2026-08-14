@@ -39,15 +39,31 @@ export function buildReport(
 export function reportToCsv(rows: readonly PlanningReportRow[]): string {
   const header = ["Período", "Pedidos", "Produzidos", "Entregues", "Atrasados", "Horas", "Receita"];
   const lines = rows.map((r) =>
-    [r.period, r.orders, r.produced, r.delivered, r.delayed, r.hours.toFixed(1), r.revenue.toFixed(2)].join(","),
+    [
+      r.period,
+      r.orders,
+      r.produced,
+      r.delivered,
+      r.delayed,
+      r.hours.toFixed(1),
+      r.revenue.toFixed(2),
+    ].join(","),
   );
   return [header.join(","), ...lines].join("\n");
 }
 
 export function reportToExcelXml(rows: readonly PlanningReportRow[]): string {
   const cells = (r: PlanningReportRow) =>
-    `<Row>${[r.period, r.orders, r.produced, r.delivered, r.delayed, r.hours.toFixed(1), r.revenue.toFixed(2)]
-      .map((v) => `<Cell><Data ss:Type="String">${v}</Data></Cell>`) 
+    `<Row>${[
+      r.period,
+      r.orders,
+      r.produced,
+      r.delivered,
+      r.delayed,
+      r.hours.toFixed(1),
+      r.revenue.toFixed(2),
+    ]
+      .map((v) => `<Cell><Data ss:Type="String">${v}</Data></Cell>`)
       .join("")}</Row>`;
   return `<?xml version="1.0"?>\n<Workbook xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">\n<Worksheet ss:Name="PCP"><Table>${rows.map(cells).join("")}</Table></Worksheet>\n</Workbook>`;
 }

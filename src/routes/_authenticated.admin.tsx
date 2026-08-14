@@ -69,34 +69,180 @@ type AdminSection = {
 };
 
 const SECTIONS: ReadonlyArray<AdminSection> = [
-  { id: "library", title: "Biblioteca Dioris", description: "Importar CSV, atualizar materiais, preços, texturas e CNC.", to: "/admin/biblioteca", icon: BookOpen, tag: "Catálogo" },
-  { id: "billing", title: "Cobrança & Provedores", description: "Mercado Pago, Stripe, Paddle, Asaas, Efí, Pagar.me — Pix, boleto, cartão e assinaturas.", to: "/admin/billing", icon: CreditCard, tag: "Financeiro" },
-  { id: "blog", title: "Editor do Blog", description: "Criar, editar e publicar artigos do blog público.", to: "/admin/blog", icon: BookOpen, tag: "Conteúdo" },
-  { id: "tenants", title: "Empresas", description: "Tenants, planos, status e configurações.", to: "/configuracoes/empresa", icon: Building2, tag: "Governança" },
-  { id: "users", title: "Usuários & Equipes", description: "Membros, convites, papéis e sessões.", to: "/configuracoes", icon: Users, tag: "Identidade" },
-  { id: "ai", title: "IA Gateway", description: "Providers, modelos, custos e circuit breaker.", to: "/ia", icon: Sparkles, tag: "IA" },
-  { id: "storage", title: "Storage & Assets", description: "Buckets, uploads, versionamento e auditoria.", to: "/storage", icon: HardDrive, tag: "Dados" },
-  { id: "notifications", title: "Notificações", description: "Templates, canais e histórico.", to: "/notificacoes", icon: Bell, tag: "Engagement" },
-  { id: "integrations", title: "Integrações", description: "APIs, webhooks, providers e health.", to: "/integracoes", icon: Plug, tag: "Conectividade" },
-  { id: "sdk", title: "SDK & Plugins", description: "Marketplace, hooks e extensões.", to: "/sdk", icon: Puzzle, tag: "Extensão" },
-  { id: "jobs", title: "Jobs & Workers", description: "Filas, retries, scheduler e dead letter.", to: "/jobs", icon: ListTodo, tag: "Runtime" },
-  { id: "gateway", title: "API Gateway", description: "Keys, rate limit, quotas e OpenAPI.", to: "/api-gateway", icon: Globe2, tag: "Runtime" },
-  { id: "cache", title: "Cache Distribuído", description: "Namespaces, tags, SWR e hit rate.", to: "/cache", icon: Database, tag: "Runtime" },
-  { id: "security", title: "Segurança", description: "MFA, sessões, incidentes e políticas.", to: "/security", icon: ShieldCheck, tag: "Segurança" },
-  { id: "quality", title: "Qualidade", description: "Cobertura, suites, gates e regressão.", to: "/quality", icon: Gauge, tag: "Qualidade" },
-  { id: "cicd", title: "CI/CD", description: "Pipelines, builds, deploys e releases.", to: "/cicd", icon: Rocket, tag: "Entrega" },
-  { id: "recovery", title: "Recovery", description: "Backups, snapshots, PITR e DR plans.", to: "/recovery", icon: LifeBuoy, tag: "Continuidade" },
-  { id: "observability", title: "Observabilidade", description: "Logs, traces, métricas e health.", to: "/admin/observabilidade", icon: Activity, tag: "Operação" },
-  { id: "settings", title: "Configurações", description: "Configuração global e por tenant.", to: "/configuracoes", icon: Settings, tag: "Plataforma" },
+  {
+    id: "library",
+    title: "Biblioteca Dioris",
+    description: "Importar CSV, atualizar materiais, preços, texturas e CNC.",
+    to: "/admin/biblioteca",
+    icon: BookOpen,
+    tag: "Catálogo",
+  },
+  {
+    id: "billing",
+    title: "Cobrança & Provedores",
+    description:
+      "Mercado Pago, Stripe, Paddle, Asaas, Efí, Pagar.me — Pix, boleto, cartão e assinaturas.",
+    to: "/admin/billing",
+    icon: CreditCard,
+    tag: "Financeiro",
+  },
+  {
+    id: "blog",
+    title: "Editor do Blog",
+    description: "Criar, editar e publicar artigos do blog público.",
+    to: "/admin/blog",
+    icon: BookOpen,
+    tag: "Conteúdo",
+  },
+  {
+    id: "tenants",
+    title: "Empresas",
+    description: "Tenants, planos, status e configurações.",
+    to: "/configuracoes/empresa",
+    icon: Building2,
+    tag: "Governança",
+  },
+  {
+    id: "users",
+    title: "Usuários & Equipes",
+    description: "Membros, convites, papéis e sessões.",
+    to: "/configuracoes",
+    icon: Users,
+    tag: "Identidade",
+  },
+  {
+    id: "ai",
+    title: "IA Gateway",
+    description: "Providers, modelos, custos e circuit breaker.",
+    to: "/ia",
+    icon: Sparkles,
+    tag: "IA",
+  },
+  {
+    id: "storage",
+    title: "Storage & Assets",
+    description: "Buckets, uploads, versionamento e auditoria.",
+    to: "/storage",
+    icon: HardDrive,
+    tag: "Dados",
+  },
+  {
+    id: "notifications",
+    title: "Notificações",
+    description: "Templates, canais e histórico.",
+    to: "/notificacoes",
+    icon: Bell,
+    tag: "Engagement",
+  },
+  {
+    id: "integrations",
+    title: "Integrações",
+    description: "APIs, webhooks, providers e health.",
+    to: "/integracoes",
+    icon: Plug,
+    tag: "Conectividade",
+  },
+  {
+    id: "sdk",
+    title: "SDK & Plugins",
+    description: "Marketplace, hooks e extensões.",
+    to: "/sdk",
+    icon: Puzzle,
+    tag: "Extensão",
+  },
+  {
+    id: "jobs",
+    title: "Jobs & Workers",
+    description: "Filas, retries, scheduler e dead letter.",
+    to: "/jobs",
+    icon: ListTodo,
+    tag: "Runtime",
+  },
+  {
+    id: "gateway",
+    title: "API Gateway",
+    description: "Keys, rate limit, quotas e OpenAPI.",
+    to: "/api-gateway",
+    icon: Globe2,
+    tag: "Runtime",
+  },
+  {
+    id: "cache",
+    title: "Cache Distribuído",
+    description: "Namespaces, tags, SWR e hit rate.",
+    to: "/cache",
+    icon: Database,
+    tag: "Runtime",
+  },
+  {
+    id: "security",
+    title: "Segurança",
+    description: "MFA, sessões, incidentes e políticas.",
+    to: "/security",
+    icon: ShieldCheck,
+    tag: "Segurança",
+  },
+  {
+    id: "quality",
+    title: "Qualidade",
+    description: "Cobertura, suites, gates e regressão.",
+    to: "/quality",
+    icon: Gauge,
+    tag: "Qualidade",
+  },
+  {
+    id: "cicd",
+    title: "CI/CD",
+    description: "Pipelines, builds, deploys e releases.",
+    to: "/cicd",
+    icon: Rocket,
+    tag: "Entrega",
+  },
+  {
+    id: "recovery",
+    title: "Recovery",
+    description: "Backups, snapshots, PITR e DR plans.",
+    to: "/recovery",
+    icon: LifeBuoy,
+    tag: "Continuidade",
+  },
+  {
+    id: "observability",
+    title: "Observabilidade",
+    description: "Logs, traces, métricas e health.",
+    to: "/admin/observabilidade",
+    icon: Activity,
+    tag: "Operação",
+  },
+  {
+    id: "settings",
+    title: "Configurações",
+    description: "Configuração global e por tenant.",
+    to: "/configuracoes",
+    icon: Settings,
+    tag: "Plataforma",
+  },
 ];
 
 function AdminCenterPage() {
   const { snapshot, isLoading } = useDashboardSnapshot();
 
   const kpis = [
-    { label: "Empresas ativas", value: snapshot.meta.warming ? "—" : "0", hint: "tenants em atividade" },
-    { label: "Créditos consumidos (mês)", value: snapshot.credits.used.toLocaleString("pt-BR"), hint: `${snapshot.credits.available} disponíveis` },
-    { label: "Requisições de IA hoje", value: snapshot.aiToday.requests.toLocaleString("pt-BR"), hint: `${snapshot.aiToday.creditsSpent} créditos` },
+    {
+      label: "Empresas ativas",
+      value: snapshot.meta.warming ? "—" : "0",
+      hint: "tenants em atividade",
+    },
+    {
+      label: "Créditos consumidos (mês)",
+      value: snapshot.credits.used.toLocaleString("pt-BR"),
+      hint: `${snapshot.credits.available} disponíveis`,
+    },
+    {
+      label: "Requisições de IA hoje",
+      value: snapshot.aiToday.requests.toLocaleString("pt-BR"),
+      hint: `${snapshot.aiToday.creditsSpent} créditos`,
+    },
     { label: "Jobs em execução", value: "0", hint: "fila estável" },
   ] as const;
 
@@ -115,9 +261,19 @@ function AdminCenterPage() {
 
   const quickActions = [
     { id: "new-user", label: "Convidar usuário", to: "/configuracoes", icon: UserPlus },
-    { id: "grant-credits", label: "Conceder créditos", to: "/configuracoes/empresa", icon: Sparkles },
+    {
+      id: "grant-credits",
+      label: "Conceder créditos",
+      to: "/configuracoes/empresa",
+      icon: Sparkles,
+    },
     { id: "reset-pass", label: "Resetar senha", to: "/security", icon: KeyRound },
-    { id: "block-tenant", label: "Suspender empresa", to: "/configuracoes/empresa", icon: ShieldAlert },
+    {
+      id: "block-tenant",
+      label: "Suspender empresa",
+      to: "/configuracoes/empresa",
+      icon: ShieldAlert,
+    },
     { id: "run-backup", label: "Executar backup", to: "/recovery", icon: RefreshCcw },
     { id: "run-job", label: "Executar job", to: "/jobs", icon: PlayCircle },
     { id: "clear-cache", label: "Limpar cache", to: "/cache", icon: Trash2 },
@@ -155,8 +311,8 @@ function AdminCenterPage() {
               Dioris Hub
             </h1>
             <p className="text-sm text-white/70 sm:text-base">
-              Centro único de administração da plataforma. Governança, IA, segurança,
-              qualidade e continuidade — inteligência que conecta tudo.
+              Centro único de administração da plataforma. Governança, IA, segurança, qualidade e
+              continuidade — inteligência que conecta tudo.
             </p>
           </div>
           <img

@@ -98,25 +98,44 @@ const asBillingSummary = (value: unknown): BillingSummary => {
         monthlyCredits: toNumber(value.plan.monthlyCredits),
         priceCents: toNumber(value.plan.priceCents),
         currency: typeof value.plan.currency === "string" ? value.plan.currency : "BRL",
-        features: toList<string>(value.plan.features).filter((feature) => typeof feature === "string"),
+        features: toList<string>(value.plan.features).filter(
+          (feature) => typeof feature === "string",
+        ),
         sortOrder: toNumber(value.plan.sortOrder),
       }
     : null;
   const subscription = isRecord(value.subscription)
     ? {
         id: typeof value.subscription.id === "string" ? value.subscription.id : "",
-        companyId: typeof value.subscription.companyId === "string" ? value.subscription.companyId : "",
-        planKey: typeof value.subscription.planKey === "string" ? value.subscription.planKey : plan?.key ?? "free",
-        status: isSubscriptionStatus(value.subscription.status) ? value.subscription.status : "active",
-        trialEndsAt: typeof value.subscription.trialEndsAt === "string" ? value.subscription.trialEndsAt : null,
+        companyId:
+          typeof value.subscription.companyId === "string" ? value.subscription.companyId : "",
+        planKey:
+          typeof value.subscription.planKey === "string"
+            ? value.subscription.planKey
+            : (plan?.key ?? "free"),
+        status: isSubscriptionStatus(value.subscription.status)
+          ? value.subscription.status
+          : "active",
+        trialEndsAt:
+          typeof value.subscription.trialEndsAt === "string"
+            ? value.subscription.trialEndsAt
+            : null,
         currentPeriodStart:
-          typeof value.subscription.currentPeriodStart === "string" ? value.subscription.currentPeriodStart : "",
+          typeof value.subscription.currentPeriodStart === "string"
+            ? value.subscription.currentPeriodStart
+            : "",
         currentPeriodEnd:
-          typeof value.subscription.currentPeriodEnd === "string" ? value.subscription.currentPeriodEnd : "",
+          typeof value.subscription.currentPeriodEnd === "string"
+            ? value.subscription.currentPeriodEnd
+            : "",
         cancelAtPeriodEnd:
-          typeof value.subscription.cancelAtPeriodEnd === "boolean" ? value.subscription.cancelAtPeriodEnd : false,
+          typeof value.subscription.cancelAtPeriodEnd === "boolean"
+            ? value.subscription.cancelAtPeriodEnd
+            : false,
         externalProvider:
-          typeof value.subscription.externalProvider === "string" ? value.subscription.externalProvider : null,
+          typeof value.subscription.externalProvider === "string"
+            ? value.subscription.externalProvider
+            : null,
       }
     : null;
   return {
@@ -213,7 +232,9 @@ function WorkspaceDashboard() {
     ["pending", "queued", "running", "retrying"].includes(String(j.status)),
   ).length;
   const eventsList = toList<Event>(events.data);
-  const eventMetricsData: Record<string, unknown> = isRecord(eventMetrics.data) ? eventMetrics.data : {};
+  const eventMetricsData: Record<string, unknown> = isRecord(eventMetrics.data)
+    ? eventMetrics.data
+    : {};
   const eventsTotal = toNumber(eventMetricsData.total, eventsList.length);
   const eventsPending = toNumber(eventMetricsData.pending);
   const eventsDelivered = toNumber(eventMetricsData.delivered);
@@ -224,13 +245,15 @@ function WorkspaceDashboard() {
   const tracesTotal = observabilityData.summary.tracesTotal;
   const healthList = toList<HealthCheckEntry>(health.data);
   const healthy = healthList.filter((h) => h.status === "healthy").length;
-  const degraded = healthList.filter(
-    (h) => h.status === "degraded" || h.status === "down",
-  ).length;
+  const degraded = healthList.filter((h) => h.status === "degraded" || h.status === "down").length;
   const teamCount = companiesList.length;
   const integrationsList = toList(integrationsHealth.data);
   const integrationsCount = integrationsList.length;
-  const aiToday: AiUsageToday = snapshot?.aiToday ?? { requests: 0, creditsSpent: 0, byCapability: [] };
+  const aiToday: AiUsageToday = snapshot?.aiToday ?? {
+    requests: 0,
+    creditsSpent: 0,
+    byCapability: [],
+  };
   const aiCapabilityList = toList<{ capability: string; count: number }>(aiToday.byCapability);
   const recentProjects = toList<RecentProject>(snapshot?.recentProjects);
   const activity = toList<ActivityEntry>(snapshot?.activity);
@@ -266,13 +289,11 @@ function WorkspaceDashboard() {
             { x: "ativos", y: activeJobs },
             {
               x: "concluídos",
-              y:
-                jobsList.filter((j) => String(j.status) === "completed").length,
+              y: jobsList.filter((j) => String(j.status) === "completed").length,
             },
             {
               x: "falhas",
-              y:
-                jobsList.filter((j) => String(j.status) === "failed").length,
+              y: jobsList.filter((j) => String(j.status) === "failed").length,
             },
           ],
         },
@@ -291,8 +312,9 @@ function WorkspaceDashboard() {
 
   const storageMb = (assetsStats.usedBytes / (1024 * 1024)).toFixed(1);
 
-  const planKey = (typeof billingSummary.plan?.key === "string" ? billingSummary.plan.key : "free") as
-    | "free" | "starter" | "pro" | "business" | "enterprise";
+  const planKey = (
+    typeof billingSummary.plan?.key === "string" ? billingSummary.plan.key : "free"
+  ) as "free" | "starter" | "pro" | "business" | "enterprise";
   const subscribed = new Set(getPlanModules(planKey));
   const firstName = auth?.user?.email?.split("@")[0] ?? "";
 
@@ -329,7 +351,8 @@ function WorkspaceDashboard() {
                 </StatusBadge>
               ) : null}
               <StatusBadge tone="info" dot={false}>
-                {subscribed.size} módulo{subscribed.size === 1 ? "" : "s"} assinado{subscribed.size === 1 ? "" : "s"}
+                {subscribed.size} módulo{subscribed.size === 1 ? "" : "s"} assinado
+                {subscribed.size === 1 ? "" : "s"}
               </StatusBadge>
             </div>
           </div>
@@ -397,7 +420,9 @@ function WorkspaceDashboard() {
                     <Icon className="h-5 w-5" />
                   </div>
                   {active ? (
-                    <StatusBadge tone="success" dot={false}>Ativo</StatusBadge>
+                    <StatusBadge tone="success" dot={false}>
+                      Ativo
+                    </StatusBadge>
                   ) : (
                     <span className="inline-flex items-center gap-1 rounded-full border border-border/60 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                       <Lock className="h-3 w-3" /> {unlockPlan}
@@ -405,9 +430,7 @@ function WorkspaceDashboard() {
                   )}
                 </div>
                 <p className="mt-3 text-sm font-semibold">{m.label}</p>
-                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-                  {m.description}
-                </p>
+                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{m.description}</p>
                 <div className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
                   {active ? "Abrir" : "Fazer upgrade"} <ArrowRight className="h-3 w-3" />
                 </div>
@@ -428,7 +451,11 @@ function WorkspaceDashboard() {
         <MetricCard
           label="Plano ativo"
           value={typeof billingSummary.plan?.label === "string" ? billingSummary.plan.label : "—"}
-          hint={typeof billingSummary.subscription?.status === "string" ? billingSummary.subscription.status : "sem assinatura"}
+          hint={
+            typeof billingSummary.subscription?.status === "string"
+              ? billingSummary.subscription.status
+              : "sem assinatura"
+          }
           icon={<Building2 className="h-4 w-4" />}
         />
         <MetricCard
@@ -485,11 +512,14 @@ function WorkspaceDashboard() {
       <div className="mt-6">
         <DashboardGrid>
           <DashboardGridItem size="md">
-            <CreditsCard credits={{
-              available: billingSummary.balance,
-              used: billingSummary.usedThisPeriod,
-              resetsAt: billingSummary.resetsAt,
-            }} status={billing.isLoading ? "loading" : "ready"} />
+            <CreditsCard
+              credits={{
+                available: billingSummary.balance,
+                used: billingSummary.usedThisPeriod,
+                resetsAt: billingSummary.resetsAt,
+              }}
+              status={billing.isLoading ? "loading" : "ready"}
+            />
           </DashboardGridItem>
           <DashboardGridItem size="md">
             <SubscriptionCard
@@ -506,8 +536,7 @@ function WorkspaceDashboard() {
                 {
                   label: "Créditos",
                   used: billingSummary.usedThisPeriod,
-                  total:
-                    billingSummary.usedThisPeriod + billingSummary.balance || 1,
+                  total: billingSummary.usedThisPeriod + billingSummary.balance || 1,
                   unit: "cr",
                 },
                 {
@@ -535,9 +564,7 @@ function WorkspaceDashboard() {
               title="Consumo de IA"
               description="Requisições por capacidade (hoje)"
               series={aiChart}
-              status={
-                aiCapabilityList.length === 0 ? "empty" : "ready"
-              }
+              status={aiCapabilityList.length === 0 ? "empty" : "ready"}
               renderer={(s) => <BarSeries series={s} />}
             />
           </DashboardGridItem>
@@ -573,10 +600,7 @@ function WorkspaceDashboard() {
               ) : (
                 <ul className="space-y-2">
                   {healthList.slice(0, 6).map((h) => (
-                    <li
-                      key={h.id}
-                      className="flex items-center justify-between text-sm"
-                    >
+                    <li key={h.id} className="flex items-center justify-between text-sm">
                       <span className="truncate">{h.component}</span>
                       <StatusBadge
                         tone={
@@ -627,10 +651,7 @@ function WorkspaceDashboard() {
               ) : (
                 <ul className="divide-y divide-border/60">
                   {notifList.slice(0, 5).map((n) => (
-                    <li
-                      key={n.id}
-                      className="flex items-start justify-between gap-3 py-2 text-sm"
-                    >
+                    <li key={n.id} className="flex items-start justify-between gap-3 py-2 text-sm">
                       <div className="min-w-0">
                         <p
                           className={`truncate ${
@@ -640,15 +661,11 @@ function WorkspaceDashboard() {
                           {n.title ?? n.body ?? "Notificação"}
                         </p>
                         {n.body && n.title ? (
-                          <p className="truncate text-xs text-muted-foreground">
-                            {n.body}
-                          </p>
+                          <p className="truncate text-xs text-muted-foreground">{n.body}</p>
                         ) : null}
                       </div>
                       <span className="shrink-0 text-xs text-muted-foreground">
-                        {n.createdAt
-                          ? new Date(n.createdAt).toLocaleDateString("pt-BR")
-                          : ""}
+                        {n.createdAt ? new Date(n.createdAt).toLocaleDateString("pt-BR") : ""}
                       </span>
                     </li>
                   ))}
@@ -657,10 +674,7 @@ function WorkspaceDashboard() {
             </DashboardCard>
           </DashboardGridItem>
           <DashboardGridItem size="lg">
-            <RecentProjects
-              projects={recentProjects}
-              status={isLoading ? "loading" : undefined}
-            />
+            <RecentProjects projects={recentProjects} status={isLoading ? "loading" : undefined} />
           </DashboardGridItem>
           <DashboardGridItem size="lg">
             <DashboardCard
@@ -716,10 +730,7 @@ function WorkspaceDashboard() {
               ) : (
                 <ul className="divide-y divide-border/60">
                   {eventsList.slice(0, 6).map((e) => (
-                    <li
-                      key={e.id}
-                      className="flex items-center justify-between py-2 text-sm"
-                    >
+                    <li key={e.id} className="flex items-center justify-between py-2 text-sm">
                       <span className="truncate">{e.type}</span>
                       <StatusBadge
                         tone={
@@ -750,15 +761,11 @@ function WorkspaceDashboard() {
                   <p className="text-xs text-muted-foreground">Erros abertos</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-semibold">
-                    {errorRate.toFixed(2)}%
-                  </p>
+                  <p className="text-2xl font-semibold">{errorRate.toFixed(2)}%</p>
                   <p className="text-xs text-muted-foreground">Taxa de erro</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-semibold">
-                    {tracesTotal}
-                  </p>
+                  <p className="text-2xl font-semibold">{tracesTotal}</p>
                   <p className="text-xs text-muted-foreground">Traces</p>
                 </div>
               </div>

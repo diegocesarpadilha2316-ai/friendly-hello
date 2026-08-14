@@ -47,16 +47,36 @@ function stub(
 }
 
 export const DECORATOR_PROVIDERS: readonly DecoratorProvider[] = [
-  stub("dioris.local", "Dioris Decorator (local)", "local",
-    "Motor heurístico determinístico — offline, sem credenciais externas."),
-  stub("openai.gpt-decor", "GPT Decorator", "openai",
-    "Sugestões amplas com contexto multimodal do OpenAI."),
-  stub("google.gemini-decor", "Gemini Decorator", "google",
-    "Sugestões multimodais com forte compreensão de composição."),
-  stub("anthropic.claude-decor", "Claude Decorator", "anthropic",
-    "Sugestões explicáveis, alinhadas a briefings extensos."),
-  stub("oss.decor", "Open Source Decorator", "oss",
-    "Modelos abertos executados em infraestrutura própria."),
+  stub(
+    "dioris.local",
+    "Dioris Decorator (local)",
+    "local",
+    "Motor heurístico determinístico — offline, sem credenciais externas.",
+  ),
+  stub(
+    "openai.gpt-decor",
+    "GPT Decorator",
+    "openai",
+    "Sugestões amplas com contexto multimodal do OpenAI.",
+  ),
+  stub(
+    "google.gemini-decor",
+    "Gemini Decorator",
+    "google",
+    "Sugestões multimodais com forte compreensão de composição.",
+  ),
+  stub(
+    "anthropic.claude-decor",
+    "Claude Decorator",
+    "anthropic",
+    "Sugestões explicáveis, alinhadas a briefings extensos.",
+  ),
+  stub(
+    "oss.decor",
+    "Open Source Decorator",
+    "oss",
+    "Modelos abertos executados em infraestrutura própria.",
+  ),
 ];
 
 export function getDecoratorProvider(id: string): DecoratorProvider {

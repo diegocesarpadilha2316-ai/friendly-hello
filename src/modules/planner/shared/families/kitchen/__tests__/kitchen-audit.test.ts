@@ -54,7 +54,7 @@ function auditScene(result: KitchenLayoutResult) {
 /** Nenhum módulo da mesma parede e faixa pode se sobrepor. */
 function overlapsInScene(result: KitchenLayoutResult): string[] {
   const out: string[] = [];
-  const groups = new Map<string, typeof result.placements[number][]>();
+  const groups = new Map<string, (typeof result.placements)[number][]>();
   for (const p of result.placements) {
     const key = `${p.wallId}|${p.level === "coluna" ? "inferior" : p.level}`;
     groups.set(key, [...(groups.get(key) ?? []), p]);
@@ -72,7 +72,10 @@ function overlapsInScene(result: KitchenLayoutResult): string[] {
 
 function expectHealthyScene(result: KitchenLayoutResult) {
   const { v, conflicts, envelope } = auditScene(result);
-  expect(v.errors.map((e) => `${e.code}: ${e.message}`), "erros").toEqual([]);
+  expect(
+    v.errors.map((e) => `${e.code}: ${e.message}`),
+    "erros",
+  ).toEqual([]);
   expect(overlapsInScene(result), "interpenetração").toEqual([]);
   expect(conflicts, "volumes técnicos invadidos").toEqual([]);
   expect(envelope, "peças fora do envelope").toEqual([]);
@@ -178,7 +181,9 @@ const inL = (kind: "canto-reto" | "canto-diagonal" | "canto-magico"): KitchenLay
 const C5: KitchenLayoutInput = {
   id: "ilha",
   shape: "ilha",
-  walls: [{ id: "p1", lengthMm: 3000, heightMm: 2700, fixtures: [{ id: "pia", kind: "pia", atMm: 600 }] }],
+  walls: [
+    { id: "p1", lengthMm: 3000, heightMm: 2700, fixtures: [{ id: "pia", kind: "pia", atMm: 600 }] },
+  ],
   island: { lengthMm: 2400, depthMm: 900, hasCooktop: true, hasSink: true, clearanceMm: 1100 },
 };
 
@@ -224,7 +229,9 @@ describe("Cenário 1 — cozinha reta de 2,5 m", () => {
     expect(r.countertopRuns[0].lengthMm).toBe(2500);
     expectCountertopCoversBases(r, "p1");
     expect(r.placements.find((p) => p.kind === "balcao-pia")!.spec.countertop.cutout).toBe("cuba");
-    expect(r.placements.find((p) => p.kind === "balcao-cooktop")!.spec.countertop.cutout).toBe("cooktop");
+    expect(r.placements.find((p) => p.kind === "balcao-cooktop")!.spec.countertop.cutout).toBe(
+      "cooktop",
+    );
   });
 
   it("rodapé acompanha toda a linha de balcões", () => {
@@ -237,7 +244,8 @@ describe("Cenário 1 — cozinha reta de 2,5 m", () => {
     expect(new Set(uppers.map((u) => u.yMm)).size).toBe(1);
     expect(new Set(uppers.map((u) => u.heightMm)).size).toBe(1);
     const hood = r.reservations.find((x) => x.kind === "coifa")!;
-    for (const u of uppers) expect(u.xMm < hood.xMm + hood.widthMm && hood.xMm < u.xMm + u.widthMm).toBe(false);
+    for (const u of uppers)
+      expect(u.xMm < hood.xMm + hood.widthMm && hood.xMm < u.xMm + u.widthMm).toBe(false);
   });
 });
 
@@ -248,8 +256,16 @@ describe("Cenário 2 — cozinha reta de 3,5 m", () => {
 
   it("compõe geladeira, torre, pia, lava-louças e cooktop sem erro", () => {
     expectHealthyScene(r);
-    for (const kind of ["torre-geladeira", "torre-quente", "balcao-pia", "balcao-cooktop"] as const) {
-      expect(r.placements.some((p) => p.kind === kind), kind).toBe(true);
+    for (const kind of [
+      "torre-geladeira",
+      "torre-quente",
+      "balcao-pia",
+      "balcao-cooktop",
+    ] as const) {
+      expect(
+        r.placements.some((p) => p.kind === kind),
+        kind,
+      ).toBe(true);
     }
   });
 
@@ -272,7 +288,9 @@ describe("Cenário 2 — cozinha reta de 3,5 m", () => {
     const micro = built.reservations.find((x) => x.kind === "microondas")!;
     expect(forno.box.x).toBe(micro.box.x);
     expect(forno.box.width).toBe(micro.box.width);
-    expect(forno.box.depth).toBeLessThanOrEqual(built.layout.interiorDepthMm - torre.spec.applianceGapBackMm);
+    expect(forno.box.depth).toBeLessThanOrEqual(
+      built.layout.interiorDepthMm - torre.spec.applianceGapBackMm,
+    );
     expect(kitchenReservationConflicts(built)).toEqual([]);
     expect(torre.yMm).toBe(0);
     expect(torre.heightMm).toBe(r.config.columnHeightMm);
@@ -288,7 +306,9 @@ describe("Cenário 2 — cozinha reta de 3,5 m", () => {
   it("coifa alinhada e centralizada sobre o cooktop", () => {
     const ck = r.reservations.find((x) => x.kind === "cooktop")!;
     const coifa = r.reservations.find((x) => x.kind === "coifa")!;
-    expect(Math.abs((coifa.xMm + coifa.widthMm / 2) - (ck.xMm + ck.widthMm / 2))).toBeLessThanOrEqual(60);
+    expect(Math.abs(coifa.xMm + coifa.widthMm / 2 - (ck.xMm + ck.widthMm / 2))).toBeLessThanOrEqual(
+      60,
+    );
     expect(coifa.yMm).toBe(r.config.baseHeightMm + r.config.hoodGapMm);
   });
 
@@ -365,7 +385,9 @@ describe("Cenário 4 — cozinha em L", () => {
         expect(retorno).toBeDefined();
         expect(retorno.wallId).toBe("b");
         for (const p of r.placements.filter((x) => x.wallId === "b" && x.level !== "superior")) {
-          expect(p.xMm, `${p.id} invade o retorno`).toBeGreaterThanOrEqual(retorno.xMm + retorno.widthMm - 1);
+          expect(p.xMm, `${p.id} invade o retorno`).toBeGreaterThanOrEqual(
+            retorno.xMm + retorno.widthMm - 1,
+          );
         }
       });
 
@@ -397,7 +419,8 @@ describe("Cenário 4 — cozinha em L", () => {
         const retorno = r.reservations.find((x) => x.kind === "retorno-de-canto")!;
         const gap = r.config.ergonomics.cornerDrawerClearanceMm;
         const near = r.placements.filter((p) => {
-          if (p.level !== "inferior" || (p.kind !== "gaveteiro" && p.kind !== "gavetao")) return false;
+          if (p.level !== "inferior" || (p.kind !== "gaveteiro" && p.kind !== "gavetao"))
+            return false;
           if (p.wallId === canto.wallId) return Math.abs(p.xMm + p.widthMm - canto.xMm) < gap;
           return Math.abs(p.xMm - (retorno.xMm + retorno.widthMm)) < gap;
         });
@@ -409,7 +432,9 @@ describe("Cenário 4 — cozinha em L", () => {
         const built = buildKitchenModule(canto.spec);
         const frentes = built.assembly.pieces.filter((p) => p.partKind === "porta");
         expect(frentes.length, "canto sem frente útil").toBeGreaterThan(0);
-        const util = frentes.filter((p) => !p.notes?.includes("frente cega") && !p.notes?.includes("aba"));
+        const util = frentes.filter(
+          (p) => !p.notes?.includes("frente cega") && !p.notes?.includes("aba"),
+        );
         expect(util.length, "canto sem folha de acesso").toBeGreaterThan(0);
         for (const f of util) {
           expect(f.box.width, f.id).toBeGreaterThanOrEqual(150);
@@ -430,7 +455,10 @@ describe("Cenário 4 — cozinha em L", () => {
   it("parede curta demais para o canto é reportada como canto impossível", () => {
     const r = planKitchen({
       shape: "L",
-      walls: [{ id: "a", lengthMm: 600, cornerEnd: true }, { id: "b", lengthMm: 2000, cornerStart: true }],
+      walls: [
+        { id: "a", lengthMm: 600, cornerEnd: true },
+        { id: "b", lengthMm: 2000, cornerStart: true },
+      ],
     });
     expect(r.warnings.some((w) => w.code === "canto-impossivel")).toBe(true);
   });
@@ -453,23 +481,31 @@ describe("Cenário 5 — cozinha com ilha", () => {
     const run = r.countertopRuns.find((x) => x.wallId === "ilha")!;
     expect(run.depthMm).toBe(900);
     expect(run.overhangFrontMm).toBe(300);
-    const custom = planKitchen({ ...C5, island: { ...C5.island!, overhangMm: 150, moduleDepthMm: 650 } });
+    const custom = planKitchen({
+      ...C5,
+      island: { ...C5.island!, overhangMm: 150, moduleDepthMm: 650 },
+    });
     const cr = custom.countertopRuns.find((x) => x.wallId === "ilha")!;
     expect(cr.overhangFrontMm).toBe(150);
-    expect(custom.placements.filter((p) => p.wallId === "ilha").every((p) => p.depthMm === 650)).toBe(true);
+    expect(
+      custom.placements.filter((p) => p.wallId === "ilha").every((p) => p.depthMm === 650),
+    ).toBe(true);
   });
 
   it("as frentes da ilha olham para o ambiente, não para a parede", () => {
     for (const p of island) expect(p.facing).toBe("frente");
     for (const p of r.placements.filter((x) => x.wallId === "p1")) expect(p.facing).toBe("parede");
     const dupla = planKitchen({ ...C5, island: { ...C5.island!, facing: "dupla" } });
-    expect(dupla.placements.filter((p) => p.wallId === "ilha").every((p) => p.facing === "dupla")).toBe(true);
+    expect(
+      dupla.placements.filter((p) => p.wallId === "ilha").every((p) => p.facing === "dupla"),
+    ).toBe(true);
   });
 
   it("cooktop e cuba não ficam colados na ilha", () => {
     const ck = island.find((p) => p.kind === "balcao-cooktop")!;
     const pia = island.find((p) => p.kind === "balcao-pia")!;
-    const gap = ck.xMm < pia.xMm ? pia.xMm - (ck.xMm + ck.widthMm) : ck.xMm - (pia.xMm + pia.widthMm);
+    const gap =
+      ck.xMm < pia.xMm ? pia.xMm - (ck.xMm + ck.widthMm) : ck.xMm - (pia.xMm + pia.widthMm);
     expect(gap).toBeGreaterThanOrEqual(r.config.ergonomics.prepAreaMinMm);
   });
 
@@ -479,7 +515,9 @@ describe("Cenário 5 — cozinha com ilha", () => {
 
   it("circulação insuficiente vira aviso do validador", () => {
     const apertada = planKitchen({ ...C5, island: { ...C5.island!, clearanceMm: 700 } });
-    expect(validateKitchenLayout(apertada).warnings.some((w) => w.code === "circulacao-ilha")).toBe(true);
+    expect(validateKitchenLayout(apertada).warnings.some((w) => w.code === "circulacao-ilha")).toBe(
+      true,
+    );
     expect(validateKitchenLayout(r).warnings.some((w) => w.code === "circulacao-ilha")).toBe(false);
   });
 
@@ -526,7 +564,13 @@ describe("Cenário 6 — janelas, portas e obstáculos", () => {
   it("aparelho fora da parede é descartado com aviso claro", () => {
     const fora = planKitchen({
       shape: "reta",
-      walls: [{ id: "p1", lengthMm: 1000, fixtures: [{ id: "pia", kind: "pia", atMm: 200, widthMm: 1200 }] }],
+      walls: [
+        {
+          id: "p1",
+          lengthMm: 1000,
+          fixtures: [{ id: "pia", kind: "pia", atMm: 200, widthMm: 1200 }],
+        },
+      ],
     });
     expect(fora.dropped).toHaveLength(1);
     expect(validateKitchenLayout(fora).errors[0].code).toBe("aparelho-fora");
@@ -553,10 +597,18 @@ describe("Cenário 6 — janelas, portas e obstáculos", () => {
   it("o motor não inventa módulo só para preencher espaço", () => {
     const apertada = planKitchen({
       shape: "reta",
-      walls: [{ id: "p1", lengthMm: 900, fixtures: [{ id: "porta", kind: "porta", atMm: 0, widthMm: 800 }] }],
+      walls: [
+        {
+          id: "p1",
+          lengthMm: 900,
+          fixtures: [{ id: "porta", kind: "porta", atMm: 0, widthMm: 800 }],
+        },
+      ],
     });
     expect(apertada.placements.filter((p) => p.level === "inferior")).toHaveLength(0);
-    expect(apertada.placements.every((p) => p.widthMm >= apertada.config.minModuleWidthMm)).toBe(true);
+    expect(apertada.placements.every((p) => p.widthMm >= apertada.config.minModuleWidthMm)).toBe(
+      true,
+    );
   });
 });
 
@@ -570,7 +622,9 @@ describe("Geometria dos módulos de cozinha", () => {
       expect(kinds.has(k as never), k).toBe(true);
     }
     expect(built.layout.caseY0).toBe(built.spec.plinth.heightMm);
-    expect(built.layout.caseY0 + built.layout.caseHeightMm + built.spec.countertop.thicknessMm).toBe(built.spec.heightMm);
+    expect(
+      built.layout.caseY0 + built.layout.caseHeightMm + built.spec.countertop.thicknessMm,
+    ).toBe(built.spec.heightMm);
   });
 
   it("aéreo é mais raso que o balcão e nenhuma folha atravessa o vizinho", () => {
@@ -614,14 +668,19 @@ describe("Geometria dos módulos de cozinha", () => {
         expect(p.box.width, `${kind}/${p.id}`).toBeGreaterThan(0);
         expect(p.box.height, `${kind}/${p.id}`).toBeGreaterThan(0);
         expect(p.box.y, `${kind}/${p.id}`).toBeGreaterThanOrEqual(-1);
-        expect(p.box.y + p.box.height, `${kind}/${p.id}`).toBeLessThanOrEqual(built.spec.heightMm + 1);
+        expect(p.box.y + p.box.height, `${kind}/${p.id}`).toBeLessThanOrEqual(
+          built.spec.heightMm + 1,
+        );
       }
     }
   });
 
   it("tampo tem espessura uniforme e balanço configurável", () => {
     const a = buildKitchenModule({ kind: "balcao", countertop: { material: "granito" } });
-    const b = buildKitchenModule({ kind: "balcao", countertop: { material: "granito", overhangFrontMm: 60 } });
+    const b = buildKitchenModule({
+      kind: "balcao",
+      countertop: { material: "granito", overhangFrontMm: 60 },
+    });
     expect(a.spec.countertop.thicknessMm).toBe(20);
     expect(b.spec.countertop.overhangFrontMm).toBe(60);
     expect(a.spec.countertop.thicknessMm).toBe(b.spec.countertop.thicknessMm);
@@ -698,7 +757,8 @@ describe("Movimentos e intertravamento na cozinha", () => {
     const desired = Object.fromEntries(pieces.map((p) => [p.id, 1]));
     const r = resolveInterlock({ pieces, motions, desired });
     expect(r.blocked).toEqual([]);
-    for (const p of pieces.filter((x) => x.partKind === "gaveta-frente")) expect(r.allowed[p.id]).toBe(1);
+    for (const p of pieces.filter((x) => x.partKind === "gaveta-frente"))
+      expect(r.allowed[p.id]).toBe(1);
   });
 
   it("a frente cega do canto trava o mecanismo atrás dela", () => {
@@ -714,8 +774,10 @@ describe("Movimentos e intertravamento na cozinha", () => {
       for (let i = 1; i < doors.length; i += 1) {
         const a = doors[i - 1];
         const b = doors[i];
-        const inter = Math.min(a.box.x + a.box.width, b.box.x + b.box.width) - Math.max(a.box.x, b.box.x);
-        if (Math.abs(a.box.y - b.box.y) < 1) expect(inter, `${kind}: ${a.id} × ${b.id}`).toBeLessThanOrEqual(2);
+        const inter =
+          Math.min(a.box.x + a.box.width, b.box.x + b.box.width) - Math.max(a.box.x, b.box.x);
+        if (Math.abs(a.box.y - b.box.y) < 1)
+          expect(inter, `${kind}: ${a.id} × ${b.id}`).toBeLessThanOrEqual(2);
       }
     }
   });
@@ -746,8 +808,13 @@ describe("Redimensionamento", () => {
     for (const L of [2500, 2800, 3400, 4300, 6000]) {
       const r = wallWith(L);
       const v = validateKitchenLayout(r);
-      expect(v.errors.map((e) => e.code), String(L)).toEqual([]);
-      const used = r.placements.filter((p) => p.level !== "superior").reduce((a, p) => a + p.widthMm, 0);
+      expect(
+        v.errors.map((e) => e.code),
+        String(L),
+      ).toEqual([]);
+      const used = r.placements
+        .filter((p) => p.level !== "superior")
+        .reduce((a, p) => a + p.widthMm, 0);
       const filled = r.fillers.reduce((a, f) => a + f.widthMm, 0);
       expect(used + filled, String(L)).toBe(L);
       for (const p of r.placements) expect(p.widthMm, `${L}/${p.id}`).toBeGreaterThan(0);
@@ -757,15 +824,22 @@ describe("Redimensionamento", () => {
   it("preserva os módulos obrigatórios ao encolher a parede", () => {
     for (const L of [2400, 2600, 3000]) {
       const r = wallWith(L);
-      expect(r.placements.some((p) => p.kind === "balcao-pia"), String(L)).toBe(true);
-      expect(r.placements.some((p) => p.kind === "balcao-cooktop"), String(L)).toBe(true);
+      expect(
+        r.placements.some((p) => p.kind === "balcao-pia"),
+        String(L),
+      ).toBe(true);
+      expect(
+        r.placements.some((p) => p.kind === "balcao-cooktop"),
+        String(L),
+      ).toBe(true);
     }
   });
 
   it("ao ampliar, os módulos flexíveis entram primeiro", () => {
     const curta = wallWith(2500);
     const longa = wallWith(4500);
-    const flex = (r: KitchenLayoutResult) => r.placements.filter((p) => p.origin === "automatico" && p.level === "inferior").length;
+    const flex = (r: KitchenLayoutResult) =>
+      r.placements.filter((p) => p.origin === "automatico" && p.level === "inferior").length;
     expect(flex(longa)).toBeGreaterThan(flex(curta));
   });
 
@@ -780,11 +854,18 @@ describe("Redimensionamento", () => {
   });
 
   it("altura alterada reduz ou descarta os aéreos com aviso", () => {
-    const baixa = planKitchen({ shape: "reta", walls: [{ id: "p1", lengthMm: 3000, heightMm: 1800 }] });
+    const baixa = planKitchen({
+      shape: "reta",
+      walls: [{ id: "p1", lengthMm: 3000, heightMm: 1800 }],
+    });
     expect(baixa.placements.filter((p) => p.level === "superior")).toHaveLength(0);
     expect(baixa.warnings.some((w) => w.code === "aereo-sem-espaco")).toBe(true);
 
-    const media = planKitchen({ shape: "reta", config: { upperGapMm: 600 }, walls: [{ id: "p1", lengthMm: 3000, heightMm: 2150 }] });
+    const media = planKitchen({
+      shape: "reta",
+      config: { upperGapMm: 600 },
+      walls: [{ id: "p1", lengthMm: 3000, heightMm: 2150 }],
+    });
     const uppers = media.placements.filter((p) => p.level === "superior");
     expect(uppers.length).toBeGreaterThan(0);
     for (const u of uppers) expect(u.yMm + u.heightMm).toBeLessThanOrEqual(2150);
@@ -802,12 +883,22 @@ describe("Redimensionamento", () => {
     const larguras = posicoes.map((at) => {
       const r = planKitchen({
         shape: "reta",
-        walls: [{ id: "p1", lengthMm: 4000, heightMm: 2700, fixtures: [{ id: "jan", kind: "janela", atMm: at, widthMm: 1200 }] }],
+        walls: [
+          {
+            id: "p1",
+            lengthMm: 4000,
+            heightMm: 2700,
+            fixtures: [{ id: "jan", kind: "janela", atMm: at, widthMm: 1200 }],
+          },
+        ],
       });
       for (const u of r.placements.filter((p) => p.level === "superior")) {
         expect(u.xMm < at + 1200 && at < u.xMm + u.widthMm, `${at}/${u.id}`).toBe(false);
       }
-      return r.placements.filter((p) => p.level === "superior").map((u) => u.xMm).join("-");
+      return r.placements
+        .filter((p) => p.level === "superior")
+        .map((u) => u.xMm)
+        .join("-");
     });
     expect(new Set(larguras).size).toBeGreaterThan(1);
   });
@@ -815,7 +906,13 @@ describe("Redimensionamento", () => {
   it("dados manuais explícitos vencem o automático", () => {
     const r = planKitchen({
       shape: "reta",
-      walls: [{ id: "p1", lengthMm: 3000, fixtures: [{ id: "pia", kind: "pia", atMm: 1000, widthMm: 900 }] }],
+      walls: [
+        {
+          id: "p1",
+          lengthMm: 3000,
+          fixtures: [{ id: "pia", kind: "pia", atMm: 1000, widthMm: 900 }],
+        },
+      ],
     });
     const pia = r.placements.find((p) => p.kind === "balcao-pia")!;
     expect(pia.xMm).toBe(1000);
@@ -865,7 +962,9 @@ describe("Persistência — salvar, fechar e reabrir", () => {
           }),
         );
         expect(reaberto.spec, `${scene.id}/${p.id}`).toEqual(antes.spec);
-        expect(reaberto.assembly.pieces.map((x) => x.id)).toEqual(antes.assembly.pieces.map((x) => x.id));
+        expect(reaberto.assembly.pieces.map((x) => x.id)).toEqual(
+          antes.assembly.pieces.map((x) => x.id),
+        );
         expect(reaberto.assembly.motions.map((x) => `${x.pieceId}:${x.kind}`)).toEqual(
           antes.assembly.motions.map((x) => `${x.pieceId}:${x.kind}`),
         );
@@ -890,23 +989,39 @@ describe("Persistência — salvar, fechar e reabrir", () => {
 describe("Validador ergonômico", () => {
   const base: KitchenLayoutInput = {
     shape: "reta",
-    walls: [{ id: "p1", lengthMm: 3000, heightMm: 2700, fixtures: [{ id: "pia", kind: "pia", atMm: 600 }] }],
+    walls: [
+      {
+        id: "p1",
+        lengthMm: 3000,
+        heightMm: 2700,
+        fixtures: [{ id: "pia", kind: "pia", atMm: 600 }],
+      },
+    ],
   };
 
   it("avisa bancada fora da faixa recomendada", () => {
     for (const h of [700, 1100]) {
       const r = planKitchen({ ...base, config: { baseHeightMm: h } });
-      expect(validateKitchenLayout(r).warnings.some((w) => w.code === "altura-bancada"), String(h)).toBe(true);
+      expect(
+        validateKitchenLayout(r).warnings.some((w) => w.code === "altura-bancada"),
+        String(h),
+      ).toBe(true);
     }
-    expect(validateKitchenLayout(planKitchen(base)).warnings.some((w) => w.code === "altura-bancada")).toBe(false);
+    expect(
+      validateKitchenLayout(planKitchen(base)).warnings.some((w) => w.code === "altura-bancada"),
+    ).toBe(false);
   });
 
   it("avisa aéreo baixo demais e alto demais", () => {
     expect(
-      validateKitchenLayout(planKitchen({ ...base, config: { upperGapMm: 350 } })).warnings.some((w) => w.code === "aereo-baixo"),
+      validateKitchenLayout(planKitchen({ ...base, config: { upperGapMm: 350 } })).warnings.some(
+        (w) => w.code === "aereo-baixo",
+      ),
     ).toBe(true);
     expect(
-      validateKitchenLayout(planKitchen({ ...base, config: { upperGapMm: 800 } })).warnings.some((w) => w.code === "aereo-alto"),
+      validateKitchenLayout(planKitchen({ ...base, config: { upperGapMm: 800 } })).warnings.some(
+        (w) => w.code === "aereo-alto",
+      ),
     ).toBe(true);
   });
 
@@ -939,16 +1054,26 @@ describe("Validador ergonômico", () => {
   it("avisa lava-louças sem espaço", () => {
     const r = planKitchen({
       shape: "reta",
-      walls: [{ id: "p1", lengthMm: 3000, fixtures: [{ id: "ll", kind: "lava-loucas", atMm: 1000, widthMm: 450 }] }],
+      walls: [
+        {
+          id: "p1",
+          lengthMm: 3000,
+          fixtures: [{ id: "ll", kind: "lava-loucas", atMm: 1000, widthMm: 450 }],
+        },
+      ],
     });
-    expect(validateKitchenLayout(r).warnings.some((w) => w.code === "lava-loucas-estreito")).toBe(true);
+    expect(validateKitchenLayout(r).warnings.some((w) => w.code === "lava-loucas-estreito")).toBe(
+      true,
+    );
   });
 
   it("avisa torre baixa demais para forno e micro-ondas", () => {
     const r = planKitchen({
       shape: "reta",
       config: { columnHeightMm: 1700 },
-      walls: [{ id: "p1", lengthMm: 3000, fixtures: [{ id: "tq", kind: "torre-quente", atMm: 0 }] }],
+      walls: [
+        { id: "p1", lengthMm: 3000, fixtures: [{ id: "tq", kind: "torre-quente", atMm: 0 }] },
+      ],
     });
     expect(validateKitchenLayout(r).warnings.some((w) => w.code === "torre-baixa")).toBe(true);
   });
@@ -956,7 +1081,10 @@ describe("Validador ergonômico", () => {
   it("as recomendações são configuráveis, não normas fixas", () => {
     const r = planKitchen({
       ...base,
-      config: { baseHeightMm: 820, ergonomics: { ...KITCHEN_DEFAULT_CONFIG.ergonomics, baseHeightMinMm: 800 } },
+      config: {
+        baseHeightMm: 820,
+        ergonomics: { ...KITCHEN_DEFAULT_CONFIG.ergonomics, baseHeightMinMm: 800 },
+      },
     });
     expect(validateKitchenLayout(r).warnings.some((w) => w.code === "altura-bancada")).toBe(false);
   });
@@ -1000,7 +1128,10 @@ describe("splitRun", () => {
   it("nunca estoura o máximo nem cria módulo abaixo do mínimo", () => {
     for (let L = 300; L <= 7000; L += 7) {
       const parts = splitRun(L, KITCHEN_DEFAULT_CONFIG);
-      expect(parts.reduce((a, b) => a + b, 0), String(L)).toBe(L);
+      expect(
+        parts.reduce((a, b) => a + b, 0),
+        String(L),
+      ).toBe(L);
       for (const w of parts) {
         expect(w, `${L} → ${w}`).toBeGreaterThanOrEqual(KITCHEN_DEFAULT_CONFIG.minModuleWidthMm);
         expect(w, `${L} → ${w}`).toBeLessThanOrEqual(KITCHEN_DEFAULT_CONFIG.maxModuleWidthMm);

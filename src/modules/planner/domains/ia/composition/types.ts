@@ -5,12 +5,7 @@
 import type { LayoutShape, LayoutWall } from "../services/layout";
 
 export type CompositionStyle =
-  | "moderno"
-  | "contemporaneo"
-  | "minimalista"
-  | "industrial"
-  | "classico"
-  | "luxo";
+  "moderno" | "contemporaneo" | "minimalista" | "industrial" | "classico" | "luxo";
 
 export type FinishLevel = "essencial" | "intermediario" | "premium";
 

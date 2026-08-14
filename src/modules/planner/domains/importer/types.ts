@@ -6,8 +6,22 @@
  * PlannerEditorProvider (preservando Undo/Redo/Autosave/Histórico).
  */
 export type ImporterFormat =
-  | "dwg" | "dxf" | "ifc" | "obj" | "fbx" | "glb" | "gltf" | "stl"
-  | "step" | "iges" | "skp" | "pdf" | "png" | "jpg" | "webp" | "svg";
+  | "dwg"
+  | "dxf"
+  | "ifc"
+  | "obj"
+  | "fbx"
+  | "glb"
+  | "gltf"
+  | "stl"
+  | "step"
+  | "iges"
+  | "skp"
+  | "pdf"
+  | "png"
+  | "jpg"
+  | "webp"
+  | "svg";
 
 export type ImporterUnit = "mm" | "cm" | "m" | "in" | "ft";
 
@@ -22,8 +36,17 @@ export interface ImporterLayer {
 }
 
 export type ImporterEntityRole =
-  | "wall" | "door" | "window" | "floor" | "ceiling" | "room"
-  | "furniture" | "dimension" | "text" | "block" | "unknown";
+  | "wall"
+  | "door"
+  | "window"
+  | "floor"
+  | "ceiling"
+  | "room"
+  | "furniture"
+  | "dimension"
+  | "text"
+  | "block"
+  | "unknown";
 
 export interface ImporterEntity {
   readonly id: string;

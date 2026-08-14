@@ -24,12 +24,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useProjectBudget } from "../hooks/use-project-budget";
-import {
-  CATEGORY_LABEL,
-  downloadCsv,
-  formatBRL,
-  printCommercialProposal,
-} from "../services";
+import { CATEGORY_LABEL, downloadCsv, formatBRL, printCommercialProposal } from "../services";
 import type { BudgetCategory, BudgetItem } from "../types";
 
 function StatusPill({ item }: { item: BudgetItem }) {

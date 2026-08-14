@@ -9,9 +9,7 @@ export function grainCompatible(
   rotated: boolean,
 ): boolean {
   if (part.grain === "none" || spec.grain === "none") return true;
-  const partDir = rotated
-    ? part.grain === "vertical" ? "horizontal" : "vertical"
-    : part.grain;
+  const partDir = rotated ? (part.grain === "vertical" ? "horizontal" : "vertical") : part.grain;
   return partDir === spec.grain;
 }
 

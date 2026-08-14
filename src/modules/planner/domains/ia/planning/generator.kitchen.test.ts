@@ -32,4 +32,3 @@ describe("Kitchen V10 — plano natural no Planner IA", () => {
 });
 
 export {};
-

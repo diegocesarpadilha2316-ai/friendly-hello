@@ -92,12 +92,7 @@ function decomposeRoom(
 /* =========================== ORÇAMENTO ============================= */
 
 export type BudgetCategory =
-  | "chapas"
-  | "fita_borda"
-  | "ferragens"
-  | "vidros"
-  | "iluminacao"
-  | "servicos";
+  "chapas" | "fita_borda" | "ferragens" | "vidros" | "iluminacao" | "servicos";
 
 export interface BudgetLine {
   readonly category: BudgetCategory;

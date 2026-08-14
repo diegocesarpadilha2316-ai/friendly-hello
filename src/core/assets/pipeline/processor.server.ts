@@ -6,13 +6,7 @@
 import type { Asset, AssetKind } from "../types";
 
 export type ProcessingStep =
-  | "thumbnail"
-  | "preview"
-  | "metadata"
-  | "dimensions"
-  | "convert"
-  | "ocr"
-  | "hash";
+  "thumbnail" | "preview" | "metadata" | "dimensions" | "convert" | "ocr" | "hash";
 
 export interface ProcessingJob {
   readonly assetId: string;
@@ -21,15 +15,15 @@ export interface ProcessingJob {
 }
 
 const STEPS_BY_KIND: Record<AssetKind, readonly ProcessingStep[]> = {
-  image:    ["hash", "metadata", "dimensions", "thumbnail", "preview"],
-  video:    ["hash", "metadata", "dimensions", "thumbnail", "preview"],
-  audio:    ["hash", "metadata"],
+  image: ["hash", "metadata", "dimensions", "thumbnail", "preview"],
+  video: ["hash", "metadata", "dimensions", "thumbnail", "preview"],
+  audio: ["hash", "metadata"],
   document: ["hash", "metadata", "preview", "ocr"],
-  pdf:      ["hash", "metadata", "thumbnail", "preview", "ocr"],
-  cad:      ["hash", "metadata", "preview"],
-  model3d:  ["hash", "metadata", "dimensions", "thumbnail", "preview"],
-  archive:  ["hash", "metadata"],
-  other:    ["hash", "metadata"],
+  pdf: ["hash", "metadata", "thumbnail", "preview", "ocr"],
+  cad: ["hash", "metadata", "preview"],
+  model3d: ["hash", "metadata", "dimensions", "thumbnail", "preview"],
+  archive: ["hash", "metadata"],
+  other: ["hash", "metadata"],
 };
 
 export function planProcessing(asset: Pick<Asset, "id" | "kind">): ProcessingJob {

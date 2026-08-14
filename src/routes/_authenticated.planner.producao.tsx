@@ -151,8 +151,7 @@ function ProducaoPage() {
   });
 
   const statusMutation = useMutation({
-    mutationFn: (v: { id: string; status: ProductionOrderStatus }) =>
-      setStatus({ data: v }),
+    mutationFn: (v: { id: string; status: ProductionOrderStatus }) => setStatus({ data: v }),
     onSuccess: () => {
       toast.success("Status atualizado");
       invalidateOrders();
@@ -161,8 +160,7 @@ function ProducaoPage() {
   });
 
   const progressMutation = useMutation({
-    mutationFn: (v: { id: string; progressPercent: number }) =>
-      setProgress({ data: v }),
+    mutationFn: (v: { id: string; progressPercent: number }) => setProgress({ data: v }),
     onSuccess: () => invalidateOrders(),
     onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erro"),
   });
@@ -389,7 +387,12 @@ function OrderRowView({
       <td className="px-3 py-2 text-right">
         <div className="inline-flex items-center gap-1">
           {row.status === "draft" || row.status === "planned" ? (
-            <Button size="sm" variant="ghost" onClick={() => onStatus("in_progress")} title="Iniciar">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => onStatus("in_progress")}
+              title="Iniciar"
+            >
               <Play className="h-4 w-4" />
             </Button>
           ) : null}
@@ -398,18 +401,33 @@ function OrderRowView({
               <Button size="sm" variant="ghost" onClick={() => onStatus("paused")} title="Pausar">
                 <Pause className="h-4 w-4" />
               </Button>
-              <Button size="sm" variant="ghost" onClick={() => onStatus("completed")} title="Concluir">
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => onStatus("completed")}
+                title="Concluir"
+              >
                 <CheckCircle2 className="h-4 w-4" />
               </Button>
             </>
           ) : null}
           {row.status === "paused" ? (
-            <Button size="sm" variant="ghost" onClick={() => onStatus("in_progress")} title="Retomar">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => onStatus("in_progress")}
+              title="Retomar"
+            >
               <Play className="h-4 w-4" />
             </Button>
           ) : null}
           {row.status !== "cancelled" && row.status !== "completed" ? (
-            <Button size="sm" variant="ghost" onClick={() => onStatus("cancelled")} title="Cancelar">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => onStatus("cancelled")}
+              title="Cancelar"
+            >
               <XCircle className="h-4 w-4" />
             </Button>
           ) : null}
@@ -594,7 +612,8 @@ function QuickCreateOrderDialog({
       <div className="w-full max-w-md rounded-xl border border-border/60 bg-card p-5 shadow-2xl">
         <h2 className="text-lg font-semibold">Nova ordem de produção</h2>
         <p className="mt-1 text-xs text-muted-foreground">
-          A ordem inicia como rascunho. As etapas padrão (Corte → Furação → Fitagem → Montagem → Embalagem) são criadas automaticamente.
+          A ordem inicia como rascunho. As etapas padrão (Corte → Furação → Fitagem → Montagem →
+          Embalagem) são criadas automaticamente.
         </p>
         <div className="mt-4 grid gap-3">
           <label className="grid gap-1">

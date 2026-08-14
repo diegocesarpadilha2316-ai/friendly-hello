@@ -9,30 +9,44 @@
  * `PlannerRegistry` (ver ../registry). Consumidores fazem
  * `registry.get("catalog")` e recebem um objeto que satisfaz este contrato.
  */
-import type {
-  PlannerContext,
-  PlannerCatalogItemId,
-  PlannerProjectId,
-} from "../types";
+import type { PlannerContext, PlannerCatalogItemId, PlannerProjectId } from "../types";
 
 export interface CatalogContract {
   readonly domain: "catalog";
-  listItems(ctx: PlannerContext, query?: { kind?: string }): Promise<ReadonlyArray<{ id: PlannerCatalogItemId; name: string }>>;
+  listItems(
+    ctx: PlannerContext,
+    query?: { kind?: string },
+  ): Promise<ReadonlyArray<{ id: PlannerCatalogItemId; name: string }>>;
 }
 
 export interface RenderContract {
   readonly domain: "render";
-  enqueueRender(ctx: PlannerContext, input: { projectId: PlannerProjectId; kind: "viewport" | "photo" | "final" | "panorama" | "video" | "tour" | "compare" }): Promise<{ jobId: string }>;
+  enqueueRender(
+    ctx: PlannerContext,
+    input: {
+      projectId: PlannerProjectId;
+      kind: "viewport" | "photo" | "final" | "panorama" | "video" | "tour" | "compare";
+    },
+  ): Promise<{ jobId: string }>;
 }
 
 export interface IAContract {
   readonly domain: "ia";
-  invoke(ctx: PlannerContext, input: { capability: "assistant" | "generate" | "optimize" | "budget" | "production" | "render"; payload: unknown }): Promise<{ ok: true; result: unknown }>;
+  invoke(
+    ctx: PlannerContext,
+    input: {
+      capability: "assistant" | "generate" | "optimize" | "budget" | "production" | "render";
+      payload: unknown;
+    },
+  ): Promise<{ ok: true; result: unknown }>;
 }
 
 export interface ProductionContract {
   readonly domain: "production";
-  buildBOM(ctx: PlannerContext, projectId: PlannerProjectId): Promise<{ items: ReadonlyArray<{ sku: string; qty: number }> }>;
+  buildBOM(
+    ctx: PlannerContext,
+    projectId: PlannerProjectId,
+  ): Promise<{ items: ReadonlyArray<{ sku: string; qty: number }> }>;
 }
 
 export interface CNCContract {
@@ -42,12 +56,19 @@ export interface CNCContract {
 
 export interface ExecutiveContract {
   readonly domain: "executive";
-  exportDrawings(ctx: PlannerContext, projectId: PlannerProjectId, format: "pdf" | "dwg" | "svg"): Promise<{ url: string }>;
+  exportDrawings(
+    ctx: PlannerContext,
+    projectId: PlannerProjectId,
+    format: "pdf" | "dwg" | "svg",
+  ): Promise<{ url: string }>;
 }
 
 export interface BudgetContract {
   readonly domain: "budget";
-  computeQuote(ctx: PlannerContext, projectId: PlannerProjectId): Promise<{ total: number; currency: string }>;
+  computeQuote(
+    ctx: PlannerContext,
+    projectId: PlannerProjectId,
+  ): Promise<{ total: number; currency: string }>;
 }
 
 export interface LibraryContract {
@@ -62,7 +83,10 @@ export interface RoomsContract {
 
 export interface MaterialsContract {
   readonly domain: "materials";
-  listMaterials(ctx: PlannerContext, filter?: { kind?: string }): Promise<ReadonlyArray<{ id: string; name: string }>>;
+  listMaterials(
+    ctx: PlannerContext,
+    filter?: { kind?: string },
+  ): Promise<ReadonlyArray<{ id: string; name: string }>>;
 }
 
 export interface HardwareContract {

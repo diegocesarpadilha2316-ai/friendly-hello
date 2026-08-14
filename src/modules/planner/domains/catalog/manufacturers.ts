@@ -73,10 +73,28 @@ export const CATALOG_MANUFACTURERS: Readonly<Record<CatalogManufacturerId, Catal
     name: "Dioris",
     country: "BR",
     categories: [
-      "armario", "balcao", "aereo", "torre", "closet", "painel",
-      "nicho", "cristaleira", "tampo", "ilha", "prateleira",
-      "porta", "gaveta", "divisoria", "ferragem", "led",
-      "perfil", "vidro", "espelho", "rodape", "pe", "acessorio",
+      "armario",
+      "balcao",
+      "aereo",
+      "torre",
+      "closet",
+      "painel",
+      "nicho",
+      "cristaleira",
+      "tampo",
+      "ilha",
+      "prateleira",
+      "porta",
+      "gaveta",
+      "divisoria",
+      "ferragem",
+      "led",
+      "perfil",
+      "vidro",
+      "espelho",
+      "rodape",
+      "pe",
+      "acessorio",
     ],
     premium: true,
   },
@@ -91,5 +109,7 @@ export function getManufacturer(id: CatalogManufacturerId): CatalogManufacturer 
 }
 
 export function manufacturersForCategory(cat: string): readonly CatalogManufacturer[] {
-  return listManufacturers().filter((m) => m.categories.includes(cat as CatalogManufacturer["categories"][number]));
+  return listManufacturers().filter((m) =>
+    m.categories.includes(cat as CatalogManufacturer["categories"][number]),
+  );
 }

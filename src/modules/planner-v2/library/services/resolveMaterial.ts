@@ -5,12 +5,9 @@ import { DEFAULT_MATERIAL_ID, MaterialRegistry } from "../registry/MaterialRegis
 export function resolveMaterial(
   materialId: string | undefined,
   overrides?: Record<string, string>,
-  key?: string
+  key?: string,
 ): MaterialDefinition {
   const overridden = key ? overrides?.[key] : undefined;
   const candidate = overridden ?? materialId ?? DEFAULT_MATERIAL_ID;
-  return (
-    MaterialRegistry.get(candidate) ??
-    MaterialRegistry.get(DEFAULT_MATERIAL_ID)!
-  );
+  return MaterialRegistry.get(candidate) ?? MaterialRegistry.get(DEFAULT_MATERIAL_ID)!;
 }

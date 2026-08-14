@@ -42,10 +42,16 @@ function validateSize(sizeBytes: number) {
 }
 function provider(id?: StorageProviderId) {
   const p = StorageRegistry.get(id ?? ASSETS_CONFIG.defaultProvider);
-  if (!p || !p.enabled) throw new StorageError(`Provider indisponível: ${id ?? "default"}`, "provider_error", id);
+  if (!p || !p.enabled)
+    throw new StorageError(`Provider indisponível: ${id ?? "default"}`, "provider_error", id);
   return p;
 }
-async function auditLog(ctx: Ctx, action: string, assetId: string | null, detail: Record<string, unknown>) {
+async function auditLog(
+  ctx: Ctx,
+  action: string,
+  assetId: string | null,
+  detail: Record<string, unknown>,
+) {
   if (!ASSETS_CONFIG.featureFlags.audit) return;
   await ctx.supabase.from("asset_audit").insert({
     company_id: ctx.tenantId,
@@ -59,7 +65,10 @@ async function ensureQuota(ctx: Ctx, extraBytes: number) {
   const { data } = await ctx.supabase.rpc("tenant_storage_bytes", { _company: ctx.tenantId });
   const used = typeof data === "number" ? data : 0;
   const { data: sub } = await ctx.supabase
-    .from("subscriptions").select("plan_key").eq("company_id", ctx.tenantId).maybeSingle();
+    .from("subscriptions")
+    .select("plan_key")
+    .eq("company_id", ctx.tenantId)
+    .maybeSingle();
   const planKey = (sub?.plan_key as keyof typeof ASSETS_CONFIG.quotaBytesPerPlan) ?? "free";
   const quota = ASSETS_CONFIG.quotaBytesPerPlan[planKey] ?? null;
   if (quota != null && used + extraBytes > quota) {
@@ -104,7 +113,8 @@ export const StorageManager = {
       })
       .select("*")
       .single();
-    if (assetErr || !assetRow) throw new StorageError(assetErr?.message ?? "asset insert failed", "provider_error");
+    if (assetErr || !assetRow)
+      throw new StorageError(assetErr?.message ?? "asset insert failed", "provider_error");
 
     const { data: jobRow, error: jobErr } = await ctx.supabase
       .from("upload_jobs")
@@ -122,20 +132,31 @@ export const StorageManager = {
       })
       .select("*")
       .single();
-    if (jobErr || !jobRow) throw new StorageError(jobErr?.message ?? "upload job insert failed", "provider_error");
+    if (jobErr || !jobRow)
+      throw new StorageError(jobErr?.message ?? "upload job insert failed", "provider_error");
 
     const upload = await p.createSignedUploadUrl({
-      bucket, objectKey, mime: input.mime, sizeBytes: input.sizeBytes,
+      bucket,
+      objectKey,
+      mime: input.mime,
+      sizeBytes: input.sizeBytes,
     });
 
-    await auditLog(ctx, "asset:upload_created", assetRow.id as string, { objectKey, size: input.sizeBytes });
+    await auditLog(ctx, "asset:upload_created", assetRow.id as string, {
+      objectKey,
+      size: input.sizeBytes,
+    });
 
     return { job: mapJob(jobRow), upload, asset: mapAsset(assetRow) };
   },
 
   async completeUpload(ctx: Ctx, jobId: string): Promise<Asset> {
     const { data: job } = await ctx.supabase
-      .from("upload_jobs").select("*").eq("id", jobId).eq("company_id", ctx.tenantId).maybeSingle();
+      .from("upload_jobs")
+      .select("*")
+      .eq("id", jobId)
+      .eq("company_id", ctx.tenantId)
+      .maybeSingle();
     if (!job) throw new StorageError("upload job not found", "not_found");
 
     const p = provider(job.provider as StorageProviderId);
@@ -144,59 +165,86 @@ export const StorageManager = {
 
     await ctx.supabase
       .from("upload_jobs")
-      .update({ status: "processing", bytes_uploaded: head.sizeBytes, updated_at: new Date().toISOString() })
+      .update({
+        status: "processing",
+        bytes_uploaded: head.sizeBytes,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", jobId);
 
     const { data: asset } = await ctx.supabase
       .from("assets")
       .update({ size_bytes: head.sizeBytes, updated_at: new Date().toISOString() })
-      .eq("id", job.asset_id).select("*").single();
+      .eq("id", job.asset_id)
+      .select("*")
+      .single();
     if (!asset) throw new StorageError("asset not found after upload", "not_found");
 
     await enqueueProcessing({ id: asset.id as string, kind: asset.kind as Asset["kind"] });
 
-    await ctx.supabase.from("upload_jobs")
-      .update({ status: "ready", updated_at: new Date().toISOString() }).eq("id", jobId);
+    await ctx.supabase
+      .from("upload_jobs")
+      .update({ status: "ready", updated_at: new Date().toISOString() })
+      .eq("id", jobId);
 
-    await auditLog(ctx, "asset:upload_completed", asset.id as string, { jobId, size: head.sizeBytes });
+    await auditLog(ctx, "asset:upload_completed", asset.id as string, {
+      jobId,
+      size: head.sizeBytes,
+    });
     return mapAsset(asset);
   },
 
   async signDownload(
-    ctx: Ctx, assetId: string,
+    ctx: Ctx,
+    assetId: string,
     opts: { downloadName?: string; expiresInSec?: number } = {},
   ): Promise<SignedUrl> {
     const { data: asset } = await ctx.supabase
-      .from("assets").select("*")
-      .eq("id", assetId).eq("company_id", ctx.tenantId).is("deleted_at", null).maybeSingle();
+      .from("assets")
+      .select("*")
+      .eq("id", assetId)
+      .eq("company_id", ctx.tenantId)
+      .is("deleted_at", null)
+      .maybeSingle();
     if (!asset) throw new StorageError("Asset não encontrado", "not_found");
     const p = provider(asset.provider as StorageProviderId);
     const signed = await p.createSignedDownloadUrl({
-      bucket: asset.bucket, objectKey: asset.object_key,
-      expiresInSec: opts.expiresInSec, downloadName: opts.downloadName ?? asset.filename,
+      bucket: asset.bucket,
+      objectKey: asset.object_key,
+      expiresInSec: opts.expiresInSec,
+      downloadName: opts.downloadName ?? asset.filename,
     });
     await auditLog(ctx, "asset:download_signed", assetId, { ttl: opts.expiresInSec ?? null });
     return signed;
   },
 
   async softDelete(ctx: Ctx, assetId: string): Promise<void> {
-    const { error } = await ctx.supabase.from("assets")
+    const { error } = await ctx.supabase
+      .from("assets")
       .update({ deleted_at: new Date().toISOString() })
-      .eq("id", assetId).eq("company_id", ctx.tenantId);
+      .eq("id", assetId)
+      .eq("company_id", ctx.tenantId);
     if (error) throw new StorageError(error.message, "provider_error");
     await auditLog(ctx, "asset:soft_delete", assetId, {});
   },
 
   async restore(ctx: Ctx, assetId: string): Promise<void> {
-    const { error } = await ctx.supabase.from("assets")
-      .update({ deleted_at: null }).eq("id", assetId).eq("company_id", ctx.tenantId);
+    const { error } = await ctx.supabase
+      .from("assets")
+      .update({ deleted_at: null })
+      .eq("id", assetId)
+      .eq("company_id", ctx.tenantId);
     if (error) throw new StorageError(error.message, "provider_error");
     await auditLog(ctx, "asset:restore", assetId, {});
   },
 
   async hardDelete(ctx: Ctx, assetId: string): Promise<void> {
     const { data: asset } = await ctx.supabase
-      .from("assets").select("*").eq("id", assetId).eq("company_id", ctx.tenantId).maybeSingle();
+      .from("assets")
+      .select("*")
+      .eq("id", assetId)
+      .eq("company_id", ctx.tenantId)
+      .maybeSingle();
     if (!asset) return;
     const p = provider(asset.provider as StorageProviderId);
     await p.deleteObject({ bucket: asset.bucket, objectKey: asset.object_key });
@@ -205,12 +253,19 @@ export const StorageManager = {
   },
 
   async stats(ctx: Ctx): Promise<StorageStats> {
-    const { data: used } = await ctx.supabase.rpc("tenant_storage_bytes", { _company: ctx.tenantId });
+    const { data: used } = await ctx.supabase.rpc("tenant_storage_bytes", {
+      _company: ctx.tenantId,
+    });
     const { count } = await ctx.supabase
-      .from("assets").select("id", { count: "exact", head: true })
-      .eq("company_id", ctx.tenantId).is("deleted_at", null);
+      .from("assets")
+      .select("id", { count: "exact", head: true })
+      .eq("company_id", ctx.tenantId)
+      .is("deleted_at", null);
     const { data: sub } = await ctx.supabase
-      .from("subscriptions").select("plan_key").eq("company_id", ctx.tenantId).maybeSingle();
+      .from("subscriptions")
+      .select("plan_key")
+      .eq("company_id", ctx.tenantId)
+      .maybeSingle();
     const planKey = (sub?.plan_key as keyof typeof ASSETS_CONFIG.quotaBytesPerPlan) ?? "free";
     return {
       usedBytes: typeof used === "number" ? used : 0,

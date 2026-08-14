@@ -6,7 +6,10 @@ export const Route = createFileRoute("/_public/sobre")({
   head: () => ({
     meta: [
       { title: "Sobre a Dioris — Inteligência que conecta tudo" },
-      { name: "description", content: "Missão, visão, valores e tecnologia por trás do ecossistema Dioris." },
+      {
+        name: "description",
+        content: "Missão, visão, valores e tecnologia por trás do ecossistema Dioris.",
+      },
       { property: "og:title", content: "Sobre a Dioris" },
       { property: "og:description", content: "Ecossistema modular com IA no núcleo." },
       { property: "og:type", content: "website" },
@@ -19,9 +22,21 @@ export const Route = createFileRoute("/_public/sobre")({
 
 function SobrePage() {
   const values = [
-    { icon: Target, t: "Missão", d: "Unificar operações empresariais em um único ecossistema inteligente e modular." },
-    { icon: Eye, t: "Visão", d: "Ser a plataforma padrão para empresas que operam com IA no núcleo." },
-    { icon: Heart, t: "Valores", d: "Excelência técnica, obsessão pelo cliente, transparência e velocidade." },
+    {
+      icon: Target,
+      t: "Missão",
+      d: "Unificar operações empresariais em um único ecossistema inteligente e modular.",
+    },
+    {
+      icon: Eye,
+      t: "Visão",
+      d: "Ser a plataforma padrão para empresas que operam com IA no núcleo.",
+    },
+    {
+      icon: Heart,
+      t: "Valores",
+      d: "Excelência técnica, obsessão pelo cliente, transparência e velocidade.",
+    },
   ];
   return (
     <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:px-8">
@@ -31,9 +46,9 @@ function SobrePage() {
           Somos um <GradientText>ecossistema de inteligência</GradientText>.
         </h1>
         <p className="mt-6 max-w-3xl text-lg text-foreground/70">
-          A Dioris não é um SaaS. É uma plataforma modular onde cada produto compartilha
-          um Core enterprise: autenticação, tenants, RBAC, IA, billing, storage,
-          eventos e observabilidade. Nasce moderna, escala como Big Tech.
+          A Dioris não é um SaaS. É uma plataforma modular onde cada produto compartilha um Core
+          enterprise: autenticação, tenants, RBAC, IA, billing, storage, eventos e observabilidade.
+          Nasce moderna, escala como Big Tech.
         </p>
       </Reveal>
       <div className="mt-16 grid gap-6 sm:grid-cols-3">
@@ -56,8 +71,20 @@ function SobrePage() {
             </h2>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            {["React 19", "TanStack Start", "Tailwind v4", "Vite 7", "Supabase", "PostgreSQL", "Edge Workers", "RLS por tenant"].map((s) => (
-              <div key={s} className="flex items-center gap-2 rounded-lg border border-white/10 bg-background/40 px-3 py-2 text-sm">
+            {[
+              "React 19",
+              "TanStack Start",
+              "Tailwind v4",
+              "Vite 7",
+              "Supabase",
+              "PostgreSQL",
+              "Edge Workers",
+              "RLS por tenant",
+            ].map((s) => (
+              <div
+                key={s}
+                className="flex items-center gap-2 rounded-lg border border-white/10 bg-background/40 px-3 py-2 text-sm"
+              >
                 <Cpu className="h-4 w-4 text-accent" /> {s}
               </div>
             ))}
@@ -75,8 +102,27 @@ function SobrePage() {
             observabilidade, backup e continuidade. Tudo compartilhado entre produtos.
           </p>
           <div className="mt-8 flex flex-wrap gap-2">
-            {["Auth", "Tenant", "RBAC", "Billing", "IA Gateway", "Storage", "Events", "Notifications", "Jobs", "Cache", "Security", "Observability", "Recovery", "SDK", "Marketplace"].map((m) => (
-              <span key={m} className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs">
+            {[
+              "Auth",
+              "Tenant",
+              "RBAC",
+              "Billing",
+              "IA Gateway",
+              "Storage",
+              "Events",
+              "Notifications",
+              "Jobs",
+              "Cache",
+              "Security",
+              "Observability",
+              "Recovery",
+              "SDK",
+              "Marketplace",
+            ].map((m) => (
+              <span
+                key={m}
+                className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs"
+              >
                 <Boxes className="h-3 w-3" /> {m}
               </span>
             ))}

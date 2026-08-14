@@ -122,7 +122,11 @@ export function autoLayout(input: AutoLayoutInput): AutoLayoutResult {
         const { box: b } = resolveInteriorBox(
           { ...cavity, x: round(cursorX), widthMm: dividerT },
           def,
-          { kind: "coordenada", at: [0, 0, 0], size: { widthMm: dividerT, heightMm: cavity.heightMm, depthMm: cavity.depthMm } },
+          {
+            kind: "coordenada",
+            at: [0, 0, 0],
+            size: { widthMm: dividerT, heightMm: cavity.heightMm, depthMm: cavity.depthMm },
+          },
         );
         placements.push({
           id: `${cavity.id}:div-${ci + 1}`,

@@ -326,8 +326,7 @@ export function usePlannerChat() {
       {
         id: uid(),
         role: "assistant",
-        content:
-          "",
+        content: "",
         createdAt: new Date().toISOString(),
         status: "done",
       },
@@ -571,9 +570,7 @@ export function usePlannerChat() {
   useEffect(() => {
     if (!planId || !planStatus) return;
     const terminal =
-      planStatus === "completed" ||
-      planStatus === "partially_completed" ||
-      planStatus === "failed";
+      planStatus === "completed" || planStatus === "partially_completed" || planStatus === "failed";
     if (!terminal) return;
     const key = `${planId}:${planStatus}`;
     if (announcedPlanRef.current === key) return;
@@ -603,7 +600,7 @@ export function usePlannerChat() {
     async (text: string) => {
       const trimmed = text.trim();
       if (!trimmed || state.status === "streaming" || state.status === "thinking") return;
-      
+
       // Limpar diagnóstico anterior ao iniciar nova conversa/comando
       // Trava síncrona — evita duplicação por duplo clique/Enter repetido.
       if (sendingRef.current) return;
@@ -885,9 +882,7 @@ export function usePlannerChat() {
                 toolCalls.push(call);
               }
             } else {
-
-
-            toolCalls.push({
+              toolCalls.push({
                 id: uid(),
                 name: chunk.toolName,
                 args: chunk.toolArgs ?? {},

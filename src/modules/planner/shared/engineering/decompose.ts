@@ -5,11 +5,7 @@
  */
 import type { Editor2DPrimitive } from "../editor-2d/types";
 import { findFinish } from "./materials";
-import type {
-  CompanyManufacturingRules,
-  FurniturePart,
-  FurnitureEngineeringParams,
-} from "./types";
+import type { CompanyManufacturingRules, FurniturePart, FurnitureEngineeringParams } from "./types";
 import { resolveEngineering } from "./parameters";
 
 function part(base: string, idx: number, data: Omit<FurniturePart, "id">): FurniturePart {
@@ -90,7 +86,10 @@ export function decomposeFurniture(
     for (let i = 0; i < eng.drawers; i++) {
       push("gaveta-frente", W - c * 2, gh, 1, { label: `frente ${i + 1}` });
       push("gaveta-lateral", D - 20, Math.max(80, gh - 20), 2, { label: `laterais ${i + 1}` });
-      push("gaveta-fundo", gw, Math.max(80, gh - 20), 1, { label: `fundo ${i + 1}`, thicknessMm: bt });
+      push("gaveta-fundo", gw, Math.max(80, gh - 20), 1, {
+        label: `fundo ${i + 1}`,
+        thicknessMm: bt,
+      });
       push("gaveta-base", gw, D - 20, 1, { label: `base ${i + 1}`, thicknessMm: bt });
     }
   }

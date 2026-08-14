@@ -76,9 +76,7 @@ export function commercialProposalHtml(budget: ProjectBudget, validityDays = 15)
     const label = CATEGORY_LABEL[item.category];
     groups.set(label, (groups.get(label) ?? 0) + (item.totalCost ?? 0));
   }
-  const scope = [...groups.keys()]
-    .map((label) => `<li>${label}</li>`)
-    .join("");
+  const scope = [...groups.keys()].map((label) => `<li>${label}</li>`).join("");
   return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
 <title>Proposta — ${budget.projectName}</title>
 <style>

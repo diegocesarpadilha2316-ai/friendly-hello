@@ -3,9 +3,11 @@ name: Marketplace adiado até pós-lançamento
 description: Nenhuma fase/migration/código novo de Marketplace, Loja de Plugins, Venda de Componentes/Bibliotecas/Temas/Materiais até existirem clientes pagantes no Planner
 type: constraint
 ---
+
 Foco absoluto: finalizar Dioris Planner (funcionalidades, Render, Vídeo, Produção, Biblioteca, IA, Configurador, auth, planos, créditos, Beta, lançamento).
 
 NÃO criar novas fases, prompts, migrations, rotas, domínios ou código de:
+
 - Marketplace / Marketplace Dioris
 - Loja de Plugins
 - Venda de Componentes, Bibliotecas, Temas, Materiais

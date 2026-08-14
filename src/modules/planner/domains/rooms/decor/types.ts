@@ -25,14 +25,7 @@ export type DecorStyleId =
 export type DecorLightTemperature = "quente" | "neutra" | "fria";
 export type DecorLightRole = "ambiente" | "tarefa" | "destaque" | "decorativa";
 export type DecorLightKind =
-  | "led"
-  | "spot"
-  | "fita_led"
-  | "pendente"
-  | "perfil_led"
-  | "abajur"
-  | "arandela"
-  | "plafon";
+  "led" | "spot" | "fita_led" | "pendente" | "perfil_led" | "abajur" | "arandela" | "plafon";
 
 export type DecorItemKind =
   | "sofa"
@@ -178,13 +171,7 @@ export interface DecorPlan {
   provider: string;
 }
 
-export type DecorSessionStatus =
-  | "idle"
-  | "analyzing"
-  | "review"
-  | "partial"
-  | "applied"
-  | "error";
+export type DecorSessionStatus = "idle" | "analyzing" | "review" | "partial" | "applied" | "error";
 
 export interface DecorSession {
   id: string;

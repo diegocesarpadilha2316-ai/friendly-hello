@@ -25,13 +25,7 @@ export type VideoCameraMoveKind =
   | "detail"
   | "auto";
 
-export type VideoEasing =
-  | "linear"
-  | "ease-in"
-  | "ease-out"
-  | "ease-in-out"
-  | "cinematic"
-  | "snap";
+export type VideoEasing = "linear" | "ease-in" | "ease-out" | "ease-in-out" | "cinematic" | "snap";
 
 export interface VideoCameraMove {
   readonly id: string;
@@ -73,7 +67,8 @@ export interface VideoAnimation {
 }
 
 // ————— Timeline / keyframes —————
-export type VideoTrackKind = "camera" | "animation" | "lighting" | "narration" | "music" | "subtitle" | "branding";
+export type VideoTrackKind =
+  "camera" | "animation" | "lighting" | "narration" | "music" | "subtitle" | "branding";
 
 export interface VideoKeyframe {
   readonly id: string;
@@ -114,14 +109,7 @@ export interface VideoSequence {
 }
 
 export type VideoTransitionKind =
-  | "cut"
-  | "fade"
-  | "dissolve"
-  | "wipe"
-  | "slide"
-  | "zoom"
-  | "iris"
-  | "morph";
+  "cut" | "fade" | "dissolve" | "wipe" | "slide" | "zoom" | "iris" | "morph";
 
 export interface VideoTransition {
   readonly kind: VideoTransitionKind;
@@ -138,13 +126,7 @@ export interface VideoTimeline {
 
 // ————— Cenas pré-prontas —————
 export type VideoSceneKind =
-  | "apresentacao"
-  | "cliente"
-  | "marketing"
-  | "instagram"
-  | "reels"
-  | "youtube"
-  | "catalogo";
+  "apresentacao" | "cliente" | "marketing" | "instagram" | "reels" | "youtube" | "catalogo";
 
 export interface VideoScenePreset {
   readonly id: string;
@@ -182,12 +164,7 @@ export interface VideoExportFormat {
 }
 
 // ————— Presets de qualidade de vídeo —————
-export type VideoPresetId =
-  | "rascunho"
-  | "social"
-  | "cliente"
-  | "marketing"
-  | "cinematografico";
+export type VideoPresetId = "rascunho" | "social" | "cliente" | "marketing" | "cinematografico";
 
 export interface VideoPreset {
   readonly id: VideoPresetId;
@@ -219,7 +196,8 @@ export interface VideoEngine {
   readonly available: boolean;
   /** exige integração externa? (true em todos os premium desta fase) */
   readonly requiresIntegration: boolean;
-  readonly integrationVendor?: "runway" | "pika" | "luma" | "kling" | "openai" | "gemini" | "custom";
+  readonly integrationVendor?:
+    "runway" | "pika" | "luma" | "kling" | "openai" | "gemini" | "custom";
   /** capacidades declarativas — usadas pela UI para exibir/ocultar controles */
   readonly capabilities: {
     readonly cameraMoves: boolean;
@@ -249,7 +227,8 @@ export interface VideoBranding {
 
 // ————— Narração / trilha —————
 export type VideoVoiceProvider = "elevenlabs" | "openai" | "google" | "azure" | "custom";
-export type VideoMusicMood = "corporativo" | "cinema" | "lounge" | "minimal" | "energetico" | "elegante";
+export type VideoMusicMood =
+  "corporativo" | "cinema" | "lounge" | "minimal" | "energetico" | "elegante";
 
 export interface VideoNarration {
   readonly enabled: boolean;

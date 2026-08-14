@@ -126,7 +126,11 @@ function isRetractable(motion: ConstructionMotion): boolean {
 }
 
 /** A peça `cover` está à frente da peça `inner`? */
-function inFrontOf(cover: ConstructionPiece, inner: ConstructionPiece, cfg: InterlockConfig): boolean {
+function inFrontOf(
+  cover: ConstructionPiece,
+  inner: ConstructionPiece,
+  cfg: InterlockConfig,
+): boolean {
   const coverFront = cover.box.z + cover.box.depth;
   const innerFront = inner.box.z + inner.box.depth;
   return coverFront > innerFront - cfg.depthToleranceMm;

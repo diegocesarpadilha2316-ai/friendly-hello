@@ -8,13 +8,20 @@ export interface OpeningCollisionWarning {
   message: string;
 }
 
-type Bounds = { minX: number; maxX: number; minY: number; maxY: number; minZ: number; maxZ: number };
+type Bounds = {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+  minZ: number;
+  maxZ: number;
+};
 
 function boundsForPart(instance: FurnitureInstance, part: PartDefinition, opening = false): Bounds {
   const x = instance.positionMm.x + part.positionMm.x;
   const y = instance.positionMm.y + part.positionMm.y;
   let z = instance.positionMm.z + part.positionMm.z;
-  let width = part.dimensionsMm.width;
+  const width = part.dimensionsMm.width;
   let height = part.dimensionsMm.height;
   let depth = part.dimensionsMm.depth;
 
@@ -44,12 +51,30 @@ function boundsForPart(instance: FurnitureInstance, part: PartDefinition, openin
 }
 
 function intersects(a: Bounds, b: Bounds) {
-  return a.minX < b.maxX && a.maxX > b.minX && a.minY < b.maxY && a.maxY > b.minY && a.minZ < b.maxZ && a.maxZ > b.minZ;
+  return (
+    a.minX < b.maxX &&
+    a.maxX > b.minX &&
+    a.minY < b.maxY &&
+    a.maxY > b.minY &&
+    a.minZ < b.maxZ &&
+    a.maxZ > b.minZ
+  );
 }
 
-export function validateOpeningClearance(instance: FurnitureInstance, others: FurnitureInstance[], partId?: string): OpeningCollisionWarning[] {
-  const requestedGroupId = partId ? instance.parts.find((part) => part.id === partId)?.groupId ?? partId : undefined;
-  const openingParts = instance.parts.filter((part) => part.interactive && part.interactive.type !== "none" && (!requestedGroupId || part.id === partId || part.groupId === requestedGroupId));
+export function validateOpeningClearance(
+  instance: FurnitureInstance,
+  others: FurnitureInstance[],
+  partId?: string,
+): OpeningCollisionWarning[] {
+  const requestedGroupId = partId
+    ? (instance.parts.find((part) => part.id === partId)?.groupId ?? partId)
+    : undefined;
+  const openingParts = instance.parts.filter(
+    (part) =>
+      part.interactive &&
+      part.interactive.type !== "none" &&
+      (!requestedGroupId || part.id === partId || part.groupId === requestedGroupId),
+  );
   const warnings: OpeningCollisionWarning[] = [];
   const checkedGroups = new Set<string>();
 
@@ -59,7 +84,9 @@ export function validateOpeningClearance(instance: FurnitureInstance, others: Fu
     checkedGroups.add(groupKey);
     const openingBounds = boundsForPart(instance, part, true);
     for (const other of others) {
-      for (const otherPart of other.parts.filter((candidate) => candidate.volumeType !== "opening")) {
+      for (const otherPart of other.parts.filter(
+        (candidate) => candidate.volumeType !== "opening",
+      )) {
         if (!intersects(openingBounds, boundsForPart(other, otherPart))) continue;
         warnings.push({
           partId: part.id,

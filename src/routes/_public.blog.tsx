@@ -11,7 +11,10 @@ export const Route = createFileRoute("/_public/blog")({
   head: () => ({
     meta: [
       { title: "Blog — Dioris" },
-      { name: "description", content: "Novidades, guias, casos de uso e bastidores do ecossistema Dioris." },
+      {
+        name: "description",
+        content: "Novidades, guias, casos de uso e bastidores do ecossistema Dioris.",
+      },
       { property: "og:title", content: "Blog Dioris" },
       { property: "og:description", content: "Novidades e insights." },
       { property: "og:url", content: "/blog" },
@@ -51,18 +54,32 @@ function Page() {
       <div className="mt-10 flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[240px]">
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar artigos..." className="w-full rounded-full border border-white/10 bg-white/5 py-2.5 pl-11 pr-4 text-sm outline-none placeholder:text-muted-foreground focus:border-primary/60" />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Buscar artigos..."
+            className="w-full rounded-full border border-white/10 bg-white/5 py-2.5 pl-11 pr-4 text-sm outline-none placeholder:text-muted-foreground focus:border-primary/60"
+          />
         </div>
         <div className="flex flex-wrap gap-1">
           {cats.map((c) => (
-            <button key={c} onClick={() => setCat(c)} className={`rounded-full px-3 py-1.5 text-xs font-medium ${cat === c ? "bg-white/15 text-foreground" : "text-foreground/60 hover:bg-white/5"}`}>{c}</button>
+            <button
+              key={c}
+              onClick={() => setCat(c)}
+              className={`rounded-full px-3 py-1.5 text-xs font-medium ${cat === c ? "bg-white/15 text-foreground" : "text-foreground/60 hover:bg-white/5"}`}
+            >
+              {c}
+            </button>
           ))}
         </div>
       </div>
       {isLoading ? (
         <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-72 animate-pulse rounded-2xl border border-white/10 bg-white/[0.02]" />
+            <div
+              key={i}
+              className="h-72 animate-pulse rounded-2xl border border-white/10 bg-white/[0.02]"
+            />
           ))}
         </div>
       ) : filtered.length === 0 ? (
@@ -82,14 +99,23 @@ function Page() {
                 >
                   <div className="aspect-video bg-gradient-to-br from-primary/30 via-secondary/20 to-accent/30">
                     {p.coverUrl ? (
-                      <img src={p.coverUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
+                      <img
+                        src={p.coverUrl}
+                        alt=""
+                        loading="lazy"
+                        className="h-full w-full object-cover"
+                      />
                     ) : null}
                   </div>
                   <div className="p-6">
                     <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5">{p.category}</span>
+                      <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5">
+                        {p.category}
+                      </span>
                       {date && (
-                        <span className="inline-flex items-center gap-1"><Calendar className="h-3 w-3" /> {date}</span>
+                        <span className="inline-flex items-center gap-1">
+                          <Calendar className="h-3 w-3" /> {date}
+                        </span>
                       )}
                       <span>· {p.readMinutes} min</span>
                     </div>

@@ -29,7 +29,19 @@ interface RoomBuilderState {
   setReferenceImage: (dataUrl: string | null, name?: string | null) => void;
   applyReferencePreset: () => void;
   resetRoom: () => void;
-  restoreRoom: (room: Omit<RoomBuilderState, "setDimension" | "addOpening" | "updateOpening" | "removeOpening" | "setReferenceImage" | "applyReferencePreset" | "resetRoom" | "restoreRoom">) => void;
+  restoreRoom: (
+    room: Omit<
+      RoomBuilderState,
+      | "setDimension"
+      | "addOpening"
+      | "updateOpening"
+      | "removeOpening"
+      | "setReferenceImage"
+      | "applyReferencePreset"
+      | "resetRoom"
+      | "restoreRoom"
+    >,
+  ) => void;
 }
 
 const defaultOpenings: OpeningSpec[] = [
@@ -40,7 +52,7 @@ const defaultOpenings: OpeningSpec[] = [
     offset: -1050,
     width: 1250,
     height: 950,
-    sill: 1050
+    sill: 1050,
   },
   {
     id: "door-left",
@@ -49,8 +61,8 @@ const defaultOpenings: OpeningSpec[] = [
     offset: 750,
     width: 900,
     height: 2100,
-    sill: 0
-  }
+    sill: 0,
+  },
 ];
 
 export const useRoomBuilderStore = create<RoomBuilderState>((set) => ({
@@ -75,20 +87,20 @@ export const useRoomBuilderStore = create<RoomBuilderState>((set) => ({
           : { id, type, wall, offset: 0, width: 1200, height: 950, sill: 1050 };
 
       return {
-        openings: [...state.openings.filter((item) => item.wall !== wall), opening]
+        openings: [...state.openings.filter((item) => item.wall !== wall), opening],
       };
     }),
 
   updateOpening: (id, patch) =>
     set((state) => ({
       openings: state.openings.map((opening) =>
-        opening.id === id ? { ...opening, ...patch } : opening
-      )
+        opening.id === id ? { ...opening, ...patch } : opening,
+      ),
     })),
 
   removeOpening: (id) =>
     set((state) => ({
-      openings: state.openings.filter((opening) => opening.id !== id)
+      openings: state.openings.filter((opening) => opening.id !== id),
     })),
 
   setReferenceImage: (referenceImage, referenceName = null) =>
@@ -108,7 +120,7 @@ export const useRoomBuilderStore = create<RoomBuilderState>((set) => ({
           offset: -250,
           width: 1150,
           height: 1150,
-          sill: 920
+          sill: 920,
         },
         {
           id: "reference-door-left",
@@ -117,9 +129,9 @@ export const useRoomBuilderStore = create<RoomBuilderState>((set) => ({
           offset: 700,
           width: 900,
           height: 2100,
-          sill: 0
-        }
-      ]
+          sill: 0,
+        },
+      ],
     }),
 
   resetRoom: () =>
@@ -128,7 +140,7 @@ export const useRoomBuilderStore = create<RoomBuilderState>((set) => ({
       depth: 3800,
       height: 2700,
       openings: defaultOpenings,
-      referenceStyle: "natural"
+      referenceStyle: "natural",
     }),
 
   restoreRoom: (room) =>
@@ -140,6 +152,6 @@ export const useRoomBuilderStore = create<RoomBuilderState>((set) => ({
       openings: room.openings,
       referenceImage: room.referenceImage,
       referenceName: room.referenceName,
-      referenceStyle: room.referenceStyle
-    })
+      referenceStyle: room.referenceStyle,
+    }),
 }));

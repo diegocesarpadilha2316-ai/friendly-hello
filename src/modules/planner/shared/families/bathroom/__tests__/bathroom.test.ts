@@ -46,7 +46,11 @@ describe("banheiro — módulos básicos", () => {
 
 describe("banheiro — instalação", () => {
   it("suspenso mantém todas as peças acima do piso", () => {
-    const r = buildBathroomModule({ kind: "gabinete-suspenso", install: "suspenso", floorGapMm: 300 });
+    const r = buildBathroomModule({
+      kind: "gabinete-suspenso",
+      install: "suspenso",
+      floorGapMm: 300,
+    });
     expect(r.layout.floorGapMm).toBe(300);
     expect(Math.min(...r.assembly.pieces.map((p) => p.box.y))).toBeGreaterThanOrEqual(300);
     expect(r.assembly.hardware.some((h) => h.id === "ancoragem")).toBe(true);
@@ -86,7 +90,12 @@ describe("banheiro — cubas e volumes hidráulicos", () => {
   });
 
   it("nenhuma peça invade volume hidráulico", () => {
-    for (const kind of ["cuba-central", "cuba-deslocada", "cuba-dupla", "gabinete-gavetas"] as const) {
+    for (const kind of [
+      "cuba-central",
+      "cuba-deslocada",
+      "cuba-dupla",
+      "gabinete-gavetas",
+    ] as const) {
       const r = buildBathroomModule({ kind, widthMm: 1200 });
       expect(bathroomReservationConflicts(r)).toEqual([]);
     }
@@ -154,7 +163,9 @@ describe("banheiro — gaveta em U", () => {
       allowUDrawer: false,
       sink: { type: "embutir", siphonMm: 260 },
     });
-    expect(r.decisions.some((d) => ["gaveta-vira-porta", "gaveta-reduzida"].includes(d.action))).toBe(true);
+    expect(
+      r.decisions.some((d) => ["gaveta-vira-porta", "gaveta-reduzida"].includes(d.action)),
+    ).toBe(true);
   });
 });
 
@@ -185,13 +196,17 @@ describe("banheiro — acabamentos, espelhos e tapa-vãos", () => {
     const portas = porta.assembly.pieces.filter((p) => p.partKind === "porta");
     expect(portas).toHaveLength(2);
     expect(portas.every((p) => p.substrate === "espelho")).toBe(true);
-    expect(porta.assembly.motions.filter((m) => portas.some((d) => d.id === m.pieceId))).toHaveLength(2);
+    expect(
+      porta.assembly.motions.filter((m) => portas.some((d) => d.id === m.pieceId)),
+    ).toHaveLength(2);
   });
 
   it("nenhum acabamento recebe rig em nenhum módulo", () => {
     for (const kind of BATHROOM_MODULE_KINDS) {
       const r = buildBathroomModule({ kind });
-      const finish = r.assembly.pieces.filter((p) => p.partKind === "acabamento" || p.partKind === "tapa-vao");
+      const finish = r.assembly.pieces.filter(
+        (p) => p.partKind === "acabamento" || p.partKind === "tapa-vao",
+      );
       for (const f of finish) {
         expect(r.assembly.motions.some((m) => m.pieceId === f.id)).toBe(false);
       }
@@ -228,20 +243,30 @@ describe("banheiro — layout engine e presets", () => {
   });
 
   it("entre paredes gera tapa-vãos reais e nenhuma sobra", () => {
-    const r = planBathroomLayout({ widthMm: 1300, preset: "gabinete-entre-paredes", betweenWalls: true });
+    const r = planBathroomLayout({
+      widthMm: 1300,
+      preset: "gabinete-entre-paredes",
+      betweenWalls: true,
+    });
     expect(r.fillers.length).toBeGreaterThan(0);
     expect(r.leftoverMm).toBe(0);
     for (const f of r.fillers) expect(f.widthMm).toBeGreaterThan(0);
   });
 
   it("não transforma toda sobra em tapa-vão", () => {
-    const r = planBathroomLayout({ widthMm: 2000, modules: [{ kind: "gabinete-1-porta", widthMm: 600 }] });
+    const r = planBathroomLayout({
+      widthMm: 2000,
+      modules: [{ kind: "gabinete-1-porta", widthMm: 600 }],
+    });
     expect(r.fillers).toHaveLength(0);
     expect(r.leftoverMm).toBeGreaterThan(0);
   });
 
   it("fallback mínimo seguro quando nada cabe", () => {
-    const r = planBathroomLayout({ widthMm: 320, modules: [{ kind: "cuba-dupla", widthMm: 1600 }] });
+    const r = planBathroomLayout({
+      widthMm: 320,
+      modules: [{ kind: "cuba-dupla", widthMm: 1600 }],
+    });
     expect(r.source).toBe("fallback");
     expect(r.placements.length).toBeGreaterThan(0);
   });
@@ -275,7 +300,12 @@ describe("banheiro — cenários de validação", () => {
   });
 
   it("3. banheiro 1200 mm com gaveta em U e cuba deslocada", () => {
-    const r = buildBathroomModule({ kind: "cuba-deslocada", widthMm: 1200, drawers: 2, opening: "gaveta" });
+    const r = buildBathroomModule({
+      kind: "cuba-deslocada",
+      widthMm: 1200,
+      drawers: 2,
+      opening: "gaveta",
+    });
     expect(bathroomReservationConflicts(r)).toEqual([]);
   });
 
@@ -288,8 +318,18 @@ describe("banheiro — cenários de validação", () => {
   });
 
   it("8. módulos internos se adaptam à cuba deslocada", () => {
-    const centro = buildBathroomModule({ kind: "cuba-central", widthMm: 1200, drawers: 2, opening: "gaveta" });
-    const desloc = buildBathroomModule({ kind: "cuba-deslocada", widthMm: 1200, drawers: 2, opening: "gaveta" });
+    const centro = buildBathroomModule({
+      kind: "cuba-central",
+      widthMm: 1200,
+      drawers: 2,
+      opening: "gaveta",
+    });
+    const desloc = buildBathroomModule({
+      kind: "cuba-deslocada",
+      widthMm: 1200,
+      drawers: 2,
+      opening: "gaveta",
+    });
     const boxOf = (r: typeof centro) =>
       r.assembly.pieces.filter((p) => p.partKind === "gaveta-lateral").map((p) => p.box.x);
     expect(boxOf(centro)).not.toEqual(boxOf(desloc));
@@ -301,9 +341,9 @@ describe("banheiro — legado e roteamento", () => {
     for (const s of ["banheiro", "lavabo", "vanity", "espelheira", "gabinete-de-banheiro"]) {
       expect(resolveFurnitureRenderer({ subtype: s }).renderer).toBe("bathroom");
     }
-    expect(resolveFurnitureRenderer({ subtype: "x", catalogItemId: "cat-bathroom-vanity" }).renderer).toBe(
-      "bathroom",
-    );
+    expect(
+      resolveFurnitureRenderer({ subtype: "x", catalogItemId: "cat-bathroom-vanity" }).renderer,
+    ).toBe("bathroom");
   });
 
   it("não rouba roteamento de outras famílias", () => {
@@ -316,7 +356,12 @@ describe("banheiro — legado e roteamento", () => {
     const legacy = {
       subtype: "gabinete-banheiro",
       widthMm: 1000,
-      params: { "mod:doors": 2, "mod:cuba": "embutir", "eng:tampo": "granito", "mod:instalacao": "suspenso" },
+      params: {
+        "mod:doors": 2,
+        "mod:cuba": "embutir",
+        "eng:tampo": "granito",
+        "mod:instalacao": "suspenso",
+      },
     };
     expect(isBathroomFurniture(legacy)).toBe(true);
     const input = bathroomFromLegacy(legacy);
@@ -329,7 +374,12 @@ describe("banheiro — legado e roteamento", () => {
   });
 
   it("persistência é determinística (mesma ficha → mesma montagem)", () => {
-    const input = { kind: "cuba-deslocada" as const, widthMm: 1200, drawers: 2, opening: "gaveta" as const };
+    const input = {
+      kind: "cuba-deslocada" as const,
+      widthMm: 1200,
+      drawers: 2,
+      opening: "gaveta" as const,
+    };
     const a = buildBathroomModule(input);
     const b = buildBathroomModule(buildBathroomModule(input).spec);
     expect(b.assembly.pieces.map((p) => `${p.id}:${p.box.x}:${p.box.y}`)).toEqual(
@@ -341,7 +391,9 @@ describe("banheiro — legado e roteamento", () => {
 describe("banheiro — não-regressão nas famílias já aprovadas", () => {
   it("cozinha, roupeiro e gaveteiro continuam montando", () => {
     expect(buildKitchenModule({ kind: "balcao" }).assembly.pieces.length).toBeGreaterThan(0);
-    expect(buildWardrobe({ widthMm: 2400, heightMm: 2400, depthMm: 600 }).assembly.pieces.length).toBeGreaterThan(0);
+    expect(
+      buildWardrobe({ widthMm: 2400, heightMm: 2400, depthMm: 600 }).assembly.pieces.length,
+    ).toBeGreaterThan(0);
     expect(buildDresser({ widthMm: 900 }).assembly.pieces.length).toBeGreaterThan(0);
   });
 
@@ -406,7 +458,9 @@ describe("banheiro — auditoria de viewport (não-regressão)", () => {
       drawers: 3,
       sink: { position: "esquerda" },
     });
-    expect(r.assembly.pieces.filter((p) => p.partKind === "gaveta-frente").length).toBeGreaterThan(0);
+    expect(r.assembly.pieces.filter((p) => p.partKind === "gaveta-frente").length).toBeGreaterThan(
+      0,
+    );
     expect(r.assembly.motions.filter((m) => m.kind === "slide").length).toBeGreaterThan(0);
     expect(r.assembly.motions.filter((m) => m.kind === "hinge").length).toBeGreaterThan(0);
   });

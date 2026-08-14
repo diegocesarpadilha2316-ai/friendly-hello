@@ -102,7 +102,8 @@ export function extractFacts(
     memory?.materials[0]?.value ??
     project?.briefing?.style ??
     null;
-  const wall = t.match(/\bparede\s+(esquerda|direita|frontal|fundo|norte|sul|leste|oeste)\b/)?.[1] ?? null;
+  const wall =
+    t.match(/\bparede\s+(esquerda|direita|frontal|fundo|norte|sul|leste|oeste)\b/)?.[1] ?? null;
   return {
     widthMm: dims?.width ?? null,
     depthMm: dims?.depth ?? null,
@@ -175,7 +176,12 @@ export function analyzeRequirements(input: {
     }
   }
 
-  if (kind === "plano_intermediario" && REFERS_TO_WALL.test(message) && !facts.wall && !facts.hasSelection) {
+  if (
+    kind === "plano_intermediario" &&
+    REFERS_TO_WALL.test(message) &&
+    !facts.wall &&
+    !facts.hasSelection
+  ) {
     missing.push({
       key: "parede",
       question: "Em qual parede? (esquerda, direita, frontal ou fundo)",

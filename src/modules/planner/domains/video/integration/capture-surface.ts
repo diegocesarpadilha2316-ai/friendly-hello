@@ -34,7 +34,8 @@ export async function captureFrame(
   spec: { format?: "png" | "jpeg" | "webp"; quality?: number } = {},
 ): Promise<Blob | null> {
   if (typeof document === "undefined") return null;
-  const mime = spec.format === "jpeg" ? "image/jpeg" : spec.format === "webp" ? "image/webp" : "image/png";
+  const mime =
+    spec.format === "jpeg" ? "image/jpeg" : spec.format === "webp" ? "image/webp" : "image/png";
   return new Promise((resolve) => {
     canvas.toBlob((b) => resolve(b), mime, spec.quality ?? 0.92);
   });

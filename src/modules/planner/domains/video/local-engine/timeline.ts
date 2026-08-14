@@ -45,8 +45,12 @@ export function makeClip(input: {
     loops: input.loops ?? 0,
     pauseAfterSec: input.pauseAfterSec ?? 0,
     animationIds: input.animationIds ?? [],
-    transitionIn: input.transitionInKind ? transition(input.transitionInKind) : DEFAULT_TRANSITION_IN,
-    transitionOut: input.transitionOutKind ? transition(input.transitionOutKind) : DEFAULT_TRANSITION_OUT,
+    transitionIn: input.transitionInKind
+      ? transition(input.transitionInKind)
+      : DEFAULT_TRANSITION_IN,
+    transitionOut: input.transitionOutKind
+      ? transition(input.transitionOutKind)
+      : DEFAULT_TRANSITION_OUT,
   };
 }
 
@@ -56,7 +60,10 @@ export function buildTimeline(input: {
   tracks?: readonly LocalTrack[];
 }): LocalTimeline {
   const fps = input.fps ?? DEFAULT_FPS;
-  const dur = input.clips.reduce((acc, c) => Math.max(acc, c.startSec + c.durationSec + c.pauseAfterSec), 0);
+  const dur = input.clips.reduce(
+    (acc, c) => Math.max(acc, c.startSec + c.durationSec + c.pauseAfterSec),
+    0,
+  );
   return { fps, durationSec: dur, clips: input.clips, tracks: input.tracks ?? [] };
 }
 
@@ -65,8 +72,20 @@ export function defaultTimeline(): LocalTimeline {
     fps: DEFAULT_FPS,
     clips: [
       makeClip({ id: "clip.1", moveId: "orbit", startSec: 0, durationSec: 8 }),
-      makeClip({ id: "clip.2", moveId: "fly-through", startSec: 8, durationSec: 6, transitionInKind: "fade" }),
-      makeClip({ id: "clip.3", moveId: "close", startSec: 14, durationSec: 4, transitionInKind: "zoom" }),
+      makeClip({
+        id: "clip.2",
+        moveId: "fly-through",
+        startSec: 8,
+        durationSec: 6,
+        transitionInKind: "fade",
+      }),
+      makeClip({
+        id: "clip.3",
+        moveId: "close",
+        startSec: 14,
+        durationSec: 4,
+        transitionInKind: "zoom",
+      }),
     ],
   });
 }

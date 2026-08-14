@@ -7,11 +7,7 @@
  */
 import { useCallback, useMemo, useRef, useState } from "react";
 import { usePlannerEditor } from "@/modules/planner/shared/state/editor-context";
-import {
-  applySuggestionsToProject,
-  removeAppliedNodes,
-  type AppliedNode,
-} from "../adapter";
+import { applySuggestionsToProject, removeAppliedNodes, type AppliedNode } from "../adapter";
 import { DEFAULT_DECORATOR_PROVIDER_ID, getDecoratorProvider } from "../providers";
 import { DEFAULT_DECOR_STYLE_ID } from "../styles";
 import type {

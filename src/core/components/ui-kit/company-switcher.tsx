@@ -23,9 +23,7 @@ export function CompanySwitcher({ onCreateNew, className }: CompanySwitcherProps
   const { companies, activeCompany, setActive, loading } = tenant;
 
   if (loading && !activeCompany) {
-    return (
-      <div className={cn("h-9 w-56 animate-pulse rounded-md bg-muted", className)} />
-    );
+    return <div className={cn("h-9 w-56 animate-pulse rounded-md bg-muted", className)} />;
   }
 
   return (
@@ -37,11 +35,7 @@ export function CompanySwitcher({ onCreateNew, className }: CompanySwitcherProps
         )}
       >
         {activeCompany?.logo_url ? (
-          <img
-            src={activeCompany.logo_url}
-            alt=""
-            className="h-5 w-5 rounded-sm object-cover"
-          />
+          <img src={activeCompany.logo_url} alt="" className="h-5 w-5 rounded-sm object-cover" />
         ) : (
           <Building2 className="h-4 w-4 text-muted-foreground" />
         )}
@@ -59,9 +53,7 @@ export function CompanySwitcher({ onCreateNew, className }: CompanySwitcherProps
         <DropdownMenuLabel>Empresas</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {companies.length === 0 ? (
-          <div className="px-2 py-3 text-xs text-muted-foreground">
-            Nenhuma empresa disponível.
-          </div>
+          <div className="px-2 py-3 text-xs text-muted-foreground">Nenhuma empresa disponível.</div>
         ) : (
           companies.map((c) => (
             <DropdownMenuItem

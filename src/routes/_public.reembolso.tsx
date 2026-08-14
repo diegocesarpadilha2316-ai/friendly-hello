@@ -7,8 +7,7 @@ export const Route = createFileRoute("/_public/reembolso")({
       { title: "Política de reembolso — Dioris" },
       {
         name: "description",
-        content:
-          "Regras de reembolso e cancelamento de planos e créditos na plataforma Dioris.",
+        content: "Regras de reembolso e cancelamento de planos e créditos na plataforma Dioris.",
       },
       { property: "og:title", content: "Política de reembolso Dioris" },
       {

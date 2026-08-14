@@ -13,14 +13,29 @@ export const DEFAULT_REALTIME_CAMERA: RealtimeCameraState = {
 };
 
 const FOV_BY_MODE: Record<RealtimeNavigationMode, number> = {
-  walk: 60, fps: 70, orbit: 45, drone: 65, cliente: 50, apresentacao: 40, livre: 55,
+  walk: 60,
+  fps: 70,
+  orbit: 45,
+  drone: 65,
+  cliente: 50,
+  apresentacao: 40,
+  livre: 55,
 };
 
 const EYE_BY_MODE: Record<RealtimeNavigationMode, number> = {
-  walk: 1650, fps: 1700, orbit: 1650, drone: 3500, cliente: 1650, apresentacao: 1650, livre: 1650,
+  walk: 1650,
+  fps: 1700,
+  orbit: 1650,
+  drone: 3500,
+  cliente: 1650,
+  apresentacao: 1650,
+  livre: 1650,
 };
 
-export function switchCameraMode(cam: RealtimeCameraState, mode: RealtimeNavigationMode): RealtimeCameraState {
+export function switchCameraMode(
+  cam: RealtimeCameraState,
+  mode: RealtimeNavigationMode,
+): RealtimeCameraState {
   return {
     ...cam,
     mode,
@@ -41,9 +56,13 @@ export function panCamera(cam: RealtimeCameraState, deltaMm: RealtimeVec3): Real
   };
 }
 
-export function rotateCamera(cam: RealtimeCameraState, deltaYawDeg: number, deltaPitchDeg: number): RealtimeCameraState {
+export function rotateCamera(
+  cam: RealtimeCameraState,
+  deltaYawDeg: number,
+  deltaPitchDeg: number,
+): RealtimeCameraState {
   const pitch = Math.max(-89, Math.min(89, cam.pitchDeg + deltaPitchDeg));
-  const yaw = ((cam.yawDeg + deltaYawDeg) % 360 + 360) % 360;
+  const yaw = (((cam.yawDeg + deltaYawDeg) % 360) + 360) % 360;
   return { ...cam, yawDeg: yaw, pitchDeg: pitch };
 }
 

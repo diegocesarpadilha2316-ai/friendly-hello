@@ -30,7 +30,6 @@ export function bootstrapLibrary(): void {
   ModuleRegistry.registerMany([...genericModules, ...kitchenModules]);
 }
 
-
 bootstrapLibrary();
 
 export * from "./contracts/FamilyDefinition";
@@ -55,6 +54,9 @@ export { resolveHardware } from "./services/resolveHardware";
 export { serializeModule } from "./services/serializeModule";
 export { buildAssemblyReport } from "./services/assemblyReport";
 export { buildJoineryReport } from "./services/joineryReport";
-export { buildNestingPlanFromPartDefinitions, toNestingPartsFromPartDefinitions } from "./services/nestingPlan";
+export {
+  buildNestingPlanFromPartDefinitions,
+  toNestingPartsFromPartDefinitions,
+} from "./services/nestingPlan";
 export type { JoineryReport } from "./services/joineryReport";
 export type { AssemblyReport, AssemblyStep } from "./services/assemblyReport";

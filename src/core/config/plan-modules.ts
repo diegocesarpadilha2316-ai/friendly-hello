@@ -5,36 +5,14 @@ import type { AppModule } from "./app";
  * Consumido pelo Workspace para exibir apenas os módulos assinados
  * pelo cliente e revelar os demais como "Disponível ao fazer upgrade".
  */
-export type PlanKey =
-  | "free"
-  | "starter"
-  | "pro"
-  | "business"
-  | "enterprise";
+export type PlanKey = "free" | "starter" | "pro" | "business" | "enterprise";
 
 const PLAN_MODULES: Record<PlanKey, readonly AppModule[]> = {
   free: [],
   starter: ["planner"],
   pro: ["planner", "crm", "finance", "ai"],
-  business: [
-    "planner",
-    "sites",
-    "systems",
-    "crm",
-    "finance",
-    "marketplace",
-    "ai",
-  ],
-  enterprise: [
-    "planner",
-    "sites",
-    "systems",
-    "crm",
-    "finance",
-    "marketplace",
-    "automation",
-    "ai",
-  ],
+  business: ["planner", "sites", "systems", "crm", "finance", "marketplace", "ai"],
+  enterprise: ["planner", "sites", "systems", "crm", "finance", "marketplace", "automation", "ai"],
 };
 
 const PLAN_ORDER: PlanKey[] = ["free", "starter", "pro", "business", "enterprise"];
@@ -44,10 +22,7 @@ export function getPlanModules(plan: string | null | undefined): readonly AppMod
   return PLAN_MODULES[key] ?? PLAN_MODULES.free;
 }
 
-export function hasModuleInPlan(
-  plan: string | null | undefined,
-  moduleId: AppModule,
-): boolean {
+export function hasModuleInPlan(plan: string | null | undefined, moduleId: AppModule): boolean {
   return getPlanModules(plan).includes(moduleId);
 }
 

@@ -27,8 +27,10 @@ const scenario = (s: (typeof SIZES)[number]) =>
   });
 
 /** Interpenetração em mm nos três eixos (0 = apenas encosto). */
-function overlap(a: { x: number; y: number; z: number; width: number; height: number; depth: number },
-                 b: typeof a) {
+function overlap(
+  a: { x: number; y: number; z: number; width: number; height: number; depth: number },
+  b: typeof a,
+) {
   const eps = 0.5;
   const ox = Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x);
   const oy = Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y);

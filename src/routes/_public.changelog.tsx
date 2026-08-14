@@ -6,7 +6,11 @@ export const Route = createFileRoute("/_public/changelog")({
   head: () => ({
     meta: [
       { title: "Changelog — Dioris" },
-      { name: "description", content: "Histórico público de releases da Dioris Hub: novos módulos, melhorias de IA, correções e evolução da plataforma." },
+      {
+        name: "description",
+        content:
+          "Histórico público de releases da Dioris Hub: novos módulos, melhorias de IA, correções e evolução da plataforma.",
+      },
       { property: "og:title", content: "Changelog Dioris" },
       { property: "og:description", content: "Histórico público de releases da Dioris." },
       { property: "og:type", content: "website" },
@@ -21,12 +25,36 @@ export const Route = createFileRoute("/_public/changelog")({
 type Kind = "feature" | "improvement" | "security" | "fix" | "design" | "release";
 
 const KIND_META: Record<Kind, { label: string; icon: typeof Sparkles; className: string }> = {
-  feature: { label: "Novo", icon: Sparkles, className: "bg-primary/15 text-primary ring-primary/30" },
-  improvement: { label: "Melhoria", icon: Zap, className: "bg-accent/15 text-accent ring-accent/30" },
-  security: { label: "Segurança", icon: ShieldCheck, className: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30" },
-  fix: { label: "Correção", icon: Wrench, className: "bg-amber-500/15 text-amber-300 ring-amber-500/30" },
-  design: { label: "Design", icon: Palette, className: "bg-fuchsia-500/15 text-fuchsia-300 ring-fuchsia-500/30" },
-  release: { label: "Release", icon: Package, className: "bg-sky-500/15 text-sky-300 ring-sky-500/30" },
+  feature: {
+    label: "Novo",
+    icon: Sparkles,
+    className: "bg-primary/15 text-primary ring-primary/30",
+  },
+  improvement: {
+    label: "Melhoria",
+    icon: Zap,
+    className: "bg-accent/15 text-accent ring-accent/30",
+  },
+  security: {
+    label: "Segurança",
+    icon: ShieldCheck,
+    className: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
+  },
+  fix: {
+    label: "Correção",
+    icon: Wrench,
+    className: "bg-amber-500/15 text-amber-300 ring-amber-500/30",
+  },
+  design: {
+    label: "Design",
+    icon: Palette,
+    className: "bg-fuchsia-500/15 text-fuchsia-300 ring-fuchsia-500/30",
+  },
+  release: {
+    label: "Release",
+    icon: Package,
+    className: "bg-sky-500/15 text-sky-300 ring-sky-500/30",
+  },
 };
 
 interface Entry {
@@ -42,10 +70,22 @@ const releases: Entry[] = [
     date: "25 de julho de 2026",
     title: "Release Candidate Enterprise",
     items: [
-      { kind: "release", text: "20 domínios do Planner auditados e classificados aptos para Beta Fechado e Produção." },
-      { kind: "security", text: "Trust Center público lançado em /seguranca com pilares de criptografia, RLS e LGPD." },
-      { kind: "improvement", text: "Página de status /status agora consulta health real de DB, Auth e Storage a cada 30s." },
-      { kind: "design", text: "Landing pública ganhou depoimentos, FAQ e refinos de glassmorfismo." },
+      {
+        kind: "release",
+        text: "20 domínios do Planner auditados e classificados aptos para Beta Fechado e Produção.",
+      },
+      {
+        kind: "security",
+        text: "Trust Center público lançado em /seguranca com pilares de criptografia, RLS e LGPD.",
+      },
+      {
+        kind: "improvement",
+        text: "Página de status /status agora consulta health real de DB, Auth e Storage a cada 30s.",
+      },
+      {
+        kind: "design",
+        text: "Landing pública ganhou depoimentos, FAQ e refinos de glassmorfismo.",
+      },
     ],
   },
   {
@@ -53,10 +93,22 @@ const releases: Entry[] = [
     date: "22 de julho de 2026",
     title: "Cobrança transparente + Onboarding",
     items: [
-      { kind: "feature", text: "Checkout transparente via Mercado Pago (Pix) integrado ao Workspace." },
-      { kind: "feature", text: "Onboarding automático — nova conta entra direto no plano Free com 100 créditos." },
-      { kind: "improvement", text: "Aba Pagamentos em /workspace/creditos com histórico real de pedidos." },
-      { kind: "security", text: "Migration 042/043 com RLS multi-tenant para provedores e pedidos de pagamento." },
+      {
+        kind: "feature",
+        text: "Checkout transparente via Mercado Pago (Pix) integrado ao Workspace.",
+      },
+      {
+        kind: "feature",
+        text: "Onboarding automático — nova conta entra direto no plano Free com 100 créditos.",
+      },
+      {
+        kind: "improvement",
+        text: "Aba Pagamentos em /workspace/creditos com histórico real de pedidos.",
+      },
+      {
+        kind: "security",
+        text: "Migration 042/043 com RLS multi-tenant para provedores e pedidos de pagamento.",
+      },
     ],
   },
   {
@@ -64,9 +116,18 @@ const releases: Entry[] = [
     date: "12 de julho de 2026",
     title: "IA Enterprise multi-modelo",
     items: [
-      { kind: "feature", text: "AI Studio com 12 abas, streaming, tool calling (37+ ferramentas) e memória de sessão." },
-      { kind: "feature", text: "Provedores DeepSeek, OpenAI, Gemini, Claude, Mistral e OSS via gateway central." },
-      { kind: "improvement", text: "Prompt builder componível e Ctrl+Space para invocar IA em qualquer contexto do Editor." },
+      {
+        kind: "feature",
+        text: "AI Studio com 12 abas, streaming, tool calling (37+ ferramentas) e memória de sessão.",
+      },
+      {
+        kind: "feature",
+        text: "Provedores DeepSeek, OpenAI, Gemini, Claude, Mistral e OSS via gateway central.",
+      },
+      {
+        kind: "improvement",
+        text: "Prompt builder componível e Ctrl+Space para invocar IA em qualquer contexto do Editor.",
+      },
     ],
   },
   {
@@ -74,9 +135,15 @@ const releases: Entry[] = [
     date: "28 de junho de 2026",
     title: "Produção Inteligente + CNC",
     items: [
-      { kind: "feature", text: "Production Studio Dark First: lista de peças, corte, plano de corte, ferragens e etiquetas." },
+      {
+        kind: "feature",
+        text: "Production Studio Dark First: lista de peças, corte, plano de corte, ferragens e etiquetas.",
+      },
       { kind: "feature", text: "Motor de fabricação CNC com suporte a 9 marcas de máquinas." },
-      { kind: "improvement", text: "PDF executivo com capa dark, sumário numerado e cabeçalho refinado." },
+      {
+        kind: "improvement",
+        text: "PDF executivo com capa dark, sumário numerado e cabeçalho refinado.",
+      },
     ],
   },
   {
@@ -84,8 +151,14 @@ const releases: Entry[] = [
     date: "10 de junho de 2026",
     title: "Biblioteca Inteligente 5.000+",
     items: [
-      { kind: "feature", text: "Catálogo paramétrico com 18 fabricantes premium (Duratex, Arauco, Blum, etc.)." },
-      { kind: "feature", text: "Drag & drop 2D/3D sincronizado, decomposição automática em peças e ferragens." },
+      {
+        kind: "feature",
+        text: "Catálogo paramétrico com 18 fabricantes premium (Duratex, Arauco, Blum, etc.).",
+      },
+      {
+        kind: "feature",
+        text: "Drag & drop 2D/3D sincronizado, decomposição automática em peças e ferragens.",
+      },
       { kind: "improvement", text: "Marketplace de componentes e importador CAD/BIM." },
     ],
   },
@@ -94,8 +167,14 @@ const releases: Entry[] = [
     date: "05 de maio de 2026",
     title: "Workspace do Cliente",
     items: [
-      { kind: "release", text: "Camada 2 concluída: Workspace com empresa, equipe, créditos, IA e módulos." },
-      { kind: "design", text: "Estética Cinematic com glassmorfismo aplicada em toda área pública." },
+      {
+        kind: "release",
+        text: "Camada 2 concluída: Workspace com empresa, equipe, créditos, IA e módulos.",
+      },
+      {
+        kind: "design",
+        text: "Estética Cinematic com glassmorfismo aplicada em toda área pública.",
+      },
     ],
   },
   {
@@ -103,8 +182,14 @@ const releases: Entry[] = [
     date: "10 de abril de 2026",
     title: "Fundação Enterprise",
     items: [
-      { kind: "release", text: "Admin Center com 16+ domínios administrativos, Command Palette e KPIs globais." },
-      { kind: "feature", text: "Core único: Auth, Tenant, RBAC, IA Gateway, Billing, Storage, Observabilidade." },
+      {
+        kind: "release",
+        text: "Admin Center com 16+ domínios administrativos, Command Palette e KPIs globais.",
+      },
+      {
+        kind: "feature",
+        text: "Core único: Auth, Tenant, RBAC, IA Gateway, Billing, Storage, Observabilidade.",
+      },
     ],
   },
 ];
@@ -118,7 +203,8 @@ function Page() {
           Changelog <GradientText>Dioris</GradientText>.
         </h1>
         <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-          O que enviamos, quando enviamos e por quê. Transparência total sobre a evolução da plataforma.
+          O que enviamos, quando enviamos e por quê. Transparência total sobre a evolução da
+          plataforma.
         </p>
       </Reveal>
 
@@ -142,7 +228,9 @@ function Page() {
                       const Icon = meta.icon;
                       return (
                         <li key={i} className="flex items-start gap-3">
-                          <span className={`mt-0.5 inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ring-1 ${meta.className}`}>
+                          <span
+                            className={`mt-0.5 inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ring-1 ${meta.className}`}
+                          >
                             <Icon className="h-3 w-3" />
                             {meta.label}
                           </span>

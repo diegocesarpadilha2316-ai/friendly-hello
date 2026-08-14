@@ -161,7 +161,14 @@ export const drawer: ConstructionComponent<DrawerParams> = {
         partKind: "gaveta-frente",
         label: "Frente integrada",
         box: inset
-          ? box(1.5, 1.5, round(p.depthMm - frontThk), round(p.widthMm - 3), round(p.heightMm - 3), frontThk)
+          ? box(
+              1.5,
+              1.5,
+              round(p.depthMm - frontThk),
+              round(p.widthMm - 3),
+              round(p.heightMm - 3),
+              frontThk,
+            )
           : box(-sideClearance, -10, boxD, p.widthMm, p.heightMm, frontThk),
         thicknessMm: 18,
         grain: p.grain,

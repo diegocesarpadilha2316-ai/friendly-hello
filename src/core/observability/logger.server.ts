@@ -41,7 +41,7 @@ export async function logEvent(entry: LogInput): Promise<void> {
     });
   } catch (err) {
     // Fallback: console. Nunca propaga.
-    // eslint-disable-next-line no-console
+
     console.error("[observability] logEvent failed", err);
   }
 }
@@ -103,7 +103,6 @@ export const Logger = {
         status: data.status ?? null,
       });
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error("[observability] Logger.write failed", err);
     }
   },
@@ -144,7 +143,6 @@ export async function auditEvent(input: {
       metadata: input.metadata ?? {},
     });
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.error("[observability] auditEvent failed", err);
   }
 }

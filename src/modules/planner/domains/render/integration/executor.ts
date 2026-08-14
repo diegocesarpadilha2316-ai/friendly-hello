@@ -10,7 +10,9 @@ import type { RenderJob } from "../types";
 import type { RealJobSnapshot } from "./types";
 
 export function jobSnapshot(job: RenderJob): RealJobSnapshot {
-  const started = job.startedAt ? new Date(job.startedAt).getTime() : new Date(job.createdAt).getTime();
+  const started = job.startedAt
+    ? new Date(job.startedAt).getTime()
+    : new Date(job.createdAt).getTime();
   const finished = job.finishedAt ? new Date(job.finishedAt).getTime() : Date.now();
   return {
     job,

@@ -7,9 +7,7 @@ import type { SecurityPolicy } from "./types";
 export const DEFAULT_CSP =
   "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' https:; frame-ancestors 'none';";
 
-export function buildSecurityHeaders(
-  policy?: Partial<SecurityPolicy>,
-): Record<string, string> {
+export function buildSecurityHeaders(policy?: Partial<SecurityPolicy>): Record<string, string> {
   const csp = policy?.csp ?? DEFAULT_CSP;
   const hsts = policy?.hstsMaxAge ?? 31_536_000;
   const frame = policy?.frameOptions ?? "DENY";

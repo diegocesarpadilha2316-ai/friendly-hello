@@ -19,10 +19,22 @@ export interface RealVideoExportResult {
   readonly url: string;
 }
 
-export function exportBlob(blob: Blob, container: LocalVideoContainer, filename?: string): RealVideoExportResult {
+export function exportBlob(
+  blob: Blob,
+  container: LocalVideoContainer,
+  filename?: string,
+): RealVideoExportResult {
   const mime = MIME[container];
   const ext =
-    container === "png-sequence" ? "zip" : container === "mov" ? "mov" : container === "webm" ? "webm" : container === "gif" ? "gif" : "mp4";
+    container === "png-sequence"
+      ? "zip"
+      : container === "mov"
+        ? "mov"
+        : container === "webm"
+          ? "webm"
+          : container === "gif"
+            ? "gif"
+            : "mp4";
   const url = URL.createObjectURL(blob);
   return {
     filename: filename ?? `dioris-video-${Date.now()}.${ext}`,

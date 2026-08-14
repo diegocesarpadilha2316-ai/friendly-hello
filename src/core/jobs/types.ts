@@ -2,14 +2,7 @@
 export type JsonRecord = Record<string, any>;
 
 export type JobStatus =
-  | "queued"
-  | "scheduled"
-  | "running"
-  | "paused"
-  | "completed"
-  | "failed"
-  | "canceled"
-  | "dead";
+  "queued" | "scheduled" | "running" | "paused" | "completed" | "failed" | "canceled" | "dead";
 
 export interface Job {
   id: string;

@@ -23,7 +23,6 @@ export function PlannerV2Layout() {
 
       <MobileUI />
 
-
       <footer className="statusbar">
         <span className="ready">● READY</span>
         <span>FPS 60</span>

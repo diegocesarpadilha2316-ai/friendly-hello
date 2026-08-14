@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { Send, Sparkles } from "lucide-react";
-import type {
-  ChatMessage,
-  FurnitureSelection,
-  RightPanelTab
-} from "./planner-ui";
+import type { ChatMessage, FurnitureSelection, RightPanelTab } from "./planner-ui";
 
 interface Props {
   activeTab: RightPanelTab;
@@ -21,7 +17,7 @@ export function CopilotPanel({
   selectedFurniture,
   onTabChange,
   onSendMessage,
-  onUpdateSelected
+  onUpdateSelected,
 }: Props) {
   const [draft, setDraft] = useState("");
 
@@ -62,9 +58,7 @@ export function CopilotPanel({
               {messages.map((message) => (
                 <article
                   key={message.id}
-                  className={`dioris-message ${
-                    message.role === "user" ? "is-user" : ""
-                  }`}
+                  className={`dioris-message ${message.role === "user" ? "is-user" : ""}`}
                 >
                   {message.role === "assistant" && <Sparkles size={15} />}
                   <div>
@@ -109,9 +103,7 @@ export function CopilotPanel({
               <input
                 type="number"
                 value={selectedFurniture?.widthMm ?? 0}
-                onChange={(event) =>
-                  onUpdateSelected?.({ widthMm: Number(event.target.value) })
-                }
+                onChange={(event) => onUpdateSelected?.({ widthMm: Number(event.target.value) })}
               />
             </label>
             <label>
@@ -119,9 +111,7 @@ export function CopilotPanel({
               <input
                 type="number"
                 value={selectedFurniture?.heightMm ?? 0}
-                onChange={(event) =>
-                  onUpdateSelected?.({ heightMm: Number(event.target.value) })
-                }
+                onChange={(event) => onUpdateSelected?.({ heightMm: Number(event.target.value) })}
               />
             </label>
             <label>
@@ -129,9 +119,7 @@ export function CopilotPanel({
               <input
                 type="number"
                 value={selectedFurniture?.depthMm ?? 0}
-                onChange={(event) =>
-                  onUpdateSelected?.({ depthMm: Number(event.target.value) })
-                }
+                onChange={(event) => onUpdateSelected?.({ depthMm: Number(event.target.value) })}
               />
             </label>
             <label>
@@ -139,9 +127,7 @@ export function CopilotPanel({
               <input
                 type="number"
                 value={selectedFurniture?.positionX ?? 0}
-                onChange={(event) =>
-                  onUpdateSelected?.({ positionX: Number(event.target.value) })
-                }
+                onChange={(event) => onUpdateSelected?.({ positionX: Number(event.target.value) })}
               />
             </label>
             <label>
@@ -149,9 +135,7 @@ export function CopilotPanel({
               <input
                 type="number"
                 value={selectedFurniture?.positionZ ?? 0}
-                onChange={(event) =>
-                  onUpdateSelected?.({ positionZ: Number(event.target.value) })
-                }
+                onChange={(event) => onUpdateSelected?.({ positionZ: Number(event.target.value) })}
               />
             </label>
             <label>
@@ -175,7 +159,7 @@ export function CopilotPanel({
               ["Grafite", "#514b48"],
               ["Pedra", "#d4cbbd"],
               ["Metal", "#202020"],
-              ["Vidro", "linear-gradient(135deg,#bfe4ed88,#ffffff22)"]
+              ["Vidro", "linear-gradient(135deg,#bfe4ed88,#ffffff22)"],
             ].map(([name, color]) => (
               <button
                 type="button"

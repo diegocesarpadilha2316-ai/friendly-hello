@@ -40,13 +40,48 @@ export const Route = createFileRoute("/_public/")({
 });
 
 const ecosystem = [
-  { icon: Layers, name: "Planner", badge: "Em breve", desc: "Projeto 3D, catálogo, orçamentos, produção e CNC com IA." },
-  { icon: Wand2, name: "Criador Universal", badge: "Em breve", desc: "Crie sites, sistemas, apps, ERPs e portais com IA." },
-  { icon: Users, name: "CRM", badge: "Em desenvolvimento", desc: "Clientes, pipeline, oportunidades e automações." },
-  { icon: Wallet, name: "Financeiro", badge: "Em desenvolvimento", desc: "Faturamento, contas, fluxo de caixa e DRE." },
-  { icon: Store, name: "Marketplace", badge: "Em desenvolvimento", desc: "Plugins, integrações e extensões oficiais." },
-  { icon: Workflow, name: "Automação", badge: "Em desenvolvimento", desc: "Workflows visuais, cron, webhooks e eventos." },
-  { icon: Brain, name: "IA Gateway", badge: "Ativo", desc: "Multi-modelo, multi-provedor, créditos unificados." },
+  {
+    icon: Layers,
+    name: "Planner",
+    badge: "Em breve",
+    desc: "Projeto 3D, catálogo, orçamentos, produção e CNC com IA.",
+  },
+  {
+    icon: Wand2,
+    name: "Criador Universal",
+    badge: "Em breve",
+    desc: "Crie sites, sistemas, apps, ERPs e portais com IA.",
+  },
+  {
+    icon: Users,
+    name: "CRM",
+    badge: "Em desenvolvimento",
+    desc: "Clientes, pipeline, oportunidades e automações.",
+  },
+  {
+    icon: Wallet,
+    name: "Financeiro",
+    badge: "Em desenvolvimento",
+    desc: "Faturamento, contas, fluxo de caixa e DRE.",
+  },
+  {
+    icon: Store,
+    name: "Marketplace",
+    badge: "Em desenvolvimento",
+    desc: "Plugins, integrações e extensões oficiais.",
+  },
+  {
+    icon: Workflow,
+    name: "Automação",
+    badge: "Em desenvolvimento",
+    desc: "Workflows visuais, cron, webhooks e eventos.",
+  },
+  {
+    icon: Brain,
+    name: "IA Gateway",
+    badge: "Ativo",
+    desc: "Multi-modelo, multi-provedor, créditos unificados.",
+  },
 ];
 
 const stats = [
@@ -85,8 +120,7 @@ function Hero() {
             backgroundImage:
               "linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)",
             backgroundSize: "72px 72px",
-            maskImage:
-              "radial-gradient(ellipse at center, black 40%, transparent 75%)",
+            maskImage: "radial-gradient(ellipse at center, black 40%, transparent 75%)",
           }}
         />
       </div>
@@ -189,7 +223,11 @@ function FloatingCubes() {
     { className: "left-[4%] top-[14%] h-24 w-24 sm:h-40 sm:w-40", rot: "-14deg", delay: "0s" },
     { className: "right-[5%] top-[10%] h-28 w-28 sm:h-44 sm:w-44", rot: "18deg", delay: "1.4s" },
     { className: "left-[7%] bottom-[10%] h-20 w-20 sm:h-36 sm:w-36", rot: "10deg", delay: "2.2s" },
-    { className: "right-[6%] bottom-[14%] h-24 w-24 sm:h-40 sm:w-40", rot: "-20deg", delay: "0.7s" },
+    {
+      className: "right-[6%] bottom-[14%] h-24 w-24 sm:h-40 sm:w-40",
+      rot: "-20deg",
+      delay: "0.7s",
+    },
   ];
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 -z-[5] hidden sm:block">
@@ -237,8 +275,8 @@ function Ecosystem() {
               Um núcleo. <GradientText>Infinitas capacidades.</GradientText>
             </h2>
             <p className="mt-4 text-lg text-foreground/70">
-              Cada módulo se conecta ao Core Dioris — autenticação, tenants, RBAC, IA,
-              billing, storage, eventos e observabilidade — sem duplicar código.
+              Cada módulo se conecta ao Core Dioris — autenticação, tenants, RBAC, IA, billing,
+              storage, eventos e observabilidade — sem duplicar código.
             </p>
           </div>
         </Reveal>
@@ -268,12 +306,36 @@ function Ecosystem() {
 
 function Pillars() {
   const items = [
-    { icon: Brain, t: "IA nativa", d: "Gateway central multi-provedor com créditos unificados por tenant." },
-    { icon: Boxes, t: "Modular", d: "Ative apenas os módulos que sua empresa precisa. Escale sem atrito." },
-    { icon: Shield, t: "Enterprise", d: "RLS por tenant, MFA, auditoria, backups e continuidade de negócio." },
-    { icon: Zap, t: "Real-time", d: "Eventos, notificações, jobs e webhooks — tudo integrado ao Core." },
-    { icon: Globe, t: "Multiempresa", d: "Isolamento total por tenant com convites, papéis e permissões." },
-    { icon: Workflow, t: "Extensível", d: "SDK, plugins e API pública para estender o ecossistema." },
+    {
+      icon: Brain,
+      t: "IA nativa",
+      d: "Gateway central multi-provedor com créditos unificados por tenant.",
+    },
+    {
+      icon: Boxes,
+      t: "Modular",
+      d: "Ative apenas os módulos que sua empresa precisa. Escale sem atrito.",
+    },
+    {
+      icon: Shield,
+      t: "Enterprise",
+      d: "RLS por tenant, MFA, auditoria, backups e continuidade de negócio.",
+    },
+    {
+      icon: Zap,
+      t: "Real-time",
+      d: "Eventos, notificações, jobs e webhooks — tudo integrado ao Core.",
+    },
+    {
+      icon: Globe,
+      t: "Multiempresa",
+      d: "Isolamento total por tenant com convites, papéis e permissões.",
+    },
+    {
+      icon: Workflow,
+      t: "Extensível",
+      d: "SDK, plugins e API pública para estender o ecossistema.",
+    },
   ];
   return (
     <section className="border-t border-white/10 bg-white/[0.02] px-4 py-24 sm:px-6 lg:px-8">
@@ -314,11 +376,17 @@ function ProductShowcase() {
                 Projete, orce e produza em <GradientText>um só lugar</GradientText>.
               </h3>
               <p className="mt-4 text-foreground/70">
-                Render 3D, catálogo, orçamentos, produção, CNC e ambientes — orquestrados
-                por IA. Um copiloto que acompanha do briefing à fábrica.
+                Render 3D, catálogo, orçamentos, produção, CNC e ambientes — orquestrados por IA. Um
+                copiloto que acompanha do briefing à fábrica.
               </p>
               <ul className="mt-6 space-y-2 text-sm">
-                {["Renderização em tempo real", "Catálogo modular", "IA de projeto", "Orçamento automático", "Integração CNC"].map((f) => (
+                {[
+                  "Renderização em tempo real",
+                  "Catálogo modular",
+                  "IA de projeto",
+                  "Orçamento automático",
+                  "Integração CNC",
+                ].map((f) => (
                   <li key={f} className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-accent" /> {f}
                   </li>
@@ -333,8 +401,13 @@ function ProductShowcase() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               {["Render", "Catálogo", "IA", "Orçamento", "Produção", "CNC"].map((tag, i) => (
-                <div key={tag} className="rounded-xl border border-white/10 bg-background/40 p-4 backdrop-blur">
-                  <div className="text-xs uppercase tracking-wider text-muted-foreground">Módulo {i + 1}</div>
+                <div
+                  key={tag}
+                  className="rounded-xl border border-white/10 bg-background/40 p-4 backdrop-blur"
+                >
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                    Módulo {i + 1}
+                  </div>
                   <div className="mt-2 text-lg font-bold">{tag}</div>
                 </div>
               ))}
@@ -345,8 +418,13 @@ function ProductShowcase() {
           <div className="grid gap-10 rounded-3xl border border-white/10 bg-gradient-to-br from-accent/10 via-secondary/5 to-primary/10 p-8 lg:grid-cols-2 lg:p-14">
             <div className="order-2 grid grid-cols-2 gap-3 lg:order-1">
               {["Sites", "Apps", "Sistemas", "Landing", "Dashboards", "Portais"].map((tag) => (
-                <div key={tag} className="rounded-xl border border-white/10 bg-background/40 p-4 backdrop-blur">
-                  <div className="text-xs uppercase tracking-wider text-muted-foreground">Gerado por IA</div>
+                <div
+                  key={tag}
+                  className="rounded-xl border border-white/10 bg-background/40 p-4 backdrop-blur"
+                >
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                    Gerado por IA
+                  </div>
                   <div className="mt-2 text-lg font-bold">{tag}</div>
                 </div>
               ))}
@@ -357,8 +435,8 @@ function ProductShowcase() {
                 Descreva. A IA <GradientText>constrói</GradientText>.
               </h3>
               <p className="mt-4 text-foreground/70">
-                Sites, sistemas, apps, ERPs, CRMs e portais — criados por IA, integrados
-                ao Core Dioris e prontos para produção.
+                Sites, sistemas, apps, ERPs, CRMs e portais — criados por IA, integrados ao Core
+                Dioris e prontos para produção.
               </p>
               <Link
                 to="/produtos/criador"

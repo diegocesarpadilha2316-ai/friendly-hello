@@ -1,8 +1,14 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  DataTable, EmptyState, MetricCard, PageContainer, PageHeader,
-  StatusBadge, type DataTableColumn, type StatusTone,
+  DataTable,
+  EmptyState,
+  MetricCard,
+  PageContainer,
+  PageHeader,
+  StatusBadge,
+  type DataTableColumn,
+  type StatusTone,
 } from "@/core/components/ui-kit";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,8 +32,14 @@ import {
 } from "@/core/cicd";
 
 type TabKey =
-  | "dashboard" | "pipelines" | "builds" | "deploys"
-  | "releases" | "artifacts" | "environments" | "history";
+  | "dashboard"
+  | "pipelines"
+  | "builds"
+  | "deploys"
+  | "releases"
+  | "artifacts"
+  | "environments"
+  | "history";
 
 const TABS: readonly { key: TabKey; label: string }[] = [
   { key: "dashboard", label: "Dashboard" },
@@ -65,21 +77,35 @@ export const Route = createFileRoute("/_authenticated/cicd")({
 
 function buildTone(s: BuildStatus): StatusTone {
   switch (s) {
-    case "passed": return "success";
-    case "failed": return "danger";
-    case "cancelled": case "skipped": return "warning";
-    case "running": case "queued": return "info";
-    default: return "neutral";
+    case "passed":
+      return "success";
+    case "failed":
+      return "danger";
+    case "cancelled":
+    case "skipped":
+      return "warning";
+    case "running":
+    case "queued":
+      return "info";
+    default:
+      return "neutral";
   }
 }
 
 function deployTone(s: DeployStatus): StatusTone {
   switch (s) {
-    case "succeeded": return "success";
-    case "failed": return "danger";
-    case "cancelled": case "rolled_back": return "warning";
-    case "running": case "queued": return "info";
-    default: return "neutral";
+    case "succeeded":
+      return "success";
+    case "failed":
+      return "danger";
+    case "cancelled":
+    case "rolled_back":
+      return "warning";
+    case "running":
+    case "queued":
+      return "info";
+    default:
+      return "neutral";
   }
 }
 
@@ -104,9 +130,7 @@ function CicdPage() {
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`px-3 py-2 text-sm ${
-              tab === t.key
-                ? "border-b-2 border-primary font-semibold"
-                : "text-muted-foreground"
+              tab === t.key ? "border-b-2 border-primary font-semibold" : "text-muted-foreground"
             }`}
           >
             {t.label}
@@ -114,9 +138,7 @@ function CicdPage() {
         ))}
       </div>
 
-      {tab === "dashboard" && (
-        <DashboardTab data={data} approvals={pendingApprovals} />
-      )}
+      {tab === "dashboard" && <DashboardTab data={data} approvals={pendingApprovals} />}
       {tab === "pipelines" && <PipelinesTab pipelines={data.pipelines} />}
       {tab === "builds" && <BuildsTab builds={data.builds} />}
       {tab === "deploys" && <DeploysTab deploys={data.deploys} />}
@@ -129,15 +151,24 @@ function CicdPage() {
 }
 
 function DashboardTab({
-  data, approvals,
+  data,
+  approvals,
 }: {
   data: ReturnType<typeof useCicdSnapshot>["data"];
   approvals: Approval[];
 }) {
   const decide = useDecideApproval();
   const approvalCols: DataTableColumn<Approval>[] = [
-    { id: "deploy", header: "Deploy", cell: (r) => <code className="text-xs">{r.deployId.slice(0, 8)}</code> },
-    { id: "status", header: "Status", cell: (r) => <StatusBadge tone="warning">{r.status}</StatusBadge> },
+    {
+      id: "deploy",
+      header: "Deploy",
+      cell: (r) => <code className="text-xs">{r.deployId.slice(0, 8)}</code>,
+    },
+    {
+      id: "status",
+      header: "Status",
+      cell: (r) => <StatusBadge tone="warning">{r.status}</StatusBadge>,
+    },
     { id: "at", header: "Solicitado", cell: (r) => new Date(r.createdAt).toLocaleString() },
     {
       id: "actions",
@@ -147,7 +178,11 @@ function DashboardTab({
           <Button size="sm" onClick={() => decide.mutate({ id: r.id, status: "approved" })}>
             Aprovar
           </Button>
-          <Button size="sm" variant="ghost" onClick={() => decide.mutate({ id: r.id, status: "rejected" })}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => decide.mutate({ id: r.id, status: "rejected" })}
+          >
             Rejeitar
           </Button>
         </div>
@@ -184,11 +219,16 @@ function PipelinesTab({ pipelines }: { pipelines: readonly Pipeline[] }) {
   const cols: DataTableColumn<Pipeline>[] = [
     { id: "slug", header: "Slug", cell: (r) => <code className="text-xs">{r.slug}</code> },
     { id: "name", header: "Nome", cell: (r) => r.name },
-    { id: "provider", header: "Provider", cell: (r) => <StatusBadge tone="info">{r.provider}</StatusBadge> },
+    {
+      id: "provider",
+      header: "Provider",
+      cell: (r) => <StatusBadge tone="info">{r.provider}</StatusBadge>,
+    },
     { id: "module", header: "Módulo", cell: (r) => r.module ?? "—" },
     { id: "stages", header: "Estágios", cell: (r) => r.stages.length },
     {
-      id: "enabled", header: "Status",
+      id: "enabled",
+      header: "Status",
       cell: (r) => (
         <StatusBadge tone={r.enabled ? "success" : "neutral"}>
           {r.enabled ? "ativa" : "desativada"}
@@ -196,7 +236,8 @@ function PipelinesTab({ pipelines }: { pipelines: readonly Pipeline[] }) {
       ),
     },
     {
-      id: "actions", header: "",
+      id: "actions",
+      header: "",
       cell: (r) => (
         <Button size="sm" variant="ghost" onClick={() => del.mutate(r.id)}>
           Remover
@@ -210,15 +251,24 @@ function PipelinesTab({ pipelines }: { pipelines: readonly Pipeline[] }) {
 
 function BuildsTab({ builds }: { builds: readonly Build[] }) {
   const cols: DataTableColumn<Build>[] = [
-    { id: "slug", header: "Pipeline", cell: (r) => <code className="text-xs">{r.pipelineSlug}</code> },
+    {
+      id: "slug",
+      header: "Pipeline",
+      cell: (r) => <code className="text-xs">{r.pipelineSlug}</code>,
+    },
     { id: "version", header: "Versão", cell: (r) => r.version ?? "—" },
     { id: "branch", header: "Branch", cell: (r) => r.branch ?? "—" },
     { id: "trigger", header: "Origem", cell: (r) => r.trigger },
     {
-      id: "status", header: "Status",
+      id: "status",
+      header: "Status",
       cell: (r) => <StatusBadge tone={buildTone(r.status)}>{r.status}</StatusBadge>,
     },
-    { id: "dur", header: "Duração", cell: (r) => (r.durationMs == null ? "—" : `${r.durationMs} ms`) },
+    {
+      id: "dur",
+      header: "Duração",
+      cell: (r) => (r.durationMs == null ? "—" : `${r.durationMs} ms`),
+    },
     { id: "at", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString() },
   ];
   if (!builds.length) return <EmptyState title="Sem builds registrados" />;
@@ -228,17 +278,27 @@ function BuildsTab({ builds }: { builds: readonly Build[] }) {
 function DeploysTab({ deploys }: { deploys: readonly Deploy[] }) {
   const rollback = useRollbackDeploy();
   const cols: DataTableColumn<Deploy>[] = [
-    { id: "env", header: "Ambiente", cell: (r) => <code className="text-xs">{r.environmentSlug}</code> },
+    {
+      id: "env",
+      header: "Ambiente",
+      cell: (r) => <code className="text-xs">{r.environmentSlug}</code>,
+    },
     { id: "version", header: "Versão", cell: (r) => r.version ?? "—" },
     { id: "strategy", header: "Estratégia", cell: (r) => r.strategy },
     {
-      id: "status", header: "Status",
+      id: "status",
+      header: "Status",
       cell: (r) => <StatusBadge tone={deployTone(r.status)}>{r.status}</StatusBadge>,
     },
-    { id: "dur", header: "Duração", cell: (r) => (r.durationMs == null ? "—" : `${r.durationMs} ms`) },
+    {
+      id: "dur",
+      header: "Duração",
+      cell: (r) => (r.durationMs == null ? "—" : `${r.durationMs} ms`),
+    },
     { id: "at", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString() },
     {
-      id: "actions", header: "",
+      id: "actions",
+      header: "",
       cell: (r) =>
         r.status === "succeeded" ? (
           <Button size="sm" variant="ghost" onClick={() => rollback.mutate(r.id)}>
@@ -255,12 +315,21 @@ function ReleasesTab({ releases }: { releases: readonly Release[] }) {
   const del = useDeleteRelease();
   const cols: DataTableColumn<Release>[] = [
     { id: "version", header: "Versão", cell: (r) => <code className="text-xs">{r.version}</code> },
-    { id: "channel", header: "Canal", cell: (r) => <StatusBadge tone="info">{r.channel}</StatusBadge> },
+    {
+      id: "channel",
+      header: "Canal",
+      cell: (r) => <StatusBadge tone="info">{r.channel}</StatusBadge>,
+    },
     { id: "tag", header: "Tag", cell: (r) => r.tag ?? "—" },
-    { id: "published", header: "Publicado", cell: (r) => (r.publishedAt ? new Date(r.publishedAt).toLocaleString() : "—") },
+    {
+      id: "published",
+      header: "Publicado",
+      cell: (r) => (r.publishedAt ? new Date(r.publishedAt).toLocaleString() : "—"),
+    },
     { id: "at", header: "Criado", cell: (r) => new Date(r.createdAt).toLocaleString() },
     {
-      id: "actions", header: "",
+      id: "actions",
+      header: "",
       cell: (r) => (
         <Button size="sm" variant="ghost" onClick={() => del.mutate(r.id)}>
           Remover
@@ -276,7 +345,11 @@ function ArtifactsTab({ artifacts }: { artifacts: readonly Artifact[] }) {
   const cols: DataTableColumn<Artifact>[] = [
     { id: "kind", header: "Tipo", cell: (r) => <StatusBadge tone="info">{r.kind}</StatusBadge> },
     { id: "name", header: "Nome", cell: (r) => r.name },
-    { id: "size", header: "Tamanho", cell: (r) => (r.sizeBytes == null ? "—" : `${r.sizeBytes} B`) },
+    {
+      id: "size",
+      header: "Tamanho",
+      cell: (r) => (r.sizeBytes == null ? "—" : `${r.sizeBytes} B`),
+    },
     { id: "checksum", header: "Checksum", cell: (r) => r.checksum ?? "—" },
     { id: "at", header: "Quando", cell: (r) => new Date(r.createdAt).toLocaleString() },
   ];
@@ -292,7 +365,8 @@ function EnvironmentsTab({ environments }: { environments: readonly Environment[
     { id: "kind", header: "Tipo", cell: (r) => <StatusBadge tone="info">{r.kind}</StatusBadge> },
     { id: "url", header: "URL", cell: (r) => r.url ?? "—" },
     {
-      id: "protected", header: "Protegido",
+      id: "protected",
+      header: "Protegido",
       cell: (r) => (
         <StatusBadge tone={r.protected ? "warning" : "neutral"}>
           {r.protected ? "sim" : "não"}
@@ -300,7 +374,8 @@ function EnvironmentsTab({ environments }: { environments: readonly Environment[
       ),
     },
     {
-      id: "approval", header: "Aprovação",
+      id: "approval",
+      header: "Aprovação",
       cell: (r) => (
         <StatusBadge tone={r.requiresApproval ? "warning" : "neutral"}>
           {r.requiresApproval ? "requer" : "livre"}
@@ -308,7 +383,8 @@ function EnvironmentsTab({ environments }: { environments: readonly Environment[
       ),
     },
     {
-      id: "actions", header: "",
+      id: "actions",
+      header: "",
       cell: (r) => (
         <Button size="sm" variant="ghost" onClick={() => del.mutate(r.id)}>
           Remover
@@ -327,7 +403,11 @@ function HistoryTab({ points }: { points: readonly CicdHistoryPoint[] }) {
     { id: "deploys", header: "Deploys", cell: (r) => r.deploys },
     { id: "rollbacks", header: "Rollbacks", cell: (r) => r.rollbacks },
     { id: "failed", header: "Falhas", cell: (r) => r.failed },
-    { id: "dur", header: "Duração média", cell: (r) => (r.avgDurationMs == null ? "—" : `${r.avgDurationMs} ms`) },
+    {
+      id: "dur",
+      header: "Duração média",
+      cell: (r) => (r.avgDurationMs == null ? "—" : `${r.avgDurationMs} ms`),
+    },
   ];
   if (!points.length) return <EmptyState title="Sem histórico agregado" />;
   return <DataTable data={[...points]} columns={cols} getRowKey={(r) => r.id} />;

@@ -56,7 +56,9 @@ describe("Vão interno útil", () => {
     const r = buildWardrobe(REF);
     const c = r.interior.cavity;
     expect(r.spec.columns).toBe(3);
-    expect(r.interior.plan.placements.filter((p) => p.moduleId === "divisoria-vertical")).toHaveLength(2);
+    expect(
+      r.interior.plan.placements.filter((p) => p.moduleId === "divisoria-vertical"),
+    ).toHaveLength(2);
     for (const p of r.interior.plan.placements) {
       expect(p.box.x).toBeGreaterThanOrEqual(c.x - 1);
       expect(p.box.x + p.box.width).toBeLessThanOrEqual(c.x + c.widthMm + 1);
@@ -125,12 +127,22 @@ describe("Origem do layout", () => {
   });
 
   it("modo preset força o preset mesmo com params legados", () => {
-    const r = buildWardrobe({ ...REF, interior: { mode: "preset", presetId: "roupeiro-solteiro" } });
+    const r = buildWardrobe({
+      ...REF,
+      interior: { mode: "preset", presetId: "roupeiro-solteiro" },
+    });
     expect(r.interior.source).toBe("preset-usuario");
   });
 
   it("fallback seguro: vão minúsculo nunca quebra o móvel", () => {
-    const r = buildWardrobe({ widthMm: 600, heightMm: 1200, depthMm: 300, doors: 1, drawers: 4, hangers: 2 });
+    const r = buildWardrobe({
+      widthMm: 600,
+      heightMm: 1200,
+      depthMm: 300,
+      doors: 1,
+      drawers: 4,
+      hangers: 2,
+    });
     expect(r.assembly.pieces.length).toBeGreaterThan(4);
     expect(r.interior.validation.ok).toBe(true);
   });

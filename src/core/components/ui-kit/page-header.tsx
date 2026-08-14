@@ -18,7 +18,10 @@ export function PageHeader({
 }: PageHeaderProps) {
   return (
     <header
-      className={cn("flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between", className)}
+      className={cn(
+        "flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between",
+        className,
+      )}
       {...props}
     >
       <div className="space-y-1">

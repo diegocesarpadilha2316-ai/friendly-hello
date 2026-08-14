@@ -9,11 +9,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireTenant } from "@/core/middleware/require-tenant";
-import type {
-  BillingSummary,
-  PlanDefinition,
-  TenantSubscription,
-} from "./types";
+import type { BillingSummary, PlanDefinition, TenantSubscription } from "./types";
 
 const isMissingTable = (message: string | undefined) =>
   !!message && (message.includes("does not exist") || message.includes("schema cache"));

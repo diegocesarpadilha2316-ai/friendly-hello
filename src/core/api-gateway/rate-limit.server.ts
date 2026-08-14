@@ -8,7 +8,9 @@ export async function checkRateLimit(
   maxRequests: number,
 ): Promise<{ allowed: boolean; remaining: number; resetAt: string }> {
   const now = new Date();
-  const bucket = new Date(Math.floor(now.getTime() / (windowSeconds * 1000)) * windowSeconds * 1000);
+  const bucket = new Date(
+    Math.floor(now.getTime() / (windowSeconds * 1000)) * windowSeconds * 1000,
+  );
   const resetAt = new Date(bucket.getTime() + windowSeconds * 1000).toISOString();
   const { data } = await supabase
     .from("api_rate_counters")
@@ -22,7 +24,10 @@ export async function checkRateLimit(
     return { allowed: false, remaining: 0, resetAt };
   }
   if (data?.id) {
-    await supabase.from("api_rate_counters").update({ count: current + 1 }).eq("id", data.id);
+    await supabase
+      .from("api_rate_counters")
+      .update({ count: current + 1 })
+      .eq("id", data.id);
   } else {
     await supabase.from("api_rate_counters").insert({
       company_id: companyId,
@@ -34,10 +39,7 @@ export async function checkRateLimit(
   return { allowed: true, remaining: maxRequests - current - 1, resetAt };
 }
 
-export async function incrementQuota(
-  supabase: SupabaseClient,
-  companyId: string,
-): Promise<void> {
+export async function incrementQuota(supabase: SupabaseClient, companyId: string): Promise<void> {
   const now = new Date();
   const periods: { key: "minute" | "hour" | "day" | "month"; ms: number }[] = [
     { key: "minute", ms: 60_000 },
@@ -59,7 +61,10 @@ export async function incrementQuota(
         .update({ used: 1, resets_at: new Date(now.getTime() + p.ms).toISOString() })
         .eq("id", data.id);
     } else {
-      await supabase.from("api_quotas").update({ used: (data.used as number) + 1 }).eq("id", data.id);
+      await supabase
+        .from("api_quotas")
+        .update({ used: (data.used as number) + 1 })
+        .eq("id", data.id);
     }
   }
 }

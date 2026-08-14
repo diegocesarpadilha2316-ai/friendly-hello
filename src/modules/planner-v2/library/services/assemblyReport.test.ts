@@ -6,7 +6,9 @@ describe("assembly report — montagem fabricável", () => {
   it("gera sequência por módulo para a ETAPA 1", () => {
     const store = usePlannerStore.getState();
     store.newProject();
-    store.sendMessage("Crie uma cozinha limpa — ETAPA 1: balcão 800 mm, gaveteiro 600 mm com 4 gavetas, pia 1200 mm e balcão 800 mm, somente inferiores, MDF 18 mm.");
+    store.sendMessage(
+      "Crie uma cozinha limpa — ETAPA 1: balcão 800 mm, gaveteiro 600 mm com 4 gavetas, pia 1200 mm e balcão 800 mm, somente inferiores, MDF 18 mm.",
+    );
     const report = buildAssemblyReport(usePlannerStore.getState().instances);
 
     expect(report.moduleCount).toBe(5);

@@ -1,11 +1,4 @@
-import {
-  DoorOpen,
-  Eye,
-  Footprints,
-  MousePointer2,
-  Orbit,
-  PanelTopClose
-} from "lucide-react";
+import { DoorOpen, Eye, Footprints, MousePointer2, Orbit, PanelTopClose } from "lucide-react";
 import { useImmersiveStore } from "../state/useImmersiveStore";
 
 export function ImmersiveControls() {
@@ -51,9 +44,7 @@ export function ImmersiveControls() {
           type="button"
           className={qualityMode === "presentation" ? "active" : ""}
           onClick={() =>
-            setQualityMode(
-              qualityMode === "presentation" ? "realistic" : "presentation"
-            )
+            setQualityMode(qualityMode === "presentation" ? "realistic" : "presentation")
           }
         >
           <Eye size={16} />

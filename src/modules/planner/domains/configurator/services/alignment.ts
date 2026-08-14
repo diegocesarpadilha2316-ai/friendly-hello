@@ -3,13 +3,25 @@ import type { PlannerProject, PlannerParametricNode } from "@/modules/planner/sh
 import { findNode } from "./selection";
 
 export const ALIGN_ACTIONS: readonly AlignAction[] = [
-  { id: "left", label: "Alinhar à esquerda", description: "Alinha borda esquerda dos selecionados." },
-  { id: "right", label: "Alinhar à direita", description: "Alinha borda direita dos selecionados." },
+  {
+    id: "left",
+    label: "Alinhar à esquerda",
+    description: "Alinha borda esquerda dos selecionados.",
+  },
+  {
+    id: "right",
+    label: "Alinhar à direita",
+    description: "Alinha borda direita dos selecionados.",
+  },
   { id: "center-h", label: "Centralizar horizontal", description: "Centro no eixo X." },
   { id: "top", label: "Alinhar topo", description: "Alinha borda superior." },
   { id: "bottom", label: "Alinhar base", description: "Alinha borda inferior." },
   { id: "center-v", label: "Centralizar vertical", description: "Centro no eixo Y." },
-  { id: "distribute-h", label: "Distribuir horizontal", description: "Espaçamento horizontal igual." },
+  {
+    id: "distribute-h",
+    label: "Distribuir horizontal",
+    description: "Espaçamento horizontal igual.",
+  },
   { id: "distribute-v", label: "Distribuir vertical", description: "Espaçamento vertical igual." },
 ];
 
@@ -61,7 +73,9 @@ export function mirrorNode(project: PlannerProject, nodeId: string): PlannerProj
     environments: project.environments.map((env) => ({
       ...env,
       rooms: env.rooms.map((room) =>
-        room.id !== found.room.id ? room : { ...room, nodes: { ...room.nodes, [mirrored.id]: mirrored } },
+        room.id !== found.room.id
+          ? room
+          : { ...room, nodes: { ...room.nodes, [mirrored.id]: mirrored } },
       ),
     })),
   };
@@ -83,7 +97,9 @@ export function rotateNode(project: PlannerProject, nodeId: string, deg: number)
     environments: project.environments.map((env) => ({
       ...env,
       rooms: env.rooms.map((room) =>
-        room.id !== found.room.id ? room : { ...room, nodes: { ...room.nodes, [rotated.id]: rotated } },
+        room.id !== found.room.id
+          ? room
+          : { ...room, nodes: { ...room.nodes, [rotated.id]: rotated } },
       ),
     })),
   };

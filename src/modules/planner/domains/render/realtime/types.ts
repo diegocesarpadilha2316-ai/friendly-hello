@@ -10,25 +10,12 @@ import type { PbrMaterial } from "../types";
 export type RealtimeQualityTier = "baixo" | "medio" | "alto" | "ultra" | "cinema";
 
 export type RealtimeWeatherId =
-  | "ensolarado"
-  | "nublado"
-  | "chuva"
-  | "fim-tarde"
-  | "nascer-sol"
-  | "noite"
-  | "blue-hour";
+  "ensolarado" | "nublado" | "chuva" | "fim-tarde" | "nascer-sol" | "noite" | "blue-hour";
 
 export type RealtimeTimeOfDay = "06h" | "08h" | "12h" | "15h" | "18h" | "21h";
 
 export type RealtimeCameraMode =
-  | "walk"
-  | "fps"
-  | "orbita"
-  | "drone"
-  | "interior"
-  | "exterior"
-  | "cliente"
-  | "apresentacao";
+  "walk" | "fps" | "orbita" | "drone" | "interior" | "exterior" | "cliente" | "apresentacao";
 
 export type RealtimeViewportMode = "trabalho" | "cliente" | "apresentacao";
 
@@ -119,13 +106,7 @@ export interface RealtimeViewportState {
   readonly weather: RealtimeWeatherId;
 }
 
-export type RealtimeAiProviderId =
-  | "openai"
-  | "gemini"
-  | "claude"
-  | "runway"
-  | "kling"
-  | "luma";
+export type RealtimeAiProviderId = "openai" | "gemini" | "claude" | "runway" | "kling" | "luma";
 
 export interface RealtimeAiHook {
   readonly id: RealtimeAiProviderId;

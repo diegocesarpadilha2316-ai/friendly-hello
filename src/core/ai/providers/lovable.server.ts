@@ -125,7 +125,8 @@ export class LovableAIProvider extends BaseAIProvider {
         usage?: { prompt_tokens?: number; completion_tokens?: number };
       };
       const output = json.choices?.[0]?.message?.content ?? "";
-      const inputTokens = json.usage?.prompt_tokens ?? this.countTokens(JSON.stringify(body.messages));
+      const inputTokens =
+        json.usage?.prompt_tokens ?? this.countTokens(JSON.stringify(body.messages));
       const outputTokens = json.usage?.completion_tokens ?? this.countTokens(output);
       const finish = (json.choices?.[0]?.finish_reason ?? "stop") as AIResponse["finishReason"];
 
@@ -193,7 +194,11 @@ export class LovableAIProvider extends BaseAIProvider {
       body: JSON.stringify({ model: modelId, input, encoding_format: "float" }),
     });
     if (!res.ok) {
-      throw new AIGatewayError(`HTTP ${res.status}: ${await res.text()}`, "provider_error", this.id);
+      throw new AIGatewayError(
+        `HTTP ${res.status}: ${await res.text()}`,
+        "provider_error",
+        this.id,
+      );
     }
     const json = (await res.json()) as {
       data: { embedding: number[] }[];

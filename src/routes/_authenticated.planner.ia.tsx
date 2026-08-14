@@ -16,7 +16,8 @@ export const Route = createFileRoute("/_authenticated/planner/ia")({
       { property: "og:title", content: "IA de Projeto — Dioris Planner" },
       {
         property: "og:description",
-        content: "A IA que interpreta briefings e projeta em tempo real, sobre o mesmo motor paramétrico.",
+        content:
+          "A IA que interpreta briefings e projeta em tempo real, sobre o mesmo motor paramétrico.",
       },
       { name: "robots", content: "noindex" },
     ],

@@ -130,9 +130,7 @@ export async function cacheSet(opts: CacheSetOptions): Promise<void> {
   const { supabase, tenantId, namespace, key, value, ttlSeconds, tags, version } = opts;
   const size = byteLength(value);
   const expiresAt =
-    ttlSeconds && ttlSeconds > 0
-      ? new Date(Date.now() + ttlSeconds * 1000).toISOString()
-      : null;
+    ttlSeconds && ttlSeconds > 0 ? new Date(Date.now() + ttlSeconds * 1000).toISOString() : null;
   const tagsArr = tags ? [...tags] : [];
   await supabase.from("cache_entries").upsert(
     {

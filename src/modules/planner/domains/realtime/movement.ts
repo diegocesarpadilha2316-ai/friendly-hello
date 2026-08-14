@@ -25,7 +25,13 @@ export interface RealtimeInputVector {
 }
 
 export const NEUTRAL_INPUT: RealtimeInputVector = {
-  forward: 0, strafe: 0, yaw: 0, pitch: 0, run: false, crouch: false, source: "keyboard",
+  forward: 0,
+  strafe: 0,
+  yaw: 0,
+  pitch: 0,
+  run: false,
+  crouch: false,
+  source: "keyboard",
 };
 
 export function speedFor(profile: RealtimeMovementProfile, input: RealtimeInputVector): number {
@@ -38,7 +44,10 @@ export function inputFromKeys(keys: Readonly<Record<string, boolean>>): Realtime
   const forward = (keys["w"] ? 1 : 0) - (keys["s"] ? 1 : 0);
   const strafe = (keys["d"] ? 1 : 0) - (keys["a"] ? 1 : 0);
   return {
-    forward, strafe, yaw: 0, pitch: 0,
+    forward,
+    strafe,
+    yaw: 0,
+    pitch: 0,
     run: keys["shift"] === true,
     crouch: keys["control"] === true || keys["c"] === true,
     source: "keyboard",
@@ -46,7 +55,15 @@ export function inputFromKeys(keys: Readonly<Record<string, boolean>>): Realtime
 }
 
 export function inputFromJoystick(axisX: number, axisY: number, run: boolean): RealtimeInputVector {
-  return { forward: clamp(-axisY), strafe: clamp(axisX), yaw: 0, pitch: 0, run, crouch: false, source: "joystick" };
+  return {
+    forward: clamp(-axisY),
+    strafe: clamp(axisX),
+    yaw: 0,
+    pitch: 0,
+    run,
+    crouch: false,
+    source: "joystick",
+  };
 }
 
 export function inputFromGamepad(gp: Gamepad): RealtimeInputVector {

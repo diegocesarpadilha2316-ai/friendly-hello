@@ -111,9 +111,7 @@ export const eventDeliveriesList = createServerFn({ method: "GET" })
 
 export const eventDeliveryRequeue = createServerFn({ method: "POST" })
   .middleware([requireTenant])
-  .inputValidator((raw: unknown) =>
-    z.object({ deliveryId: z.string().uuid() }).parse(raw),
-  )
+  .inputValidator((raw: unknown) => z.object({ deliveryId: z.string().uuid() }).parse(raw))
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const { error } = await context.supabase
       .from("event_deliveries")

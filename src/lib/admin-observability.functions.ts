@@ -23,7 +23,11 @@ async function assertAdmin(ctx: { supabase: any; userId: string }) {
 
 const H24 = () => new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-async function count(sb: any, table: string, filters: Array<[string, string, unknown]>): Promise<number> {
+async function count(
+  sb: any,
+  table: string,
+  filters: Array<[string, string, unknown]>,
+): Promise<number> {
   let q = sb.from(table).select("id", { count: "exact", head: true });
   for (const [col, op, val] of filters) q = (q as any)[op](col, val);
   const { count: c, error } = await q;
@@ -39,26 +43,63 @@ export const getObservabilitySnapshot = createServerFn({ method: "GET" })
     const since = H24();
 
     const [
-      logsTotal, logsErr, logsWarn,
-      jobsPending, jobsRunning, jobsFailed, jobsDone,
-      notifPending, notifFailed, notifSent,
-      payPending, payApproved,
-      aiReq, aiErr,
+      logsTotal,
+      logsErr,
+      logsWarn,
+      jobsPending,
+      jobsRunning,
+      jobsFailed,
+      jobsDone,
+      notifPending,
+      notifFailed,
+      notifSent,
+      payPending,
+      payApproved,
+      aiReq,
+      aiErr,
     ] = await Promise.all([
       count(sb, "logs", [["created_at", "gte", since]]),
-      count(sb, "logs", [["created_at", "gte", since], ["level", "eq", "error"]]),
-      count(sb, "logs", [["created_at", "gte", since], ["level", "eq", "warn"]]),
+      count(sb, "logs", [
+        ["created_at", "gte", since],
+        ["level", "eq", "error"],
+      ]),
+      count(sb, "logs", [
+        ["created_at", "gte", since],
+        ["level", "eq", "warn"],
+      ]),
       count(sb, "jobs", [["status", "eq", "pending"]]),
       count(sb, "jobs", [["status", "eq", "running"]]),
-      count(sb, "jobs", [["status", "eq", "failed"], ["created_at", "gte", since]]),
-      count(sb, "jobs", [["status", "eq", "completed"], ["created_at", "gte", since]]),
+      count(sb, "jobs", [
+        ["status", "eq", "failed"],
+        ["created_at", "gte", since],
+      ]),
+      count(sb, "jobs", [
+        ["status", "eq", "completed"],
+        ["created_at", "gte", since],
+      ]),
       count(sb, "notifications", [["status", "eq", "pending"]]),
-      count(sb, "notifications", [["status", "eq", "failed"], ["created_at", "gte", since]]),
-      count(sb, "notifications", [["status", "eq", "sent"], ["created_at", "gte", since]]),
+      count(sb, "notifications", [
+        ["status", "eq", "failed"],
+        ["created_at", "gte", since],
+      ]),
+      count(sb, "notifications", [
+        ["status", "eq", "sent"],
+        ["created_at", "gte", since],
+      ]),
       count(sb, "payment_orders", [["status", "eq", "pending"]]),
-      count(sb, "payment_orders", [["status", "eq", "approved"], ["updated_at", "gte", since]]),
-      count(sb, "logs", [["created_at", "gte", since], ["module", "eq", "ai"]]),
-      count(sb, "logs", [["created_at", "gte", since], ["module", "eq", "ai"], ["level", "eq", "error"]]),
+      count(sb, "payment_orders", [
+        ["status", "eq", "approved"],
+        ["updated_at", "gte", since],
+      ]),
+      count(sb, "logs", [
+        ["created_at", "gte", since],
+        ["module", "eq", "ai"],
+      ]),
+      count(sb, "logs", [
+        ["created_at", "gte", since],
+        ["module", "eq", "ai"],
+        ["level", "eq", "error"],
+      ]),
     ]);
 
     // Bruto aprovado 24h
@@ -68,7 +109,10 @@ export const getObservabilitySnapshot = createServerFn({ method: "GET" })
       .eq("status", "approved")
       .gte("updated_at", since)
       .limit(1000);
-    const grossCents24h = (paidRows ?? []).reduce((s: number, r: any) => s + (r.amount_cents ?? 0), 0);
+    const grossCents24h = (paidRows ?? []).reduce(
+      (s: number, r: any) => s + (r.amount_cents ?? 0),
+      0,
+    );
 
     const { data: errRows } = await sb
       .from("logs")
@@ -81,12 +125,20 @@ export const getObservabilitySnapshot = createServerFn({ method: "GET" })
     return {
       window: "24h",
       logs: { total: logsTotal, errors: logsErr, warnings: logsWarn },
-      jobs: { pending: jobsPending, running: jobsRunning, failed24h: jobsFailed, completed24h: jobsDone },
+      jobs: {
+        pending: jobsPending,
+        running: jobsRunning,
+        failed24h: jobsFailed,
+        completed24h: jobsDone,
+      },
       notifications: { pending: notifPending, failed24h: notifFailed, sent24h: notifSent },
       payments: { pending: payPending, approved24h: payApproved, grossCents24h },
       ai: { requests24h: aiReq, errors24h: aiErr },
       recentErrors: (errRows ?? []).map((r: any) => ({
-        id: r.id, module: r.module, message: r.message, createdAt: r.created_at,
+        id: r.id,
+        module: r.module,
+        message: r.message,
+        createdAt: r.created_at,
       })),
     };
   });

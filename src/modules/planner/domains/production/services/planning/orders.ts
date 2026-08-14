@@ -2,13 +2,13 @@ import type { ProductionOrder } from "../../types";
 import type { PlanningOrder, OrderStatus, OrderUrgency } from "./types";
 
 const STATUS_MAP: Record<string, OrderStatus> = {
-  "corte": "em-producao",
-  "usinagem": "em-producao",
-  "colagem": "em-producao",
-  "montagem": "em-producao",
-  "acabamento": "em-producao",
-  "embalagem": "concluido",
-  "expedicao": "entregue",
+  corte: "em-producao",
+  usinagem: "em-producao",
+  colagem: "em-producao",
+  montagem: "em-producao",
+  acabamento: "em-producao",
+  embalagem: "concluido",
+  expedicao: "entregue",
 };
 
 function urgencyFromDays(days: number): OrderUrgency {
@@ -28,7 +28,13 @@ function priorityScore(urgency: OrderUrgency, progress: number, days: number): n
 
 export function buildPlanningOrders(
   orders: readonly ProductionOrder[],
-  opts: { totalHours: number; totalValue: number; parts: number; company: string; projectName: string },
+  opts: {
+    totalHours: number;
+    totalValue: number;
+    parts: number;
+    company: string;
+    projectName: string;
+  },
 ): PlanningOrder[] {
   const now = new Date();
   return orders.map((o) => {
@@ -43,7 +49,8 @@ export function buildPlanningOrders(
       clientName: o.clientName,
       company: opts.company,
       projectName: opts.projectName,
-      status: daysRemaining < 0 && status !== "concluido" && status !== "entregue" ? "atrasado" : status,
+      status:
+        daysRemaining < 0 && status !== "concluido" && status !== "entregue" ? "atrasado" : status,
       urgency,
       priority: priorityScore(urgency, o.progress, daysRemaining),
       totalValue: opts.totalValue / Math.max(1, orders.length),

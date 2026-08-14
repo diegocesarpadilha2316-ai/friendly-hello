@@ -77,7 +77,7 @@ export function useCatalog(): UseCatalog {
   const [recents, setRecents] = useState<CatalogRecentsState>(() => readRecents());
 
   const filtered = useMemo(() => searchItems(filters), [filters]);
-  const selected = useMemo(() => (selectedId ? getItem(selectedId) ?? null : null), [selectedId]);
+  const selected = useMemo(() => (selectedId ? (getItem(selectedId) ?? null) : null), [selectedId]);
 
   const setFilters = useCallback((patch: Partial<CatalogSearchFilters>) => {
     setFiltersState((prev) => ({ ...prev, ...patch }));
@@ -96,10 +96,13 @@ export function useCatalog(): UseCatalog {
     }
   }, []);
 
-  const updateVariant = useCallback((patch: Partial<Omit<CatalogVariant, "id" | "itemId">>) => {
-    if (!selected) return;
-    setVariant((prev) => createVariant(selected, { ...(prev ?? {}), ...patch }));
-  }, [selected]);
+  const updateVariant = useCallback(
+    (patch: Partial<Omit<CatalogVariant, "id" | "itemId">>) => {
+      if (!selected) return;
+      setVariant((prev) => createVariant(selected, { ...(prev ?? {}), ...patch }));
+    },
+    [selected],
+  );
 
   const handleToggleFav = useCallback((itemId: string) => {
     setFavorites(toggleFavorite(itemId));
@@ -113,7 +116,9 @@ export function useCatalog(): UseCatalog {
     setRecents(clearRecents());
   }, []);
 
-  const canInsert = Boolean(editor.state.project && editor.state.selectedRoomId && selected && variant);
+  const canInsert = Boolean(
+    editor.state.project && editor.state.selectedRoomId && selected && variant,
+  );
 
   const insertSelected = useCallback((): boolean => {
     const roomId = editor.state.selectedRoomId;

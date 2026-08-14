@@ -57,12 +57,7 @@ export function isDrawerPart(partKind: PartKind): boolean {
  * colapsavam em `porta`.
  */
 export type FrontClass =
-  | "porta-abrir"
-  | "porta-correr"
-  | "gaveta-frente"
-  | "painel-fixo"
-  | "tapa-vao"
-  | "aba-canto";
+  "porta-abrir" | "porta-correr" | "gaveta-frente" | "painel-fixo" | "tapa-vao" | "aba-canto";
 
 export function classifyFront(
   piece: Pick<ConstructionPiece, "partKind" | "frontRole">,

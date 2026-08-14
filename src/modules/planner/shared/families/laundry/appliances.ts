@@ -13,12 +13,7 @@
  */
 
 export type ApplianceKind =
-  | "nenhum"
-  | "lavadora-frontal"
-  | "lavadora-superior"
-  | "secadora"
-  | "lava-e-seca"
-  | "torre";
+  "nenhum" | "lavadora-frontal" | "lavadora-superior" | "secadora" | "lava-e-seca" | "torre";
 
 /** Como o aparelho abre. */
 export type ApplianceDoorOpening = "frontal" | "superior" | "nenhuma";
@@ -217,7 +212,10 @@ export function normalizeApplianceKind(value: unknown): ApplianceKind {
   return "nenhum";
 }
 
-export function normalizeApplianceHinge(value: unknown, fallback: ApplianceHingeSide = "esquerda"): ApplianceHingeSide {
+export function normalizeApplianceHinge(
+  value: unknown,
+  fallback: ApplianceHingeSide = "esquerda",
+): ApplianceHingeSide {
   const k = slug(value);
   if (/direit|right/.test(k)) return "direita";
   if (/esquerd|left/.test(k)) return "esquerda";

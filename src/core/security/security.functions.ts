@@ -97,7 +97,11 @@ const policySchema = z.object({
   replayWindowSeconds: z.number().int().min(30).max(3600),
   bruteForceMaxAttempts: z.number().int().min(1).max(50),
   bruteForceLockoutMinutes: z.number().int().min(1).max(1440),
-  sessionTtlMinutes: z.number().int().min(5).max(43_200 * 2),
+  sessionTtlMinutes: z
+    .number()
+    .int()
+    .min(5)
+    .max(43_200 * 2),
   requireMfa: z.boolean(),
   allowTotp: z.boolean(),
   allowPasskey: z.boolean(),
@@ -108,31 +112,29 @@ export const securityUpdatePolicy = createServerFn({ method: "POST" })
   .middleware([requireTenant])
   .inputValidator((raw: unknown) => policySchema.parse(raw))
   .handler(async ({ context, data }) => {
-    const { error } = await context.supabase
-      .from("security_policies")
-      .upsert(
-        {
-          company_id: context.tenantId,
-          csp: data.csp,
-          hsts_max_age: data.hstsMaxAge,
-          frame_options: data.frameOptions,
-          referrer_policy: data.referrerPolicy,
-          permissions_policy: data.permissionsPolicy,
-          cors_allowed_origins: data.corsAllowedOrigins,
-          csrf_enabled: data.csrfEnabled,
-          replay_window_seconds: data.replayWindowSeconds,
-          brute_force_max_attempts: data.bruteForceMaxAttempts,
-          brute_force_lockout_minutes: data.bruteForceLockoutMinutes,
-          session_ttl_minutes: data.sessionTtlMinutes,
-          require_mfa: data.requireMfa,
-          allow_totp: data.allowTotp,
-          allow_passkey: data.allowPasskey,
-          allow_backup_codes: data.allowBackupCodes,
-          updated_by: context.userId,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "company_id" },
-      );
+    const { error } = await context.supabase.from("security_policies").upsert(
+      {
+        company_id: context.tenantId,
+        csp: data.csp,
+        hsts_max_age: data.hstsMaxAge,
+        frame_options: data.frameOptions,
+        referrer_policy: data.referrerPolicy,
+        permissions_policy: data.permissionsPolicy,
+        cors_allowed_origins: data.corsAllowedOrigins,
+        csrf_enabled: data.csrfEnabled,
+        replay_window_seconds: data.replayWindowSeconds,
+        brute_force_max_attempts: data.bruteForceMaxAttempts,
+        brute_force_lockout_minutes: data.bruteForceLockoutMinutes,
+        session_ttl_minutes: data.sessionTtlMinutes,
+        require_mfa: data.requireMfa,
+        allow_totp: data.allowTotp,
+        allow_passkey: data.allowPasskey,
+        allow_backup_codes: data.allowBackupCodes,
+        updated_by: context.userId,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "company_id" },
+    );
     if (error) throw new Error(error.message);
     await auditEvent(context.supabase, context.tenantId, {
       action: "security.policy.updated",
@@ -143,7 +145,10 @@ export const securityUpdatePolicy = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
-const sessionIdSchema = z.object({ sessionId: z.string().uuid(), reason: z.string().max(200).optional() });
+const sessionIdSchema = z.object({
+  sessionId: z.string().uuid(),
+  reason: z.string().max(200).optional(),
+});
 
 export const securityRevokeSession = createServerFn({ method: "POST" })
   .middleware([requireTenant])
@@ -342,9 +347,7 @@ export const securityUpdateIncident = createServerFn({ method: "POST" })
       .update({
         status: data.status,
         resolved_at:
-          data.status === "resolved" || data.status === "ignored"
-            ? new Date().toISOString()
-            : null,
+          data.status === "resolved" || data.status === "ignored" ? new Date().toISOString() : null,
       })
       .eq("id", data.id)
       .eq("company_id", context.tenantId);

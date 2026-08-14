@@ -99,8 +99,7 @@ function AiStudioPage() {
     staleTime: 10_000,
   });
 
-  const invalidate = () =>
-    qc.invalidateQueries({ queryKey: ["planner", "ai"] });
+  const invalidate = () => qc.invalidateQueries({ queryKey: ["planner", "ai"] });
 
   const createMutation = useMutation({
     mutationFn: () => create({ data: { title: "Nova conversa" } }),
@@ -109,8 +108,7 @@ function AiStudioPage() {
       setSelectedId(row.id);
       invalidate();
     },
-    onError: (e: unknown) =>
-      toast.error(e instanceof Error ? e.message : "Erro ao criar sessão"),
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erro ao criar sessão"),
   });
 
   const archiveMutation = useMutation({
@@ -120,8 +118,7 @@ function AiStudioPage() {
       toast.success(v.archived ? "Arquivada" : "Restaurada");
       invalidate();
     },
-    onError: (e: unknown) =>
-      toast.error(e instanceof Error ? e.message : "Erro"),
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erro"),
   });
 
   const removeMutation = useMutation({
@@ -131,17 +128,16 @@ function AiStudioPage() {
       if (selectedId) setSelectedId(null);
       invalidate();
     },
-    onError: (e: unknown) =>
-      toast.error(e instanceof Error ? e.message : "Erro"),
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erro"),
   });
 
   const rows = useMemo(() => {
     const all = (sessionsQuery.data ?? []) as SessionRow[];
     const q = query.trim().toLowerCase();
     if (!q) return all;
-    return all.filter((r) =>
-      (r.title ?? "").toLowerCase().includes(q) ||
-      (r.summary ?? "").toLowerCase().includes(q),
+    return all.filter(
+      (r) =>
+        (r.title ?? "").toLowerCase().includes(q) || (r.summary ?? "").toLowerCase().includes(q),
     );
   }, [sessionsQuery.data, query]);
 
@@ -153,8 +149,7 @@ function AiStudioPage() {
     >();
     for (const r of series) {
       const key = r.provider ?? "desconhecido";
-      const cur =
-        acc.get(key) ?? { credits: 0, tokensIn: 0, tokensOut: 0, calls: 0 };
+      const cur = acc.get(key) ?? { credits: 0, tokensIn: 0, tokensOut: 0, calls: 0 };
       cur.credits += Number(r.credits_spent) || 0;
       cur.tokensIn += r.tokens_in ?? 0;
       cur.tokensOut += r.tokens_out ?? 0;
@@ -307,12 +302,9 @@ function AiStudioPage() {
 
         <SessionDetail
           sessionId={selectedId}
-          onArchive={(id, archived) =>
-            archiveMutation.mutate({ id, archived })
-          }
+          onArchive={(id, archived) => archiveMutation.mutate({ id, archived })}
           onRemove={(id) => {
-            if (confirm("Remover esta sessão e todo o histórico?"))
-              removeMutation.mutate(id);
+            if (confirm("Remover esta sessão e todo o histórico?")) removeMutation.mutate(id);
           }}
         />
       </div>
@@ -350,8 +342,7 @@ function SessionDetail({
       <div className="grid min-h-[380px] place-items-center rounded-xl border border-dashed border-border/60 bg-background/40 p-8 text-center text-sm text-muted-foreground">
         <div>
           <Sparkles className="mx-auto mb-2 h-6 w-6 text-primary/60" />
-          Selecione uma sessão à esquerda para inspecionar mensagens, tool calls
-          e consumo.
+          Selecione uma sessão à esquerda para inspecionar mensagens, tool calls e consumo.
         </div>
       </div>
     );
@@ -376,9 +367,7 @@ function SessionDetail({
     <div className="flex flex-col rounded-xl border border-border/60 bg-background/40">
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border/40 p-3">
         <div className="min-w-0">
-          <div className="truncate text-base font-semibold">
-            {session.title || "Sem título"}
-          </div>
+          <div className="truncate text-base font-semibold">{session.title || "Sem título"}</div>
           <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
             <StatusBadge tone={session.archived ? "neutral" : "success"}>
               {session.archived ? "arquivada" : "ativa"}
@@ -398,9 +387,7 @@ function SessionDetail({
             ) : null}
           </div>
           {session.summary ? (
-            <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">
-              {session.summary}
-            </p>
+            <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">{session.summary}</p>
           ) : null}
         </div>
         <div className="flex shrink-0 items-center gap-1">
@@ -416,12 +403,7 @@ function SessionDetail({
               <Archive className="h-4 w-4" />
             )}
           </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onRemove(session.id)}
-            title="Remover"
-          >
+          <Button size="sm" variant="ghost" onClick={() => onRemove(session.id)} title="Remover">
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
@@ -455,9 +437,7 @@ function SessionDetail({
                     {new Date(m.created_at).toLocaleString("pt-BR")}
                   </span>
                   {m.latency_ms ? (
-                    <span className="text-muted-foreground">
-                      · {m.latency_ms}ms
-                    </span>
+                    <span className="text-muted-foreground">· {m.latency_ms}ms</span>
                   ) : null}
                   {(m.tokens_in ?? 0) + (m.tokens_out ?? 0) > 0 ? (
                     <span className="text-muted-foreground">
@@ -485,9 +465,7 @@ function SessionDetail({
                   className="rounded-md border border-border/40 bg-muted/30 p-2 text-xs"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-medium text-primary">
-                      {t.tool_name}
-                    </span>
+                    <span className="font-mono font-medium text-primary">{t.tool_name}</span>
                     <StatusBadge
                       tone={
                         t.status === "ok"
@@ -502,17 +480,13 @@ function SessionDetail({
                       {t.status}
                     </StatusBadge>
                     {t.duration_ms ? (
-                      <span className="text-muted-foreground">
-                        {t.duration_ms}ms
-                      </span>
+                      <span className="text-muted-foreground">{t.duration_ms}ms</span>
                     ) : null}
                     <span className="ml-auto text-muted-foreground">
                       {new Date(t.executed_at).toLocaleTimeString("pt-BR")}
                     </span>
                   </div>
-                  {t.summary ? (
-                    <div className="mt-1 text-muted-foreground">{t.summary}</div>
-                  ) : null}
+                  {t.summary ? <div className="mt-1 text-muted-foreground">{t.summary}</div> : null}
                 </li>
               ))}
             </ul>

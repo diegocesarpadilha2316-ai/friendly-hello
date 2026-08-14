@@ -108,23 +108,11 @@ export const GLASS_TYPES = [
 export type GlassType = (typeof GLASS_TYPES)[number];
 
 /** Tipos de espelho suportados. */
-export const MIRROR_TYPES = [
-  "Prata",
-  "Bronze",
-  "Fumê",
-  "Bisotê",
-  "Lapidado",
-] as const;
+export const MIRROR_TYPES = ["Prata", "Bronze", "Fumê", "Bisotê", "Lapidado"] as const;
 export type MirrorType = (typeof MIRROR_TYPES)[number];
 
 /** Acabamentos suportados. */
-export const FINISH_TYPES = [
-  "Fosco",
-  "Acetinado",
-  "Brilho",
-  "Alto Brilho",
-  "Texturizado",
-] as const;
+export const FINISH_TYPES = ["Fosco", "Acetinado", "Brilho", "Alto Brilho", "Texturizado"] as const;
 export type FinishType = (typeof FINISH_TYPES)[number];
 
 /** Perfis / componentes LED. */
@@ -171,14 +159,7 @@ export interface PremiumFavorite {
 
 /** Formatos suportados na importação. */
 export type PremiumImportFormat =
-  | "csv"
-  | "excel"
-  | "xml"
-  | "json"
-  | "zip"
-  | "promob"
-  | "sketchup"
-  | "custom";
+  "csv" | "excel" | "xml" | "json" | "zip" | "promob" | "sketchup" | "custom";
 
 /** Formatos suportados na exportação. */
 export type PremiumExportFormat = "csv" | "excel" | "xml" | "json" | "zip";

@@ -14,9 +14,9 @@ export interface LibraryFilterState {
   line?: string;
   material?: string;
   color?: string;
-  doors?: number;      // 1..6, 0 = sem porta
-  drawers?: number;    // 1..8
-  minWidth?: number;   // mm
+  doors?: number; // 1..6, 0 = sem porta
+  drawers?: number; // 1..8
+  minWidth?: number; // mm
   maxWidth?: number;
   minHeight?: number;
   maxHeight?: number;
@@ -37,7 +37,10 @@ export function itemDrawers(item: CatalogItem): number {
   return countIn(item.name, "gavet");
 }
 
-export function applyFilters(items: readonly CatalogItem[], f: LibraryFilterState): readonly CatalogItem[] {
+export function applyFilters(
+  items: readonly CatalogItem[],
+  f: LibraryFilterState,
+): readonly CatalogItem[] {
   return items.filter((i) => {
     if (f.bucketId && !bucketsFor(i).includes(f.bucketId)) return false;
     if (f.category && i.category !== f.category) return false;
@@ -68,7 +71,7 @@ export interface FilterOptions {
 }
 
 export function deriveOptions(items: readonly CatalogItem[]): FilterOptions {
-  const set = <T,>(arr: (T | undefined | null)[]) =>
+  const set = <T>(arr: (T | undefined | null)[]) =>
     [...new Set(arr.filter((x): x is T => x != null && x !== ""))].sort() as readonly T[];
   return {
     brands: set(items.map((i) => i.brand)) as readonly string[],

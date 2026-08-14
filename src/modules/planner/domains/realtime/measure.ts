@@ -10,18 +10,34 @@ export function distanceMm(a: RealtimeVec3, b: RealtimeVec3): number {
   return Math.sqrt(dx * dx + dy * dy + dz * dz);
 }
 
-export function createMeasure(mode: RealtimeMeasureMode, a: RealtimeVec3, b: RealtimeVec3): RealtimeMeasurePoint {
+export function createMeasure(
+  mode: RealtimeMeasureMode,
+  a: RealtimeVec3,
+  b: RealtimeVec3,
+): RealtimeMeasurePoint {
   let value: number;
   switch (mode) {
-    case "height": value = Math.abs(a.y - b.y); break;
-    case "width": value = Math.abs(a.x - b.x); break;
-    case "depth": value = Math.abs(a.z - b.z); break;
-    case "area": value = Math.abs((a.x - b.x) * (a.z - b.z)); break;
-    default: value = distanceMm(a, b);
+    case "height":
+      value = Math.abs(a.y - b.y);
+      break;
+    case "width":
+      value = Math.abs(a.x - b.x);
+      break;
+    case "depth":
+      value = Math.abs(a.z - b.z);
+      break;
+    case "area":
+      value = Math.abs((a.x - b.x) * (a.z - b.z));
+      break;
+    default:
+      value = distanceMm(a, b);
   }
   return {
     id: `mm_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`,
-    mode, aMm: a, bMm: b, valueMm: value,
+    mode,
+    aMm: a,
+    bMm: b,
+    valueMm: value,
   };
 }
 

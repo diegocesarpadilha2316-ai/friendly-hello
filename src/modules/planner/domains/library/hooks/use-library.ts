@@ -23,9 +23,15 @@ export function useLibraryHardwareSearch(query: string, category?: string) {
     let cancelled = false;
     setLoading(true);
     searchHardware({ query, category, limit: 60 })
-      .then((r) => { if (!cancelled) setItems(r); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
+      .then((r) => {
+        if (!cancelled) setItems(r);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
   return { items, loading };
 }
@@ -41,9 +47,15 @@ export function useLibrarySearch(filters: LibrarySearchFilters) {
     let cancelled = false;
     setState((s) => ({ ...s, loading: true }));
     searchLibrary(filters)
-      .then((r) => { if (!cancelled) setState({ ...r, loading: false }); })
-      .catch(() => { if (!cancelled) setState({ materials: [], hardware: [], loading: false }); });
-    return () => { cancelled = true; };
+      .then((r) => {
+        if (!cancelled) setState({ ...r, loading: false });
+      })
+      .catch(() => {
+        if (!cancelled) setState({ materials: [], hardware: [], loading: false });
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
   return state;
 }

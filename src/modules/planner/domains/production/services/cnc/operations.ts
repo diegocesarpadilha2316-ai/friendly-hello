@@ -38,16 +38,17 @@ function optimizeOrder(ops: readonly CncOperation[]): readonly CncOperation[] {
     byTool.set(o.toolId, arr);
   }
   const sortedTools = [...byTool.keys()].sort();
-  return sortedTools.flatMap((t) =>
-    (byTool.get(t) ?? []).sort((a, b) => a.y - b.y || a.x - b.x),
-  );
+  return sortedTools.flatMap((t) => (byTool.get(t) ?? []).sort((a, b) => a.y - b.y || a.x - b.x));
 }
 
 function countToolChanges(ops: readonly CncOperation[]): number {
   let changes = 0;
   let last = "";
   for (const o of ops) {
-    if (o.toolId !== last) { changes++; last = o.toolId; }
+    if (o.toolId !== last) {
+      changes++;
+      last = o.toolId;
+    }
   }
   return Math.max(0, changes - 1);
 }

@@ -42,11 +42,21 @@ export function laundryExtraHardware(spec: LaundryModuleSpec): ConstructionHardw
     });
   }
   if (spec.install === "pes") {
-    extra.push({ id: "pes", kind: "perfil", qty: 4, notes: `pé regulável ${spec.feetHeightMm} mm` });
+    extra.push({
+      id: "pes",
+      kind: "perfil",
+      qty: 4,
+      notes: `pé regulável ${spec.feetHeightMm} mm`,
+    });
   }
 
   if (spec.tub.type !== "nenhum") {
-    extra.push({ id: "sifao", kind: "perfil", qty: 1, notes: "sifão e ligações flexíveis do tanque" });
+    extra.push({
+      id: "sifao",
+      kind: "perfil",
+      qty: 1,
+      notes: "sifão e ligações flexíveis do tanque",
+    });
     if (spec.countertop.cutout !== "nenhum") {
       extra.push({
         id: "recorte-tanque",
@@ -65,21 +75,28 @@ export function laundryExtraHardware(spec: LaundryModuleSpec): ConstructionHardw
       id: `instalacao-${a.kind}`,
       kind: "perfil",
       qty: 1,
-      notes: [
-        a.water ? "ponto de água" : null,
-        a.drain ? "ponto de esgoto" : null,
-        a.power ? "ponto elétrico" : null,
-        a.ventilation ? "ventilação traseira" : null,
-      ]
-        .filter(Boolean)
-        .join(" + ") || "instalação do aparelho",
+      notes:
+        [
+          a.water ? "ponto de água" : null,
+          a.drain ? "ponto de esgoto" : null,
+          a.power ? "ponto elétrico" : null,
+          a.ventilation ? "ventilação traseira" : null,
+        ]
+          .filter(Boolean)
+          .join(" + ") || "instalação do aparelho",
     });
   }
 
   if (spec.stackingKit && spec.appliance.kind === "torre") {
-    extra.push({ id: "kit-empilhamento", kind: "perfil", qty: 1, notes: "kit de empilhamento máquina + secadora" });
+    extra.push({
+      id: "kit-empilhamento",
+      kind: "perfil",
+      qty: 1,
+      notes: "kit de empilhamento máquina + secadora",
+    });
   }
-  if (spec.led) extra.push({ id: "led", kind: "perfil", qty: 1, notes: "fita LED + perfil de alumínio" });
+  if (spec.led)
+    extra.push({ id: "led", kind: "perfil", qty: 1, notes: "fita LED + perfil de alumínio" });
 
   return extra;
 }
@@ -98,7 +115,7 @@ export interface LaundryBuildResult extends FamilyBuildResult<LaundryModuleSpec>
 export const LAUNDRY_REQUIREMENTS: FamilyRequirementSpec = {
   mandatory: ["base", "lateral-e", "lateral-d"],
   important: ["tampo", "fundo", "frente"],
-  optional: ["gaveta", "prateleira", "acessorio"]
+  optional: ["gaveta", "prateleira", "acessorio"],
 };
 
 /** Monta UM módulo de lavanderia. Puro e determinístico. */

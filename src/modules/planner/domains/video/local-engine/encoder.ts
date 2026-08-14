@@ -21,9 +21,29 @@ export const LOCAL_VIDEO_RESOLUTIONS: readonly LocalVideoResolution[] = [
   { width: 15360, height: 8640, tier: "16k", label: "16K experimental" },
 ];
 
-export const LOCAL_VIDEO_ASPECTS: readonly LocalVideoAspect[] = ["16:9", "9:16", "1:1", "21:9", "4:5"];
-export const LOCAL_VIDEO_CONTAINERS: readonly LocalVideoContainer[] = ["mp4", "mov", "webm", "gif", "png-sequence"];
-export const LOCAL_VIDEO_CODECS: readonly LocalVideoCodec[] = ["h264", "h265", "vp9", "av1", "prores", "gif", "png"];
+export const LOCAL_VIDEO_ASPECTS: readonly LocalVideoAspect[] = [
+  "16:9",
+  "9:16",
+  "1:1",
+  "21:9",
+  "4:5",
+];
+export const LOCAL_VIDEO_CONTAINERS: readonly LocalVideoContainer[] = [
+  "mp4",
+  "mov",
+  "webm",
+  "gif",
+  "png-sequence",
+];
+export const LOCAL_VIDEO_CODECS: readonly LocalVideoCodec[] = [
+  "h264",
+  "h265",
+  "vp9",
+  "av1",
+  "prores",
+  "gif",
+  "png",
+];
 
 export const DEFAULT_VIDEO_OUTPUT: LocalVideoOutputSpec = {
   container: "mp4",
@@ -52,9 +72,17 @@ export function estimateBytes(spec: LocalVideoOutputSpec, durationSec: number): 
 export function estimateEncodeMs(spec: LocalVideoOutputSpec, durationSec: number): number {
   const px = spec.resolution.width * spec.resolution.height;
   const codecFactor: Readonly<Record<LocalVideoCodec, number>> = {
-    h264: 1, h265: 1.6, vp9: 1.4, av1: 2.4, prores: 0.8, gif: 0.4, png: 0.5,
+    h264: 1,
+    h265: 1.6,
+    vp9: 1.4,
+    av1: 2.4,
+    prores: 0.8,
+    gif: 0.4,
+    png: 0.5,
   };
   return Math.round(500 + durationSec * 60 * (px / 1_000_000) * codecFactor[spec.codec]);
 }
 
-export function fpsFrom(spec: LocalVideoOutputSpec): LocalFps { return spec.fps; }
+export function fpsFrom(spec: LocalVideoOutputSpec): LocalFps {
+  return spec.fps;
+}

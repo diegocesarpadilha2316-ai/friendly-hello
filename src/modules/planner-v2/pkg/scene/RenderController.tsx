@@ -55,17 +55,32 @@ function temporarilyHideGoldenModuleAssets(scene: THREE.Scene) {
         belongsToGoldenModule = true;
         break;
       }
-      if (ancestor.userData?.contentType === "decoration" || ancestor.userData?.contentType === "appliances" || ancestor.userData?.decorAsset || ancestor.userData?.assetId) {
+      if (
+        ancestor.userData?.contentType === "decoration" ||
+        ancestor.userData?.contentType === "appliances" ||
+        ancestor.userData?.decorAsset ||
+        ancestor.userData?.assetId
+      ) {
         belongsToNonFurnitureAsset = true;
       }
       ancestor = ancestor.parent;
     }
-    if (!belongsToGoldenModule && (belongsToNonFurnitureAsset || object.userData?.contentType === "decoration" || object.userData?.contentType === "appliances" || object.userData?.decorAsset || object.userData?.assetId)) {
+    if (
+      !belongsToGoldenModule &&
+      (belongsToNonFurnitureAsset ||
+        object.userData?.contentType === "decoration" ||
+        object.userData?.contentType === "appliances" ||
+        object.userData?.decorAsset ||
+        object.userData?.assetId)
+    ) {
       hidden.push({ object, visible: object.visible });
       object.visible = false;
     }
   });
-  return () => hidden.forEach(({ object, visible }) => { object.visible = visible; });
+  return () =>
+    hidden.forEach(({ object, visible }) => {
+      object.visible = visible;
+    });
 }
 
 function temporarilyHideEditorOverlays(scene: THREE.Scene) {
@@ -75,20 +90,41 @@ function temporarilyHideEditorOverlays(scene: THREE.Scene) {
     let ancestor: THREE.Object3D | null = object;
     let inTransformControls = false;
     for (let depth = 0; depth < 6 && ancestor; depth += 1) {
-      const candidate = ancestor as THREE.Object3D & { isTransformControlsGizmo?: boolean; isTransformControlsPlane?: boolean };
-      if (candidate.isTransformControlsGizmo || candidate.isTransformControlsPlane || candidate.name.toLowerCase().includes("transformcontrols") || candidate.name.toLowerCase().includes("gizmo")) {
+      const candidate = ancestor as THREE.Object3D & {
+        isTransformControlsGizmo?: boolean;
+        isTransformControlsPlane?: boolean;
+      };
+      if (
+        candidate.isTransformControlsGizmo ||
+        candidate.isTransformControlsPlane ||
+        candidate.name.toLowerCase().includes("transformcontrols") ||
+        candidate.name.toLowerCase().includes("gizmo")
+      ) {
         inTransformControls = true;
         break;
       }
       ancestor = ancestor.parent;
     }
-    const isEditorOverlay = object.userData?.renderLayer === "EDITOR_ONLY" || object.userData?.editorObject || inTransformControls || object.userData?.dragPreview || object.userData?.snapGuide || object.userData?.gizmo || name.includes("transformcontrols") || name.includes("gizmo") || object.type === "LineSegments" || object.type === "LineLoop";
+    const isEditorOverlay =
+      object.userData?.renderLayer === "EDITOR_ONLY" ||
+      object.userData?.editorObject ||
+      inTransformControls ||
+      object.userData?.dragPreview ||
+      object.userData?.snapGuide ||
+      object.userData?.gizmo ||
+      name.includes("transformcontrols") ||
+      name.includes("gizmo") ||
+      object.type === "LineSegments" ||
+      object.type === "LineLoop";
     if (isEditorOverlay) {
       hidden.push({ object, visible: object.visible });
       object.visible = false;
     }
   });
-  return () => hidden.forEach(({ object, visible }) => { object.visible = visible; });
+  return () =>
+    hidden.forEach(({ object, visible }) => {
+      object.visible = visible;
+    });
 }
 
 function renderToPng(
@@ -133,14 +169,30 @@ function renderToPng(
   return canvas.toDataURL("image/png");
 }
 
-function applyView(camera: THREE.Camera, scene: THREE.Scene, view: RenderView, aspect: number, goldenModuleCapture = false) {
+function applyView(
+  camera: THREE.Camera,
+  scene: THREE.Scene,
+  view: RenderView,
+  aspect: number,
+  goldenModuleCapture = false,
+) {
   const effectiveView = goldenModuleCapture && view === "overview" ? "detail" : view;
   applyKitchenCamera(camera, scene, effectiveView, aspect);
 }
 
 export function RenderController() {
   const { gl, scene, camera, invalidate } = useThree();
-  const videoRef = useRef<{ recorder: MediaRecorder; startedAt: number; durationMs: number; view: RenderView; stream: MediaStream; previousSize: THREE.Vector2; previousPixelRatio: number; previousAspect: number | null; previousSelectedId: string | null } | null>(null);
+  const videoRef = useRef<{
+    recorder: MediaRecorder;
+    startedAt: number;
+    durationMs: number;
+    view: RenderView;
+    stream: MediaStream;
+    previousSize: THREE.Vector2;
+    previousPixelRatio: number;
+    previousAspect: number | null;
+    previousSelectedId: string | null;
+  } | null>(null);
 
   useEffect(() => {
     const handleImage = (event: Event) => {
@@ -149,7 +201,8 @@ export function RenderController() {
       const previousPosition = camera.position.clone();
       const previousQuaternion = camera.quaternion.clone();
       const previousExposure = gl.toneMappingExposure;
-      const goldenModuleCapture = new URLSearchParams(window.location.search).get("goldenmodule") === "1";
+      const goldenModuleCapture =
+        new URLSearchParams(window.location.search).get("goldenmodule") === "1";
       let restoreOverlays = () => {};
       let restoreGoldenAssets = () => {};
       try {
@@ -163,10 +216,27 @@ export function RenderController() {
         window.setTimeout(() => {
           try {
             const dataUrl = renderToPng(gl, scene, camera, request);
-            downloadDataUrl(dataUrl, `dioris-kitchen-v10-${request.view}-${request.quality}-${request.width}x${request.height}.png`);
-            window.dispatchEvent(new CustomEvent("dioris:render-status", { detail: { kind: "success", message: `Render ${request.view} exportado em PNG real.` } }));
+            downloadDataUrl(
+              dataUrl,
+              `dioris-kitchen-v10-${request.view}-${request.quality}-${request.width}x${request.height}.png`,
+            );
+            window.dispatchEvent(
+              new CustomEvent("dioris:render-status", {
+                detail: {
+                  kind: "success",
+                  message: `Render ${request.view} exportado em PNG real.`,
+                },
+              }),
+            );
           } catch (error) {
-            window.dispatchEvent(new CustomEvent("dioris:render-status", { detail: { kind: "error", message: error instanceof Error ? error.message : "Falha ao exportar render." } }));
+            window.dispatchEvent(
+              new CustomEvent("dioris:render-status", {
+                detail: {
+                  kind: "error",
+                  message: error instanceof Error ? error.message : "Falha ao exportar render.",
+                },
+              }),
+            );
           } finally {
             restoreOverlays();
             restoreGoldenAssets();
@@ -175,7 +245,11 @@ export function RenderController() {
             usePlannerStore.getState().selectFurnitureInstance(previousSelectedId);
             camera.position.copy(previousPosition);
             camera.quaternion.copy(previousQuaternion);
-            if (camera instanceof THREE.PerspectiveCamera || camera instanceof THREE.OrthographicCamera) camera.updateProjectionMatrix();
+            if (
+              camera instanceof THREE.PerspectiveCamera ||
+              camera instanceof THREE.OrthographicCamera
+            )
+              camera.updateProjectionMatrix();
             gl.toneMappingExposure = previousExposure;
             invalidate();
           }
@@ -186,7 +260,14 @@ export function RenderController() {
         setPresentationCapture(false);
         window.dispatchEvent(new CustomEvent("dioris:render-show-editor"));
         usePlannerStore.getState().selectFurnitureInstance(previousSelectedId);
-        window.dispatchEvent(new CustomEvent("dioris:render-status", { detail: { kind: "error", message: error instanceof Error ? error.message : "Falha ao preparar render." } }));
+        window.dispatchEvent(
+          new CustomEvent("dioris:render-status", {
+            detail: {
+              kind: "error",
+              message: error instanceof Error ? error.message : "Falha ao preparar render.",
+            },
+          }),
+        );
       }
     };
 
@@ -195,7 +276,14 @@ export function RenderController() {
       const request = (event as CustomEvent<RenderVideoRequest>).detail;
       const canvas = gl.domElement;
       if (!("captureStream" in canvas) || typeof MediaRecorder === "undefined") {
-        window.dispatchEvent(new CustomEvent("dioris:render-status", { detail: { kind: "error", message: "Exportação de vídeo não suportada neste navegador; WebM indisponível." } }));
+        window.dispatchEvent(
+          new CustomEvent("dioris:render-status", {
+            detail: {
+              kind: "error",
+              message: "Exportação de vídeo não suportada neste navegador; WebM indisponível.",
+            },
+          }),
+        );
         return;
       }
       const previousSize = gl.getSize(new THREE.Vector2());
@@ -212,72 +300,141 @@ export function RenderController() {
         camera.updateProjectionMatrix();
       }
       const stream = canvas.captureStream(30);
-      const mimeType = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"].find((type) => MediaRecorder.isTypeSupported(type));
+      const mimeType = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"].find(
+        (type) => MediaRecorder.isTypeSupported(type),
+      );
       if (!mimeType) {
-        window.dispatchEvent(new CustomEvent("dioris:render-status", { detail: { kind: "error", message: "Nenhum codec WebM suportado para exportação." } }));
+        window.dispatchEvent(
+          new CustomEvent("dioris:render-status", {
+            detail: { kind: "error", message: "Nenhum codec WebM suportado para exportação." },
+          }),
+        );
         stream.getTracks().forEach((track) => track.stop());
         gl.setPixelRatio(previousPixelRatio);
         gl.setSize(previousSize.x, previousSize.y, false);
-        if (camera instanceof THREE.PerspectiveCamera && previousAspect !== null) { camera.aspect = previousAspect; camera.updateProjectionMatrix(); }
+        if (camera instanceof THREE.PerspectiveCamera && previousAspect !== null) {
+          camera.aspect = previousAspect;
+          camera.updateProjectionMatrix();
+        }
         usePlannerStore.getState().selectFurnitureInstance(previousSelectedId);
         setPresentationCapture(false);
         window.dispatchEvent(new CustomEvent("dioris:render-show-editor"));
         return;
       }
       const chunks: Blob[] = [];
-      const durationMs = request.durationMs ?? (request.preset === "quick" ? 6000 : request.preset === "client" ? 12000 : 9000);
-      const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: request.preset === "client" ? 8_000_000 : 5_000_000 });
-      recorder.ondataavailable = (dataEvent) => { if (dataEvent.data.size > 0) chunks.push(dataEvent.data); };
+      const durationMs =
+        request.durationMs ??
+        (request.preset === "quick" ? 6000 : request.preset === "client" ? 12000 : 9000);
+      const recorder = new MediaRecorder(stream, {
+        mimeType,
+        videoBitsPerSecond: request.preset === "client" ? 8_000_000 : 5_000_000,
+      });
+      recorder.ondataavailable = (dataEvent) => {
+        if (dataEvent.data.size > 0) chunks.push(dataEvent.data);
+      };
       recorder.onstop = () => {
-        downloadBlob(new Blob(chunks, { type: mimeType }), `golden-kitchen-tour-v10-${request.preset}.webm`);
+        downloadBlob(
+          new Blob(chunks, { type: mimeType }),
+          `golden-kitchen-tour-v10-${request.preset}.webm`,
+        );
         stream.getTracks().forEach((track) => track.stop());
         gl.setPixelRatio(previousPixelRatio);
         gl.setSize(previousSize.x, previousSize.y, false);
-        if (camera instanceof THREE.PerspectiveCamera && previousAspect !== null) { camera.aspect = previousAspect; camera.updateProjectionMatrix(); }
+        if (camera instanceof THREE.PerspectiveCamera && previousAspect !== null) {
+          camera.aspect = previousAspect;
+          camera.updateProjectionMatrix();
+        }
         usePlannerStore.getState().selectFurnitureInstance(previousSelectedId);
         setPresentationCapture(false);
         window.dispatchEvent(new CustomEvent("dioris:render-show-editor"));
         videoRef.current = null;
-        window.dispatchEvent(new CustomEvent("dioris:render-status", { detail: { kind: "success", message: "Vídeo WebM real exportado em 1280×720." } }));
+        window.dispatchEvent(
+          new CustomEvent("dioris:render-status", {
+            detail: { kind: "success", message: "Vídeo WebM real exportado em 1280×720." },
+          }),
+        );
       };
       recorder.onerror = () => {
         videoRef.current = null;
         stream.getTracks().forEach((track) => track.stop());
         gl.setPixelRatio(previousPixelRatio);
         gl.setSize(previousSize.x, previousSize.y, false);
-        if (camera instanceof THREE.PerspectiveCamera && previousAspect !== null) { camera.aspect = previousAspect; camera.updateProjectionMatrix(); }
+        if (camera instanceof THREE.PerspectiveCamera && previousAspect !== null) {
+          camera.aspect = previousAspect;
+          camera.updateProjectionMatrix();
+        }
         usePlannerStore.getState().selectFurnitureInstance(previousSelectedId);
         setPresentationCapture(false);
         window.dispatchEvent(new CustomEvent("dioris:render-show-editor"));
-        window.dispatchEvent(new CustomEvent("dioris:render-status", { detail: { kind: "error", message: "MediaRecorder falhou durante a exportação WebM." } }));
+        window.dispatchEvent(
+          new CustomEvent("dioris:render-status", {
+            detail: { kind: "error", message: "MediaRecorder falhou durante a exportação WebM." },
+          }),
+        );
       };
-      videoRef.current = { recorder, startedAt: performance.now(), durationMs, view: "overview", stream, previousSize, previousPixelRatio, previousAspect, previousSelectedId };
+      videoRef.current = {
+        recorder,
+        startedAt: performance.now(),
+        durationMs,
+        view: "overview",
+        stream,
+        previousSize,
+        previousPixelRatio,
+        previousAspect,
+        previousSelectedId,
+      };
       recorder.start(250);
-      window.dispatchEvent(new CustomEvent("dioris:render-status", { detail: { kind: "progress", message: `Tour ${request.preset} iniciado; exportação em WebM.` } }));
+      window.dispatchEvent(
+        new CustomEvent("dioris:render-status", {
+          detail: {
+            kind: "progress",
+            message: `Tour ${request.preset} iniciado; exportação em WebM.`,
+          },
+        }),
+      );
     };
 
     window.addEventListener("dioris:render-image", handleImage);
     window.addEventListener("dioris:render-video", handleVideo);
-    const query = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+    const query =
+      typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
     const autoCapture = query?.get("v10autocapture") === "1";
     const requestedView = query?.get("v10view");
-    const autoView: RenderView = requestedView === "front" || requestedView === "three-quarter-left" || requestedView === "three-quarter-right" || requestedView === "island" || requestedView === "detail" || requestedView === "overview" || requestedView === "top" || requestedView === "lateral" ? requestedView : "front";
+    const autoView: RenderView =
+      requestedView === "front" ||
+      requestedView === "three-quarter-left" ||
+      requestedView === "three-quarter-right" ||
+      requestedView === "island" ||
+      requestedView === "detail" ||
+      requestedView === "overview" ||
+      requestedView === "top" ||
+      requestedView === "lateral"
+        ? requestedView
+        : "front";
     const goldenModule = query?.get("goldenmodule") === "1";
     const goldenOpen = query?.get("goldenopen") === "1";
     const openAll = query?.get("v10open") === "1";
     const autoVideo = query?.get("v10video") as RenderVideoRequest["preset"] | null;
-    const autoCaptureTimer = autoCapture ? window.setTimeout(() => {
-      if (openAll) usePlannerStore.getState().openAllAnimations();
-      else if (goldenModule && goldenOpen) {
-        const id = usePlannerStore.getState().instances[0]?.id;
-        if (id) usePlannerStore.getState().toggleInstanceAnimation(id);
-      }
-      if (autoVideo === "quick" || autoVideo === "professional" || autoVideo === "client") {
-        window.dispatchEvent(new CustomEvent("dioris:render-video", { detail: { preset: autoVideo } }));
-      } else {
-        window.dispatchEvent(new CustomEvent("dioris:render-image", { detail: { view: autoView, quality: "quick", width: 1280, height: 720 } }));
-      }
-    }, 5200) : undefined;
+    const autoCaptureTimer = autoCapture
+      ? window.setTimeout(() => {
+          if (openAll) usePlannerStore.getState().openAllAnimations();
+          else if (goldenModule && goldenOpen) {
+            const id = usePlannerStore.getState().instances[0]?.id;
+            if (id) usePlannerStore.getState().toggleInstanceAnimation(id);
+          }
+          if (autoVideo === "quick" || autoVideo === "professional" || autoVideo === "client") {
+            window.dispatchEvent(
+              new CustomEvent("dioris:render-video", { detail: { preset: autoVideo } }),
+            );
+          } else {
+            window.dispatchEvent(
+              new CustomEvent("dioris:render-image", {
+                detail: { view: autoView, quality: "quick", width: 1280, height: 720 },
+              }),
+            );
+          }
+        }, 5200)
+      : undefined;
     return () => {
       if (autoCaptureTimer) window.clearTimeout(autoCaptureTimer);
       window.removeEventListener("dioris:render-image", handleImage);
@@ -293,10 +450,15 @@ export function RenderController() {
     const progress = Math.min(elapsed / session.durationMs, 1);
     const angle = progress * Math.PI * 2.2;
     const radius = 5.6 - progress * 1.4;
-      camera.position.set(Math.sin(angle) * radius, 1.55 + Math.sin(progress * Math.PI) * 0.55, Math.cos(angle) * radius + 0.3);
-      VIEW_TARGET.set(0, 1.05, -0.58);
-      camera.lookAt(VIEW_TARGET);
-    if (camera instanceof THREE.PerspectiveCamera || camera instanceof THREE.OrthographicCamera) camera.updateProjectionMatrix();
+    camera.position.set(
+      Math.sin(angle) * radius,
+      1.55 + Math.sin(progress * Math.PI) * 0.55,
+      Math.cos(angle) * radius + 0.3,
+    );
+    VIEW_TARGET.set(0, 1.05, -0.58);
+    camera.lookAt(VIEW_TARGET);
+    if (camera instanceof THREE.PerspectiveCamera || camera instanceof THREE.OrthographicCamera)
+      camera.updateProjectionMatrix();
     invalidate();
     if (progress >= 1) session.recorder.stop();
   });

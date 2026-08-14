@@ -42,16 +42,22 @@ function RoomSvg({
   }, [room, visibleIds]);
 
   return (
-    <div className={cn(
-      "overflow-hidden rounded-xl border",
-      accent === "after" ? "border-primary/40" : "border-border/60",
-    )}>
-      <div className={cn(
-        "flex items-center justify-between border-b border-border/60 px-3 py-1.5 text-xs uppercase tracking-wide",
-        accent === "after" ? "bg-primary/10 text-primary" : "bg-muted/30 text-muted-foreground",
-      )}>
+    <div
+      className={cn(
+        "overflow-hidden rounded-xl border",
+        accent === "after" ? "border-primary/40" : "border-border/60",
+      )}
+    >
+      <div
+        className={cn(
+          "flex items-center justify-between border-b border-border/60 px-3 py-1.5 text-xs uppercase tracking-wide",
+          accent === "after" ? "bg-primary/10 text-primary" : "bg-muted/30 text-muted-foreground",
+        )}
+      >
         <span>{label}</span>
-        <span>{room.dimensions.width}×{room.dimensions.depth} mm</span>
+        <span>
+          {room.dimensions.width}×{room.dimensions.depth} mm
+        </span>
       </div>
       <div className="aspect-[4/3] bg-background">
         <svg viewBox={`0 0 ${w} ${h}`} className="h-full w-full">

@@ -55,7 +55,6 @@ export async function notify(input: NotifyInput): Promise<void> {
       });
     }
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.error("[notify] failed", err);
   }
 }
@@ -73,8 +72,7 @@ export async function notifyWelcome(params: {
     category: "onboarding",
     priority: "normal",
     title: `Bem-vindo à Dioris${params.companyName ? `, ${params.companyName}` : ""}`,
-    body:
-      "Sua conta foi provisionada com o plano Free e 100 créditos iniciais. Explore o Planner para começar seu primeiro projeto.",
+    body: "Sua conta foi provisionada com o plano Free e 100 créditos iniciais. Explore o Planner para começar seu primeiro projeto.",
     link: "/workspace",
     icon: "sparkles",
     email: params.email ? { to: params.email, subject: "Bem-vindo à Dioris" } : null,

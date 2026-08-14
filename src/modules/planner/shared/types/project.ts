@@ -28,13 +28,7 @@ export interface PlannerDimensions {
 }
 
 export type PlannerParametricNodeKind =
-  | "wall"
-  | "floor"
-  | "ceiling"
-  | "opening"
-  | "module"
-  | "hardware"
-  | "material";
+  "wall" | "floor" | "ceiling" | "opening" | "module" | "hardware" | "material";
 
 export interface PlannerParametricNode {
   id: string;
@@ -68,12 +62,7 @@ export interface PlannerEnvironment {
   updatedAt: string;
 }
 
-export type PlannerProjectStatus =
-  | "draft"
-  | "in_progress"
-  | "review"
-  | "approved"
-  | "archived";
+export type PlannerProjectStatus = "draft" | "in_progress" | "review" | "approved" | "archived";
 
 export type PlannerProjectStyle =
   | "moderno"

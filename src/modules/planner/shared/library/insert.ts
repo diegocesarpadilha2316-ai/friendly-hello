@@ -39,7 +39,10 @@ export interface InsertionOptions {
   materialId?: string;
 }
 
-export function buildFurniturePrimitive(item: CatalogItem, opts: InsertionOptions = {}): Editor2DPrimitive {
+export function buildFurniturePrimitive(
+  item: CatalogItem,
+  opts: InsertionOptions = {},
+): Editor2DPrimitive {
   const { defaults } = item.parametric;
   const width = opts.overrides?.width ?? defaults.width;
   const depth = opts.overrides?.depth ?? defaults.depth;
@@ -106,7 +109,9 @@ export function insertItemIntoProject(
       bridgeToWindow("ui:item-inserted", { primitiveId: last.id, roomId: target.roomId });
       bridgeToWindow("ui:focus-selection", { primitiveId: last.id });
     }
-  } catch { /* ambientes sem window/CustomEvent ou bus */ }
+  } catch {
+    /* ambientes sem window/CustomEvent ou bus */
+  }
   return next;
 }
 
@@ -168,8 +173,7 @@ function applyInsertion(room: PlannerRoom, item: CatalogItem, opts: InsertionOpt
   );
   if (existing.length > 0 && isCabinet) {
     const candidate = { x: at.x - halfW, y: at.y - halfD, width, depth, rotation };
-    const collides = () =>
-      existing.some((p) => aabbOverlap(candidate, p, CLEARANCE_MM));
+    const collides = () => existing.some((p) => aabbOverlap(candidate, p, CLEARANCE_MM));
     if (collides()) {
       // Determina eixo de deslizamento pela parede (horizontal para bottom/top).
       const horizontal = rotation === 0 || rotation === 180 || rotation === undefined;
@@ -189,13 +193,21 @@ function applyInsertion(room: PlannerRoom, item: CatalogItem, opts: InsertionOpt
             candidate.y = v - halfD;
             at = { x: at.x, y: v };
           }
-          if (!collides()) { found = true; break; }
+          if (!collides()) {
+            found = true;
+            break;
+          }
         }
       }
     }
   }
   return upsertPrimitive(
     room,
-    buildFurniturePrimitive(item, { ...opts, at, rotation, overrides: { ...opts.overrides, depth } }),
+    buildFurniturePrimitive(item, {
+      ...opts,
+      at,
+      rotation,
+      overrides: { ...opts.overrides, depth },
+    }),
   );
 }

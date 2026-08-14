@@ -135,12 +135,15 @@ export function normalizeWardrobeSpec(input: Partial<WardrobeSpec> = {}): Wardro
 
   const autoColumns =
     opening === "abrir" ? Math.max(1, doors) : Math.min(6, Math.max(1, Math.round(widthMm / 900)));
-  const columns = input.columns && input.columns > 0 ? clampInt(input.columns, 1, 8, autoColumns) : autoColumns;
+  const columns =
+    input.columns && input.columns > 0 ? clampInt(input.columns, 1, 8, autoColumns) : autoColumns;
 
   const drawers = clampInt(input.drawers, 0, 8, d.drawers);
   const rawDrawerColumn = num(input.drawerColumn, d.drawerColumn);
   const drawerColumn =
-    rawDrawerColumn >= 0 ? Math.min(columns - 1, Math.round(rawDrawerColumn)) : Math.floor((columns - 1) / 2);
+    rawDrawerColumn >= 0
+      ? Math.min(columns - 1, Math.round(rawDrawerColumn))
+      : Math.floor((columns - 1) / 2);
 
   const maleiro = input.maleiro === true;
   const maleiroHeightMm = maleiro

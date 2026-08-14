@@ -1,10 +1,5 @@
 import type { CutListRow } from "../../types";
-import type {
-  FabricationBoard,
-  FabricationPlan,
-  OffcutRect,
-  OptimizerConstraints,
-} from "./types";
+import type { FabricationBoard, FabricationPlan, OffcutRect, OptimizerConstraints } from "./types";
 import { DEFAULT_OPTIMIZER_CONSTRAINTS } from "./types";
 import { STANDARD_BOARD } from "../cutting-plan";
 
@@ -80,10 +75,7 @@ export function optimizeCutting(
 
   const flush = () => {
     if (placementsMutable.length === 0) return;
-    const usedArea = placementsMutable.reduce(
-      (acc, pl) => acc + (pl.w * pl.h) / 1_000_000,
-      0,
-    );
+    const usedArea = placementsMutable.reduce((acc, pl) => acc + (pl.w * pl.h) / 1_000_000, 0);
     const offcuts: OffcutRect[] = freeRects
       .map((r) => ({
         x: r.x,
@@ -111,7 +103,13 @@ export function optimizeCutting(
     freeRects = [{ x: margin, y: margin, w: boardW, h: boardH }];
   };
 
-  const tryPlace = (w: number, h: number, rotated: boolean, code: string, grainOk: boolean): boolean => {
+  const tryPlace = (
+    w: number,
+    h: number,
+    rotated: boolean,
+    code: string,
+    grainOk: boolean,
+  ): boolean => {
     let bestIdx = -1;
     let bestScore = Infinity;
     for (let i = 0; i < freeRects.length; i++) {
@@ -164,14 +162,10 @@ export function optimizeCutting(
 
   const usedTotal = boards.reduce((a, b) => a + b.usedM2, 0);
   const wasteTotal = boards.reduce((a, b) => a + b.wasteM2, 0);
-  const offcutTotal = boards.reduce(
-    (a, b) => a + b.offcuts.reduce((s, o) => s + o.areaM2, 0),
-    0,
-  );
-  const avgUsage = boards.length
-    ? boards.reduce((a, b) => a + b.usageRatio, 0) / boards.length
-    : 0;
-  const totalPieces = placementsMutable.length + boards.reduce((a, b) => a + b.placements.length, 0);
+  const offcutTotal = boards.reduce((a, b) => a + b.offcuts.reduce((s, o) => s + o.areaM2, 0), 0);
+  const avgUsage = boards.length ? boards.reduce((a, b) => a + b.usageRatio, 0) / boards.length : 0;
+  const totalPieces =
+    placementsMutable.length + boards.reduce((a, b) => a + b.placements.length, 0);
   const grainPct = totalPieces > 0 ? Math.round((grainOkCount / totalPieces) * 100) : 100;
 
   return {
@@ -185,7 +179,12 @@ export function optimizeCutting(
       avgUsageRatio: Math.round(avgUsage * 100) / 100,
       effectiveRatio:
         boards.length > 0
-          ? Math.round(((usedTotal + offcutTotal) / (boards.length * ((STANDARD_BOARD.lengthMm * STANDARD_BOARD.widthMm) / 1_000_000))) * 100) / 100
+          ? Math.round(
+              ((usedTotal + offcutTotal) /
+                (boards.length *
+                  ((STANDARD_BOARD.lengthMm * STANDARD_BOARD.widthMm) / 1_000_000))) *
+                100,
+            ) / 100
           : 0,
       totalCuts,
       grainRespectedPct: grainPct,

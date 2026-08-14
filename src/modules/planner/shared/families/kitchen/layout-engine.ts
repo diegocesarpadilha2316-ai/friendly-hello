@@ -307,9 +307,19 @@ const FIXTURE_WIDTH: Readonly<Record<KitchenFixtureKind, number>> = {
 };
 
 /** Aparelhos que ocupam a faixa inteira (nenhum módulo inferior embaixo). */
-const FULL_HEIGHT: ReadonlySet<KitchenFixtureKind> = new Set(["geladeira", "porta", "torre-quente"]);
+const FULL_HEIGHT: ReadonlySet<KitchenFixtureKind> = new Set([
+  "geladeira",
+  "porta",
+  "torre-quente",
+]);
 /** Aparelhos que impedem aéreo acima. */
-const BLOCKS_UPPER: ReadonlySet<KitchenFixtureKind> = new Set(["janela", "porta", "coifa", "geladeira", "torre-quente"]);
+const BLOCKS_UPPER: ReadonlySet<KitchenFixtureKind> = new Set([
+  "janela",
+  "porta",
+  "coifa",
+  "geladeira",
+  "torre-quente",
+]);
 /** Aparelhos embutidos no balcão (definem o módulo daquele trecho). */
 const BASE_MODULE_OF: Partial<Record<KitchenFixtureKind, KitchenModuleKind>> = {
   pia: "balcao-pia",
@@ -451,7 +461,10 @@ export function planKitchen(input: KitchenLayoutInput): KitchenLayoutResult {
     plinth: cfg.plinth,
   } as const;
 
-  const add = (d: Omit<Draft, "absorbedMm" | "facing" | "extra"> & Partial<Pick<Draft, "absorbedMm" | "facing" | "extra">>) => {
+  const add = (
+    d: Omit<Draft, "absorbedMm" | "facing" | "extra"> &
+      Partial<Pick<Draft, "absorbedMm" | "facing" | "extra">>,
+  ) => {
     drafts.push({ absorbedMm: 0, facing: "parede", extra: {}, ...d });
   };
 
@@ -546,7 +559,10 @@ export function planKitchen(input: KitchenLayoutInput): KitchenLayoutResult {
         // Retorno: o canto pertence à parede vizinha; aqui só reservamos
         // a profundidade da caixa que invade este trecho.
         const rw = Math.min(cfg.baseDepthMm, w);
-        reserved.push({ startMm: at === "start" ? 0 : wallLen - rw, endMm: at === "start" ? rw : wallLen });
+        reserved.push({
+          startMm: at === "start" ? 0 : wallLen - rw,
+          endMm: at === "start" ? rw : wallLen,
+        });
         reservations.push({
           id: `${wall.id}-retorno-${at}`,
           wallId: wall.id,
@@ -587,7 +603,8 @@ export function planKitchen(input: KitchenLayoutInput): KitchenLayoutResult {
     let freeBase: Span[] = [{ startMm: 0, endMm: wallLen }];
     let freeUpper: Span[] = [{ startMm: 0, endMm: wallLen }];
     const cornerModules = drafts.filter((d) => d.wallId === wall.id && d.origin === "canto");
-    for (const c of cornerModules) freeBase = subtract(freeBase, { startMm: c.xMm, endMm: c.xMm + c.widthMm });
+    for (const c of cornerModules)
+      freeBase = subtract(freeBase, { startMm: c.xMm, endMm: c.xMm + c.widthMm });
     for (const r of reserved) freeBase = subtract(freeBase, r);
     // No nível superior a quina é resolvida por UMA das paredes: a que não é
     // dona do canto libera a profundidade do aéreo, senão os dois se cruzam.
@@ -605,7 +622,9 @@ export function planKitchen(input: KitchenLayoutInput): KitchenLayoutResult {
     const hoodSpans: Span[] = [];
     for (const f of accepted) {
       const span: Span = { startMm: f.atMm, endMm: f.atMm + f.widthMm };
-      const overCorner = cornerModules.some((c) => overlapsSpan(span, { startMm: c.xMm, endMm: c.xMm + c.widthMm }));
+      const overCorner = cornerModules.some((c) =>
+        overlapsSpan(span, { startMm: c.xMm, endMm: c.xMm + c.widthMm }),
+      );
       if (overCorner || reserved.some((r) => overlapsSpan(span, r))) {
         dropped.push(`${f.kind} conflita com o canto da parede ${wall.id}`);
         warnings.push({
@@ -717,7 +736,10 @@ export function planKitchen(input: KitchenLayoutInput): KitchenLayoutResult {
           yMm: 0,
           heightMm: f.kind === "porta" ? (f.heightMm ?? 2100) : cfg.baseHeightMm,
           depthMm: cfg.baseDepthMm,
-          note: f.kind === "porta" ? "abertura de porta — sem marcenaria e sem tampo" : "vão de embutir",
+          note:
+            f.kind === "porta"
+              ? "abertura de porta — sem marcenaria e sem tampo"
+              : "vão de embutir",
         });
         if (f.kind === "lava-loucas" && f.widthMm < cfg.ergonomics.dishwasherWidthMinMm) {
           warnings.push({
@@ -760,7 +782,9 @@ export function planKitchen(input: KitchenLayoutInput): KitchenLayoutResult {
     for (const ck of cooktops) {
       const span: Span = { startMm: ck.atMm, endMm: ck.atMm + ck.widthMm };
       freeUpper = subtract(freeUpper, span);
-      const hood = hoods.find((h) => overlapsSpan(span, { startMm: h.atMm, endMm: h.atMm + h.widthMm }));
+      const hood = hoods.find((h) =>
+        overlapsSpan(span, { startMm: h.atMm, endMm: h.atMm + h.widthMm }),
+      );
       const center = span.startMm + ck.widthMm / 2;
       if (hood) {
         const hoodCenter = hood.atMm + hood.widthMm / 2;
@@ -845,7 +869,8 @@ export function planKitchen(input: KitchenLayoutInput): KitchenLayoutResult {
         if (d.wallId !== wall.id || d.origin !== "automatico" || d.level !== "inferior") continue;
         if (d.kind !== "gaveteiro" && d.kind !== "gavetao") continue;
         const touches = cornerEdges.some(
-          (edge) => Math.abs(edge - d.xMm) < clearance || Math.abs(edge - (d.xMm + d.widthMm)) < clearance,
+          (edge) =>
+            Math.abs(edge - d.xMm) < clearance || Math.abs(edge - (d.xMm + d.widthMm)) < clearance,
         );
         if (touches) d.kind = "balcao";
       }
@@ -891,10 +916,14 @@ export function planKitchen(input: KitchenLayoutInput): KitchenLayoutResult {
       // Prefere alargar um módulo automático; se não houver, alarga o módulo
       // do aparelho (a caixa pode ser maior que o eletrodoméstico).
       const pickable = [left, right].filter(
-        (b): b is Draft => !!b && b.level !== "coluna" && b.widthMm + width <= cfg.maxModuleWidthMm + (isFixedWidthKind(b.kind) ? 600 : 0),
+        (b): b is Draft =>
+          !!b &&
+          b.level !== "coluna" &&
+          b.widthMm + width <= cfg.maxModuleWidthMm + (isFixedWidthKind(b.kind) ? 600 : 0),
       );
       const target =
-        pickable.find((b) => b.origin === "automatico") ?? (width <= cfg.maxAbsorbMm ? pickable[0] : undefined);
+        pickable.find((b) => b.origin === "automatico") ??
+        (width <= cfg.maxAbsorbMm ? pickable[0] : undefined);
       if (target) {
         if (target === left) target.widthMm += width;
         else {
@@ -905,7 +934,12 @@ export function planKitchen(input: KitchenLayoutInput): KitchenLayoutResult {
         resized.push(`${wall.id}:${target.kind}@${target.xMm} +${Math.round(width)} mm`);
         continue;
       }
-      fillers.push({ wallId: wall.id, xMm: gap.startMm, widthMm: width, heightMm: cfg.baseHeightMm });
+      fillers.push({
+        wallId: wall.id,
+        xMm: gap.startMm,
+        widthMm: width,
+        heightMm: cfg.baseHeightMm,
+      });
       warnings.push({
         code: "tamponamento",
         level: "info",
@@ -1030,7 +1064,10 @@ export function planKitchen(input: KitchenLayoutInput): KitchenLayoutResult {
   if (input.island && input.island.lengthMm >= 800) {
     const isl = input.island;
     const totalDepth = isl.depthMm ?? 900;
-    const moduleDepth = Math.max(300, Math.min(isl.moduleDepthMm ?? Math.min(cfg.baseDepthMm, totalDepth), totalDepth));
+    const moduleDepth = Math.max(
+      300,
+      Math.min(isl.moduleDepthMm ?? Math.min(cfg.baseDepthMm, totalDepth), totalDepth),
+    );
     const overhang = Math.max(0, isl.overhangMm ?? totalDepth - moduleDepth);
     const facing: KitchenPlacement["facing"] = isl.facing === "dupla" ? "dupla" : "frente";
     const parts = splitRun(isl.lengthMm, cfg);

@@ -1,10 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  assetsAuditQuery,
-  assetsJobsQuery,
-  assetsListQuery,
-  assetsStatsQuery,
-} from "./queries";
+import { assetsAuditQuery, assetsJobsQuery, assetsListQuery, assetsStatsQuery } from "./queries";
 
 export function useAssetsList(folderId?: string | null) {
   return useQuery(assetsListQuery(folderId));

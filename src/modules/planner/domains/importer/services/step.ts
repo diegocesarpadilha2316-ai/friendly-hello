@@ -10,10 +10,16 @@ export function parseSTEP(text: string, filename: string): ImportResult {
     bytes: text.length,
     scale: { factorToMm: 1, detectedUnit: "mm" },
     bbox: null,
-    layers: [{ id: "STEP", name: "STEP", visible: true, locked: false, count: entities, role: "block" }],
-    entities: [], materials: [], texts: [],
+    layers: [
+      { id: "STEP", name: "STEP", visible: true, locked: false, count: entities, role: "block" },
+    ],
+    entities: [],
+    materials: [],
+    texts: [],
     previewSvg: null,
-    warnings: [{ code: "step-cad", severity: "info", message: `STEP com ${entities} entidades CAD.` }],
+    warnings: [
+      { code: "step-cad", severity: "info", message: `STEP com ${entities} entidades CAD.` },
+    ],
     createdAt: new Date().toISOString(),
   };
 }

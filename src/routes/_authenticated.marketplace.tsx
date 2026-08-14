@@ -1,11 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ShoppingBag } from "lucide-react";
-import {
-  PageContainer,
-  PageHeader,
-  EmptyState,
-  StatusBadge,
-} from "@/core/components/ui-kit";
+import { PageContainer, PageHeader, EmptyState, StatusBadge } from "@/core/components/ui-kit";
 
 export const Route = createFileRoute("/_authenticated/marketplace")({
   head: () => ({

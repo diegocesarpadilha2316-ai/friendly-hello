@@ -467,11 +467,11 @@ export function toolCreateRoomPreset(
     const proposed = composeDecor({ analysis, occupied, sizeOf });
 
     // ── 4) CONTROLE DE QUALIDADE + REORGANIZAÇÃO AUTOMÁTICA ─────────────
-    const { decor: finalDecor, report, passes } = rebalanceComposition(
-      analysis,
-      occupied,
-      proposed,
-    );
+    const {
+      decor: finalDecor,
+      report,
+      passes,
+    } = rebalanceComposition(analysis, occupied, proposed);
 
     for (const d of finalDecor) {
       const item = findCatalogItem(d.catalogItemId);
@@ -482,8 +482,7 @@ export function toolCreateRoomPreset(
       });
       decorPlaced += 1;
     }
-    qualityLine =
-      `${describeQuality(report)}` + (passes > 0 ? ` (reorganizado ${passes}×)` : "");
+    qualityLine = `${describeQuality(report)}` + (passes > 0 ? ` (reorganizado ${passes}×)` : "");
   }
 
   // ── Auditoria Modo Engenharia ──────────────────────────────────────────
@@ -1045,8 +1044,7 @@ export function toolSetModuleParams(
   }
   if (args.mirror != null) {
     patch["mod:mirror"] = args.mirror;
-    if (args.mirror && args.mirrorPosition)
-      patch["mod:mirrorPosition"] = args.mirrorPosition;
+    if (args.mirror && args.mirrorPosition) patch["mod:mirrorPosition"] = args.mirrorPosition;
     notes.push(args.mirror ? "espelho" : "sem espelho");
   }
   if (args.handle != null) {

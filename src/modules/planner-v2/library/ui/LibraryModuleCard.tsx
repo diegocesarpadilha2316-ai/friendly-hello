@@ -8,7 +8,7 @@ export function LibraryModuleCard({
   onAdd,
   onDragStart,
   onDragEnd,
-  onTouchStart
+  onTouchStart,
 }: {
   definition: ModuleDefinition;
   onAdd: (moduleId: string) => void;
@@ -31,7 +31,9 @@ export function LibraryModuleCard({
         onDragStart?.(definition.id);
       }}
       onDragEnd={() => onDragEnd?.()}
-      onPointerDown={(event) => { if (event.pointerType === "touch") onTouchStart?.(definition.id); }}
+      onPointerDown={(event) => {
+        if (event.pointerType === "touch") onTouchStart?.(definition.id);
+      }}
     >
       <ModulePreview definition={definition} />
       <div className="library-card-info">
@@ -39,11 +41,19 @@ export function LibraryModuleCard({
         <span>
           {width} × {height} × {depth} mm
         </span>
-        <span className="library-card-meta">{definition.category}{definition.subcategory ? ` · ${definition.subcategory}` : ""}</span>
+        <span className="library-card-meta">
+          {definition.category}
+          {definition.subcategory ? ` · ${definition.subcategory}` : ""}
+        </span>
         <span className="library-card-meta">Tipo: {definition.kind ?? "módulo"}</span>
         <span className="library-card-material">{material.name}</span>
       </div>
-      <button type="button" className="library-add" aria-label={`Adicionar ${definition.name}`} onClick={() => onAdd(definition.id)}>
+      <button
+        type="button"
+        className="library-add"
+        aria-label={`Adicionar ${definition.name}`}
+        onClick={() => onAdd(definition.id)}
+      >
         <Plus size={14} /> Adicionar
       </button>
     </div>

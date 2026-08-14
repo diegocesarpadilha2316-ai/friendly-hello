@@ -42,7 +42,9 @@ export function RenderRealPanel() {
       </section>
 
       <section className="rounded-xl border border-white/10 bg-white/5 p-3">
-        <p className="mb-2 text-xs uppercase tracking-wider text-slate-500">Viewport — Comparação</p>
+        <p className="mb-2 text-xs uppercase tracking-wider text-slate-500">
+          Viewport — Comparação
+        </p>
         <div className="flex flex-wrap gap-2">
           {COMPARE_MODES.map((m) => (
             <button
@@ -60,7 +62,9 @@ export function RenderRealPanel() {
         </div>
         {real.compare.mode === "split" && (
           <div className="mt-3">
-            <label className="text-[11px] text-slate-400">Divisão: {real.compare.splitPercent}%</label>
+            <label className="text-[11px] text-slate-400">
+              Divisão: {real.compare.splitPercent}%
+            </label>
             <input
               type="range"
               min={0}
@@ -103,7 +107,8 @@ export function RenderRealPanel() {
           </span>
         </div>
         <p className="mt-2 text-[11px] text-slate-500">
-          Chamar `real.exportCanvas(canvas, {`{`} format, quality: 0.92, bitDepth: 8, width: {res.width}, height: {res.height} {`}`})` a partir do viewport ativo.
+          Chamar `real.exportCanvas(canvas, {`{`} format, quality: 0.92, bitDepth: 8, width:{" "}
+          {res.width}, height: {res.height} {`}`})` a partir do viewport ativo.
         </p>
       </section>
 
@@ -122,7 +127,9 @@ export function RenderRealPanel() {
             <span
               key={k}
               className={`rounded-md border px-2 py-1 text-[11px] ${
-                v ? "border-emerald-400/30 bg-emerald-500/10 text-emerald-200" : "border-white/10 bg-white/5 text-slate-400"
+                v
+                  ? "border-emerald-400/30 bg-emerald-500/10 text-emerald-200"
+                  : "border-white/10 bg-white/5 text-slate-400"
               }`}
             >
               {k}

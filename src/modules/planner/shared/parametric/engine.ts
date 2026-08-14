@@ -13,19 +13,11 @@
  *  - Sem side-effects. Sem acesso a Core, IA, storage ou eventos.
  *  - Unidade oficial: milímetros.
  */
-import type {
-  PlannerDimensions,
-  PlannerParametricNode,
-  PlannerRoom,
-} from "../types/project";
+import type { PlannerDimensions, PlannerParametricNode, PlannerRoom } from "../types/project";
 
 export interface PlannerEvaluationIssue {
   nodeId: string;
-  code:
-    | "invalid-dimension"
-    | "out-of-bounds"
-    | "missing-param"
-    | "type-mismatch";
+  code: "invalid-dimension" | "out-of-bounds" | "missing-param" | "type-mismatch";
   message: string;
 }
 
@@ -48,11 +40,7 @@ function evalNodeDimensions(
   const issues: PlannerEvaluationIssue[] = [];
 
   // Módulos, aberturas, ferragens têm dimensões próprias declaradas.
-  const dimensional: readonly PlannerParametricNode["kind"][] = [
-    "module",
-    "opening",
-    "hardware",
-  ];
+  const dimensional: readonly PlannerParametricNode["kind"][] = ["module", "opening", "hardware"];
   if (!dimensional.includes(node.kind)) {
     return { dims: null, issues };
   }

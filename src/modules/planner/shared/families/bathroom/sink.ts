@@ -7,13 +7,7 @@
  * O desenho realista da louça vem depois — o volume é que precisa estar certo.
  */
 
-export type SinkType =
-  | "apoio"
-  | "embutir"
-  | "sobrepor"
-  | "esculpida"
-  | "dupla"
-  | "nenhuma";
+export type SinkType = "apoio" | "embutir" | "sobrepor" | "esculpida" | "dupla" | "nenhuma";
 
 export type SinkPosition = "central" | "esquerda" | "direita" | "dupla";
 
@@ -50,12 +44,60 @@ export interface SinkProfileDef {
 }
 
 export const SINKS: Readonly<Record<SinkType, SinkProfileDef>> = {
-  apoio: { id: "apoio", label: "Cuba de apoio", widthMm: 420, depthMm: 380, heightMm: 130, dropMm: 0, cutout: false },
-  embutir: { id: "embutir", label: "Cuba de embutir", widthMm: 460, depthMm: 380, heightMm: 160, dropMm: 160, cutout: true },
-  sobrepor: { id: "sobrepor", label: "Cuba de sobrepor", widthMm: 500, depthMm: 400, heightMm: 150, dropMm: 60, cutout: true },
-  esculpida: { id: "esculpida", label: "Cuba esculpida", widthMm: 600, depthMm: 400, heightMm: 110, dropMm: 110, cutout: true },
-  dupla: { id: "dupla", label: "Cuba dupla", widthMm: 420, depthMm: 380, heightMm: 150, dropMm: 150, cutout: true },
-  nenhuma: { id: "nenhuma", label: "Sem cuba", widthMm: 0, depthMm: 0, heightMm: 0, dropMm: 0, cutout: false },
+  apoio: {
+    id: "apoio",
+    label: "Cuba de apoio",
+    widthMm: 420,
+    depthMm: 380,
+    heightMm: 130,
+    dropMm: 0,
+    cutout: false,
+  },
+  embutir: {
+    id: "embutir",
+    label: "Cuba de embutir",
+    widthMm: 460,
+    depthMm: 380,
+    heightMm: 160,
+    dropMm: 160,
+    cutout: true,
+  },
+  sobrepor: {
+    id: "sobrepor",
+    label: "Cuba de sobrepor",
+    widthMm: 500,
+    depthMm: 400,
+    heightMm: 150,
+    dropMm: 60,
+    cutout: true,
+  },
+  esculpida: {
+    id: "esculpida",
+    label: "Cuba esculpida",
+    widthMm: 600,
+    depthMm: 400,
+    heightMm: 110,
+    dropMm: 110,
+    cutout: true,
+  },
+  dupla: {
+    id: "dupla",
+    label: "Cuba dupla",
+    widthMm: 420,
+    depthMm: 380,
+    heightMm: 150,
+    dropMm: 150,
+    cutout: true,
+  },
+  nenhuma: {
+    id: "nenhuma",
+    label: "Sem cuba",
+    widthMm: 0,
+    depthMm: 0,
+    heightMm: 0,
+    dropMm: 0,
+    cutout: false,
+  },
 };
 
 function clampNum(v: unknown, fallback: number, min: number, max: number): number {
@@ -118,14 +160,23 @@ export function normalizeSink(
     widthMm: width,
     depthMm: depth,
     heightMm: type === "nenhuma" ? 0 : clampNum(input?.heightMm, def.heightMm, 60, 400),
-    xMm: typeof input?.xMm === "number" && Number.isFinite(input.xMm) ? Math.round(input.xMm) : undefined,
+    xMm:
+      typeof input?.xMm === "number" && Number.isFinite(input.xMm)
+        ? Math.round(input.xMm)
+        : undefined,
     zMm: type === "nenhuma" ? 0 : clampNum(input?.zMm, 60, 0, 400),
-    cutoutWidthMm: def.cutout ? clampNum(input?.cutoutWidthMm, Math.max(120, width - 60), 100, 900) : 0,
-    cutoutDepthMm: def.cutout ? clampNum(input?.cutoutDepthMm, Math.max(120, depth - 60), 100, 700) : 0,
+    cutoutWidthMm: def.cutout
+      ? clampNum(input?.cutoutWidthMm, Math.max(120, width - 60), 100, 900)
+      : 0,
+    cutoutDepthMm: def.cutout
+      ? clampNum(input?.cutoutDepthMm, Math.max(120, depth - 60), 100, 700)
+      : 0,
     faucetCutout: input?.faucetCutout ?? type !== "nenhuma",
     siphonMm: type === "nenhuma" ? 0 : clampNum(input?.siphonMm, 220, 120, 400),
     hydraulicHeightMm:
-      type === "nenhuma" ? 0 : clampNum(input?.hydraulicHeightMm, Math.max(260, def.dropMm + 200), 150, 800),
+      type === "nenhuma"
+        ? 0
+        : clampNum(input?.hydraulicHeightMm, Math.max(260, def.dropMm + 200), 150, 800),
   };
 }
 

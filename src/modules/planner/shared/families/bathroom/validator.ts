@@ -55,9 +55,15 @@ export function validateBathroomModule(
     issues.push({ code, level: "recomendacao", message });
 
   /* medidas mínimas */
-  if (spec.widthMm < p.minWidthMm) err("largura-minima", `largura ${spec.widthMm} mm abaixo do mínimo ${p.minWidthMm} mm`);
-  if (spec.depthMm < p.minDepthMm) err("profundidade-minima", `profundidade ${spec.depthMm} mm abaixo do mínimo ${p.minDepthMm} mm`);
-  if (spec.depthMm > p.maxDepthMm) warn("profundidade-maxima", `profundidade acima do usual (${p.maxDepthMm} mm)`);
+  if (spec.widthMm < p.minWidthMm)
+    err("largura-minima", `largura ${spec.widthMm} mm abaixo do mínimo ${p.minWidthMm} mm`);
+  if (spec.depthMm < p.minDepthMm)
+    err(
+      "profundidade-minima",
+      `profundidade ${spec.depthMm} mm abaixo do mínimo ${p.minDepthMm} mm`,
+    );
+  if (spec.depthMm > p.maxDepthMm)
+    warn("profundidade-maxima", `profundidade acima do usual (${p.maxDepthMm} mm)`);
 
   /* cuba × tampo × recorte */
   const s = spec.sink;
@@ -97,7 +103,8 @@ export function validateBathroomModule(
     if (s.hydraulicHeightMm > g.caseHeightMm)
       warn("reserva-alta", "reserva hidráulica maior que a altura da caixa");
     /* Distância cuba × parede é RECOMENDAÇÃO, não erro. */
-    const sideGap = (fit.cabinetInnerWidthMm - fit.sinkCount * fit.sinkWidthMm) / (fit.sinkCount + 1);
+    const sideGap =
+      (fit.cabinetInnerWidthMm - fit.sinkCount * fit.sinkWidthMm) / (fit.sinkCount + 1);
     if (fit.sinkCount > 0 && sideGap < ergonomics.sinkToWallMm)
       tip(
         "cuba-proxima-parede",
@@ -125,7 +132,8 @@ export function validateBathroomModule(
 
   /* instalação */
   if (spec.install === "suspenso") {
-    if (g.floorGapMm <= 0) err("suspenso-no-piso", "módulo suspenso precisa de altura livre acima do piso");
+    if (g.floorGapMm <= 0)
+      err("suspenso-no-piso", "módulo suspenso precisa de altura livre acima do piso");
     const [lo, hi] = ergonomics.wallHungFloorGapMm;
     if (g.floorGapMm < lo || g.floorGapMm > hi)
       tip("altura-suspenso", `altura livre recomendada entre ${lo} e ${hi} mm`);
@@ -136,13 +144,19 @@ export function validateBathroomModule(
 
   /* nível superior */
   if (p.level === "superior" && spec.kind !== "prateleira") {
-    tip("altura-espelheira", `base da espelheira recomendada entre ${ergonomics.mirrorBottomMm[0]} e ${ergonomics.mirrorBottomMm[1]} mm do piso`);
+    tip(
+      "altura-espelheira",
+      `base da espelheira recomendada entre ${ergonomics.mirrorBottomMm[0]} e ${ergonomics.mirrorBottomMm[1]} mm do piso`,
+    );
   }
   if (p.level === "bancada" && spec.countertop.material !== "nenhum") {
     const [lo, hi] = ergonomics.counterHeightMm;
     const topFromFloor = g.topOfCountertopMm;
     if (topFromFloor < lo || topFromFloor > hi)
-      tip("altura-bancada", `altura da bancada (${Math.round(topFromFloor)} mm) fora da faixa recomendada ${lo}–${hi} mm`);
+      tip(
+        "altura-bancada",
+        `altura da bancada (${Math.round(topFromFloor)} mm) fora da faixa recomendada ${lo}–${hi} mm`,
+      );
   }
 
   /* acabamentos e tapa-vãos não podem se comportar como frente móvel */
@@ -151,9 +165,14 @@ export function validateBathroomModule(
     if (assembly.motions.some((m) => m.pieceId === piece.id))
       err("acabamento-movel", `${piece.id} é acabamento e não pode se mover`);
   }
-  const mirrorDoors = assembly.pieces.filter((x) => isDoor(x.partKind) && x.substrate === "espelho");
+  const mirrorDoors = assembly.pieces.filter(
+    (x) => isDoor(x.partKind) && x.substrate === "espelho",
+  );
   if (spec.mirror === "porta" && mirrorDoors.length === 0)
-    warn("espelho-sem-porta", "espelheira configurada com porta espelhada, mas nenhuma porta foi emitida");
+    warn(
+      "espelho-sem-porta",
+      "espelheira configurada com porta espelhada, mas nenhuma porta foi emitida",
+    );
 
   /* interpenetração grosseira entre peças estruturais */
   return { ok: !issues.some((i) => i.level === "erro"), issues };

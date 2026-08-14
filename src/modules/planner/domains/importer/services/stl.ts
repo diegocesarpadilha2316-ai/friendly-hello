@@ -23,12 +23,23 @@ export function parseSTL(input: ArrayBuffer | string, filename: string): ImportR
     bytes,
     scale: { factorToMm: 1, detectedUnit: "mm" },
     bbox: null,
-    layers: [{ id: "STL", name: "Mesh", visible: true, locked: false, count: triangles, role: "furniture" }],
+    layers: [
+      {
+        id: "STL",
+        name: "Mesh",
+        visible: true,
+        locked: false,
+        count: triangles,
+        role: "furniture",
+      },
+    ],
     entities: [],
     materials: [],
     texts: [],
     previewSvg: null,
-    warnings: [{ code: "stl-mesh", severity: "info", message: `Malha STL com ${triangles} triângulos.` }],
+    warnings: [
+      { code: "stl-mesh", severity: "info", message: `Malha STL com ${triangles} triângulos.` },
+    ],
     createdAt: new Date().toISOString(),
   };
 }

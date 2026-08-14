@@ -542,10 +542,7 @@ function BackupsTab() {
             save.mutate({
               enabled: Boolean(form.enabled ?? b?.enabled ?? false),
               frequency: (form.frequency ?? b?.frequency ?? "daily") as
-                | "hourly"
-                | "daily"
-                | "weekly"
-                | "monthly",
+                "hourly" | "daily" | "weekly" | "monthly",
               retentionDays: Number(form.retentionDays ?? b?.retentionDays ?? 30),
               storageProvider: String(form.storageProvider ?? b?.storageProvider ?? "supabase"),
             })

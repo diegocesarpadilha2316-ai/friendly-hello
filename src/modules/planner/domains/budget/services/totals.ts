@@ -57,7 +57,8 @@ export function computeTotals(
   const profitPct = final > 0 ? Math.round((profit / final) * 1000) / 10 : 0;
   const perM2 = processedAreaM2 > 0 ? money(final / processedAreaM2) : 0;
   const totalLines = pricedLines + missingPriceCount;
-  const priceCoveragePct = totalLines > 0 ? Math.round((pricedLines / totalLines) * 1000) / 10 : 100;
+  const priceCoveragePct =
+    totalLines > 0 ? Math.round((pricedLines / totalLines) * 1000) / 10 : 100;
 
   return {
     directCost,

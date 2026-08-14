@@ -44,7 +44,13 @@ export function AuthProvider({ config, children }: AuthProviderProps) {
       setLoading(false);
     });
     const { data: sub } = supabase.auth.onAuthStateChange((event, next) => {
-      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED" && event !== "TOKEN_REFRESHED") return;
+      if (
+        event !== "SIGNED_IN" &&
+        event !== "SIGNED_OUT" &&
+        event !== "USER_UPDATED" &&
+        event !== "TOKEN_REFRESHED"
+      )
+        return;
       setSession(next);
       setUser(next?.user ?? null);
       if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
@@ -91,9 +97,7 @@ export function AuthProvider({ config, children }: AuthProviderProps) {
       async resetPassword(email) {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo:
-            typeof window !== "undefined"
-              ? `${window.location.origin}/reset-password`
-              : undefined,
+            typeof window !== "undefined" ? `${window.location.origin}/reset-password` : undefined,
         });
         if (error) throw error;
       },

@@ -19,7 +19,10 @@ export interface RealPerformanceProfile {
   readonly textureCache: boolean;
 }
 
-export function buildPerformanceProfile(project: PlannerProject, roomId: string | null = null): RealPerformanceProfile {
+export function buildPerformanceProfile(
+  project: PlannerProject,
+  roomId: string | null = null,
+): RealPerformanceProfile {
   const scene = buildLocalScene(project, roomId);
   const tier = recommendTier(scene);
   const performance = performanceForTier(tier);

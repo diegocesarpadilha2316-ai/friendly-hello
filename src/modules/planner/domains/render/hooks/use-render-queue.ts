@@ -32,7 +32,14 @@ export function useRenderQueue(): UseRenderQueue {
   const cancelledRef = useRef<Set<string>>(new Set());
 
   const active = useMemo(
-    () => queue.find((j) => j.status !== "queued" && j.status !== "done" && j.status !== "cancelled" && j.status !== "failed") ?? null,
+    () =>
+      queue.find(
+        (j) =>
+          j.status !== "queued" &&
+          j.status !== "done" &&
+          j.status !== "cancelled" &&
+          j.status !== "failed",
+      ) ?? null,
     [queue],
   );
 
@@ -100,7 +107,9 @@ export function useRenderQueue(): UseRenderQueue {
 
   const cancel = useCallback((jobId: string) => {
     cancelledRef.current.add(jobId);
-    setQueue((q) => q.map((j) => (j.id === jobId && j.status === "queued" ? withStatus(j, "cancelled") : j)));
+    setQueue((q) =>
+      q.map((j) => (j.id === jobId && j.status === "queued" ? withStatus(j, "cancelled") : j)),
+    );
     // Se ainda estava só queued, remove imediatamente para o histórico.
     setQueue((q) => q.filter((j) => j.status !== "cancelled"));
     setHistory((h) => {

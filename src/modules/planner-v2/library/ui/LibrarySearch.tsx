@@ -2,7 +2,7 @@ import { Search } from "lucide-react";
 
 export function LibrarySearch({
   value,
-  onChange
+  onChange,
 }: {
   value: string;
   onChange: (value: string) => void;

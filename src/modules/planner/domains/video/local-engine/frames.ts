@@ -28,8 +28,14 @@ export function timelineFrames(t: LocalTimeline): readonly number[] {
   return out;
 }
 
-export function frameAtClip(t: LocalTimeline, clipId: string): { start: number; end: number } | null {
+export function frameAtClip(
+  t: LocalTimeline,
+  clipId: string,
+): { start: number; end: number } | null {
   const c = t.clips.find((x) => x.id === clipId);
   if (!c) return null;
-  return { start: timeToFrame(c.startSec, t.fps), end: timeToFrame(c.startSec + c.durationSec, t.fps) };
+  return {
+    start: timeToFrame(c.startSec, t.fps),
+    end: timeToFrame(c.startSec + c.durationSec, t.fps),
+  };
 }

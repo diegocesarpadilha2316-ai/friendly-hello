@@ -27,10 +27,22 @@ function num(
 ): ConfiguratorField {
   return { key, label, kind: "number", value, group, ...(opts ?? {}) };
 }
-function bool(key: string, label: string, value: boolean, group: ConfiguratorField["group"], hint?: string): ConfiguratorField {
+function bool(
+  key: string,
+  label: string,
+  value: boolean,
+  group: ConfiguratorField["group"],
+  hint?: string,
+): ConfiguratorField {
   return { key, label, kind: "boolean", value, group, hint };
 }
-function sel(key: string, label: string, value: string, options: readonly string[], group: ConfiguratorField["group"]): ConfiguratorField {
+function sel(
+  key: string,
+  label: string,
+  value: string,
+  options: readonly string[],
+  group: ConfiguratorField["group"],
+): ConfiguratorField {
   return { key, label, kind: "select", value, options, group };
 }
 
@@ -53,10 +65,30 @@ export function buildConfiguratorSchema(node: PlannerParametricNode): Configurat
   const p = node.params;
   const fields: ConfiguratorField[] = [
     // Medidas
-    num("width", "Largura", toNum(p.width, 800), "medidas", { min: 100, max: 5000, step: 10, unit: "mm" }),
-    num("height", "Altura", toNum(p.height, 2100), "medidas", { min: 100, max: 3200, step: 10, unit: "mm" }),
-    num("depth", "Profundidade", toNum(p.depth, 600), "medidas", { min: 100, max: 1200, step: 10, unit: "mm" }),
-    num("thickness", "Espessura", toNum(p.thickness, 18), "medidas", { min: 3, max: 40, step: 1, unit: "mm" }),
+    num("width", "Largura", toNum(p.width, 800), "medidas", {
+      min: 100,
+      max: 5000,
+      step: 10,
+      unit: "mm",
+    }),
+    num("height", "Altura", toNum(p.height, 2100), "medidas", {
+      min: 100,
+      max: 3200,
+      step: 10,
+      unit: "mm",
+    }),
+    num("depth", "Profundidade", toNum(p.depth, 600), "medidas", {
+      min: 100,
+      max: 1200,
+      step: 10,
+      unit: "mm",
+    }),
+    num("thickness", "Espessura", toNum(p.thickness, 18), "medidas", {
+      min: 3,
+      max: 40,
+      step: 1,
+      unit: "mm",
+    }),
 
     // Estrutura
     num("dividers", "Divisórias", toNum(p.dividers, 1), "estrutura", { min: 0, max: 10, step: 1 }),
@@ -71,13 +103,27 @@ export function buildConfiguratorSchema(node: PlannerParametricNode): Configurat
 
     // Portas
     num("doors", "Quantidade de portas", toNum(p.doors, 2), "portas", { min: 0, max: 12, step: 1 }),
-    num("doorsOpenPct", "Abertura (%)", toNum(p.doorsOpenPct, 0), "portas", { min: 0, max: 100, step: 5, unit: "%" }),
+    num("doorsOpenPct", "Abertura (%)", toNum(p.doorsOpenPct, 0), "portas", {
+      min: 0,
+      max: 100,
+      step: 5,
+      unit: "%",
+    }),
     sel("handle", "Puxador", toStr(p.handle, "Cava"), HANDLE_TYPES, "portas"),
     sel("hinges", "Dobradiça", toStr(p.hinges, "Soft-close"), HINGE_TYPES, "portas"),
 
     // Gavetas
-    num("drawers", "Quantidade de gavetas", toNum(p.drawers, 0), "gavetas", { min: 0, max: 12, step: 1 }),
-    num("drawersOpenPct", "Abertura (%)", toNum(p.drawersOpenPct, 0), "gavetas", { min: 0, max: 100, step: 5, unit: "%" }),
+    num("drawers", "Quantidade de gavetas", toNum(p.drawers, 0), "gavetas", {
+      min: 0,
+      max: 12,
+      step: 1,
+    }),
+    num("drawersOpenPct", "Abertura (%)", toNum(p.drawersOpenPct, 0), "gavetas", {
+      min: 0,
+      max: 100,
+      step: 5,
+      unit: "%",
+    }),
     sel("slides", "Corrediça", toStr(p.slides, "Soft-close"), SLIDE_TYPES, "gavetas"),
     bool("dampers", "Amortecedores", toBool(p.dampers, true), "gavetas"),
 
@@ -86,8 +132,18 @@ export function buildConfiguratorSchema(node: PlannerParametricNode): Configurat
 
     // Iluminação
     bool("led", "LED integrado", toBool(p.led, false), "iluminacao"),
-    num("ledTempK", "Temperatura de cor", toNum(p.ledTempK, 3000), "iluminacao", { min: 2700, max: 6500, step: 100, unit: "K" }),
-    num("ledLumens", "Fluxo luminoso", toNum(p.ledLumens, 800), "iluminacao", { min: 100, max: 5000, step: 50, unit: "lm" }),
+    num("ledTempK", "Temperatura de cor", toNum(p.ledTempK, 3000), "iluminacao", {
+      min: 2700,
+      max: 6500,
+      step: 100,
+      unit: "K",
+    }),
+    num("ledLumens", "Fluxo luminoso", toNum(p.ledLumens, 800), "iluminacao", {
+      min: 100,
+      max: 5000,
+      step: 50,
+      unit: "lm",
+    }),
 
     // Material
     sel("material", "Material", toStr(p.material, "MDF Branco"), MATERIALS, "material"),

@@ -9,13 +9,13 @@
 
 A sequência determinística usada pelo Layout Engine é:
 
-| Índice | Módulo | Largura nominal | Altura nominal | Profundidade nominal | Início relativo | Fim relativo | Suportado | Colisão |
-|---:|---|---:|---:|---:|---:|---:|---|---|
-| 0 | Balcão inferior, 2 portas | 800 mm | 870 mm | 580 mm | 0 mm | 800 mm | Sim | Não |
-| 1 | Gaveteiro inferior, 4 gavetas | 600 mm | 870 mm | 580 mm | 800 mm | 1400 mm | Sim | Não |
-| 2 | Balcão de pia, 2 portas | 1200 mm | 870 mm | 580 mm | 1400 mm | 2600 mm | Sim | Não |
-| 3 | Balcão inferior, 2 portas | 800 mm | 870 mm | 580 mm | 2600 mm | 3400 mm | Sim | Não |
-| 4 | Bancada derivada contínua | 3400 mm | 20 mm | 600 mm | 0 mm | 3400 mm | Sim | Não |
+| Índice | Módulo                        | Largura nominal | Altura nominal | Profundidade nominal | Início relativo | Fim relativo | Suportado | Colisão |
+| -----: | ----------------------------- | --------------: | -------------: | -------------------: | --------------: | -----------: | --------- | ------- |
+|      0 | Balcão inferior, 2 portas     |          800 mm |         870 mm |               580 mm |            0 mm |       800 mm | Sim       | Não     |
+|      1 | Gaveteiro inferior, 4 gavetas |          600 mm |         870 mm |               580 mm |          800 mm |      1400 mm | Sim       | Não     |
+|      2 | Balcão de pia, 2 portas       |         1200 mm |         870 mm |               580 mm |         1400 mm |      2600 mm | Sim       | Não     |
+|      3 | Balcão inferior, 2 portas     |          800 mm |         870 mm |               580 mm |         2600 mm |      3400 mm | Sim       | Não     |
+|      4 | Bancada derivada contínua     |         3400 mm |          20 mm |               600 mm |            0 mm |      3400 mm | Sim       | Não     |
 
 A soma das larguras inferiores é **800 + 600 + 1200 + 800 = 3400 mm**. A bancada não recebe largura manual: ela é derivada do menor início e do maior fim dos módulos inferiores, resultando em **3400 mm contínuos**.
 
@@ -29,11 +29,11 @@ A validação de abertura foi corrigida para representar o volume aberto na dire
 
 A suíte dedicada foi executada com resultado integral:
 
-| Suíte | Testes | Resultado |
-|---|---:|---|
-| `src/modules/planner-v2/pkg/state/etapa1LowerKitchen.test.ts` | 3 | **3 aprovados** |
-| `src/modules/planner-v2/pkg/state/usePlannerStore.regression.test.ts` | 7 | **7 aprovados** |
-| Suíte completa do projeto | 31 arquivos / 522 testes | **31 arquivos e 522 testes aprovados** |
+| Suíte                                                                 |                   Testes | Resultado                              |
+| --------------------------------------------------------------------- | -----------------------: | -------------------------------------- |
+| `src/modules/planner-v2/pkg/state/etapa1LowerKitchen.test.ts`         |                        3 | **3 aprovados**                        |
+| `src/modules/planner-v2/pkg/state/usePlannerStore.regression.test.ts` |                        7 | **7 aprovados**                        |
+| Suíte completa do projeto                                             | 31 arquivos / 522 testes | **31 arquivos e 522 testes aprovados** |
 
 As correções desta execução foram aplicadas em `professionalModules.ts`, `validateOpeningClearance.ts`, `cameraPresets.ts`, `RenderController.tsx`, `RenderFinalPanel.tsx` e na suíte dedicada da Etapa 1.
 

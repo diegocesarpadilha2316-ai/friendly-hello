@@ -18,7 +18,7 @@ export function ModulePreview({ definition }: { definition: ModuleDefinition }) 
           background: material.baseColor,
           borderRadius: 3,
           display: "block",
-          boxShadow: "inset 0 0 0 1px rgba(0,0,0,.35)"
+          boxShadow: "inset 0 0 0 1px rgba(0,0,0,.35)",
         }}
       />
     </span>

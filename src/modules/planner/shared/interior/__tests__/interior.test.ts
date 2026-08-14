@@ -44,7 +44,14 @@ describe("Catálogo e registro", () => {
   it("expõe os módulos internos registrados", () => {
     expect(INTERIOR_MODULES.length).toBeGreaterThanOrEqual(19);
     expect(interiorModuleCount()).toBe(INTERIOR_MODULES.length);
-    for (const id of ["prateleira", "cabideiro", "sapateira", "maleiro", "gaveta-interna", "adega"]) {
+    for (const id of [
+      "prateleira",
+      "cabideiro",
+      "sapateira",
+      "maleiro",
+      "gaveta-interna",
+      "adega",
+    ]) {
       expect(getInteriorModule(id)).toBeDefined();
     }
   });
@@ -97,7 +104,12 @@ describe("Posicionamento", () => {
     expect(row.y).toBeCloseTo(1200, 0);
 
     const niches = splitCavityColumns(cavity, 2);
-    const nicho = resolveInteriorBox(cavity, def, { kind: "nicho", nicheId: niches[1].id }, { niches }).box;
+    const nicho = resolveInteriorBox(
+      cavity,
+      def,
+      { kind: "nicho", nicheId: niches[1].id },
+      { niches },
+    ).box;
     expect(nicho.x).toBeCloseTo(1100, 0);
 
     const vao = resolveInteriorBox(cavity, def, { kind: "vao", fromYMm: 400, toYMm: 418 }).box;
@@ -246,7 +258,9 @@ describe("Layout Engine", () => {
   it("todos os presets geram planos válidos", () => {
     for (const preset of INTERIOR_PRESETS) {
       const r = autoLayout({ cavity, recipe: preset });
-      expect(r.validation.errors, `${preset.id}: ${JSON.stringify(r.validation.errors)}`).toEqual([]);
+      expect(r.validation.errors, `${preset.id}: ${JSON.stringify(r.validation.errors)}`).toEqual(
+        [],
+      );
       expect(r.plan.placements.length).toBeGreaterThan(0);
     }
   });

@@ -167,8 +167,7 @@ function toMaterialRow(r: Record<string, string>): MaterialRow {
     espessura_mm: num(r.espessura_mm),
     largura_mm: optNum(r.largura_mm),
     comprimento_mm: optNum(r.comprimento_mm),
-    sentido_veio:
-      veio === "vertical" || veio === "horizontal" || veio === "livre" ? veio : null,
+    sentido_veio: veio === "vertical" || veio === "horizontal" || veio === "livre" ? veio : null,
     preco_m2: optNum(r.preco_m2),
     ativo: r.ativo ? r.ativo !== "false" && r.ativo !== "0" : true,
   };
@@ -350,7 +349,10 @@ function TabButton({
 function MaterialsPanel({ onChanged }: { onChanged: () => void }) {
   const [rows, setRows] = useState<MaterialRow[] | null>(null);
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState<{ tone: "info" | "success" | "danger"; text: string } | null>(null);
+  const [status, setStatus] = useState<{
+    tone: "info" | "success" | "danger";
+    text: string;
+  } | null>(null);
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -372,9 +374,7 @@ function MaterialsPanel({ onChanged }: { onChanged: () => void }) {
     try {
       const text = await file.text();
       const raw = parseCSV(text);
-      const parsed = raw
-        .filter((r) => r.id && r.fabricante && r.espessura_mm)
-        .map(toMaterialRow);
+      const parsed = raw.filter((r) => r.id && r.fabricante && r.espessura_mm).map(toMaterialRow);
       if (parsed.length === 0) {
         setStatus({ tone: "danger", text: "Nenhuma linha válida encontrada no CSV." });
         setBusy(false);
@@ -426,11 +426,7 @@ function MaterialsPanel({ onChanged }: { onChanged: () => void }) {
             onClick={() => fileRef.current?.click()}
             className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-opacity hover:opacity-90 disabled:opacity-50"
           >
-            {busy ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Upload className="h-4 w-4" />
-            )}
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
             Importar Biblioteca (CSV)
           </button>
         </div>
@@ -441,7 +437,11 @@ function MaterialsPanel({ onChanged }: { onChanged: () => void }) {
 
       <div className="rounded-2xl border border-border/60 bg-card">
         <div className="border-b border-border/60 px-4 py-3 text-xs text-muted-foreground">
-          Colunas esperadas: <code className="text-foreground/80">id, fabricante, marca, linha, categoria, padrao, cor_nome, cor_hex, textura_url, espessura_mm, largura_mm, comprimento_mm, sentido_veio, preco_m2</code>
+          Colunas esperadas:{" "}
+          <code className="text-foreground/80">
+            id, fabricante, marca, linha, categoria, padrao, cor_nome, cor_hex, textura_url,
+            espessura_mm, largura_mm, comprimento_mm, sentido_veio, preco_m2
+          </code>
         </div>
         {!rows ? (
           <div className="flex items-center justify-center p-8 text-sm text-muted-foreground">
@@ -454,20 +454,20 @@ function MaterialsPanel({ onChanged }: { onChanged: () => void }) {
             description="Importe um CSV para popular a biblioteca oficial."
           />
         ) : (
-          <MaterialsTable rows={rows} onChanged={() => { onChanged(); reload(); }} />
+          <MaterialsTable
+            rows={rows}
+            onChanged={() => {
+              onChanged();
+              reload();
+            }}
+          />
         )}
       </div>
     </div>
   );
 }
 
-function MaterialsTable({
-  rows,
-  onChanged,
-}: {
-  rows: MaterialRow[];
-  onChanged: () => void;
-}) {
+function MaterialsTable({ rows, onChanged }: { rows: MaterialRow[]; onChanged: () => void }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -493,13 +493,7 @@ function MaterialsTable({
   );
 }
 
-function MaterialRowEditor({
-  row,
-  onChanged,
-}: {
-  row: MaterialRow;
-  onChanged: () => void;
-}) {
+function MaterialRowEditor({ row, onChanged }: { row: MaterialRow; onChanged: () => void }) {
   const [preco, setPreco] = useState<string>(row.preco_m2?.toString() ?? "");
   const [textura, setTextura] = useState<string>(row.textura_url ?? "");
   const [ativo, setAtivo] = useState<boolean>(row.ativo ?? true);
@@ -563,11 +557,7 @@ function MaterialRowEditor({
         />
       </td>
       <td className="px-4 py-2">
-        <input
-          type="checkbox"
-          checked={ativo}
-          onChange={(e) => setAtivo(e.target.checked)}
-        />
+        <input type="checkbox" checked={ativo} onChange={(e) => setAtivo(e.target.checked)} />
       </td>
       <td className="px-4 py-2">
         <div className="flex items-center gap-1">
@@ -599,7 +589,10 @@ function MaterialRowEditor({
 function HardwarePanel({ onChanged }: { onChanged: () => void }) {
   const [rows, setRows] = useState<HardwareRow[] | null>(null);
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState<{ tone: "info" | "success" | "danger"; text: string } | null>(null);
+  const [status, setStatus] = useState<{
+    tone: "info" | "success" | "danger";
+    text: string;
+  } | null>(null);
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -621,9 +614,7 @@ function HardwarePanel({ onChanged }: { onChanged: () => void }) {
     try {
       const text = await file.text();
       const raw = parseCSV(text);
-      const parsed = raw
-        .filter((r) => r.id && r.fabricante && r.modelo)
-        .map(toHardwareRow);
+      const parsed = raw.filter((r) => r.id && r.fabricante && r.modelo).map(toHardwareRow);
       if (parsed.length === 0) {
         setStatus({ tone: "danger", text: "Nenhuma linha válida encontrada no CSV." });
         setBusy(false);
@@ -675,11 +666,7 @@ function HardwarePanel({ onChanged }: { onChanged: () => void }) {
             onClick={() => fileRef.current?.click()}
             className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-opacity hover:opacity-90 disabled:opacity-50"
           >
-            {busy ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Upload className="h-4 w-4" />
-            )}
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
             Importar Biblioteca (CSV)
           </button>
         </div>
@@ -690,7 +677,11 @@ function HardwarePanel({ onChanged }: { onChanged: () => void }) {
 
       <div className="rounded-2xl border border-border/60 bg-card">
         <div className="border-b border-border/60 px-4 py-3 text-xs text-muted-foreground">
-          Colunas esperadas: <code className="text-foreground/80">id, fabricante, marca, categoria, modelo, descricao, imagem_url, preco_unitario, parametros_cnc, furacao, profundidade, folga</code>
+          Colunas esperadas:{" "}
+          <code className="text-foreground/80">
+            id, fabricante, marca, categoria, modelo, descricao, imagem_url, preco_unitario,
+            parametros_cnc, furacao, profundidade, folga
+          </code>
         </div>
         {!rows ? (
           <div className="flex items-center justify-center p-8 text-sm text-muted-foreground">
@@ -703,20 +694,20 @@ function HardwarePanel({ onChanged }: { onChanged: () => void }) {
             description="Importe um CSV para popular a biblioteca oficial."
           />
         ) : (
-          <HardwareTable rows={rows} onChanged={() => { onChanged(); reload(); }} />
+          <HardwareTable
+            rows={rows}
+            onChanged={() => {
+              onChanged();
+              reload();
+            }}
+          />
         )}
       </div>
     </div>
   );
 }
 
-function HardwareTable({
-  rows,
-  onChanged,
-}: {
-  rows: HardwareRow[];
-  onChanged: () => void;
-}) {
+function HardwareTable({ rows, onChanged }: { rows: HardwareRow[]; onChanged: () => void }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -742,13 +733,7 @@ function HardwareTable({
   );
 }
 
-function HardwareRowEditor({
-  row,
-  onChanged,
-}: {
-  row: HardwareRow;
-  onChanged: () => void;
-}) {
+function HardwareRowEditor({ row, onChanged }: { row: HardwareRow; onChanged: () => void }) {
   const [preco, setPreco] = useState(row.preco_unitario?.toString() ?? "");
   const [furacao, setFuracao] = useState(row.furacao?.toString() ?? "");
   const [ativo, setAtivo] = useState<boolean>(row.ativo ?? true);
@@ -809,11 +794,7 @@ function HardwareRowEditor({
         />
       </td>
       <td className="px-4 py-2">
-        <input
-          type="checkbox"
-          checked={ativo}
-          onChange={(e) => setAtivo(e.target.checked)}
-        />
+        <input type="checkbox" checked={ativo} onChange={(e) => setAtivo(e.target.checked)} />
       </td>
       <td className="px-4 py-2">
         <div className="flex items-center gap-1">
@@ -884,7 +865,11 @@ function ImportReportCard({ report }: { report: ImportReportShape }) {
         <ReportStat label="Adicionados" value={report.inserted} tone="success" />
         <ReportStat label="Atualizados" value={report.updated} tone="info" />
         <ReportStat label="Duplicados" value={report.skipped} tone="muted" />
-        <ReportStat label="Erros" value={report.errors.length} tone={report.errors.length > 0 ? "danger" : "muted"} />
+        <ReportStat
+          label="Erros"
+          value={report.errors.length}
+          tone={report.errors.length > 0 ? "danger" : "muted"}
+        />
       </div>
       {report.errors.length > 0 && (
         <div className="mt-4">
@@ -1013,12 +998,16 @@ function HistoryPanel() {
                 </StatusBadge>
               </td>
               <td className="px-4 py-2 font-mono text-xs">{r.filename ?? "—"}</td>
-              <td className="px-4 py-2 text-xs">{r.admin_email ?? r.admin_user_id?.slice(0, 8) ?? "—"}</td>
+              <td className="px-4 py-2 text-xs">
+                {r.admin_email ?? r.admin_user_id?.slice(0, 8) ?? "—"}
+              </td>
               <td className="px-4 py-2 text-right">{r.total_rows.toLocaleString("pt-BR")}</td>
               <td className="px-4 py-2 text-right text-emerald-500">+{r.inserted_count}</td>
               <td className="px-4 py-2 text-right text-sky-500">{r.updated_count}</td>
               <td className="px-4 py-2 text-right text-muted-foreground">{r.skipped_count}</td>
-              <td className={`px-4 py-2 text-right ${r.error_count > 0 ? "text-destructive" : "text-muted-foreground"}`}>
+              <td
+                className={`px-4 py-2 text-right ${r.error_count > 0 ? "text-destructive" : "text-muted-foreground"}`}
+              >
                 {r.error_count}
               </td>
             </tr>

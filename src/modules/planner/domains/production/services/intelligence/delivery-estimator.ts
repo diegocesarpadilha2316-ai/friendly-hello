@@ -19,8 +19,10 @@ export function estimateDelivery(
 ): DeliveryEstimate {
   const totalMinutes = routings.reduce((a, r) => a + r.totalMinutes, 0);
   const totalHours = Math.round((totalMinutes / 60) * 10) / 10;
-  const effectiveDays = capacity.dailyCapacityH > 0 ? Math.max(1, Math.ceil(totalHours / capacity.dailyCapacityH)) : 0;
-  const bufferDays = balance.bottleneckId && balance.loads.some((l) => l.utilizationPct >= 90) ? 1 : 0;
+  const effectiveDays =
+    capacity.dailyCapacityH > 0 ? Math.max(1, Math.ceil(totalHours / capacity.dailyCapacityH)) : 0;
+  const bufferDays =
+    balance.bottleneckId && balance.loads.some((l) => l.utilizationPct >= 90) ? 1 : 0;
   const finishDate = addBusinessDays(new Date(), effectiveDays + bufferDays).toISOString();
   const confidence: DeliveryEstimate["confidence"] =
     capacity.utilizationPct >= 90 ? "baixa" : capacity.utilizationPct >= 70 ? "media" : "alta";

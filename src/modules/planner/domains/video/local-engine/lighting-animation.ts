@@ -6,19 +6,19 @@ import type { LocalObjectAnimation } from "./types";
 export type LightingScenario = "dia" | "por-do-sol" | "noite" | "chuva" | "estudio";
 
 const KELVIN: Readonly<Record<LightingScenario, number>> = {
-  "dia": 5600,
+  dia: 5600,
   "por-do-sol": 3200,
-  "noite": 2700,
-  "chuva": 6500,
-  "estudio": 5000,
+  noite: 2700,
+  chuva: 6500,
+  estudio: 5000,
 };
 
 const INTENSITY: Readonly<Record<LightingScenario, number>> = {
-  "dia": 1,
+  dia: 1,
   "por-do-sol": 0.55,
-  "noite": 0.2,
-  "chuva": 0.6,
-  "estudio": 0.85,
+  noite: 0.2,
+  chuva: 0.6,
+  estudio: 0.85,
 };
 
 export function lightingSwap(
@@ -45,7 +45,10 @@ export function lightingSwap(
   };
 }
 
-export function sampleLighting(anim: LocalObjectAnimation, atSec: number): { kelvin: number; intensity: number } {
+export function sampleLighting(
+  anim: LocalObjectAnimation,
+  atSec: number,
+): { kelvin: number; intensity: number } {
   const t = Math.max(0, Math.min(1, (atSec - anim.startSec) / anim.durationSec));
   const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
   const fromK = Number(anim.params.fromKelvin ?? 5600);

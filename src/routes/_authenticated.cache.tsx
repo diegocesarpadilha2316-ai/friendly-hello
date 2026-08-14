@@ -115,9 +115,7 @@ function CachePage() {
         map.set(t, cur);
       }
     }
-    return [...map.entries()]
-      .map(([tag, v]) => ({ tag, ...v }))
-      .sort((a, b) => b.count - a.count);
+    return [...map.entries()].map(([tag, v]) => ({ tag, ...v })).sort((a, b) => b.count - a.count);
   }, [data.entries]);
 
   return (

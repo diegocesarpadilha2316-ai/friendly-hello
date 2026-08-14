@@ -5,16 +5,7 @@
  * detém estado de projeto — apenas apresenta a conversa.
  */
 import { useEffect, useRef, useState } from "react";
-import {
-  Bot,
-  Send,
-  Sparkles,
-  Square,
-  Trash2,
-  Wand2,
-  User as UserIcon,
-  Pencil,
-} from "lucide-react";
+import { Bot, Send, Sparkles, Square, Trash2, Wand2, User as UserIcon, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/core/components/ui-kit";
 import { usePlannerChat } from "../hooks/use-planner-chat";
@@ -98,7 +89,6 @@ export function PlannerAIPanel({ variant = "docked", className, onClose }: Plann
             pensando…
           </div>
         )}
-
       </div>
 
       {/* Sugestões rápidas */}

@@ -42,7 +42,10 @@ function NumberField({
 export function VisionCorrections({ model, onPatch }: Props) {
   return (
     <div className="space-y-6">
-      <FormSection title="Ambiente detectado" description="Ajuste nome, tipo e dimensões estimadas.">
+      <FormSection
+        title="Ambiente detectado"
+        description="Ajuste nome, tipo e dimensões estimadas."
+      >
         <div className="grid gap-3 md:grid-cols-2">
           <label className="block text-sm">
             <span className="mb-1 block text-xs font-medium text-muted-foreground">Nome</span>
@@ -58,7 +61,10 @@ export function VisionCorrections({ model, onPatch }: Props) {
             <select
               value={model.suggestedType}
               onChange={(e) =>
-                onPatch((prev) => ({ ...prev, suggestedType: e.target.value as VisionRoomModel["suggestedType"] }))
+                onPatch((prev) => ({
+                  ...prev,
+                  suggestedType: e.target.value as VisionRoomModel["suggestedType"],
+                }))
               }
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
@@ -87,7 +93,9 @@ export function VisionCorrections({ model, onPatch }: Props) {
           <NumberField
             label="Altura (pé-direito)"
             value={model.bounds.height}
-            onChange={(n) => onPatch((prev) => ({ ...prev, bounds: { ...prev.bounds, height: n } }))}
+            onChange={(n) =>
+              onPatch((prev) => ({ ...prev, bounds: { ...prev.bounds, height: n } }))
+            }
           />
         </div>
       </FormSection>
@@ -95,7 +103,10 @@ export function VisionCorrections({ model, onPatch }: Props) {
       <FormSection title="Paredes" description="Espessura e altura por parede detectada.">
         <div className="space-y-2">
           {model.walls.map((wall) => (
-            <div key={wall.id} className="grid gap-3 rounded-lg border border-border/60 bg-muted/10 p-3 md:grid-cols-4">
+            <div
+              key={wall.id}
+              className="grid gap-3 rounded-lg border border-border/60 bg-muted/10 p-3 md:grid-cols-4"
+            >
               <div className="text-xs">
                 <div className="font-medium">{wall.id}</div>
                 <div className="text-muted-foreground">
@@ -111,7 +122,10 @@ export function VisionCorrections({ model, onPatch }: Props) {
                 onChange={(n) =>
                   onPatch((prev) => ({
                     ...prev,
-                    walls: { ...(prev.walls ?? {}), [wall.id]: { ...(prev.walls?.[wall.id] ?? {}), thickness: n } },
+                    walls: {
+                      ...(prev.walls ?? {}),
+                      [wall.id]: { ...(prev.walls?.[wall.id] ?? {}), thickness: n },
+                    },
                   }))
                 }
               />
@@ -121,7 +135,10 @@ export function VisionCorrections({ model, onPatch }: Props) {
                 onChange={(n) =>
                   onPatch((prev) => ({
                     ...prev,
-                    walls: { ...(prev.walls ?? {}), [wall.id]: { ...(prev.walls?.[wall.id] ?? {}), height: n } },
+                    walls: {
+                      ...(prev.walls ?? {}),
+                      [wall.id]: { ...(prev.walls?.[wall.id] ?? {}), height: n },
+                    },
                   }))
                 }
               />
@@ -133,9 +150,14 @@ export function VisionCorrections({ model, onPatch }: Props) {
       <FormSection title="Portas e janelas" description="Ajuste dimensões e posicionamento.">
         <div className="space-y-2">
           {model.openings.map((op) => (
-            <div key={op.id} className="grid gap-3 rounded-lg border border-border/60 bg-muted/10 p-3 md:grid-cols-4">
+            <div
+              key={op.id}
+              className="grid gap-3 rounded-lg border border-border/60 bg-muted/10 p-3 md:grid-cols-4"
+            >
               <div className="text-xs">
-                <div className="font-medium capitalize">{op.role === "door" ? "Porta" : "Janela"}</div>
+                <div className="font-medium capitalize">
+                  {op.role === "door" ? "Porta" : "Janela"}
+                </div>
                 <div className="text-muted-foreground">na parede {op.wallId}</div>
                 <div className="mt-1 text-muted-foreground">
                   confiança {(op.confidence * 100).toFixed(0)}%

@@ -75,7 +75,16 @@ export function useIntelligence(): UseIntelligenceResult {
     const queues = buildQueues(report, assembly, routings, prioritized, clientName);
     const kpis = buildFactoryKpis(report, capacity, balance, delivery, quality, queues);
     const alerts = buildFactoryAlerts(balance, capacity, delivery, quality, queues);
-    const intents = buildFactoryIntents(report, capacity, balance, delivery, quality, assignments, routings, prioritized);
+    const intents = buildFactoryIntents(
+      report,
+      capacity,
+      balance,
+      delivery,
+      quality,
+      assignments,
+      routings,
+      prioritized,
+    );
     return {
       hasProject,
       capacity,

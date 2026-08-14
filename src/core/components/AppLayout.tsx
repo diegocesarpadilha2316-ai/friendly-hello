@@ -78,7 +78,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
     },
   ];
 
-
   return (
     <AppShell
       sidebar={
@@ -100,9 +99,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
       }
       topbar={
         <Topbar
-          left={
-            <CompanySwitcher />
-          }
+          left={<CompanySwitcher />}
           right={
             auth?.user ? (
               <>

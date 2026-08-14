@@ -60,8 +60,7 @@ export const Route = createFileRoute("/_authenticated/planner/assets")({
       { property: "og:title", content: "Assets Manager — Dioris Planner" },
       {
         property: "og:description",
-        content:
-          "Upload, versionamento, permissões e signed URLs para todos os assets da empresa.",
+        content: "Upload, versionamento, permissões e signed URLs para todos os assets da empresa.",
       },
       { name: "robots", content: "noindex" },
     ],
@@ -118,8 +117,7 @@ function kindFromMime(mime: string): AssetKind {
   if (mime.startsWith("video/")) return "video";
   if (mime.startsWith("audio/")) return "audio";
   if (mime === "application/pdf" || mime.startsWith("text/")) return "document";
-  if (mime.includes("gltf") || mime.includes("obj") || mime.includes("fbx"))
-    return "model3d";
+  if (mime.includes("gltf") || mime.includes("obj") || mime.includes("fbx")) return "model3d";
   return "other";
 }
 
@@ -168,8 +166,7 @@ function AssetsPage() {
     staleTime: 10_000,
   });
 
-  const invalidate = () =>
-    qc.invalidateQueries({ queryKey: ["planner", "assets"] });
+  const invalidate = () => qc.invalidateQueries({ queryKey: ["planner", "assets"] });
 
   const removeMutation = useMutation({
     mutationFn: (id: string) => softDelete({ data: { id } }),
@@ -177,8 +174,7 @@ function AssetsPage() {
       toast.success("Asset movido para a lixeira");
       invalidate();
     },
-    onError: (e: unknown) =>
-      toast.error(e instanceof Error ? e.message : "Erro"),
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erro"),
   });
 
   const restoreMutation = useMutation({
@@ -187,8 +183,7 @@ function AssetsPage() {
       toast.success("Restaurado");
       invalidate();
     },
-    onError: (e: unknown) =>
-      toast.error(e instanceof Error ? e.message : "Erro"),
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erro"),
   });
 
   async function handleFiles(files: FileList | null) {
@@ -213,13 +208,11 @@ function AssetsPage() {
             bucket: "assets",
           },
         });
-        const up = await supabase.storage
-          .from(started.bucket)
-          .upload(started.objectKey, file, {
-            cacheControl: "3600",
-            upsert: false,
-            contentType: file.type || undefined,
-          });
+        const up = await supabase.storage.from(started.bucket).upload(started.objectKey, file, {
+          cacheControl: "3600",
+          upsert: false,
+          contentType: file.type || undefined,
+        });
         if (up.error) {
           await fail({
             data: { jobId: started.job.id, error: up.error.message },
@@ -250,9 +243,7 @@ function AssetsPage() {
         ok++;
       } catch (err) {
         ko++;
-        toast.error(
-          `Falha ao enviar ${file.name}: ${err instanceof Error ? err.message : "erro"}`,
-        );
+        toast.error(`Falha ao enviar ${file.name}: ${err instanceof Error ? err.message : "erro"}`);
       }
     }
 
@@ -275,18 +266,19 @@ function AssetsPage() {
 
   const rows = (listQuery.data ?? []) as AssetRow[];
   const kinds = useMemo(
-    () => [
-      "all",
-      "image",
-      "video",
-      "render",
-      "texture",
-      "hdri",
-      "model3d",
-      "document",
-      "audio",
-      "other",
-    ] as const,
+    () =>
+      [
+        "all",
+        "image",
+        "video",
+        "render",
+        "texture",
+        "hdri",
+        "model3d",
+        "document",
+        "audio",
+        "other",
+      ] as const,
     [],
   );
 
@@ -306,17 +298,13 @@ function AssetsPage() {
               onChange={(e) => handleFiles(e.target.files)}
               disabled={uploading}
             />
-            <Button
-              size="sm"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-            >
+            <Button size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
               {uploading ? (
                 <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
               ) : (
                 <Upload className="mr-1.5 h-4 w-4" />
               )}
-              {uploading ? uploadProgress ?? "Enviando…" : "Enviar arquivos"}
+              {uploading ? (uploadProgress ?? "Enviando…") : "Enviar arquivos"}
             </Button>
           </div>
         }
@@ -404,8 +392,7 @@ function AssetsPage() {
                 trashed={showTrash}
                 onDownload={() => handleDownload(r.id)}
                 onRemove={() => {
-                  if (confirm("Mover este asset para a lixeira?"))
-                    removeMutation.mutate(r.id);
+                  if (confirm("Mover este asset para a lixeira?")) removeMutation.mutate(r.id);
                 }}
                 onRestore={() => restoreMutation.mutate(r.id)}
               />
@@ -445,7 +432,9 @@ function AssetCard({
             <StatusBadge tone="neutral">{KIND_LABEL[row.kind]}</StatusBadge>
             <span>{formatBytes(row.size_bytes ?? 0)}</span>
             {row.width && row.height ? (
-              <span>· {row.width}×{row.height}</span>
+              <span>
+                · {row.width}×{row.height}
+              </span>
             ) : null}
           </div>
         </div>
@@ -473,9 +462,7 @@ function AssetCard({
   );
 }
 
-function readImageDimensions(
-  file: File,
-): Promise<{ width: number; height: number }> {
+function readImageDimensions(file: File): Promise<{ width: number; height: number }> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const img = new Image();

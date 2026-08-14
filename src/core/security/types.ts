@@ -6,12 +6,7 @@
 export type IncidentSeverity = "low" | "medium" | "high" | "critical";
 export type IncidentStatus = "open" | "investigating" | "resolved" | "ignored";
 export type LoginOutcome =
-  | "success"
-  | "invalid_credentials"
-  | "locked"
-  | "mfa_required"
-  | "mfa_failed"
-  | "suspicious";
+  "success" | "invalid_credentials" | "locked" | "mfa_required" | "mfa_failed" | "suspicious";
 export type MfaMethod = "totp" | "webauthn" | "passkey" | "backup_codes";
 
 export interface SecurityPolicy {

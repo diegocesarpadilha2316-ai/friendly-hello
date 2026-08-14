@@ -185,7 +185,15 @@ function inferFromModules(dec: Decomposition): string | null {
 // 2) Validação — nunca executar Blueprint incompleto
 // ─────────────────────────────────────────────────────────────────────────
 
-const VALID_ENVS = new Set(["cozinha", "closet", "dormitorio", "sala", "escritorio", "banheiro", "lavanderia"]);
+const VALID_ENVS = new Set([
+  "cozinha",
+  "closet",
+  "dormitorio",
+  "sala",
+  "escritorio",
+  "banheiro",
+  "lavanderia",
+]);
 
 export function validateBlueprint(bp: PlannerBlueprint): BlueprintValidation {
   const errors: string[] = [];

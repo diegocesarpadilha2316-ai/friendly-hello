@@ -5,12 +5,7 @@
  */
 import type { ConstructionBox } from "../construction";
 import { box, clamp, round, warn } from "../construction";
-import type {
-  InteriorCavity,
-  InteriorIssue,
-  InteriorModuleDef,
-  InteriorPosition,
-} from "./types";
+import type { InteriorCavity, InteriorIssue, InteriorModuleDef, InteriorPosition } from "./types";
 
 export interface ResolveOptions {
   /** Sub-vãos nomeados (usados por `{kind:"nicho"}`). */

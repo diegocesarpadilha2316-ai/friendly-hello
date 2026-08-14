@@ -81,7 +81,9 @@ export function buildFabricationReport(instances: FurnitureInstance[]): Fabricat
   for (const instance of instances) {
     const physicalParts = instance.parts.filter(isPhysicalCutPart);
     const hardwareParts = instance.parts.filter((part) => part.role === "hardware");
-    const technicalParts = instance.parts.filter((part) => part.volumeType === "technical" || part.volumeType === "opening");
+    const technicalParts = instance.parts.filter(
+      (part) => part.volumeType === "technical" || part.volumeType === "opening",
+    );
     let warningCount = 0;
 
     if (!instance.thicknessMm?.panelMm) {
@@ -111,7 +113,8 @@ export function buildFabricationReport(instances: FurnitureInstance[]): Fabricat
       if (current) {
         current.quantity += 1;
         current.partIds.push(part.id);
-        if (!current.moduleIds.includes(instance.moduleDefinitionId)) current.moduleIds.push(instance.moduleDefinitionId);
+        if (!current.moduleIds.includes(instance.moduleDefinitionId))
+          current.moduleIds.push(instance.moduleDefinitionId);
         if (!current.names.includes(part.name)) current.names.push(part.name);
         continue;
       }
@@ -142,7 +145,8 @@ export function buildFabricationReport(instances: FurnitureInstance[]): Fabricat
       if (current) {
         current.quantity += 1;
         current.partIds.push(part.id);
-        if (!current.moduleIds.includes(instance.moduleDefinitionId)) current.moduleIds.push(instance.moduleDefinitionId);
+        if (!current.moduleIds.includes(instance.moduleDefinitionId))
+          current.moduleIds.push(instance.moduleDefinitionId);
       } else {
         hardwareMap.set(part.hardwareId, {
           hardwareId: part.hardwareId,
@@ -165,22 +169,41 @@ export function buildFabricationReport(instances: FurnitureInstance[]): Fabricat
 }
 
 export function fabricationReportToCsv(report: FabricationReport) {
-  const header = ["quantidade", "largura_mm", "altura_mm", "profundidade_mm", "funcao", "material", "veio", "fita_topo", "fita_base", "fita_esquerda", "fita_direita", "fita_frente", "fita_fundo", "nomes"].join(",");
-  const rows = report.cutItems.map((item) => [
-    item.quantity,
-    item.widthMm,
-    item.heightMm,
-    item.depthMm,
-    item.role,
-    item.materialId,
-    item.grainDirection ?? "none",
-    item.edgeBanding.top ?? "",
-    item.edgeBanding.bottom ?? "",
-    item.edgeBanding.left ?? "",
-    item.edgeBanding.right ?? "",
-    item.edgeBanding.front ?? "",
-    item.edgeBanding.back ?? "",
-    item.names.join(" / "),
-  ].map((value) => `"${String(value).replaceAll('"', '""')}"`).join(","));
+  const header = [
+    "quantidade",
+    "largura_mm",
+    "altura_mm",
+    "profundidade_mm",
+    "funcao",
+    "material",
+    "veio",
+    "fita_topo",
+    "fita_base",
+    "fita_esquerda",
+    "fita_direita",
+    "fita_frente",
+    "fita_fundo",
+    "nomes",
+  ].join(",");
+  const rows = report.cutItems.map((item) =>
+    [
+      item.quantity,
+      item.widthMm,
+      item.heightMm,
+      item.depthMm,
+      item.role,
+      item.materialId,
+      item.grainDirection ?? "none",
+      item.edgeBanding.top ?? "",
+      item.edgeBanding.bottom ?? "",
+      item.edgeBanding.left ?? "",
+      item.edgeBanding.right ?? "",
+      item.edgeBanding.front ?? "",
+      item.edgeBanding.back ?? "",
+      item.names.join(" / "),
+    ]
+      .map((value) => `"${String(value).replaceAll('"', '""')}"`)
+      .join(","),
+  );
   return [header, ...rows].join("\n");
 }

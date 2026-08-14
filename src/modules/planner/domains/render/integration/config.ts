@@ -16,11 +16,16 @@ import type { RealRenderConfig } from "./types";
 
 function mapPresetToLocalQuality(id: RenderPresetId): LocalQualityId {
   switch (id) {
-    case "rascunho": return "rascunho";
-    case "baixa": return "baixa";
-    case "media": return "media";
-    case "alta": return "alta";
-    case "ultra": return "ultra";
+    case "rascunho":
+      return "rascunho";
+    case "baixa":
+      return "baixa";
+    case "media":
+      return "media";
+    case "alta":
+      return "alta";
+    case "ultra":
+      return "ultra";
     case "fotografica":
     case "marketing":
     case "cinema":

@@ -15,73 +15,124 @@ import { usePresentationCapture } from "./presentationCapture";
 
 const DEG = Math.PI / 180;
 const EDGE_BAND_THICKNESS_M = 0.001;
-const FALLBACK_COLOR_MAP = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='2' height='2' fill='%23ffffff'/%3E%3C/svg%3E";
-const FALLBACK_NORMAL_MAP = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='2' height='2' fill='%238080ff'/%3E%3C/svg%3E";
-const FALLBACK_BUMP_MAP = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='2' height='2' fill='%23000000'/%3E%3C/svg%3E";
-const FALLBACK_ROUGHNESS_MAP = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='2' height='2' fill='%23b8b8b8'/%3E%3C/svg%3E";
-const FALLBACK_METALNESS_MAP = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='2' height='2' fill='%23000000'/%3E%3C/svg%3E";
-const FALLBACK_AO_MAP = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='2' height='2' fill='%23ffffff'/%3E%3C/svg%3E";
+const FALLBACK_COLOR_MAP =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='2' height='2' fill='%23ffffff'/%3E%3C/svg%3E";
+const FALLBACK_NORMAL_MAP =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='2' height='2' fill='%238080ff'/%3E%3C/svg%3E";
+const FALLBACK_BUMP_MAP =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='2' height='2' fill='%23000000'/%3E%3C/svg%3E";
+const FALLBACK_ROUGHNESS_MAP =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='2' height='2' fill='%23b8b8b8'/%3E%3C/svg%3E";
+const FALLBACK_METALNESS_MAP =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='2' height='2' fill='%23000000'/%3E%3C/svg%3E";
+const FALLBACK_AO_MAP =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='2' height='2' fill='%23ffffff'/%3E%3C/svg%3E";
 
-type SafeTextureBundle = Partial<Record<"map" | "normalMap" | "bumpMap" | "roughnessMap" | "metalnessMap" | "aoMap" | "displacementMap", THREE.Texture>>;
+type SafeTextureBundle = Partial<
+  Record<
+    "map" | "normalMap" | "bumpMap" | "roughnessMap" | "metalnessMap" | "aoMap" | "displacementMap",
+    THREE.Texture
+  >
+>;
 const safeTextureCache = new Map<string, THREE.Texture>();
 const safeTextureLoader = new THREE.TextureLoader();
 
 function useSafeMaterialTextures(urls: Record<string, string>) {
   const [textures, setTextures] = useState<SafeTextureBundle>({});
-  const signature = Object.entries(urls).map(([key, url]) => `${key}:${url}`).join("|");
+  const signature = Object.entries(urls)
+    .map(([key, url]) => `${key}:${url}`)
+    .join("|");
 
   useEffect(() => {
     let active = true;
     const entries = Object.entries(urls);
-    Promise.all(entries.map(([key, url]) => new Promise<[string, THREE.Texture | undefined]>((resolve) => {
-      const cached = safeTextureCache.get(url);
-      if (cached) { resolve([key, cached]); return; }
-      safeTextureLoader.load(url, (texture) => {
-        texture.wrapS = THREE.RepeatWrapping;
-        texture.wrapT = THREE.RepeatWrapping;
-        safeTextureCache.set(url, texture);
-        resolve([key, texture]);
-      }, undefined, () => resolve([key, undefined]));
-    }))).then((loaded) => {
+    Promise.all(
+      entries.map(
+        ([key, url]) =>
+          new Promise<[string, THREE.Texture | undefined]>((resolve) => {
+            const cached = safeTextureCache.get(url);
+            if (cached) {
+              resolve([key, cached]);
+              return;
+            }
+            safeTextureLoader.load(
+              url,
+              (texture) => {
+                texture.wrapS = THREE.RepeatWrapping;
+                texture.wrapT = THREE.RepeatWrapping;
+                safeTextureCache.set(url, texture);
+                resolve([key, texture]);
+              },
+              undefined,
+              () => resolve([key, undefined]),
+            );
+          }),
+      ),
+    ).then((loaded) => {
       if (!active) return;
       setTextures(Object.fromEntries(loaded.filter(([, texture]) => texture)) as SafeTextureBundle);
     });
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [signature]);
 
   return textures;
 }
 
-function EdgeBandMesh({ edge, materialId, size, instanceId }: { edge: string; materialId: string; size: [number, number, number]; instanceId: string }) {
+function EdgeBandMesh({
+  edge,
+  materialId,
+  size,
+  instanceId,
+}: {
+  edge: string;
+  materialId: string;
+  size: [number, number, number];
+  instanceId: string;
+}) {
   const material = resolveMaterial(materialId);
   const [width, height, depth] = size;
-  const edgeThickness = material.category === "stone" ? Math.min(0.004, height) : EDGE_BAND_THICKNESS_M;
-  const bandSize: [number, number, number] = edge === "top" || edge === "bottom"
-    ? [width, edgeThickness, depth]
-    : edge === "front" || edge === "back"
-      ? [width, height, edgeThickness]
-      : [edgeThickness, height, depth];
-  const position: [number, number, number] = edge === "top"
-    ? [0, height / 2, 0]
-    : edge === "bottom"
-      ? [0, -height / 2, 0]
-      : edge === "front"
-        ? [0, 0, depth / 2]
-        : edge === "back"
-          ? [0, 0, -depth / 2]
-          : edge === "left"
-            ? [-width / 2, 0, 0]
-            : [width / 2, 0, 0];
+  const edgeThickness =
+    material.category === "stone" ? Math.min(0.004, height) : EDGE_BAND_THICKNESS_M;
+  const bandSize: [number, number, number] =
+    edge === "top" || edge === "bottom"
+      ? [width, edgeThickness, depth]
+      : edge === "front" || edge === "back"
+        ? [width, height, edgeThickness]
+        : [edgeThickness, height, depth];
+  const position: [number, number, number] =
+    edge === "top"
+      ? [0, height / 2, 0]
+      : edge === "bottom"
+        ? [0, -height / 2, 0]
+        : edge === "front"
+          ? [0, 0, depth / 2]
+          : edge === "back"
+            ? [0, 0, -depth / 2]
+            : edge === "left"
+              ? [-width / 2, 0, 0]
+              : [width / 2, 0, 0];
 
   return (
-      <mesh position={position} raycast={() => null} userData={{ instanceId, edgeBand: edge }}>
+    <mesh position={position} raycast={() => null} userData={{ instanceId, edgeBand: edge }}>
       <boxGeometry args={bandSize} />
-      <meshStandardMaterial color={material.baseColor} roughness={material.roughness} metalness={material.metalness} />
+      <meshStandardMaterial
+        color={material.baseColor}
+        roughness={material.roughness}
+        metalness={material.metalness}
+      />
     </mesh>
   );
 }
 
-function StaticHardwareBatch({ parts, instanceId }: { parts: PartDefinition[]; instanceId: string }) {
+function StaticHardwareBatch({
+  parts,
+  instanceId,
+}: {
+  parts: PartDefinition[];
+  instanceId: string;
+}) {
   const qualityMode = useImmersiveStore((s) => s.qualityMode);
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const first = parts[0];
@@ -91,20 +142,35 @@ function StaticHardwareBatch({ parts, instanceId }: { parts: PartDefinition[]; i
     mmToScene(first.dimensionsMm.height),
     mmToScene(first.dimensionsMm.depth),
   ];
-  const geometry = useMemo(() => new THREE.BoxGeometry(size[0], size[1], size[2]), [size[0], size[1], size[2]]);
-  const material = useMemo(() => new THREE.MeshStandardMaterial({
-    color: materialDefinition.baseColor,
-    roughness: materialDefinition.roughness,
-    metalness: materialDefinition.metalness,
-  }), [materialDefinition.baseColor, materialDefinition.roughness, materialDefinition.metalness]);
+  const geometry = useMemo(
+    () => new THREE.BoxGeometry(size[0], size[1], size[2]),
+    [size[0], size[1], size[2]],
+  );
+  const material = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: materialDefinition.baseColor,
+        roughness: materialDefinition.roughness,
+        metalness: materialDefinition.metalness,
+      }),
+    [materialDefinition.baseColor, materialDefinition.roughness, materialDefinition.metalness],
+  );
   const helper = useMemo(() => new THREE.Object3D(), []);
 
   useEffect(() => {
     const mesh = meshRef.current;
     if (!mesh) return;
     parts.forEach((part, index) => {
-      helper.position.set(mmToScene(part.positionMm.x), mmToScene(part.positionMm.y), mmToScene(part.positionMm.z));
-      helper.rotation.set(part.rotationDeg.x * DEG, part.rotationDeg.y * DEG, part.rotationDeg.z * DEG);
+      helper.position.set(
+        mmToScene(part.positionMm.x),
+        mmToScene(part.positionMm.y),
+        mmToScene(part.positionMm.z),
+      );
+      helper.rotation.set(
+        part.rotationDeg.x * DEG,
+        part.rotationDeg.y * DEG,
+        part.rotationDeg.z * DEG,
+      );
       helper.updateMatrix();
       mesh.setMatrixAt(index, helper.matrix);
     });
@@ -125,7 +191,15 @@ function StaticHardwareBatch({ parts, instanceId }: { parts: PartDefinition[]; i
   );
 }
 
-function HardwareVisual({ part, material, size }: { part: PartDefinition; material: ReturnType<typeof resolveMaterial>; size: [number, number, number] }) {
+function HardwareVisual({
+  part,
+  material,
+  size,
+}: {
+  part: PartDefinition;
+  material: ReturnType<typeof resolveMaterial>;
+  size: [number, number, number];
+}) {
   const geometry = part.hardwareGeometry;
   if (!geometry || geometry.kind === "box") {
     return <boxGeometry args={size} />;
@@ -134,7 +208,12 @@ function HardwareVisual({ part, material, size }: { part: PartDefinition; materi
   if (geometry.kind === "cylinder") {
     return (
       <cylinderGeometry
-        args={[mmToScene(geometry.radiusMm), mmToScene(geometry.radiusMm), size[0], geometry.radialSegments ?? 24]}
+        args={[
+          mmToScene(geometry.radiusMm),
+          mmToScene(geometry.radiusMm),
+          size[0],
+          geometry.radialSegments ?? 24,
+        ]}
         rotate-z={Math.PI / 2}
       />
     );
@@ -143,16 +222,26 @@ function HardwareVisual({ part, material, size }: { part: PartDefinition; materi
   const radius = geometry.kind === "profile" ? mmToScene(geometry.radiusMm) : 0.003;
   const grooveColor = new THREE.Color(material.baseColor).offsetHSL(0, 0, -0.14);
   const grooveWidth = Math.max(0.003, size[0] * 0.82);
-  const grooveLipMm = geometry.kind === "gola" || geometry.kind === "cava" ? geometry.lipMm : geometry.radiusMm;
+  const grooveLipMm =
+    geometry.kind === "gola" || geometry.kind === "cava" ? geometry.lipMm : geometry.radiusMm;
   const grooveHeight = Math.min(size[1] * 0.28, mmToScene(grooveLipMm));
 
   return (
     <group>
       <RoundedBox args={size} radius={radius} smoothness={3}>
-        <meshPhysicalMaterial color={material.baseColor} roughness={material.roughness} metalness={material.metalness} clearcoat={material.clearcoat ?? 0.35} clearcoatRoughness={material.clearcoatRoughness ?? 0.18} />
+        <meshPhysicalMaterial
+          color={material.baseColor}
+          roughness={material.roughness}
+          metalness={material.metalness}
+          clearcoat={material.clearcoat ?? 0.35}
+          clearcoatRoughness={material.clearcoatRoughness ?? 0.18}
+        />
       </RoundedBox>
       {(geometry.kind === "gola" || geometry.kind === "cava") && (
-        <mesh position={[0, geometry.kind === "gola" ? -size[1] * 0.18 : 0, size[2] / 2 + 0.001]} raycast={() => null}>
+        <mesh
+          position={[0, geometry.kind === "gola" ? -size[1] * 0.18 : 0, size[2] / 2 + 0.001]}
+          raycast={() => null}
+        >
           <boxGeometry args={[grooveWidth, grooveHeight, mmToScene(geometry.recessMm)]} />
           <meshStandardMaterial color={grooveColor} roughness={0.24} metalness={0.78} />
         </mesh>
@@ -169,7 +258,7 @@ function PartMesh({
   xray,
   onSelect,
   onToggleOpen,
-  instanceId
+  instanceId,
 }: {
   part: PartDefinition;
   motionPart?: PartDefinition;
@@ -182,23 +271,40 @@ function PartMesh({
 }) {
   const material = useMemo(() => resolveMaterial(part.materialId), [part.materialId]);
   const qualityMode = useImmersiveStore((s) => s.qualityMode);
-  const exposed = ["door", "drawer-front", "countertop", "top", "side-left", "side-right"].includes(part.role);
-  const castShadow = qualityMode !== "work" && ["door", "drawer-front", "countertop", "top"].includes(part.role);
-  const materialTextureUrl = useMemo(() => material.textureUrl || material.maps?.baseColorUrl || createMaterialTextureUrl(material), [material]);
-  const textureUrls = useMemo(() => ({
-    map: materialTextureUrl || FALLBACK_COLOR_MAP,
-    normalMap: material.normalUrl || material.maps?.normalUrl || FALLBACK_NORMAL_MAP,
-    bumpMap: material.bumpUrl || FALLBACK_BUMP_MAP,
-    roughnessMap: material.maps?.roughnessUrl || FALLBACK_ROUGHNESS_MAP,
-    metalnessMap: material.maps?.metalnessUrl || FALLBACK_METALNESS_MAP,
-    aoMap: material.maps?.aoUrl || FALLBACK_AO_MAP,
-    displacementMap: material.maps?.heightUrl || FALLBACK_BUMP_MAP,
-  }), [materialTextureUrl, material.normalUrl, material.maps]);
+  const exposed = ["door", "drawer-front", "countertop", "top", "side-left", "side-right"].includes(
+    part.role,
+  );
+  const castShadow =
+    qualityMode !== "work" && ["door", "drawer-front", "countertop", "top"].includes(part.role);
+  const materialTextureUrl = useMemo(
+    () => material.textureUrl || material.maps?.baseColorUrl || createMaterialTextureUrl(material),
+    [material],
+  );
+  const textureUrls = useMemo(
+    () => ({
+      map: materialTextureUrl || FALLBACK_COLOR_MAP,
+      normalMap: material.normalUrl || material.maps?.normalUrl || FALLBACK_NORMAL_MAP,
+      bumpMap: material.bumpUrl || FALLBACK_BUMP_MAP,
+      roughnessMap: material.maps?.roughnessUrl || FALLBACK_ROUGHNESS_MAP,
+      metalnessMap: material.maps?.metalnessUrl || FALLBACK_METALNESS_MAP,
+      aoMap: material.maps?.aoUrl || FALLBACK_AO_MAP,
+      displacementMap: material.maps?.heightUrl || FALLBACK_BUMP_MAP,
+    }),
+    [materialTextureUrl, material.normalUrl, material.maps],
+  );
   const textures = useSafeMaterialTextures(textureUrls);
   useEffect(() => {
-    const repeat = material.uvRepeat ?? { x: material.uvTransform?.scaleX ?? material.textureScale, y: material.uvTransform?.scaleY ?? material.textureScale };
-    const grainRotationDeg = part.grainDirection === "vertical" ? 90 : part.grainDirection === "horizontal" ? 0 : 0;
-    const rotation = ((material.textureRotationDeg ?? 0) + (material.uvTransform?.rotationDeg ?? 0) + grainRotationDeg) * DEG;
+    const repeat = material.uvRepeat ?? {
+      x: material.uvTransform?.scaleX ?? material.textureScale,
+      y: material.uvTransform?.scaleY ?? material.textureScale,
+    };
+    const grainRotationDeg =
+      part.grainDirection === "vertical" ? 90 : part.grainDirection === "horizontal" ? 0 : 0;
+    const rotation =
+      ((material.textureRotationDeg ?? 0) +
+        (material.uvTransform?.rotationDeg ?? 0) +
+        grainRotationDeg) *
+      DEG;
     Object.values(textures).forEach((texture) => {
       if (!texture) return;
       texture.wrapS = THREE.RepeatWrapping;
@@ -209,18 +315,25 @@ function PartMesh({
       texture.needsUpdate = true;
     });
     if (textures.map) textures.map.colorSpace = THREE.SRGBColorSpace;
-  }, [material.textureRotationDeg, material.uvRepeat, material.uvTransform, material.textureScale, part.grainDirection, textures]);
+  }, [
+    material.textureRotationDeg,
+    material.uvRepeat,
+    material.uvTransform,
+    material.textureScale,
+    part.grainDirection,
+    textures,
+  ]);
   const transparent = Boolean(xray || material.transparent);
-  const opacity = xray ? 0.22 : material.opacity ?? 1;
+  const opacity = xray ? 0.22 : (material.opacity ?? 1);
   const size: [number, number, number] = [
     mmToScene(part.dimensionsMm.width),
     mmToScene(part.dimensionsMm.height),
-    mmToScene(part.dimensionsMm.depth)
+    mmToScene(part.dimensionsMm.depth),
   ];
   const position: [number, number, number] = [
     mmToScene(part.positionMm.x),
     mmToScene(part.positionMm.y),
-    mmToScene(part.positionMm.z)
+    mmToScene(part.positionMm.z),
   ];
 
   const interactive = motionPart?.interactive ?? part.interactive;
@@ -232,7 +345,7 @@ function PartMesh({
     group = {
       position: [position[0], position[1], position[2] + mmToScene(interactive.maxTravelMm ?? 0)],
       rotationX: 0,
-      rotationY: 0
+      rotationY: 0,
     };
   }
 
@@ -240,16 +353,26 @@ function PartMesh({
     const angle = (interactive.maxOpenAngleDeg ?? 90) * DEG;
     const sign = interactive.hingeSide === "left" ? 1 : -1;
     const rotationY = -sign * angle;
-    const fallbackPivot = { x: position[0] - sign * size[0] / 2, y: position[1], z: position[2] };
-    const pivot = pivotMm ? [mmToScene(pivotMm.x), mmToScene(pivotMm.y), mmToScene(pivotMm.z)] as [number, number, number] : [fallbackPivot.x, fallbackPivot.y, fallbackPivot.z] as [number, number, number];
+    const fallbackPivot = { x: position[0] - (sign * size[0]) / 2, y: position[1], z: position[2] };
+    const pivot = pivotMm
+      ? ([mmToScene(pivotMm.x), mmToScene(pivotMm.y), mmToScene(pivotMm.z)] as [
+          number,
+          number,
+          number,
+        ])
+      : ([fallbackPivot.x, fallbackPivot.y, fallbackPivot.z] as [number, number, number]);
     const localX = position[0] - pivot[0];
     const localZ = position[2] - pivot[2];
     const cos = Math.cos(rotationY);
     const sin = Math.sin(rotationY);
     group = {
-      position: [pivot[0] + localX * cos + localZ * sin, pivot[1], pivot[2] - localX * sin + localZ * cos],
+      position: [
+        pivot[0] + localX * cos + localZ * sin,
+        pivot[1],
+        pivot[2] - localX * sin + localZ * cos,
+      ],
       rotationX: 0,
-      rotationY
+      rotationY,
     };
   }
 
@@ -258,27 +381,45 @@ function PartMesh({
     group = {
       position: [position[0], position[1], position[2]],
       rotationX: -angle,
-      rotationY: 0
+      rotationY: 0,
     };
   }
 
-  const edgeEntries = qualityMode === "work"
-    ? []
-    : Object.entries(part.edgeBanding ?? {}).filter(([edge]) => qualityMode === "realistic" ? edge === "front" : true);
+  const edgeEntries =
+    qualityMode === "work"
+      ? []
+      : Object.entries(part.edgeBanding ?? {}).filter(([edge]) =>
+          qualityMode === "realistic" ? edge === "front" : true,
+        );
 
   return (
     <mesh
       position={group.position}
       raycast={partSelectable ? undefined : () => null}
-      userData={{ instanceId: part.moduleId, partId: part.id, role: part.role, hasPartListener: partSelectable, grainDirection: part.grainDirection ?? material.grain, hardwareId: part.hardwareId ?? null }}
-      rotation={[group.rotationX + part.rotationDeg.x * DEG, group.rotationY + part.rotationDeg.y * DEG, part.rotationDeg.z * DEG]}
+      userData={{
+        instanceId: part.moduleId,
+        partId: part.id,
+        role: part.role,
+        hasPartListener: partSelectable,
+        grainDirection: part.grainDirection ?? material.grain,
+        hardwareId: part.hardwareId ?? null,
+      }}
+      rotation={[
+        group.rotationX + part.rotationDeg.x * DEG,
+        group.rotationY + part.rotationDeg.y * DEG,
+        part.rotationDeg.z * DEG,
+      ]}
       castShadow={castShadow}
       receiveShadow={castShadow}
-      onClick={partSelectable ? (event) => {
-        event.stopPropagation();
-        onSelect();
-        if (event.detail === 2 && part.groupId) onToggleOpen();
-      } : undefined}
+      onClick={
+        partSelectable
+          ? (event) => {
+              event.stopPropagation();
+              onSelect();
+              if (event.detail === 2 && part.groupId) onToggleOpen();
+            }
+          : undefined
+      }
     >
       {part.role === "hardware" && part.hardwareGeometry && part.hardwareGeometry.kind !== "box" ? (
         <HardwareVisual part={part} material={material} size={size} />
@@ -309,7 +450,14 @@ function PartMesh({
         <>
           <boxGeometry args={size} />
           {qualityMode === "work" ? (
-            <meshStandardMaterial color={material.baseColor} roughness={Math.max(material.roughness, 0.55)} metalness={Math.min(material.metalness, 0.35)} transparent={transparent} opacity={opacity} depthWrite={!transparent} />
+            <meshStandardMaterial
+              color={material.baseColor}
+              roughness={Math.max(material.roughness, 0.55)}
+              metalness={Math.min(material.metalness, 0.35)}
+              transparent={transparent}
+              opacity={opacity}
+              depthWrite={!transparent}
+            />
           ) : (
             <meshPhysicalMaterial
               color={material.baseColor}
@@ -330,14 +478,24 @@ function PartMesh({
         </>
       )}
       {edgeEntries.map(([edge, materialId]) => (
-        <EdgeBandMesh key={`${part.id}:${edge}`} edge={edge} materialId={materialId} size={size} instanceId={instanceId} />
+        <EdgeBandMesh
+          key={`${part.id}:${edge}`}
+          edge={edge}
+          materialId={materialId}
+          size={size}
+          instanceId={instanceId}
+        />
       ))}
       {selected && <Edges color="#7c6cff" scale={1.02} />}
     </mesh>
   );
 }
 
-function DragPreviewGroup({ preview }: { preview: { moduleId: string; positionMm: { x: number; y: number; z: number }; valid: boolean } }) {
+function DragPreviewGroup({
+  preview,
+}: {
+  preview: { moduleId: string; positionMm: { x: number; y: number; z: number }; valid: boolean };
+}) {
   const definition = ModuleRegistry.get(preview.moduleId);
   if (!definition) return null;
   const roomWidthMm = useRoomBuilderStore((s) => s.width);
@@ -353,17 +511,31 @@ function DragPreviewGroup({ preview }: { preview: { moduleId: string; positionMm
   return (
     <group>
       <mesh
-        position={[mmToScene(preview.positionMm.x), mmToScene(preview.positionMm.y + definition.defaultDimensionsMm.height / 2), mmToScene(preview.positionMm.z)]}
+        position={[
+          mmToScene(preview.positionMm.x),
+          mmToScene(preview.positionMm.y + definition.defaultDimensionsMm.height / 2),
+          mmToScene(preview.positionMm.z),
+        ]}
         userData={{ dragPreview: true, moduleId: preview.moduleId }}
       >
         <boxGeometry args={size} />
         <meshBasicMaterial color={guideColor} transparent opacity={0.24} wireframe />
       </mesh>
-      <mesh position={[0, guideY, mmToScene(preview.positionMm.z)]} userData={{ snapGuide: "floor-line" }}>
+      <mesh
+        position={[0, guideY, mmToScene(preview.positionMm.z)]}
+        userData={{ snapGuide: "floor-line" }}
+      >
         <boxGeometry args={[mmToScene(roomWidthMm), 0.006, 0.012]} />
         <meshBasicMaterial color={guideColor} transparent opacity={0.72} />
       </mesh>
-      <mesh position={[mmToScene(preview.positionMm.x), mmToScene(roomHeightMm / 2), -mmToScene(roomDepthMm / 2) + 0.006]} userData={{ snapGuide: "back-wall-line" }}>
+      <mesh
+        position={[
+          mmToScene(preview.positionMm.x),
+          mmToScene(roomHeightMm / 2),
+          -mmToScene(roomDepthMm / 2) + 0.006,
+        ]}
+        userData={{ snapGuide: "back-wall-line" }}
+      >
         <boxGeometry args={[0.012, mmToScene(roomHeightMm), 0.012]} />
         <meshBasicMaterial color={guideColor} transparent opacity={0.72} />
       </mesh>
@@ -398,7 +570,8 @@ function InstanceGroup({ instance }: { instance: FurnitureInstance }) {
   const openingAnchors = useMemo(() => {
     const anchors = new Map<string, PartDefinition>();
     for (const part of instance.parts) {
-      if (part.groupId && part.interactive && !anchors.has(part.groupId)) anchors.set(part.groupId, part);
+      if (part.groupId && part.interactive && !anchors.has(part.groupId))
+        anchors.set(part.groupId, part);
     }
     return anchors;
   }, [instance.parts]);
@@ -406,7 +579,12 @@ function InstanceGroup({ instance }: { instance: FurnitureInstance }) {
     const batches = new Map<string, PartDefinition[]>();
     for (const part of instance.parts) {
       if (part.role !== "hardware" || part.groupId) continue;
-      const key = [part.materialId, part.dimensionsMm.width, part.dimensionsMm.height, part.dimensionsMm.depth].join("|");
+      const key = [
+        part.materialId,
+        part.dimensionsMm.width,
+        part.dimensionsMm.height,
+        part.dimensionsMm.depth,
+      ].join("|");
       const batch = batches.get(key) ?? [];
       batch.push(part);
       batches.set(key, batch);
@@ -461,12 +639,12 @@ function InstanceGroup({ instance }: { instance: FurnitureInstance }) {
       position={[
         mmToScene(instance.positionMm.x),
         mmToScene(instance.positionMm.y),
-        mmToScene(instance.positionMm.z)
+        mmToScene(instance.positionMm.z),
       ]}
       rotation={[
         instance.rotationDeg.x * DEG,
         instance.rotationDeg.y * DEG,
-        instance.rotationDeg.z * DEG
+        instance.rotationDeg.z * DEG,
       ]}
       onClick={(event) => {
         event.stopPropagation();
@@ -475,21 +653,30 @@ function InstanceGroup({ instance }: { instance: FurnitureInstance }) {
       }}
     >
       {staticHardwareBatches.map((parts) => (
-        <StaticHardwareBatch key={`${parts[0].materialId}:${parts[0].dimensionsMm.width}:${parts[0].dimensionsMm.height}:${parts[0].dimensionsMm.depth}`} parts={parts} instanceId={instance.id} />
-      ))}
-      {instance.parts.filter((part) => !(part.role === "hardware" && !part.groupId)).map((part) => (
-          <PartMesh
-          key={part.id}
-          part={part}
-          motionPart={part.groupId ? openingAnchors.get(part.groupId) : undefined}
-          open={Boolean(instance.isOpen || (part.groupId && (openStates[part.groupId] || instance.openStates?.[part.groupId])))}
-          selected={instance.selected && selectedPart === part.id && !presentationCapture}
-          xray={instance.isXRay || (occlusionMode === "xray" && !instance.selected)}
-          onSelect={() => selectPartForInstance(part)}
-          onToggleOpen={() => part.groupId && toggleInstanceAnimation(instance.id, part.groupId)}
+        <StaticHardwareBatch
+          key={`${parts[0].materialId}:${parts[0].dimensionsMm.width}:${parts[0].dimensionsMm.height}:${parts[0].dimensionsMm.depth}`}
+          parts={parts}
           instanceId={instance.id}
         />
       ))}
+      {instance.parts
+        .filter((part) => !(part.role === "hardware" && !part.groupId))
+        .map((part) => (
+          <PartMesh
+            key={part.id}
+            part={part}
+            motionPart={part.groupId ? openingAnchors.get(part.groupId) : undefined}
+            open={Boolean(
+              instance.isOpen ||
+              (part.groupId && (openStates[part.groupId] || instance.openStates?.[part.groupId])),
+            )}
+            selected={instance.selected && selectedPart === part.id && !presentationCapture}
+            xray={instance.isXRay || (occlusionMode === "xray" && !instance.selected)}
+            onSelect={() => selectPartForInstance(part)}
+            onToggleOpen={() => part.groupId && toggleInstanceAnimation(instance.id, part.groupId)}
+            instanceId={instance.id}
+          />
+        ))}
     </group>
   );
 
@@ -501,7 +688,9 @@ function InstanceGroup({ instance }: { instance: FurnitureInstance }) {
     >
       {group}
     </TransformControls>
-  ) : group;
+  ) : (
+    group
+  );
 }
 
 export function LibraryPartsRenderer() {
@@ -510,7 +699,6 @@ export function LibraryPartsRenderer() {
   const presentationCapture = usePresentationCapture();
   return (
     <group userData={{ renderLayer: "SCENE_CONTENT", contentType: "kitchen-furniture" }}>
-
       {instances.map((instance) => (
         <InstanceGroup key={instance.id} instance={instance} />
       ))}

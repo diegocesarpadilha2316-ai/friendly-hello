@@ -11,7 +11,7 @@ const MATERIAL_ALIASES: Record<string, string> = {
   mdf: "MDF Branco",
   compensado: "Compensado Naval",
   melaminico: "Melamínico",
-  "melamínico": "Melamínico",
+  melamínico: "Melamínico",
 };
 
 const BRAND_ALIASES = ["Blum", "Hettich", "Häfele", "Hafele", "FGV", "Salice"] as const;
@@ -40,7 +40,7 @@ export function parseConfiguratorCommand(input: string): ConfiguratorCommand | n
   const width = /largura|comprimento/.test(text);
   const height = /altura/.test(text);
   const depth = /profundidade|fundo/.test(text);
-  if ((/aumente|reduza|redimensione|ajuste|coloque|configure/.test(text)) && (meters || millis)) {
+  if (/aumente|reduza|redimensione|ajuste|coloque|configure/.test(text) && (meters || millis)) {
     const value = meters ?? millis!;
     const axis = width ? "width" : height ? "height" : depth ? "depth" : "width";
     return {
@@ -53,7 +53,9 @@ export function parseConfiguratorCommand(input: string): ConfiguratorCommand | n
   }
 
   // Material: "troque MDF branco por Carvalho" / "material Freijó"
-  const matHit = Object.keys(MATERIAL_ALIASES).find((k) => new RegExp(`\\b${k}\\b`, "i").test(text));
+  const matHit = Object.keys(MATERIAL_ALIASES).find((k) =>
+    new RegExp(`\\b${k}\\b`, "i").test(text),
+  );
   if (matHit && /(troque|mude|coloque|use|material)/.test(text)) {
     return {
       id: `material:${MATERIAL_ALIASES[matHit]}`,
@@ -82,15 +84,45 @@ export function parseConfiguratorCommand(input: string): ConfiguratorCommand | n
     const value = Number(countMatch[1]);
     const kind = countMatch[2];
     if (/porta/.test(kind))
-      return { id: `doors:${value}`, matched: raw, intent: "doors.count", args: { value }, summary: `Definir ${value} portas` };
+      return {
+        id: `doors:${value}`,
+        matched: raw,
+        intent: "doors.count",
+        args: { value },
+        summary: `Definir ${value} portas`,
+      };
     if (/gaveta/.test(kind))
-      return { id: `drawers:${value}`, matched: raw, intent: "drawers.count", args: { value }, summary: `Definir ${value} gavetas` };
+      return {
+        id: `drawers:${value}`,
+        matched: raw,
+        intent: "drawers.count",
+        args: { value },
+        summary: `Definir ${value} gavetas`,
+      };
     if (/prateleira/.test(kind))
-      return { id: `shelves:${value}`, matched: raw, intent: "shelves.count", args: { value }, summary: `Definir ${value} prateleiras` };
+      return {
+        id: `shelves:${value}`,
+        matched: raw,
+        intent: "shelves.count",
+        args: { value },
+        summary: `Definir ${value} prateleiras`,
+      };
     if (/divis/.test(kind))
-      return { id: `dividers:${value}`, matched: raw, intent: "dividers.count", args: { value }, summary: `Definir ${value} divisórias` };
+      return {
+        id: `dividers:${value}`,
+        matched: raw,
+        intent: "dividers.count",
+        args: { value },
+        summary: `Definir ${value} divisórias`,
+      };
     if (/nicho/.test(kind))
-      return { id: `niches:${value}`, matched: raw, intent: "niches.count", args: { value }, summary: `Dividir em ${value} nichos` };
+      return {
+        id: `niches:${value}`,
+        matched: raw,
+        intent: "niches.count",
+        args: { value },
+        summary: `Dividir em ${value} nichos`,
+      };
   }
 
   // Aberturas
@@ -105,20 +137,81 @@ export function parseConfiguratorCommand(input: string): ConfiguratorCommand | n
     };
   }
   if (/abra.*todas|abrir todas|abra tudo/.test(text))
-    return { id: "open.all", matched: raw, intent: "open.all", args: {}, summary: "Abrir portas e gavetas" };
+    return {
+      id: "open.all",
+      matched: raw,
+      intent: "open.all",
+      args: {},
+      summary: "Abrir portas e gavetas",
+    };
   if (/feche.*todas|fechar todas|feche tudo/.test(text))
-    return { id: "close.all", matched: raw, intent: "close.all", args: {}, summary: "Fechar portas e gavetas" };
-  if (/abr[ai].*porta/.test(text)) return { id: "open.doors", matched: raw, intent: "open.doors", args: {}, summary: "Abrir portas" };
-  if (/fech[ae].*porta/.test(text)) return { id: "close.doors", matched: raw, intent: "close.doors", args: {}, summary: "Fechar portas" };
-  if (/abr[ai].*gaveta/.test(text)) return { id: "open.drawers", matched: raw, intent: "open.drawers", args: {}, summary: "Abrir gavetas" };
-  if (/fech[ae].*gaveta/.test(text)) return { id: "close.drawers", matched: raw, intent: "close.drawers", args: {}, summary: "Fechar gavetas" };
+    return {
+      id: "close.all",
+      matched: raw,
+      intent: "close.all",
+      args: {},
+      summary: "Fechar portas e gavetas",
+    };
+  if (/abr[ai].*porta/.test(text))
+    return {
+      id: "open.doors",
+      matched: raw,
+      intent: "open.doors",
+      args: {},
+      summary: "Abrir portas",
+    };
+  if (/fech[ae].*porta/.test(text))
+    return {
+      id: "close.doors",
+      matched: raw,
+      intent: "close.doors",
+      args: {},
+      summary: "Fechar portas",
+    };
+  if (/abr[ai].*gaveta/.test(text))
+    return {
+      id: "open.drawers",
+      matched: raw,
+      intent: "open.drawers",
+      args: {},
+      summary: "Abrir gavetas",
+    };
+  if (/fech[ae].*gaveta/.test(text))
+    return {
+      id: "close.drawers",
+      matched: raw,
+      intent: "close.drawers",
+      args: {},
+      summary: "Fechar gavetas",
+    };
 
   // LED / vidro / espelho / ripado
-  if (/led/.test(text)) return { id: "add.led", matched: raw, intent: "add.led", args: {}, summary: "Adicionar LED" };
-  if (/espelho/.test(text)) return { id: "add.mirror", matched: raw, intent: "add.mirror", args: {}, summary: "Adicionar espelho" };
-  if (/vidro/.test(text)) return { id: "add.glass", matched: raw, intent: "add.glass", args: {}, summary: "Adicionar vidro" };
+  if (/led/.test(text))
+    return { id: "add.led", matched: raw, intent: "add.led", args: {}, summary: "Adicionar LED" };
+  if (/espelho/.test(text))
+    return {
+      id: "add.mirror",
+      matched: raw,
+      intent: "add.mirror",
+      args: {},
+      summary: "Adicionar espelho",
+    };
+  if (/vidro/.test(text))
+    return {
+      id: "add.glass",
+      matched: raw,
+      intent: "add.glass",
+      args: {},
+      summary: "Adicionar vidro",
+    };
   if (/ripado|painel ripado/.test(text))
-    return { id: "slatted", matched: raw, intent: "slatted", args: {}, summary: "Transformar em painel ripado" };
+    return {
+      id: "slatted",
+      matched: raw,
+      intent: "slatted",
+      args: {},
+      summary: "Transformar em painel ripado",
+    };
 
   return null;
 }
@@ -140,7 +233,9 @@ export const CONFIGURATOR_SUGGESTIONS: readonly string[] = [
 ];
 
 /** Converte um comando parseado em um patch de params (mesma shape de PlannerParametricNode.params). */
-export function commandToPatch(cmd: ConfiguratorCommand): Record<string, string | number | boolean> {
+export function commandToPatch(
+  cmd: ConfiguratorCommand,
+): Record<string, string | number | boolean> {
   switch (cmd.intent) {
     case "resize": {
       const axis = String(cmd.args.axis);

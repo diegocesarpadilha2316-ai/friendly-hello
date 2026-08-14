@@ -8,11 +8,41 @@
 import type { RenderProvider, RenderProviderId } from "../types";
 
 export const RENDER_PROVIDERS: readonly RenderProvider[] = [
-  { id: "dioris.local", label: "Dioris Local (WebGPU)", description: "Render em tempo real no navegador do usuário.", supports: ["still", "panorama"], available: true },
-  { id: "dioris.cloud", label: "Dioris Cloud", description: "Farm de GPU dedicado a projetos premium.", supports: ["still", "panorama", "video"], available: false },
-  { id: "dioris.ai", label: "Dioris IA", description: "Difusão orientada por geometria para fotorrealismo instantâneo.", supports: ["still", "ai", "marketing"], available: false },
-  { id: "dioris.video", label: "Dioris Vídeo", description: "Sequenciador de câmeras para animações e reels.", supports: ["video"], available: false },
-  { id: "dioris.marketing", label: "Dioris Marketing", description: "Templates prontos para redes sociais e catálogos.", supports: ["marketing"], available: false },
+  {
+    id: "dioris.local",
+    label: "Dioris Local (WebGPU)",
+    description: "Render em tempo real no navegador do usuário.",
+    supports: ["still", "panorama"],
+    available: true,
+  },
+  {
+    id: "dioris.cloud",
+    label: "Dioris Cloud",
+    description: "Farm de GPU dedicado a projetos premium.",
+    supports: ["still", "panorama", "video"],
+    available: false,
+  },
+  {
+    id: "dioris.ai",
+    label: "Dioris IA",
+    description: "Difusão orientada por geometria para fotorrealismo instantâneo.",
+    supports: ["still", "ai", "marketing"],
+    available: false,
+  },
+  {
+    id: "dioris.video",
+    label: "Dioris Vídeo",
+    description: "Sequenciador de câmeras para animações e reels.",
+    supports: ["video"],
+    available: false,
+  },
+  {
+    id: "dioris.marketing",
+    label: "Dioris Marketing",
+    description: "Templates prontos para redes sociais e catálogos.",
+    supports: ["marketing"],
+    available: false,
+  },
 ];
 
 export const DEFAULT_RENDER_PROVIDER_ID: RenderProviderId = "dioris.local";

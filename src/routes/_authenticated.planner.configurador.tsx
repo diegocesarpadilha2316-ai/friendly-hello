@@ -7,7 +7,11 @@ export const Route = createFileRoute("/_authenticated/planner/configurador")({
   head: () => ({
     meta: [
       { title: "Configurador Paramétrico — Dioris Planner" },
-      { name: "description", content: "Configure módulos parametricamente: medidas, portas, gavetas, ferragens, iluminação e materiais, com IA e Walk/FPS integrados." },
+      {
+        name: "description",
+        content:
+          "Configure módulos parametricamente: medidas, portas, gavetas, ferragens, iluminação e materiais, com IA e Walk/FPS integrados.",
+      },
       { property: "og:title", content: "Configurador Paramétrico Dioris" },
       { property: "og:description", content: "IA de Projeto + Edição Total do Planner Dioris." },
       { property: "og:type", content: "website" },

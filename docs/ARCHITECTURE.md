@@ -46,7 +46,7 @@ src/
    permissões, notificações, créditos, uploads, config, logs, auditoria,
    integrações, cache e helpers. Nenhum módulo pode reimplementar.
 2. **Modules** — cada módulo consome exclusivamente `@/core` e expõe
-   suas próprias rotas, componentes, hooks e services *específicos* do
+   suas próprias rotas, componentes, hooks e services _específicos_ do
    domínio.
 3. **Shared** — assets e recursos genuinamente transversais que não são
    funcionalidade (imagens, fontes locais, mocks).

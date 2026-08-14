@@ -9,10 +9,7 @@ import { Label } from "@/components/ui/label";
 export const Route = createFileRoute("/reset-password")({
   ssr: false,
   head: () => ({
-    meta: [
-      { title: "Nova senha — Dioris Hub" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "Nova senha — Dioris Hub" }, { name: "robots", content: "noindex" }],
   }),
   component: ResetPasswordPage,
 });

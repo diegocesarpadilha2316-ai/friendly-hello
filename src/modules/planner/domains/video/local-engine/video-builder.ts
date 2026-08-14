@@ -34,7 +34,9 @@ export function buildVideoScene(
   let lightCount = 0;
   let openableCount = 0;
   let wallCount = 0;
-  let maxW = 0, maxD = 0, maxH = 0;
+  let maxW = 0,
+    maxD = 0,
+    maxH = 0;
 
   for (const env of project.environments) {
     for (const room of env.rooms) {
@@ -60,7 +62,8 @@ export function buildVideoScene(
     moduleCount,
     lightCount,
     openableCount,
-    triangleEstimate: moduleCount * TRI_PER_MODULE + wallCount * TRI_PER_WALL + lightCount * TRI_PER_LIGHT,
+    triangleEstimate:
+      moduleCount * TRI_PER_MODULE + wallCount * TRI_PER_WALL + lightCount * TRI_PER_LIGHT,
     durationSec: timeline.durationSec,
     frameCount,
     bboxMm: { w: maxW, d: maxD, h: maxH },

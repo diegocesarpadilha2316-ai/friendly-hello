@@ -1,4 +1,4 @@
-export type WallId = 'front' | 'back' | 'left' | 'right';
+export type WallId = "front" | "back" | "left" | "right";
 
 export interface RoomOpening {
   id: string;
@@ -9,8 +9,8 @@ export interface RoomOpening {
 }
 
 export interface DoorSpec extends RoomOpening {
-  openingDirection: 'inward' | 'outward';
-  hingeSide: 'left' | 'right';
+  openingDirection: "inward" | "outward";
+  hingeSide: "left" | "right";
 }
 
 export interface WindowSpec extends RoomOpening {

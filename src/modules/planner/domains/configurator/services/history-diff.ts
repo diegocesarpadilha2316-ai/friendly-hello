@@ -21,7 +21,12 @@ function diffParams(
   for (const k of keys) {
     const a = before.params[k];
     const b = after.params[k];
-    if (a !== b) changes.push({ field: `${after.label}.${k}`, before: String(a ?? "—"), after: String(b ?? "—") });
+    if (a !== b)
+      changes.push({
+        field: `${after.label}.${k}`,
+        before: String(a ?? "—"),
+        after: String(b ?? "—"),
+      });
   }
   return changes;
 }
@@ -60,7 +65,9 @@ export function buildHistory(
     }
     if (changes.length === 0) continue;
     const summary =
-      changes.length === 1 ? changes[0].field : `${changes.length} alterações em ${new Set(changes.map((c) => c.field.split(".")[0])).size} módulo(s)`;
+      changes.length === 1
+        ? changes[0].field
+        : `${changes.length} alterações em ${new Set(changes.map((c) => c.field.split(".")[0])).size} módulo(s)`;
     entries.push({
       id: `hist_${next.version}_${i}`,
       version: next.version,

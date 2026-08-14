@@ -137,9 +137,30 @@ export function AIStudio() {
         </TabsContent>
 
         <TabsContent value="prompts" className="px-4 pb-4 text-sm space-y-2">
-          <p className="text-muted-foreground">Prompts compõem system + developer + contextos por domínio.</p>
+          <p className="text-muted-foreground">
+            Prompts compõem system + developer + contextos por domínio.
+          </p>
           <ul className="list-disc pl-6 text-xs space-y-1">
-            {["system","developer","project","room","selection","library","catalog","budget","production","render","video","engineering","importer","realtime","factory","marketplace","decorator","conversation"].map((k) => (
+            {[
+              "system",
+              "developer",
+              "project",
+              "room",
+              "selection",
+              "library",
+              "catalog",
+              "budget",
+              "production",
+              "render",
+              "video",
+              "engineering",
+              "importer",
+              "realtime",
+              "factory",
+              "marketplace",
+              "decorator",
+              "conversation",
+            ].map((k) => (
               <li key={k}>{k}</li>
             ))}
           </ul>
@@ -153,15 +174,22 @@ export function AIStudio() {
             className="bg-background border border-border rounded px-2 py-1 text-sm"
           >
             {listProviders().map((p) => (
-              <option key={p} value={p}>{p}</option>
+              <option key={p} value={p}>
+                {p}
+              </option>
             ))}
           </select>
-          <Input placeholder="Modelo (opcional)" value={model} onChange={(e) => setModel(e.target.value)} />
+          <Input
+            placeholder="Modelo (opcional)"
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+          />
         </TabsContent>
 
         <TabsContent value="memoria" className="px-4 pb-4 text-sm">
           <p className="text-muted-foreground">
-            Sessão atual: {ai.conversation.messages.length} mensagem(ns) · max turns {ai.conversation.maxTurns}.
+            Sessão atual: {ai.conversation.messages.length} mensagem(ns) · max turns{" "}
+            {ai.conversation.maxTurns}.
           </p>
           {ai.conversation.summary && (
             <pre className="mt-2 p-2 bg-card/60 rounded text-xs whitespace-pre-wrap">
@@ -171,17 +199,30 @@ export function AIStudio() {
         </TabsContent>
 
         <TabsContent value="visao" className="px-4 pb-4 text-sm">
-          <p className="text-muted-foreground">Formatos preparados (execução via domínio importer / ia visão):</p>
+          <p className="text-muted-foreground">
+            Formatos preparados (execução via domínio importer / ia visão):
+          </p>
           <div className="flex flex-wrap gap-1 mt-2">
             {VISION_SUPPORTED_KINDS.map((k) => (
-              <Badge key={k} variant="outline">{k}</Badge>
+              <Badge key={k} variant="outline">
+                {k}
+              </Badge>
             ))}
           </div>
         </TabsContent>
 
         <TabsContent value="config" className="px-4 pb-4 space-y-2 text-sm">
-          <Input placeholder="API Key" value={apiKey} onChange={(e) => setApiKey(e.target.value)} type="password" />
-          <Input placeholder="Base URL" value={baseUrl} onChange={(e) => setBaseUrl(e.target.value)} />
+          <Input
+            placeholder="API Key"
+            value={apiKey}
+            onChange={(e) => setApiKey(e.target.value)}
+            type="password"
+          />
+          <Input
+            placeholder="Base URL"
+            value={baseUrl}
+            onChange={(e) => setBaseUrl(e.target.value)}
+          />
         </TabsContent>
 
         <TabsContent value="logs" className="px-4 pb-4">
@@ -189,7 +230,8 @@ export function AIStudio() {
             <ul className="text-xs space-y-1">
               {logs.map((l) => (
                 <li key={l.id} className="border-b border-border/40 pb-1">
-                  <span className="text-muted-foreground">{l.at}</span> · <b>{l.provider}</b> · {l.kind} · {l.message}
+                  <span className="text-muted-foreground">{l.at}</span> · <b>{l.provider}</b> ·{" "}
+                  {l.kind} · {l.message}
                   {l.durationMs != null && <> · {l.durationMs}ms</>}
                 </li>
               ))}
@@ -199,8 +241,12 @@ export function AIStudio() {
         </TabsContent>
 
         <TabsContent value="provider" className="px-4 pb-4 text-sm">
-          <p><b>Ativo:</b> {ai.providerId}</p>
-          <p className="text-muted-foreground">Padrão: {DEFAULT_PROVIDER} · Compatível com OpenAI/Gemini/Claude/Mistral/OSS.</p>
+          <p>
+            <b>Ativo:</b> {ai.providerId}
+          </p>
+          <p className="text-muted-foreground">
+            Padrão: {DEFAULT_PROVIDER} · Compatível com OpenAI/Gemini/Claude/Mistral/OSS.
+          </p>
         </TabsContent>
 
         <TabsContent value="tokens" className="px-4 pb-4 text-sm">

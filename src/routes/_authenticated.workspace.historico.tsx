@@ -1,10 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { History } from "lucide-react";
-import {
-  PageContainer,
-  PageHeader,
-  EmptyState,
-} from "@/core/components/ui-kit";
+import { PageContainer, PageHeader, EmptyState } from "@/core/components/ui-kit";
 import { useNotificationAudit } from "@/core/notifications/use-notifications";
 import type { NotificationAuditEntry } from "@/core/notifications/types";
 
@@ -32,7 +28,10 @@ function WorkspaceHist() {
           <ul className="divide-y divide-border/60 rounded-md border border-border/60 bg-card/30">
             {rows.map((r) => (
               <li key={r.id} className="flex items-center justify-between px-4 py-3 text-sm">
-                <span>{r.action}{r.entity ? ` — ${r.entity}` : ""}</span>
+                <span>
+                  {r.action}
+                  {r.entity ? ` — ${r.entity}` : ""}
+                </span>
                 <span className="text-xs text-muted-foreground">
                   {new Date(r.createdAt).toLocaleString("pt-BR")}
                 </span>

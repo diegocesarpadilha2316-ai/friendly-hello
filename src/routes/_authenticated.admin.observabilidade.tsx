@@ -12,7 +12,10 @@ export const Route = createFileRoute("/_authenticated/admin/observabilidade")({
   head: () => ({
     meta: [
       { title: "Observabilidade — Dioris Admin" },
-      { name: "description", content: "Métricas em tempo real de logs, jobs, notificações, pagamentos e IA." },
+      {
+        name: "description",
+        content: "Métricas em tempo real de logs, jobs, notificações, pagamentos e IA.",
+      },
       { property: "og:title", content: "Observabilidade — Dioris Admin" },
       { property: "og:description", content: "Painel de observabilidade da plataforma." },
     ],
@@ -21,7 +24,11 @@ export const Route = createFileRoute("/_authenticated/admin/observabilidade")({
 });
 
 function formatBRL(cents: number) {
-  return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 2 });
+  return (cents / 100).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    maximumFractionDigits: 2,
+  });
 }
 
 function Page() {
@@ -38,7 +45,11 @@ function Page() {
     <PageContainer>
       <PageHeader
         title="Observabilidade"
-        eyebrow={<span className="inline-flex items-center gap-1.5"><Activity className="h-3.5 w-3.5" /> Admin</span>}
+        eyebrow={
+          <span className="inline-flex items-center gap-1.5">
+            <Activity className="h-3.5 w-3.5" /> Admin
+          </span>
+        }
         description="Snapshot das últimas 24h — atualiza a cada 15s. Fonte: logs, jobs, notifications, payment_orders."
         actions={
           <button
@@ -59,10 +70,30 @@ function Page() {
       ) : s ? (
         <>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <MetricCard label="Logs (24h)" value={s.logs.total.toLocaleString("pt-BR")} hint={`${s.logs.errors} erros · ${s.logs.warnings} avisos`} icon={<Activity className="h-4 w-4" />} />
-            <MetricCard label="Jobs" value={`${s.jobs.pending + s.jobs.running}`} hint={`${s.jobs.pending} fila · ${s.jobs.running} rodando · ${s.jobs.failed24h} falhas 24h`} icon={<ListTodo className="h-4 w-4" />} />
-            <MetricCard label="Notificações (24h)" value={s.notifications.sent24h.toLocaleString("pt-BR")} hint={`${s.notifications.pending} pendentes · ${s.notifications.failed24h} falhas`} icon={<Bell className="h-4 w-4" />} />
-            <MetricCard label="Pagamentos (24h)" value={formatBRL(s.payments.grossCents24h)} hint={`${s.payments.approved24h} aprovados · ${s.payments.pending} pendentes`} icon={<CreditCard className="h-4 w-4" />} />
+            <MetricCard
+              label="Logs (24h)"
+              value={s.logs.total.toLocaleString("pt-BR")}
+              hint={`${s.logs.errors} erros · ${s.logs.warnings} avisos`}
+              icon={<Activity className="h-4 w-4" />}
+            />
+            <MetricCard
+              label="Jobs"
+              value={`${s.jobs.pending + s.jobs.running}`}
+              hint={`${s.jobs.pending} fila · ${s.jobs.running} rodando · ${s.jobs.failed24h} falhas 24h`}
+              icon={<ListTodo className="h-4 w-4" />}
+            />
+            <MetricCard
+              label="Notificações (24h)"
+              value={s.notifications.sent24h.toLocaleString("pt-BR")}
+              hint={`${s.notifications.pending} pendentes · ${s.notifications.failed24h} falhas`}
+              icon={<Bell className="h-4 w-4" />}
+            />
+            <MetricCard
+              label="Pagamentos (24h)"
+              value={formatBRL(s.payments.grossCents24h)}
+              hint={`${s.payments.approved24h} aprovados · ${s.payments.pending} pendentes`}
+              icon={<CreditCard className="h-4 w-4" />}
+            />
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -72,11 +103,17 @@ function Page() {
               </div>
               <div className="mt-4 flex items-end gap-6">
                 <div>
-                  <div className="text-3xl font-black">{s.ai.requests24h.toLocaleString("pt-BR")}</div>
+                  <div className="text-3xl font-black">
+                    {s.ai.requests24h.toLocaleString("pt-BR")}
+                  </div>
                   <div className="text-xs text-foreground/60">Requisições</div>
                 </div>
                 <div>
-                  <div className={`text-3xl font-black ${s.ai.errors24h > 0 ? "text-destructive" : ""}`}>{s.ai.errors24h}</div>
+                  <div
+                    className={`text-3xl font-black ${s.ai.errors24h > 0 ? "text-destructive" : ""}`}
+                  >
+                    {s.ai.errors24h}
+                  </div>
                   <div className="text-xs text-foreground/60">Erros</div>
                 </div>
               </div>
@@ -87,7 +124,9 @@ function Page() {
                 <AlertTriangle className="h-4 w-4 text-destructive" /> Últimos erros
               </div>
               {s.recentErrors.length === 0 ? (
-                <div className="mt-4 text-xs text-foreground/60">Nenhum erro nas últimas 24h. 🎉</div>
+                <div className="mt-4 text-xs text-foreground/60">
+                  Nenhum erro nas últimas 24h. 🎉
+                </div>
               ) : (
                 <ul className="mt-4 space-y-2 text-xs">
                   {s.recentErrors.map((e) => (

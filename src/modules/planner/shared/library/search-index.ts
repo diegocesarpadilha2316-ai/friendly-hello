@@ -39,12 +39,15 @@ function fuzzyMatch(needle: string, hay: string): boolean {
 
 function levenshtein(a: string, b: string, max: number): number {
   if (a === b) return 0;
-  const la = a.length; const lb = b.length;
+  const la = a.length;
+  const lb = b.length;
   if (Math.abs(la - lb) > max) return max + 1;
   const dp = new Array(lb + 1);
   for (let j = 0; j <= lb; j++) dp[j] = j;
   for (let i = 1; i <= la; i++) {
-    let prev = dp[0]; dp[0] = i; let rowMin = i;
+    let prev = dp[0];
+    dp[0] = i;
+    let rowMin = i;
     for (let j = 1; j <= lb; j++) {
       const tmp = dp[j];
       dp[j] = a[i - 1] === b[j - 1] ? prev : 1 + Math.min(prev, dp[j], dp[j - 1]);
@@ -65,10 +68,18 @@ export interface IndexedItem {
 export function buildIndex(items: readonly CatalogItem[]): readonly IndexedItem[] {
   return items.map((item) => {
     const parts = [
-      item.name, item.description, item.subtype, item.category,
-      item.brand ?? "", item.line ?? "", item.code ?? "",
-      item.material ?? "", item.color ?? "",
-      ...item.tags, ...item.ai.semanticTags, ...item.ai.contexts,
+      item.name,
+      item.description,
+      item.subtype,
+      item.category,
+      item.brand ?? "",
+      item.line ?? "",
+      item.code ?? "",
+      item.material ?? "",
+      item.color ?? "",
+      ...item.tags,
+      ...item.ai.semanticTags,
+      ...item.ai.contexts,
     ].join(" ");
     return { item, haystack: normalize(parts), tokens: tokenize(parts) };
   });
@@ -89,7 +100,10 @@ export function searchIndex(index: readonly IndexedItem[], query: string): reado
     for (const n of needles) {
       if (entry.haystack.includes(n)) score += 10;
       else if (entry.tokens.some((t) => fuzzyMatch(n, t))) score += 3;
-      else { missed = true; break; }
+      else {
+        missed = true;
+        break;
+      }
     }
     if (missed) continue;
     // Boost quando o nome cita o termo

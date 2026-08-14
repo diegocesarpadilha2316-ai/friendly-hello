@@ -25,18 +25,22 @@ type Tab =
   | "ia";
 
 const TABS: ReadonlyArray<{ id: Tab; label: string }> = [
-  { id: "destaques",     label: "Destaques" },
-  { id: "biblioteca",    label: "Biblioteca" },
-  { id: "fabricantes",   label: "Fabricantes" },
-  { id: "categorias",    label: "Categorias" },
-  { id: "colecoes",      label: "Coleções" },
-  { id: "atualizacoes",  label: "Atualizações" },
-  { id: "favoritos",     label: "Favoritos" },
-  { id: "analytics",     label: "Analytics" },
-  { id: "ia",            label: "IA" },
+  { id: "destaques", label: "Destaques" },
+  { id: "biblioteca", label: "Biblioteca" },
+  { id: "fabricantes", label: "Fabricantes" },
+  { id: "categorias", label: "Categorias" },
+  { id: "colecoes", label: "Coleções" },
+  { id: "atualizacoes", label: "Atualizações" },
+  { id: "favoritos", label: "Favoritos" },
+  { id: "analytics", label: "Analytics" },
+  { id: "ia", label: "IA" },
 ];
 
-function StatusBadge({ status }: { status: ReturnType<ReturnType<typeof useMarketplace>["statusOf"]> }): ReactNode {
+function StatusBadge({
+  status,
+}: {
+  status: ReturnType<ReturnType<typeof useMarketplace>["statusOf"]>;
+}): ReactNode {
   if (status === "installed") return <Badge variant="secondary">Instalado</Badge>;
   if (status === "update_available") return <Badge>Atualizar</Badge>;
   if (status === "removed") return <Badge variant="outline">Removido</Badge>;
@@ -76,23 +80,33 @@ function ItemCard({
         </div>
         <div className="flex items-center justify-between">
           <span className="font-medium">{mk.priceLabel(item)}</span>
-          <span>{item.rating.average.toFixed(1)} ★ · {item.downloads.toLocaleString("pt-BR")} ↓</span>
+          <span>
+            {item.rating.average.toFixed(1)} ★ · {item.downloads.toLocaleString("pt-BR")} ↓
+          </span>
         </div>
         <div className="mt-1 flex flex-wrap gap-2">
           <Button size="sm" variant="secondary" onClick={() => mk.select(item.id)}>
             Detalhes
           </Button>
           {status === "not_installed" && (
-            <Button size="sm" onClick={() => mk.install(item.id)}>Instalar</Button>
+            <Button size="sm" onClick={() => mk.install(item.id)}>
+              Instalar
+            </Button>
           )}
           {status === "update_available" && (
-            <Button size="sm" onClick={() => mk.updateOne(item.id)}>Atualizar</Button>
+            <Button size="sm" onClick={() => mk.updateOne(item.id)}>
+              Atualizar
+            </Button>
           )}
           {status === "installed" && (
-            <Button size="sm" variant="outline" onClick={() => mk.reinstall(item.id)}>Reinstalar</Button>
+            <Button size="sm" variant="outline" onClick={() => mk.reinstall(item.id)}>
+              Reinstalar
+            </Button>
           )}
           {(status === "installed" || status === "update_available") && (
-            <Button size="sm" variant="ghost" onClick={() => mk.uninstall(item.id)}>Remover</Button>
+            <Button size="sm" variant="ghost" onClick={() => mk.uninstall(item.id)}>
+              Remover
+            </Button>
           )}
           <Button
             size="sm"
@@ -117,7 +131,11 @@ function Grid({
   empty: string;
 }): ReactNode {
   if (items.length === 0) {
-    return <p className="rounded-md border border-dashed border-border/60 p-6 text-center text-sm text-muted-foreground">{empty}</p>;
+    return (
+      <p className="rounded-md border border-dashed border-border/60 p-6 text-center text-sm text-muted-foreground">
+        {empty}
+      </p>
+    );
   }
   return (
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -151,11 +169,7 @@ export function MarketplaceStudio(): ReactNode {
   );
 
   const filteredForLibrary = useMemo(() => {
-    return query
-      ? mk.suggest(query, 60)
-      : mk.filtered.length
-        ? mk.filtered
-        : mk.items;
+    return query ? mk.suggest(query, 60) : mk.filtered.length ? mk.filtered : mk.items;
   }, [mk, query]);
 
   return (
@@ -168,7 +182,9 @@ export function MarketplaceStudio(): ReactNode {
             onClick={() => setTab(t.id)}
             className={cn(
               "rounded-md px-3 py-2 text-left text-sm transition",
-              tab === t.id ? "bg-primary/15 text-primary" : "hover:bg-muted/50 text-muted-foreground",
+              tab === t.id
+                ? "bg-primary/15 text-primary"
+                : "hover:bg-muted/50 text-muted-foreground",
             )}
           >
             {t.label}
@@ -188,14 +204,20 @@ export function MarketplaceStudio(): ReactNode {
             <header className="flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-semibold">Destaques do Marketplace</h2>
-                <p className="text-sm text-muted-foreground">Curadoria oficial Dioris — bibliotecas verificadas e mais baixadas.</p>
+                <p className="text-sm text-muted-foreground">
+                  Curadoria oficial Dioris — bibliotecas verificadas e mais baixadas.
+                </p>
               </div>
               <Badge variant="secondary">{mk.featured.length} destaques</Badge>
             </header>
             <Grid items={mk.featured} mk={mk} empty="Nenhum destaque no momento." />
-            <h3 className="pt-4 text-sm font-medium uppercase tracking-wide text-muted-foreground">Mais baixados</h3>
+            <h3 className="pt-4 text-sm font-medium uppercase tracking-wide text-muted-foreground">
+              Mais baixados
+            </h3>
             <Grid items={mk.mostDownloaded.slice(0, 6)} mk={mk} empty="—" />
-            <h3 className="pt-4 text-sm font-medium uppercase tracking-wide text-muted-foreground">Novidades</h3>
+            <h3 className="pt-4 text-sm font-medium uppercase tracking-wide text-muted-foreground">
+              Novidades
+            </h3>
             <Grid items={mk.newest.slice(0, 6)} mk={mk} empty="—" />
           </>
         )}
@@ -241,7 +263,11 @@ export function MarketplaceStudio(): ReactNode {
                 </Button>
               )}
             </div>
-            <Grid items={filteredForLibrary} mk={mk} empty="Nenhum item encontrado com os filtros atuais." />
+            <Grid
+              items={filteredForLibrary}
+              mk={mk}
+              empty="Nenhum item encontrado com os filtros atuais."
+            />
           </>
         )}
 
@@ -305,7 +331,9 @@ export function MarketplaceStudio(): ReactNode {
                   <CardDescription className="text-xs">{col.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex items-center justify-between text-xs">
-                  <span>{col.itemIds.length} itens · {col.ownerKind}</span>
+                  <span>
+                    {col.itemIds.length} itens · {col.ownerKind}
+                  </span>
                   <Button
                     size="sm"
                     variant="secondary"
@@ -327,9 +355,15 @@ export function MarketplaceStudio(): ReactNode {
             <header className="flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-semibold">Atualizações disponíveis</h2>
-                <p className="text-sm text-muted-foreground">Sincronização determinística — sem chamadas externas.</p>
+                <p className="text-sm text-muted-foreground">
+                  Sincronização determinística — sem chamadas externas.
+                </p>
               </div>
-              <Button size="sm" onClick={() => mk.updateAll()} disabled={mk.pendingUpdates.length === 0}>
+              <Button
+                size="sm"
+                onClick={() => mk.updateAll()}
+                disabled={mk.pendingUpdates.length === 0}
+              >
                 Atualizar tudo ({mk.pendingUpdates.length})
               </Button>
             </header>
@@ -348,7 +382,9 @@ export function MarketplaceStudio(): ReactNode {
                           {upd.installedVersion} → {upd.latestVersion}
                         </p>
                       </div>
-                      <Button size="sm" onClick={() => mk.updateOne(upd.item.id)}>Atualizar</Button>
+                      <Button size="sm" onClick={() => mk.updateOne(upd.item.id)}>
+                        Atualizar
+                      </Button>
                     </CardContent>
                   </Card>
                 ))}
@@ -371,40 +407,70 @@ export function MarketplaceStudio(): ReactNode {
                 </Button>
               )}
             </header>
-            <Grid items={favoriteItems} mk={mk} empty="Marque itens como favoritos para acessá-los aqui." />
+            <Grid
+              items={favoriteItems}
+              mk={mk}
+              empty="Marque itens como favoritos para acessá-los aqui."
+            />
           </>
         )}
 
         {tab === "analytics" && (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             <Card className="border-border/60 bg-card/60">
-              <CardHeader><CardTitle className="text-sm">Total de itens</CardTitle></CardHeader>
-              <CardContent className="text-2xl font-semibold">{mk.analytics.totalItems}</CardContent>
+              <CardHeader>
+                <CardTitle className="text-sm">Total de itens</CardTitle>
+              </CardHeader>
+              <CardContent className="text-2xl font-semibold">
+                {mk.analytics.totalItems}
+              </CardContent>
             </Card>
             <Card className="border-border/60 bg-card/60">
-              <CardHeader><CardTitle className="text-sm">Downloads totais</CardTitle></CardHeader>
-              <CardContent className="text-2xl font-semibold">{mk.analytics.totalDownloads.toLocaleString("pt-BR")}</CardContent>
+              <CardHeader>
+                <CardTitle className="text-sm">Downloads totais</CardTitle>
+              </CardHeader>
+              <CardContent className="text-2xl font-semibold">
+                {mk.analytics.totalDownloads.toLocaleString("pt-BR")}
+              </CardContent>
             </Card>
             <Card className="border-border/60 bg-card/60">
-              <CardHeader><CardTitle className="text-sm">Instalados</CardTitle></CardHeader>
-              <CardContent className="text-2xl font-semibold">{mk.analytics.totalInstalled}</CardContent>
+              <CardHeader>
+                <CardTitle className="text-sm">Instalados</CardTitle>
+              </CardHeader>
+              <CardContent className="text-2xl font-semibold">
+                {mk.analytics.totalInstalled}
+              </CardContent>
             </Card>
             <Card className="border-border/60 bg-card/60">
-              <CardHeader><CardTitle className="text-sm">Atualizações</CardTitle></CardHeader>
-              <CardContent className="text-2xl font-semibold">{mk.analytics.totalUpdates}</CardContent>
+              <CardHeader>
+                <CardTitle className="text-sm">Atualizações</CardTitle>
+              </CardHeader>
+              <CardContent className="text-2xl font-semibold">
+                {mk.analytics.totalUpdates}
+              </CardContent>
             </Card>
             <Card className="border-border/60 bg-card/60">
-              <CardHeader><CardTitle className="text-sm">Favoritos</CardTitle></CardHeader>
-              <CardContent className="text-2xl font-semibold">{mk.analytics.totalFavorites}</CardContent>
+              <CardHeader>
+                <CardTitle className="text-sm">Favoritos</CardTitle>
+              </CardHeader>
+              <CardContent className="text-2xl font-semibold">
+                {mk.analytics.totalFavorites}
+              </CardContent>
             </Card>
             <Card className="border-border/60 bg-card/60">
-              <CardHeader><CardTitle className="text-sm">Coleções</CardTitle></CardHeader>
-              <CardContent className="text-2xl font-semibold">{mk.analytics.totalCollections}</CardContent>
+              <CardHeader>
+                <CardTitle className="text-sm">Coleções</CardTitle>
+              </CardHeader>
+              <CardContent className="text-2xl font-semibold">
+                {mk.analytics.totalCollections}
+              </CardContent>
             </Card>
             <Card className="border-border/60 bg-card/60 sm:col-span-2 xl:col-span-3">
               <CardHeader>
                 <CardTitle className="text-sm">Importar / Exportar</CardTitle>
-                <CardDescription className="text-xs">Formatos: CSV · JSON · XML · Excel · PDF</CardDescription>
+                <CardDescription className="text-xs">
+                  Formatos: CSV · JSON · XML · Excel · PDF
+                </CardDescription>
               </CardHeader>
               <CardContent className="grid gap-3 lg:grid-cols-2">
                 <div className="space-y-2">
@@ -484,12 +550,17 @@ export function MarketplaceStudio(): ReactNode {
                   onChange={(e) => setQuestion(e.target.value)}
                   placeholder="Pergunte à IA do Marketplace"
                 />
-                <Button onClick={() => setAiAnswer(mk.askAI(question).answer)} disabled={!question.trim()}>
+                <Button
+                  onClick={() => setAiAnswer(mk.askAI(question).answer)}
+                  disabled={!question.trim()}
+                >
                   Perguntar
                 </Button>
               </div>
               {aiAnswer && (
-                <p className="rounded-md border border-border/60 bg-background/40 p-3 text-sm">{aiAnswer}</p>
+                <p className="rounded-md border border-border/60 bg-background/40 p-3 text-sm">
+                  {aiAnswer}
+                </p>
               )}
               <div className="flex flex-wrap gap-2 text-xs">
                 {[
@@ -498,7 +569,15 @@ export function MarketplaceStudio(): ReactNode {
                   "Qual item mais usado?",
                   "Qual coleção instalar?",
                 ].map((sample) => (
-                  <Button key={sample} size="sm" variant="outline" onClick={() => { setQuestion(sample); setAiAnswer(mk.askAI(sample).answer); }}>
+                  <Button
+                    key={sample}
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setQuestion(sample);
+                      setAiAnswer(mk.askAI(sample).answer);
+                    }}
+                  >
                     {sample}
                   </Button>
                 ))}
@@ -525,15 +604,18 @@ export function MarketplaceStudio(): ReactNode {
                 {mk.selected.compatibility.plannerRecommended}
               </p>
               <p>
-                Preço: <span className="font-medium text-foreground">{mk.priceLabel(mk.selected)}</span> ·{" "}
-                {mk.selected.downloads.toLocaleString("pt-BR")} downloads · {mk.selected.rating.average.toFixed(1)} ★ (
-                {mk.selected.rating.count})
+                Preço:{" "}
+                <span className="font-medium text-foreground">{mk.priceLabel(mk.selected)}</span> ·{" "}
+                {mk.selected.downloads.toLocaleString("pt-BR")} downloads ·{" "}
+                {mk.selected.rating.average.toFixed(1)} ★ ({mk.selected.rating.count})
               </p>
               <div className="flex flex-wrap gap-2 pt-1">
                 <Button size="sm" onClick={() => mk.insertSelected()} disabled={!mk.canInsert}>
                   Inserir no cômodo ativo
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => mk.select(null)}>Fechar</Button>
+                <Button size="sm" variant="outline" onClick={() => mk.select(null)}>
+                  Fechar
+                </Button>
               </div>
             </CardContent>
           </Card>

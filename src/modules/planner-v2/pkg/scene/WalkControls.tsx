@@ -47,14 +47,15 @@ export function WalkControls() {
     const roomHalfDepth = roomDepth / 2000 - 0.35;
     const next = camera.position.clone();
     const radius = 0.28;
-    const collides = (x: number, z: number) => instances.some((instance) => {
-      if (!instance.visible) return false;
-      const halfWidth = instance.dimensionsMm.width / 2000 + radius;
-      const halfDepth = instance.dimensionsMm.depth / 2000 + radius;
-      const centerX = instance.positionMm.x / 1000;
-      const centerZ = instance.positionMm.z / 1000;
-      return Math.abs(x - centerX) < halfWidth && Math.abs(z - centerZ) < halfDepth;
-    });
+    const collides = (x: number, z: number) =>
+      instances.some((instance) => {
+        if (!instance.visible) return false;
+        const halfWidth = instance.dimensionsMm.width / 2000 + radius;
+        const halfDepth = instance.dimensionsMm.depth / 2000 + radius;
+        const centerX = instance.positionMm.x / 1000;
+        const centerZ = instance.positionMm.z / 1000;
+        return Math.abs(x - centerX) < halfWidth && Math.abs(z - centerZ) < halfDepth;
+      });
 
     const candidateX = THREE.MathUtils.clamp(next.x + step.x, -roomHalfWidth, roomHalfWidth);
     if (!collides(candidateX, next.z)) next.x = candidateX;

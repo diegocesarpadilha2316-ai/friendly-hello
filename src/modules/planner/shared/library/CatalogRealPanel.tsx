@@ -61,7 +61,7 @@ export function CatalogRealPanel() {
   });
 
   const loading = tab === "materials" ? materials.isLoading : hardware.isLoading;
-  const rows = tab === "materials" ? materials.data ?? [] : hardware.data ?? [];
+  const rows = tab === "materials" ? (materials.data ?? []) : (hardware.data ?? []);
 
   const tabs = useMemo(
     () => [
@@ -107,7 +107,11 @@ export function CatalogRealPanel() {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={tab === "materials" ? "Buscar chapa, cor, fabricante…" : "Buscar dobradiça, corrediça, puxador…"}
+            placeholder={
+              tab === "materials"
+                ? "Buscar chapa, cor, fabricante…"
+                : "Buscar dobradiça, corrediça, puxador…"
+            }
             className="h-8 w-72 rounded-md border border-input bg-background pl-7 pr-2 text-xs outline-none focus:ring-2 focus:ring-primary/30"
           />
         </div>
@@ -150,7 +154,8 @@ export function CatalogRealPanel() {
             Somente atuais
           </label>
           <span className="ml-auto text-[10px] text-muted-foreground">
-            {(materials.data?.length ?? 0).toLocaleString("pt-BR")} de {(stats.data?.materials ?? 0).toLocaleString("pt-BR")} chapas
+            {(materials.data?.length ?? 0).toLocaleString("pt-BR")} de{" "}
+            {(stats.data?.materials ?? 0).toLocaleString("pt-BR")} chapas
           </span>
         </div>
       ) : null}

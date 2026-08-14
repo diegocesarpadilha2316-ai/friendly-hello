@@ -122,8 +122,9 @@ function renderHtml(n: NotifRow): string {
 }
 
 function escapeHtml(s: string): string {
-  return s.replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] ?? c,
+  return s.replace(
+    /[&<>"']/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] ?? c,
   );
 }
 
@@ -200,7 +201,9 @@ export async function tickEmailWorker(opts: { maxJobs?: number } = {}): Promise<
     const subject =
       (notif.data && typeof notif.data === "object" && "subject" in notif.data
         ? String((notif.data as Record<string, unknown>).subject ?? "")
-        : "") || notif.title || "Notificação Dioris";
+        : "") ||
+      notif.title ||
+      "Notificação Dioris";
 
     try {
       const { id } = await sendViaResend({

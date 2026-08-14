@@ -7,7 +7,11 @@ import { PlanRunner } from "./executor";
 describe("Kitchen V10 — execução do plano autenticado", () => {
   it("materializa módulos no projeto após executar create_room_preset", async () => {
     const base = ensureProjectRoomShells(
-      createProject({ tenantId: "tenant-test", ownerId: "owner-test", name: "Execução Kitchen V10" }),
+      createProject({
+        tenantId: "tenant-test",
+        ownerId: "owner-test",
+        name: "Execução Kitchen V10",
+      }),
     );
     const environment = base.environments[0];
     const room = environment?.rooms[0];
@@ -47,4 +51,3 @@ describe("Kitchen V10 — execução do plano autenticado", () => {
 });
 
 export {};
-

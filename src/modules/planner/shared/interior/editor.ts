@@ -4,7 +4,12 @@
  * Uma operação que produza colisão/medida inválida é REJEITADA.
  */
 import { box, clamp, round } from "../construction";
-import type { InteriorPlacement, InteriorPlan, InteriorPosition, InteriorValidation } from "./types";
+import type {
+  InteriorPlacement,
+  InteriorPlan,
+  InteriorPosition,
+  InteriorValidation,
+} from "./types";
 import { getInteriorModule } from "./registry";
 import { resolveInteriorBox } from "./positioning";
 import { validateInteriorPlan } from "./validator";
@@ -134,7 +139,8 @@ export function resizeModule(
 export function swapModules(plan: InteriorPlan, aId: string, bId: string): EditResult {
   const a = plan.placements.find((p) => p.id === aId);
   const b = plan.placements.find((p) => p.id === bId);
-  if (!a || !b || aId === bId) return { plan, validation: validateInteriorPlan(plan), applied: false };
+  if (!a || !b || aId === bId)
+    return { plan, validation: validateInteriorPlan(plan), applied: false };
   const placements = plan.placements.map((p) => {
     if (p.id === aId) {
       return { ...p, box: box(b.box.x, b.box.y, b.box.z, a.box.width, a.box.height, a.box.depth) };

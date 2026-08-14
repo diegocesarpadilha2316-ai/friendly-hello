@@ -10,12 +10,7 @@ import { buildRenderScene } from "../services/adapter";
 import { RENDER_CAMERAS } from "../services/cameras";
 import { RENDER_HDRIS, RENDER_LIGHT_PRESETS } from "../services/lighting";
 import { PBR_MATERIALS, getMaterial } from "../services/materials";
-import type {
-  RealLight,
-  RealObject,
-  RealObjectKind,
-  RealScene,
-} from "./types";
+import type { RealLight, RealObject, RealObjectKind, RealScene } from "./types";
 
 function classifyKind(node: PlannerParametricNode): RealObjectKind | null {
   const role = typeof node.params.role === "string" ? String(node.params.role).toLowerCase() : "";

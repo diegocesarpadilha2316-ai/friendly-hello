@@ -12,13 +12,7 @@ import { DECOR_ITEMS } from "./catalog";
 import { DECOR_LIGHTING_SCENES } from "./lighting";
 import { DECOR_MATERIALS } from "./materials";
 import { getDecorStyle } from "./styles";
-import type {
-  DecorContext,
-  DecorItem,
-  DecorPlan,
-  DecorStyleId,
-  DecorSuggestion,
-} from "./types";
+import type { DecorContext, DecorItem, DecorPlan, DecorStyleId, DecorSuggestion } from "./types";
 
 function uid(prefix: string): string {
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
@@ -49,7 +43,11 @@ export function analyzeRoom(room: PlannerRoom): DecorContext {
     }
     if (node.kind === "module") {
       const aiKind = node.params["ai:kind"];
-      if (aiKind === "decor.luminaria" || aiKind === "decor.pendente" || aiKind === "decor.abajur") {
+      if (
+        aiKind === "decor.luminaria" ||
+        aiKind === "decor.pendente" ||
+        aiKind === "decor.abajur"
+      ) {
         lighting += 1;
       } else {
         furniture += 1;
@@ -85,7 +83,8 @@ function scoreItem(item: DecorItem, styleId: DecorStyleId, context: DecorContext
   // ambientes grandes → priorizar peças principais
   if (context.areaM2 >= 20 && item.role === "principal") score += 1;
   // se já há muita mobília, priorizar decoração e verde
-  if (context.existingFurnitureCount >= 4 && (item.role === "decoracao" || item.role === "verde")) score += 2;
+  if (context.existingFurnitureCount >= 4 && (item.role === "decoracao" || item.role === "verde"))
+    score += 2;
   // se não há iluminação, priorizar luminárias
   if (context.existingLightingCount === 0 && item.role === "luminaria") score += 2;
   return score;
@@ -135,8 +134,7 @@ export function generateDecorPlan(
   const style = getDecorStyle(styleId);
   const maxItems = options.maxItems ?? 8;
 
-  const ranked = DECOR_ITEMS
-    .map((it) => ({ item: it, score: scoreItem(it, styleId, context) }))
+  const ranked = DECOR_ITEMS.map((it) => ({ item: it, score: scoreItem(it, styleId, context) }))
     .filter((r) => r.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, maxItems);
@@ -155,9 +153,9 @@ export function generateDecorPlan(
   }));
 
   if (options.includeLighting !== false) {
-    const scene = DECOR_LIGHTING_SCENES
-      .filter((s) => s.styles.includes(styleId) && s.suitedFor.includes(context.roomType))
-      .sort((a, b) => b.emitters.length - a.emitters.length)[0];
+    const scene = DECOR_LIGHTING_SCENES.filter(
+      (s) => s.styles.includes(styleId) && s.suitedFor.includes(context.roomType),
+    ).sort((a, b) => b.emitters.length - a.emitters.length)[0];
     if (scene) {
       suggestions.push({
         id: uid("sug"),
@@ -172,9 +170,7 @@ export function generateDecorPlan(
   }
 
   if (options.includeMaterials !== false) {
-    const materials = DECOR_MATERIALS
-      .filter((m) => m.styles.includes(styleId))
-      .slice(0, 3);
+    const materials = DECOR_MATERIALS.filter((m) => m.styles.includes(styleId)).slice(0, 3);
     for (const m of materials) {
       suggestions.push({
         id: uid("sug"),

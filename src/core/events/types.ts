@@ -10,13 +10,7 @@ export interface EventPayload {
 
 export type EventPriority = "low" | "normal" | "high" | "critical";
 export type EventStatus =
-  | "pending"
-  | "processing"
-  | "delivered"
-  | "failed"
-  | "dead"
-  | "scheduled"
-  | "deduped";
+  "pending" | "processing" | "delivered" | "failed" | "dead" | "scheduled" | "deduped";
 
 /** Tipo de evento — string dotted namespaced: `<módulo>.<recurso>.<ação>` */
 export type EventType = string;

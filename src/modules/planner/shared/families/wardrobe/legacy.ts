@@ -78,8 +78,7 @@ export function wardrobeSpecFromLegacy(f: LegacyFurniture): WardrobeSpec {
           has: true,
           position:
             (asText(pick(p, "mod:mirrorPosition", "mirrorPosition")) as
-              | WardrobeSpec["mirror"]["position"]
-              | undefined) ?? "central",
+              WardrobeSpec["mirror"]["position"] | undefined) ?? "central",
         }
       : undefined,
     handle: asText(pick(p, "mod:handle", "handle", "puxador")),

@@ -9,7 +9,12 @@ function fmtBRL(n: number): string {
 export function askOverloadedMachine(loads: readonly MachineLoad[]): PlanningAiAnswer {
   const over = [...loads].filter((l) => l.overloaded).sort((a, b) => b.loadPct - a.loadPct);
   if (over.length === 0) {
-    return { question: "Qual máquina está sobrecarregada?", answer: "Nenhuma máquina em sobrecarga no horizonte atual.", confidence: "alta", refs: [] };
+    return {
+      question: "Qual máquina está sobrecarregada?",
+      answer: "Nenhuma máquina em sobrecarga no horizonte atual.",
+      confidence: "alta",
+      refs: [],
+    };
   }
   const m = over[0];
   return {
@@ -23,7 +28,12 @@ export function askOverloadedMachine(loads: readonly MachineLoad[]): PlanningAiA
 export function askFreeOperator(ops: readonly OperatorLoad[]): PlanningAiAnswer {
   const free = [...ops].filter((o) => o.free).sort((a, b) => a.loadPct - b.loadPct);
   if (free.length === 0) {
-    return { question: "Qual operador está livre?", answer: "Nenhum operador com folga acima de 40%.", confidence: "media", refs: [] };
+    return {
+      question: "Qual operador está livre?",
+      answer: "Nenhum operador com folga acima de 40%.",
+      confidence: "media",
+      refs: [],
+    };
   }
   const o = free[0];
   return {
@@ -35,9 +45,16 @@ export function askFreeOperator(ops: readonly OperatorLoad[]): PlanningAiAnswer 
 }
 
 export function askDelayedOrder(deliveries: readonly DeliveryEstimate[]): PlanningAiAnswer {
-  const late = [...deliveries].filter((d) => d.delayDays > 0).sort((a, b) => b.delayDays - a.delayDays);
+  const late = [...deliveries]
+    .filter((d) => d.delayDays > 0)
+    .sort((a, b) => b.delayDays - a.delayDays);
   if (late.length === 0) {
-    return { question: "Qual pedido atrasará?", answer: "Nenhum pedido com previsão de atraso.", confidence: "alta", refs: [] };
+    return {
+      question: "Qual pedido atrasará?",
+      answer: "Nenhum pedido com previsão de atraso.",
+      confidence: "alta",
+      refs: [],
+    };
   }
   const d = late[0];
   return {
@@ -50,7 +67,13 @@ export function askDelayedOrder(deliveries: readonly DeliveryEstimate[]): Planni
 
 export function askMdfRequirement(mrp: MrpSummary): PlanningAiAnswer {
   const mdf = mrp.byCategory["MDF"];
-  if (!mdf) return { question: "Quanto MDF será necessário?", answer: "Sem consumo de MDF neste projeto.", confidence: "alta", refs: [] };
+  if (!mdf)
+    return {
+      question: "Quanto MDF será necessário?",
+      answer: "Sem consumo de MDF neste projeto.",
+      confidence: "alta",
+      refs: [],
+    };
   return {
     question: "Quanto MDF será necessário?",
     answer: `Total ${mdf.qty.toFixed(2)} m² de MDF — custo previsto ${fmtBRL(mdf.cost)}.`,
@@ -70,7 +93,13 @@ export function askTotalCost(mrp: MrpSummary): PlanningAiAnswer {
 
 export function askBottleneck(loads: readonly MachineLoad[]): PlanningAiAnswer {
   const worst = [...loads].sort((a, b) => b.loadPct - a.loadPct)[0];
-  if (!worst) return { question: "Qual é o gargalo?", answer: "Sem dados de carga.", confidence: "baixa", refs: [] };
+  if (!worst)
+    return {
+      question: "Qual é o gargalo?",
+      answer: "Sem dados de carga.",
+      confidence: "baixa",
+      refs: [],
+    };
   return {
     question: "Qual é o gargalo?",
     answer: `${worst.label} (${worst.sector}) — ${worst.loadPct}% de ocupação.`,
@@ -80,8 +109,17 @@ export function askBottleneck(loads: readonly MachineLoad[]): PlanningAiAnswer {
 }
 
 export function askBestSequence(orders: readonly PlanningOrder[]): PlanningAiAnswer {
-  if (orders.length === 0) return { question: "Qual é a melhor sequência?", answer: "Sem pedidos na fila.", confidence: "baixa", refs: [] };
-  const first = orders.slice(0, 3).map((o) => o.code).join(" → ");
+  if (orders.length === 0)
+    return {
+      question: "Qual é a melhor sequência?",
+      answer: "Sem pedidos na fila.",
+      confidence: "baixa",
+      refs: [],
+    };
+  const first = orders
+    .slice(0, 3)
+    .map((o) => o.code)
+    .join(" → ");
   return {
     question: "Qual é a melhor sequência?",
     answer: `Recomendo: ${first} — prioriza urgência × prazo × valor.`,
@@ -92,7 +130,13 @@ export function askBestSequence(orders: readonly PlanningOrder[]): PlanningAiAns
 
 export function askReduceTime(loads: readonly MachineLoad[]): PlanningAiAnswer {
   const worst = [...loads].sort((a, b) => b.loadPct - a.loadPct)[0];
-  if (!worst) return { question: "Como reduzir tempo?", answer: "Otimize sequenciamento por menor-tempo.", confidence: "media", refs: [] };
+  if (!worst)
+    return {
+      question: "Como reduzir tempo?",
+      answer: "Otimize sequenciamento por menor-tempo.",
+      confidence: "media",
+      refs: [],
+    };
   return {
     question: "Como reduzir tempo?",
     answer: `Adicione turno extra em ${worst.label} — libera ~${(worst.loadH * 0.15).toFixed(1)}h.`,
@@ -113,7 +157,12 @@ export function askReduceWaste(mrp: MrpSummary): PlanningAiAnswer {
 export function askIncreaseProduction(loads: readonly MachineLoad[]): PlanningAiAnswer {
   const idle = [...loads].filter((l) => l.loadPct < 60).sort((a, b) => a.loadPct - b.loadPct);
   if (idle.length === 0) {
-    return { question: "Como aumentar produção?", answer: "Todas as máquinas acima de 60% — adicione turno noturno.", confidence: "media", refs: [] };
+    return {
+      question: "Como aumentar produção?",
+      answer: "Todas as máquinas acima de 60% — adicione turno noturno.",
+      confidence: "media",
+      refs: [],
+    };
   }
   const m = idle[0];
   return {

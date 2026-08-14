@@ -47,7 +47,11 @@ export interface UseRenderReal {
     roomId: string | null,
     hdriId: string | null,
   ): void;
-  exportCanvas(canvas: HTMLCanvasElement, spec: RealExportSpec, autoDownload?: boolean): Promise<RealExportResult>;
+  exportCanvas(
+    canvas: HTMLCanvasElement,
+    spec: RealExportSpec,
+    autoDownload?: boolean,
+  ): Promise<RealExportResult>;
   readonly queue: ReturnType<typeof useRenderQueue>;
   readonly local: ReturnType<typeof useLocalRender>;
 }
@@ -66,23 +70,45 @@ export function useRenderReal(): UseRenderReal {
     hdriId: string | null;
   }>({ presetId: "media", target: "still", roomId: null, hdriId: "hdri.interior.day" });
 
-  const scene = useMemo(() => (project ? buildRealScene(project, runtime.roomId) : null), [project, runtime.roomId]);
+  const scene = useMemo(
+    () => (project ? buildRealScene(project, runtime.roomId) : null),
+    [project, runtime.roomId],
+  );
   const config = useMemo(
-    () => (project ? buildRealRenderConfig(project, runtime.presetId, runtime.target, runtime.roomId, runtime.hdriId) : null),
+    () =>
+      project
+        ? buildRealRenderConfig(
+            project,
+            runtime.presetId,
+            runtime.target,
+            runtime.roomId,
+            runtime.hdriId,
+          )
+        : null,
     [project, runtime.presetId, runtime.target, runtime.roomId, runtime.hdriId],
   );
-  const performance = useMemo(() => (project ? buildPerformanceProfile(project, runtime.roomId) : null), [project, runtime.roomId]);
+  const performance = useMemo(
+    () => (project ? buildPerformanceProfile(project, runtime.roomId) : null),
+    [project, runtime.roomId],
+  );
   const lighting = useMemo(() => buildLightingRig(runtime.hdriId, []), [runtime.hdriId]);
   const integrations = useMemo(() => integrationReport(), []);
 
-  const setCompareMode = useCallback((mode: ViewportCompareState["mode"]) => setCompare((c) => withMode(c, mode)), []);
+  const setCompareMode = useCallback(
+    (mode: ViewportCompareState["mode"]) => setCompare((c) => withMode(c, mode)),
+    [],
+  );
   const setCompareSplit = useCallback((p: number) => setCompare((c) => withSplit(c, p)), []);
   const setBefore = useCallback((id: string | null) => setCompare((c) => withBefore(c, id)), []);
   const setAfter = useCallback((id: string | null) => setCompare((c) => withAfter(c, id)), []);
 
   const configureFor = useCallback(
-    (presetId: RenderPresetId, target: RenderTargetKind, roomId: string | null, hdriId: string | null) =>
-      setRuntime({ presetId, target, roomId, hdriId }),
+    (
+      presetId: RenderPresetId,
+      target: RenderTargetKind,
+      roomId: string | null,
+      hdriId: string | null,
+    ) => setRuntime({ presetId, target, roomId, hdriId }),
     [],
   );
 

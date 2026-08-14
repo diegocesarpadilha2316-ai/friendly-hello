@@ -19,7 +19,8 @@ export function searchItems(filters: CatalogSearchFilters): readonly CatalogItem
       if (!haystack.includes(q)) return false;
     }
     if (filters.categories?.length && !filters.categories.includes(item.category)) return false;
-    if (filters.manufacturers?.length && !filters.manufacturers.includes(item.manufacturer)) return false;
+    if (filters.manufacturers?.length && !filters.manufacturers.includes(item.manufacturer))
+      return false;
     if (filters.tags?.length && !filters.tags.some((t) => item.tags.includes(t))) return false;
     if (typeof filters.minPrice === "number" && item.basePrice < filters.minPrice) return false;
     if (typeof filters.maxPrice === "number" && item.basePrice > filters.maxPrice) return false;

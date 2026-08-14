@@ -1,12 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Reveal, GradientText, SectionEyebrow } from "@/core/components/public/PublicLayout";
-import { Shield, Lock, KeyRound, Database, ServerCog, Eye, FileCheck2, AlertTriangle, Users2, Cloud, RefreshCw, ScrollText } from "lucide-react";
+import {
+  Shield,
+  Lock,
+  KeyRound,
+  Database,
+  ServerCog,
+  Eye,
+  FileCheck2,
+  AlertTriangle,
+  Users2,
+  Cloud,
+  RefreshCw,
+  ScrollText,
+} from "lucide-react";
 
 export const Route = createFileRoute("/_public/seguranca")({
   head: () => ({
     meta: [
       { title: "Segurança e conformidade — Dioris" },
-      { name: "description", content: "Como a Dioris protege seus dados: criptografia, RLS multi-tenant, LGPD, MFA, auditoria contínua e observabilidade 24/7." },
+      {
+        name: "description",
+        content:
+          "Como a Dioris protege seus dados: criptografia, RLS multi-tenant, LGPD, MFA, auditoria contínua e observabilidade 24/7.",
+      },
       { property: "og:title", content: "Trust Center Dioris" },
       { property: "og:description", content: "Postura de segurança da plataforma Dioris." },
       { property: "og:type", content: "website" },
@@ -19,25 +36,85 @@ export const Route = createFileRoute("/_public/seguranca")({
 });
 
 const pillars = [
-  { icon: Lock, title: "Criptografia forte", desc: "TLS 1.3 em trânsito e AES-256 em repouso para todos os dados sensíveis." },
-  { icon: Database, title: "Isolamento multi-tenant", desc: "Row-Level Security em cada tabela — nenhum tenant vê dados de outro." },
-  { icon: KeyRound, title: "Autenticação robusta", desc: "MFA opcional, sessões rotativas, revogação instantânea e login social auditado." },
-  { icon: Users2, title: "RBAC granular", desc: "Papéis Owner, Admin, Editor e Viewer com permissões finas por módulo." },
-  { icon: Eye, title: "Auditoria contínua", desc: "Todos os eventos críticos registrados em audit log imutável com retenção de 12 meses." },
-  { icon: ServerCog, title: "Infra gerenciada", desc: "Runtime edge em Cloudflare Workers, banco Postgres gerenciado, backups automáticos." },
-  { icon: Cloud, title: "Backups & DR", desc: "PITR (point-in-time recovery) e snapshots diários com replicação geográfica." },
-  { icon: AlertTriangle, title: "Monitoramento 24/7", desc: "Alertas em tempo real de erros, latência anômala e picos de consumo." },
-  { icon: FileCheck2, title: "LGPD-first", desc: "Direitos do titular (acesso, portabilidade, exclusão) atendidos em até 15 dias." },
-  { icon: ScrollText, title: "Políticas transparentes", desc: "Termos, Privacidade, Cookies e Reembolso publicados e versionados." },
-  { icon: RefreshCw, title: "Patch discipline", desc: "Dependências monitoradas continuamente; correções críticas em janelas curtas." },
-  { icon: Shield, title: "IA responsável", desc: "Prompts e outputs não usados para treinar modelos de terceiros por padrão." },
+  {
+    icon: Lock,
+    title: "Criptografia forte",
+    desc: "TLS 1.3 em trânsito e AES-256 em repouso para todos os dados sensíveis.",
+  },
+  {
+    icon: Database,
+    title: "Isolamento multi-tenant",
+    desc: "Row-Level Security em cada tabela — nenhum tenant vê dados de outro.",
+  },
+  {
+    icon: KeyRound,
+    title: "Autenticação robusta",
+    desc: "MFA opcional, sessões rotativas, revogação instantânea e login social auditado.",
+  },
+  {
+    icon: Users2,
+    title: "RBAC granular",
+    desc: "Papéis Owner, Admin, Editor e Viewer com permissões finas por módulo.",
+  },
+  {
+    icon: Eye,
+    title: "Auditoria contínua",
+    desc: "Todos os eventos críticos registrados em audit log imutável com retenção de 12 meses.",
+  },
+  {
+    icon: ServerCog,
+    title: "Infra gerenciada",
+    desc: "Runtime edge em Cloudflare Workers, banco Postgres gerenciado, backups automáticos.",
+  },
+  {
+    icon: Cloud,
+    title: "Backups & DR",
+    desc: "PITR (point-in-time recovery) e snapshots diários com replicação geográfica.",
+  },
+  {
+    icon: AlertTriangle,
+    title: "Monitoramento 24/7",
+    desc: "Alertas em tempo real de erros, latência anômala e picos de consumo.",
+  },
+  {
+    icon: FileCheck2,
+    title: "LGPD-first",
+    desc: "Direitos do titular (acesso, portabilidade, exclusão) atendidos em até 15 dias.",
+  },
+  {
+    icon: ScrollText,
+    title: "Políticas transparentes",
+    desc: "Termos, Privacidade, Cookies e Reembolso publicados e versionados.",
+  },
+  {
+    icon: RefreshCw,
+    title: "Patch discipline",
+    desc: "Dependências monitoradas continuamente; correções críticas em janelas curtas.",
+  },
+  {
+    icon: Shield,
+    title: "IA responsável",
+    desc: "Prompts e outputs não usados para treinar modelos de terceiros por padrão.",
+  },
 ];
 
 const commitments: [string, string][] = [
-  ["Dados do cliente", "Seus projetos, arquivos e conteúdos são exclusivamente seus. Você exporta ou exclui quando quiser."],
-  ["Sub-processadores", "Trabalhamos apenas com provedores auditados (infra, e-mail, pagamentos). Lista disponível sob solicitação."],
-  ["Retenção", "Dados são mantidos enquanto sua conta existir. Após exclusão, remoção definitiva em até 30 dias."],
-  ["Divulgação responsável", "Vulnerabilidades podem ser reportadas em segurança@dioris.com — resposta em até 48h úteis."],
+  [
+    "Dados do cliente",
+    "Seus projetos, arquivos e conteúdos são exclusivamente seus. Você exporta ou exclui quando quiser.",
+  ],
+  [
+    "Sub-processadores",
+    "Trabalhamos apenas com provedores auditados (infra, e-mail, pagamentos). Lista disponível sob solicitação.",
+  ],
+  [
+    "Retenção",
+    "Dados são mantidos enquanto sua conta existir. Após exclusão, remoção definitiva em até 30 dias.",
+  ],
+  [
+    "Divulgação responsável",
+    "Vulnerabilidades podem ser reportadas em segurança@dioris.com — resposta em até 48h úteis.",
+  ],
 ];
 
 function Page() {
@@ -49,8 +126,8 @@ function Page() {
           Segurança de <GradientText>nível enterprise</GradientText>.
         </h1>
         <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-          A Dioris foi desenhada desde o primeiro dia para operar dados críticos de empresas — com criptografia,
-          isolamento por tenant, auditoria contínua e conformidade LGPD.
+          A Dioris foi desenhada desde o primeiro dia para operar dados críticos de empresas — com
+          criptografia, isolamento por tenant, auditoria contínua e conformidade LGPD.
         </p>
       </Reveal>
 
@@ -93,7 +170,8 @@ function Page() {
           <div>
             <h3 className="text-xl font-bold">Precisa de um DPA ou questionário de segurança?</h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              Empresas em planos Business e Enterprise recebem DPA assinado e resposta a questionários de compliance.
+              Empresas em planos Business e Enterprise recebem DPA assinado e resposta a
+              questionários de compliance.
             </p>
           </div>
           <a

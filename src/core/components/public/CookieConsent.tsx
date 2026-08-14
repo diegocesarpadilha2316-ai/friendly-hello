@@ -22,10 +22,7 @@ export function CookieConsent() {
 
   const decide = (choice: Choice) => {
     try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ choice, at: new Date().toISOString() }),
-      );
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ choice, at: new Date().toISOString() }));
     } catch {
       /* noop */
     }
@@ -52,13 +49,11 @@ export function CookieConsent() {
                 <Cookie className="h-4 w-4 text-foreground" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-foreground">
-                  Cookies e privacidade
-                </p>
+                <p className="text-sm font-semibold text-foreground">Cookies e privacidade</p>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                  Usamos cookies essenciais para operar a plataforma e cookies
-                  analíticos opcionais para melhorar a experiência. Você pode
-                  aceitar ou recusar os opcionais. Saiba mais em{" "}
+                  Usamos cookies essenciais para operar a plataforma e cookies analíticos opcionais
+                  para melhorar a experiência. Você pode aceitar ou recusar os opcionais. Saiba mais
+                  em{" "}
                   <Link
                     to="/cookies"
                     className="text-foreground underline decoration-primary/50 underline-offset-2 hover:decoration-primary"

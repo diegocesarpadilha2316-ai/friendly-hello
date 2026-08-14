@@ -10,18 +10,18 @@
  * Nunca chaves, tokens, prompts internos ou raciocínio intermediário.
  */
 export function emptyMemory(tenantId, projectId, projectName = "Projeto") {
-    return {
-        version: 1,
-        tenantId,
-        projectId,
-        identity: { projectName, environmentType: null, stage: "briefing" },
-        style: null,
-        materials: [],
-        preferences: [],
-        decisions: [],
-        constraints: [],
-        pendings: [],
-        executiveSummary: "",
-        updatedAt: new Date().toISOString(),
-    };
+  return {
+    version: 1,
+    tenantId,
+    projectId,
+    identity: { projectName, environmentType: null, stage: "briefing" },
+    style: null,
+    materials: [],
+    preferences: [],
+    decisions: [],
+    constraints: [],
+    pendings: [],
+    executiveSummary: "",
+    updatedAt: new Date().toISOString(),
+  };
 }

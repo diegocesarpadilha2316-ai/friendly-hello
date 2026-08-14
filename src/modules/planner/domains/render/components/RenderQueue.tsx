@@ -39,7 +39,11 @@ function Section({
         {action}
       </div>
       <div className="divide-y divide-border/40">
-        {isEmpty ? <div className="px-4 py-6 text-xs text-muted-foreground">{empty}</div> : children}
+        {isEmpty ? (
+          <div className="px-4 py-6 text-xs text-muted-foreground">{empty}</div>
+        ) : (
+          children
+        )}
       </div>
     </div>
   );
@@ -65,7 +69,8 @@ function JobRow({
             <span>{job.stage}</span>
             {job.result ? (
               <span>
-                {job.result.widthPx}×{job.result.heightPx} · {(job.result.durationMs / 1000).toFixed(1)}s
+                {job.result.widthPx}×{job.result.heightPx} ·{" "}
+                {(job.result.durationMs / 1000).toFixed(1)}s
               </span>
             ) : null}
           </div>

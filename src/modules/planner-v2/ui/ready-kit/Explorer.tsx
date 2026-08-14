@@ -11,11 +11,10 @@ import {
   PanelTop,
   Palette,
   Square,
-  Wrench
+  Wrench,
 } from "lucide-react";
 import { usePlannerStore } from "./usePlannerStoreReady";
 import { LibraryPanel } from "../../library/ui/LibraryPanel";
-
 
 export function Explorer() {
   const leftTab = usePlannerStore((s) => s.leftTab || "structure");
@@ -25,14 +24,13 @@ export function Explorer() {
   const toggleLeft = usePlannerStore((s) => s.toggleLeft);
   const furniture = usePlannerStore((s) => s.furniture);
   const selectedId = usePlannerStore((s) => s.selectedId);
-  
+
   const selectFurniture = (id: string | null) => {
     usePlannerStore.getState().selectFurniture(id);
     usePlannerStore.getState().setMobileDrawer(false);
   };
 
   const toggleVisibility = (id: string) => usePlannerStore.getState().toggleVisibility(id);
-
 
   return (
     <aside className={`explorer ${collapsed ? "collapsed" : ""}`}>
@@ -45,20 +43,20 @@ export function Explorer() {
 
       {!collapsed && (
         <div className="panel-tabs">
-          <button 
-            className={leftTab === "structure" ? "active" : ""} 
+          <button
+            className={leftTab === "structure" ? "active" : ""}
             onClick={() => setLeftTab("structure")}
           >
             Estrutura
           </button>
-          <button 
-            className={leftTab === "library" ? "active" : ""} 
+          <button
+            className={leftTab === "library" ? "active" : ""}
             onClick={() => setLeftTab("library")}
           >
             Biblioteca
           </button>
-          <button 
-            className={leftTab === "rooms" ? "active" : ""} 
+          <button
+            className={leftTab === "rooms" ? "active" : ""}
             onClick={() => setLeftTab("rooms")}
           >
             Ambientes
@@ -81,9 +79,24 @@ export function Explorer() {
 
             {!collapsed && (
               <>
-                <div className="tree-row child"><Square size={15} /><span>Paredes</span><span className="grow" /><Eye size={15} /></div>
-                <div className="tree-row child"><Layers3 size={15} /><span>Piso</span><span className="grow" /><Eye size={15} /></div>
-                <div className="tree-row child"><PanelTop size={15} /><span>Teto</span><span className="grow" /><Eye size={15} /></div>
+                <div className="tree-row child">
+                  <Square size={15} />
+                  <span>Paredes</span>
+                  <span className="grow" />
+                  <Eye size={15} />
+                </div>
+                <div className="tree-row child">
+                  <Layers3 size={15} />
+                  <span>Piso</span>
+                  <span className="grow" />
+                  <Eye size={15} />
+                </div>
+                <div className="tree-row child">
+                  <PanelTop size={15} />
+                  <span>Teto</span>
+                  <span className="grow" />
+                  <Eye size={15} />
+                </div>
               </>
             )}
 
@@ -124,9 +137,21 @@ export function Explorer() {
 
             {!collapsed && (
               <>
-                <div className="tree-row root"><Palette size={16} /><span>Materiais</span><span className="grow" /></div>
-                <div className="tree-row root"><Lightbulb size={16} /><span>Iluminação</span><span className="grow" /></div>
-                <div className="tree-row root"><Wrench size={16} /><span>Ferragens</span><span className="grow" /></div>
+                <div className="tree-row root">
+                  <Palette size={16} />
+                  <span>Materiais</span>
+                  <span className="grow" />
+                </div>
+                <div className="tree-row root">
+                  <Lightbulb size={16} />
+                  <span>Iluminação</span>
+                  <span className="grow" />
+                </div>
+                <div className="tree-row root">
+                  <Wrench size={16} />
+                  <span>Ferragens</span>
+                  <span className="grow" />
+                </div>
               </>
             )}
           </>

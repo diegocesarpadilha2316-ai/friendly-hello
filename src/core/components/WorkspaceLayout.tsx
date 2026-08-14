@@ -23,17 +23,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetTitle,
-  SheetHeader,
-} from "@/components/ui/sheet";
-import {
-  CommandPalette,
-  useCommandPalette,
-} from "@/core/components/command-palette";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
+import { CommandPalette, useCommandPalette } from "@/core/components/command-palette";
 import { useTenant } from "@/core/providers/TenantProvider";
 
 type NavItem = {
@@ -85,17 +76,9 @@ export const WORKSPACE_NAV_GROUPS: readonly NavGroup[] = [
 ];
 
 /** Lista plana (compatibilidade) de todos os itens do Workspace. */
-export const WORKSPACE_NAV: readonly NavItem[] = WORKSPACE_NAV_GROUPS.flatMap(
-  (g) => g.items,
-);
+export const WORKSPACE_NAV: readonly NavItem[] = WORKSPACE_NAV_GROUPS.flatMap((g) => g.items);
 
-function NavList({
-  path,
-  onNavigate,
-}: {
-  path: string;
-  onNavigate?: () => void;
-}) {
+function NavList({ path, onNavigate }: { path: string; onNavigate?: () => void }) {
   return (
     <nav className="flex flex-col gap-4">
       {WORKSPACE_NAV_GROUPS.map((group) => (
@@ -104,9 +87,7 @@ function NavList({
             {group.label}
           </p>
           {group.items.map((item) => {
-            const active = item.exact
-              ? path === item.to
-              : path.startsWith(item.to);
+            const active = item.exact ? path === item.to : path.startsWith(item.to);
             const Icon = item.icon;
             return (
               <Link
@@ -173,9 +154,7 @@ export function WorkspaceLayout({ children }: { children: ReactNode }) {
             </SheetTrigger>
             <SheetContent side="left" className="w-72 p-4">
               <SheetHeader>
-                <SheetTitle className="text-sm">
-                  {activeCompany?.name ?? "Workspace"}
-                </SheetTitle>
+                <SheetTitle className="text-sm">{activeCompany?.name ?? "Workspace"}</SheetTitle>
               </SheetHeader>
               <div className="mt-4">
                 <NavList path={path} />

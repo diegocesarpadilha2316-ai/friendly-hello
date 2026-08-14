@@ -10,20 +10,15 @@
  * válido para ser inserido no `PlannerProject` via `updateProject`.
  */
 import { createRoom } from "@/modules/planner/shared/factories/project";
-import {
-  makePrimitiveId,
-  upsertPrimitives,
-} from "@/modules/planner/shared/editor-2d/room-ops";
+import { makePrimitiveId, upsertPrimitives } from "@/modules/planner/shared/editor-2d/room-ops";
 import type { Editor2DPrimitive } from "@/modules/planner/shared/editor-2d/types";
 import type { PlannerRoom } from "@/modules/planner/shared/types/project";
-import type {
-  VisionCorrectionPatch,
-  VisionOpening,
-  VisionRoomModel,
-  VisionWall,
-} from "./types";
+import type { VisionCorrectionPatch, VisionOpening, VisionRoomModel, VisionWall } from "./types";
 
-function applyWallPatch(wall: VisionWall, patch: Partial<Omit<VisionWall, "id">> | undefined): VisionWall {
+function applyWallPatch(
+  wall: VisionWall,
+  patch: Partial<Omit<VisionWall, "id">> | undefined,
+): VisionWall {
   if (!patch) return wall;
   return {
     ...wall,
@@ -35,7 +30,10 @@ function applyWallPatch(wall: VisionWall, patch: Partial<Omit<VisionWall, "id">>
   };
 }
 
-function applyOpeningPatch(op: VisionOpening, patch: Partial<Omit<VisionOpening, "id">> | undefined): VisionOpening {
+function applyOpeningPatch(
+  op: VisionOpening,
+  patch: Partial<Omit<VisionOpening, "id">> | undefined,
+): VisionOpening {
   if (!patch) return op;
   return {
     ...op,

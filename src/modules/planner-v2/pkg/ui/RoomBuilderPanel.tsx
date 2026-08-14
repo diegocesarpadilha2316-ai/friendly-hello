@@ -1,23 +1,12 @@
-import {
-  DoorOpen,
-  ImagePlus,
-  RotateCcw,
-  Trash2,
-  Upload,
-  PanelsTopLeft
-} from "lucide-react";
+import { DoorOpen, ImagePlus, RotateCcw, Trash2, Upload, PanelsTopLeft } from "lucide-react";
 import { ChangeEvent } from "react";
-import {
-  OpeningSpec,
-  WallSide,
-  useRoomBuilderStore
-} from "../state/useRoomBuilderStore";
+import { OpeningSpec, WallSide, useRoomBuilderStore } from "../state/useRoomBuilderStore";
 import { usePlannerStore } from "../state/usePlannerStore";
 
 const wallNames: Record<WallSide, string> = {
   back: "Parede do fundo",
   left: "Parede esquerda",
-  right: "Parede direita"
+  right: "Parede direita",
 };
 
 function NumberField({
@@ -26,7 +15,7 @@ function NumberField({
   onChange,
   min,
   max,
-  step = 0.05
+  step = 0.05,
 }: {
   label: string;
   value: number; // mm
@@ -223,11 +212,7 @@ export function ImageReferencePanel() {
             <img src={referenceImage} alt="Referência enviada" />
           </div>
           <p className="reference-name">{referenceName}</p>
-          <button
-            type="button"
-            className="apply-reference"
-            onClick={applyReferencePreset}
-          >
+          <button type="button" className="apply-reference" onClick={applyReferencePreset}>
             Criar prévia inspirada na imagem
           </button>
           <button
@@ -243,13 +228,13 @@ export function ImageReferencePanel() {
       <div className="vision-note">
         <strong>Como funcionará no Dioris real</strong>
         <p>
-          A imagem será enviada ao modelo de visão. Ele deverá identificar cômodo,
-          paredes, portas, janelas, cores, materiais, eletrodomésticos e disposição
-          aproximada, gerar um plano editável e pedir confirmação antes de criar.
+          A imagem será enviada ao modelo de visão. Ele deverá identificar cômodo, paredes, portas,
+          janelas, cores, materiais, eletrodomésticos e disposição aproximada, gerar um plano
+          editável e pedir confirmação antes de criar.
         </p>
         <p>
-          Nesta prévia local, o botão aplica um preset demonstrativo. A análise por IA
-          deverá ser conectada pela Lovable ao endpoint de visão do projeto.
+          Nesta prévia local, o botão aplica um preset demonstrativo. A análise por IA deverá ser
+          conectada pela Lovable ao endpoint de visão do projeto.
         </p>
       </div>
     </div>

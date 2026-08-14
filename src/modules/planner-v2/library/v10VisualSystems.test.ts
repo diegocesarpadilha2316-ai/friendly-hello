@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { MaterialRegistry } from "./registry/MaterialRegistry";
 import { DecorAssetRegistry } from "./registry/AssetRegistry";
 
-
 describe("Kitchen V10 visual systems", () => {
   it("exposes physical UV profiles and stone definitions without replacing the common registry", () => {
     const freijo = MaterialRegistry.get("mdf-freijo");
@@ -13,8 +12,12 @@ describe("Kitchen V10 visual systems", () => {
     expect(calacatta?.category).toBe("stone");
     expect(calacatta?.stone?.thicknessMm).toBe(12);
     expect(calacatta?.stone?.veinDirection).toBe("length");
-    expect(MaterialRegistry.get("stone-quartzite")?.maps?.baseColorUrl).toBe("/assets/v10/stone-quartzite-taj-seamless.jpg");
-    expect(MaterialRegistry.get("metal-inox")?.maps?.baseColorUrl).toBe("/assets/v10/stainless-brushed-seamless.jpg");
+    expect(MaterialRegistry.get("stone-quartzite")?.maps?.baseColorUrl).toBe(
+      "/assets/v10/stone-quartzite-taj-seamless.jpg",
+    );
+    expect(MaterialRegistry.get("metal-inox")?.maps?.baseColorUrl).toBe(
+      "/assets/v10/stainless-brushed-seamless.jpg",
+    );
   });
 
   it("preserves official catalog metadata without inventing commercial verification", () => {

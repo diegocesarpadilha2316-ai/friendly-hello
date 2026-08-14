@@ -122,14 +122,7 @@ export interface WalkModeSpec {
 }
 
 export type SnapTargetKind =
-  | "paredes"
-  | "moveis"
-  | "eixos"
-  | "centro"
-  | "quinas"
-  | "divisorias"
-  | "portas"
-  | "gavetas";
+  "paredes" | "moveis" | "eixos" | "centro" | "quinas" | "divisorias" | "portas" | "gavetas";
 
 export interface SnapTarget {
   id: string;
@@ -141,14 +134,7 @@ export interface SnapTarget {
 
 export interface AlignAction {
   id:
-    | "left"
-    | "right"
-    | "center-h"
-    | "top"
-    | "bottom"
-    | "center-v"
-    | "distribute-h"
-    | "distribute-v";
+    "left" | "right" | "center-h" | "top" | "bottom" | "center-v" | "distribute-h" | "distribute-v";
   label: string;
   description: string;
 }

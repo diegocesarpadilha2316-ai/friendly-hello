@@ -16,13 +16,28 @@ export function normalizeDimensions(
   raw: { widthMm?: number; heightMm?: number; depthMm?: number },
   defaults: CatalogItem["defaults"],
 ): { widthMm: number; heightMm: number; depthMm: number } {
-  const w = clamp(snap(raw.widthMm ?? defaults.widthMm, parametric.widthMm.step), parametric.widthMm.min, parametric.widthMm.max);
-  const h = clamp(snap(raw.heightMm ?? defaults.heightMm, parametric.heightMm.step), parametric.heightMm.min, parametric.heightMm.max);
-  const d = clamp(snap(raw.depthMm ?? defaults.depthMm, parametric.depthMm.step), parametric.depthMm.min, parametric.depthMm.max);
+  const w = clamp(
+    snap(raw.widthMm ?? defaults.widthMm, parametric.widthMm.step),
+    parametric.widthMm.min,
+    parametric.widthMm.max,
+  );
+  const h = clamp(
+    snap(raw.heightMm ?? defaults.heightMm, parametric.heightMm.step),
+    parametric.heightMm.min,
+    parametric.heightMm.max,
+  );
+  const d = clamp(
+    snap(raw.depthMm ?? defaults.depthMm, parametric.depthMm.step),
+    parametric.depthMm.min,
+    parametric.depthMm.max,
+  );
   return { widthMm: w, heightMm: h, depthMm: d };
 }
 
-export function createVariant(item: CatalogItem, patch: Partial<Omit<CatalogVariant, "id" | "itemId">>): CatalogVariant {
+export function createVariant(
+  item: CatalogItem,
+  patch: Partial<Omit<CatalogVariant, "id" | "itemId">>,
+): CatalogVariant {
   const dims = normalizeDimensions(item.parametric, patch, item.defaults);
   return {
     id: `${item.id}-${dims.widthMm}x${dims.heightMm}x${dims.depthMm}-${Date.now().toString(36)}`,

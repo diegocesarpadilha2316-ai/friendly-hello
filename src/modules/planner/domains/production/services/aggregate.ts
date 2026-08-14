@@ -7,7 +7,10 @@
 import type { PlannerProject } from "@/modules/planner/shared/types/project";
 import { listPrimitives } from "@/modules/planner/shared/editor-2d/serialization";
 import { decomposeFurniture } from "@/modules/planner/shared/engineering/decompose";
-import type { CompanyManufacturingRules, FurniturePart } from "@/modules/planner/shared/engineering/types";
+import type {
+  CompanyManufacturingRules,
+  FurniturePart,
+} from "@/modules/planner/shared/engineering/types";
 import type { ProductionPart, ProductionPartCategory } from "../types";
 
 const DENSITY_KG_M3 = 720;
@@ -57,9 +60,10 @@ export function aggregateProductionParts(
           const areaM2 = (p.widthMm * p.heightMm) / 1_000_000;
           const volumeM3 = (areaM2 * p.thicknessMm) / 1000;
           const weightKg = Math.round(volumeM3 * DENSITY_KG_M3 * 100) / 100;
-          const edgeMetersEach = p.kind === "fita-borda"
-            ? 0
-            : Math.round(((2 * (p.widthMm + p.heightMm)) / 1000) * 100) / 100;
+          const edgeMetersEach =
+            p.kind === "fita-borda"
+              ? 0
+              : Math.round(((2 * (p.widthMm + p.heightMm)) / 1000) * 100) / 100;
           parts.push({
             ...p,
             category: CATEGORY_MAP[p.kind] ?? "outro",

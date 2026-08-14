@@ -34,7 +34,9 @@ export interface PersistedProject {
   };
 }
 
-export function serializeProject(input: Omit<PersistedProject, "schema" | "version" | "savedAt">): PersistedProject {
+export function serializeProject(
+  input: Omit<PersistedProject, "schema" | "version" | "savedAt">,
+): PersistedProject {
   return {
     schema: "dioris.planner-v2.project",
     version: 4,

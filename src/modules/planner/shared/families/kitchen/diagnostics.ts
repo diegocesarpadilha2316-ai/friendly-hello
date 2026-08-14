@@ -11,7 +11,11 @@ import { validateKitchenLayout } from "./validator";
 export interface KitchenDiagnostics {
   readonly id: string;
   readonly shape: string;
-  readonly walls: readonly { readonly id: string; readonly lengthMm: number; readonly heightMm: number }[];
+  readonly walls: readonly {
+    readonly id: string;
+    readonly lengthMm: number;
+    readonly heightMm: number;
+  }[];
   readonly origin: string;
   readonly requested: readonly string[];
   readonly placed: readonly string[];
@@ -41,11 +45,16 @@ export function kitchenDiagnostics(
   return {
     id: result.id,
     shape: result.shape,
-    walls: result.walls.map((w) => ({ id: w.id, lengthMm: w.lengthMm, heightMm: w.heightMm ?? 2700 })),
+    walls: result.walls.map((w) => ({
+      id: w.id,
+      lengthMm: w.lengthMm,
+      heightMm: w.heightMm ?? 2700,
+    })),
     origin: [...new Set(result.placements.map((p) => p.origin))].join(", ") || "vazio",
     requested,
     placed: result.placements.map(
-      (p) => `${p.wallId} ${p.level} @${p.xMm} ${p.widthMm}×${p.heightMm}×${p.depthMm} ${p.kind} (${p.origin})`,
+      (p) =>
+        `${p.wallId} ${p.level} @${p.xMm} ${p.widthMm}×${p.heightMm}×${p.depthMm} ${p.kind} (${p.origin})`,
     ),
     resized: result.resized,
     dropped: result.dropped,
@@ -53,15 +62,24 @@ export function kitchenDiagnostics(
       .filter((r) => r.kind === "janela" || r.kind === "porta" || r.kind === "retorno-de-canto")
       .map((r) => `${r.wallId} ${r.kind} @${r.xMm} ${r.widthMm} mm`),
     countertopRuns: result.countertopRuns.map(
-      (r) => `${r.wallId} ${r.startMm}–${r.endMm} (${r.lengthMm} mm, ${r.material}, balanço ${r.overhangFrontMm} mm${r.joinStart || r.joinEnd ? ", união em L" : ""})`,
+      (r) =>
+        `${r.wallId} ${r.startMm}–${r.endMm} (${r.lengthMm} mm, ${r.material}, balanço ${r.overhangFrontMm} mm${r.joinStart || r.joinEnd ? ", união em L" : ""})`,
     ),
-    plinthRuns: result.plinthRuns.map((r) => `${r.wallId} ${r.startMm}–${r.endMm} (${r.kind}, ${r.heightMm} mm)`),
-    reservations: result.reservations.map((r) => `${r.wallId} ${r.kind} @${r.xMm} ${r.widthMm}×${r.heightMm}×${r.depthMm} — ${r.note}`),
+    plinthRuns: result.plinthRuns.map(
+      (r) => `${r.wallId} ${r.startMm}–${r.endMm} (${r.kind}, ${r.heightMm} mm)`,
+    ),
+    reservations: result.reservations.map(
+      (r) => `${r.wallId} ${r.kind} @${r.xMm} ${r.widthMm}×${r.heightMm}×${r.depthMm} — ${r.note}`,
+    ),
     fillers: result.fillers.map((f) => `${f.wallId} @${f.xMm} ${f.widthMm} mm`),
     mechanisms: result.placements
       .filter((p) => p.spec.doors > 0 || p.spec.drawers > 0)
-      .map((p) => `${p.id}: ${p.spec.doors} porta(s) ${p.spec.opening}, ${p.spec.drawers} gaveta(s)`),
-    collisions: v.errors.filter((x) => x.code === "colisao" || x.code === "fora-parede").map((x) => x.message),
+      .map(
+        (p) => `${p.id}: ${p.spec.doors} porta(s) ${p.spec.opening}, ${p.spec.drawers} gaveta(s)`,
+      ),
+    collisions: v.errors
+      .filter((x) => x.code === "colisao" || x.code === "fora-parede")
+      .map((x) => x.message),
     ergonomics: v.warnings.map((w) => `[${w.code}] ${w.message}`),
     fallbacks: [
       ...result.warnings.filter((w) => w.level !== "error").map((w) => `[${w.code}] ${w.message}`),
@@ -71,7 +89,9 @@ export function kitchenDiagnostics(
   };
 }
 
-const DEV = typeof import.meta !== "undefined" && Boolean((import.meta as { env?: { DEV?: boolean } }).env?.DEV);
+const DEV =
+  typeof import.meta !== "undefined" &&
+  Boolean((import.meta as { env?: { DEV?: boolean } }).env?.DEV);
 
 /** Publica o diagnóstico em `window.__DIORIS_KITCHEN__`. Só em DEV. */
 export function publishKitchenDiagnostics(
@@ -80,7 +100,8 @@ export function publishKitchenDiagnostics(
 ): KitchenDiagnostics | null {
   if (!DEV || typeof window === "undefined") return null;
   const diag = kitchenDiagnostics(result, input);
-  const store = ((window as unknown as Record<string, unknown>).__DIORIS_KITCHEN__ ??= {}) as Record<string, unknown>;
+  const store = ((window as unknown as Record<string, unknown>).__DIORIS_KITCHEN__ ??=
+    {}) as Record<string, unknown>;
   store[diag.id] = diag;
   return diag;
 }

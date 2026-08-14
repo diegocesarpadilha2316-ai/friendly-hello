@@ -12,7 +12,7 @@ import {
   Save,
   Share2,
   Undo2,
-  ZoomIn
+  ZoomIn,
 } from "lucide-react";
 import { usePlannerStore } from "./usePlannerStoreReady";
 import type { ToolMode } from "./types";
@@ -31,7 +31,7 @@ const toolList: { label: string; icon: React.ReactNode; mode?: ToolMode }[] = [
   { label: "Render", icon: <Camera size={17} /> },
   { label: "Planta 2D", icon: <Grid2X2 size={17} /> },
   { label: "Lista de Corte", icon: <ListTree size={17} /> },
-  { label: "Orçamento", icon: <Calculator size={17} /> }
+  { label: "Orçamento", icon: <Calculator size={17} /> },
 ];
 
 export function Topbar() {
@@ -63,8 +63,12 @@ export function Topbar() {
       </nav>
 
       <div className="top-actions">
-        <button type="button" className="primary" onClick={() => {}}><Save size={16} /> Salvar</button>
-        <button type="button" className="secondary" onClick={() => {}}><Share2 size={16} /> Compartilhar</button>
+        <button type="button" className="primary" onClick={() => {}}>
+          <Save size={16} /> Salvar
+        </button>
+        <button type="button" className="secondary" onClick={() => {}}>
+          <Share2 size={16} /> Compartilhar
+        </button>
       </div>
     </header>
   );

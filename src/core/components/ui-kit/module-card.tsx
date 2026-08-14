@@ -60,9 +60,7 @@ export function ModuleCard({
         </div>
         {status ? <StatusBadge tone={status.tone}>{status.label}</StatusBadge> : null}
       </div>
-      {description ? (
-        <p className="text-sm text-muted-foreground">{description}</p>
-      ) : null}
+      {description ? <p className="text-sm text-muted-foreground">{description}</p> : null}
       {interactive ? (
         <div className="mt-auto flex items-center gap-1 text-xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
           Abrir módulo <ArrowUpRight className="h-3.5 w-3.5" />

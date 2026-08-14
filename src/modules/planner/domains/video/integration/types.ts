@@ -19,12 +19,7 @@ import type {
 } from "../local-engine/types";
 
 export type RealVideoEncoderId =
-  | "auto"
-  | "webcodecs"
-  | "mediarecorder"
-  | "ffmpeg-wasm"
-  | "png-sequence"
-  | "gif-encoder";
+  "auto" | "webcodecs" | "mediarecorder" | "ffmpeg-wasm" | "png-sequence" | "gif-encoder";
 
 export interface RealEncoderCapabilities {
   readonly id: RealVideoEncoderId;

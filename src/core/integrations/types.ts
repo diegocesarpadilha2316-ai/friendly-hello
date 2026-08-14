@@ -1,13 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type JsonRecord = Record<string, any>;
 
-export type IntegrationAuthType =
-  | "oauth2"
-  | "oidc"
-  | "api_key"
-  | "bearer"
-  | "basic"
-  | "jwt";
+export type IntegrationAuthType = "oauth2" | "oidc" | "api_key" | "bearer" | "basic" | "jwt";
 
 export type IntegrationCategory =
   | "storage"
@@ -21,12 +15,7 @@ export type IntegrationCategory =
   | "social"
   | "generic";
 
-export type IntegrationStatus =
-  | "active"
-  | "inactive"
-  | "error"
-  | "degraded"
-  | "connecting";
+export type IntegrationStatus = "active" | "inactive" | "error" | "degraded" | "connecting";
 
 export type IntegrationHealthStatus = "online" | "offline" | "degraded" | "unknown";
 

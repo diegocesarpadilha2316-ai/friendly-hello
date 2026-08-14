@@ -255,7 +255,10 @@ export class PlanRunner {
 
     const baseProject = this.options.getProject();
     if (!baseProject) {
-      this.setPlan({ status: "failed", warnings: [...this.plan.warnings, "Nenhum projeto ativo."] });
+      this.setPlan({
+        status: "failed",
+        warnings: [...this.plan.warnings, "Nenhum projeto ativo."],
+      });
       return this.plan;
     }
 
@@ -288,17 +291,19 @@ export class PlanRunner {
         // Ordem estrita: a próxima etapa é sempre a primeira pendente
         // com todas as dependências satisfeitas.
         const next = this.plan.steps.find(
-          (s) => (s.status === "pending" || s.status === "blocked") && isStepUnlocked(s, this.plan.steps),
+          (s) =>
+            (s.status === "pending" || s.status === "blocked") &&
+            isStepUnlocked(s, this.plan.steps),
         );
         if (!next) break;
 
         const index = this.plan.steps.findIndex((s) => s.stepId === next.stepId);
         this.emit(
-          patchStep(
-            { ...this.plan, currentStepIndex: index },
-            next.stepId,
-            { status: "running", startedAt: new Date().toISOString(), attempts: next.attempts + 1 },
-          ),
+          patchStep({ ...this.plan, currentStepIndex: index }, next.stepId, {
+            status: "running",
+            startedAt: new Date().toISOString(),
+            attempts: next.attempts + 1,
+          }),
         );
 
         const outcome = await runPlannerTool({

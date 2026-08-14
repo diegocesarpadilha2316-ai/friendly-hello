@@ -1,6 +1,16 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { ClientOnly } from "@tanstack/react-router";
-import { Ruler, Move3D, Undo2, Redo2, Save, PanelLeftOpen, PanelLeftClose, Boxes, Wrench } from "lucide-react";
+import {
+  Ruler,
+  Move3D,
+  Undo2,
+  Redo2,
+  Save,
+  PanelLeftOpen,
+  PanelLeftClose,
+  Boxes,
+  Wrench,
+} from "lucide-react";
 import { Button } from "@/core/components/ui-kit";
 import { usePlannerEditor } from "../state/editor-context";
 import { Editor2D } from "../editor-2d";
@@ -82,7 +92,11 @@ export function EditorCanvas({ mode, controls }: { mode: Mode; controls?: Editor
               onClick={() => setLibraryOpen((v) => !v)}
               title="Biblioteca (arraste peças para inserir)"
             >
-              {libraryOpen ? <PanelLeftClose className="mr-1 h-4 w-4" /> : <PanelLeftOpen className="mr-1 h-4 w-4" />}
+              {libraryOpen ? (
+                <PanelLeftClose className="mr-1 h-4 w-4" />
+              ) : (
+                <PanelLeftOpen className="mr-1 h-4 w-4" />
+              )}
               <Boxes className="mr-1 h-4 w-4" /> Biblioteca
             </Button>
             <Button
@@ -104,10 +118,7 @@ export function EditorCanvas({ mode, controls }: { mode: Mode; controls?: Editor
             </Button>
           </div>
         </div>
-        <EditorLayout
-          libraryOpen={libraryOpen}
-          inspectorOpen={inspectorOpen}
-        />
+        <EditorLayout libraryOpen={libraryOpen} inspectorOpen={inspectorOpen} />
       </div>
     );
   }
@@ -133,14 +144,14 @@ export function EditorCanvas({ mode, controls }: { mode: Mode; controls?: Editor
       </div>
       <ClientOnly
         fallback={
-            <div className="grid min-h-[520px] place-items-center rounded-xl border border-border/60 bg-muted/20 text-sm text-muted-foreground">
+          <div className="grid min-h-[520px] place-items-center rounded-xl border border-border/60 bg-muted/20 text-sm text-muted-foreground">
             Carregando ambiente 3D…
           </div>
         }
       >
         <Suspense
           fallback={
-              <div className="grid min-h-[520px] place-items-center rounded-xl border border-border/60 bg-muted/20 text-sm text-muted-foreground">
+            <div className="grid min-h-[520px] place-items-center rounded-xl border border-border/60 bg-muted/20 text-sm text-muted-foreground">
               Inicializando motor 3D…
             </div>
           }

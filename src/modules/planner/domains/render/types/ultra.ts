@@ -8,28 +8,34 @@
 
 // ————— Materiais Ultra —————
 export type UltraWoodId =
-  | "mdf" | "mdp" | "carvalho" | "freijo" | "imbuia" | "nogueira"
-  | "louro-freijo" | "cumaru" | "tauari" | "jequitiba" | "pinus" | "cedro";
+  | "mdf"
+  | "mdp"
+  | "carvalho"
+  | "freijo"
+  | "imbuia"
+  | "nogueira"
+  | "louro-freijo"
+  | "cumaru"
+  | "tauari"
+  | "jequitiba"
+  | "pinus"
+  | "cedro";
 
-export type UltraStoneId =
-  | "marmore" | "quartzo" | "granito" | "limestone" | "onix" | "ardosia";
+export type UltraStoneId = "marmore" | "quartzo" | "granito" | "limestone" | "onix" | "ardosia";
 
 export type UltraMetalFinishId =
-  | "inox" | "escovado" | "cromado" | "preto-fosco" | "ouro" | "bronze" | "cobre";
+  "inox" | "escovado" | "cromado" | "preto-fosco" | "ouro" | "bronze" | "cobre";
 
 export type UltraGlassId =
-  | "transparente" | "extra-clear" | "bronze" | "fume" | "canelado" | "reflecta";
+  "transparente" | "extra-clear" | "bronze" | "fume" | "canelado" | "reflecta";
 
-export type UltraPaintId =
-  | "fosco" | "semi-brilho" | "alto-brilho" | "laca" | "pu";
+export type UltraPaintId = "fosco" | "semi-brilho" | "alto-brilho" | "laca" | "pu";
 
-export type UltraFabricId =
-  | "linho" | "veludo" | "suede" | "couro" | "algodao" | "boucle";
+export type UltraFabricId = "linho" | "veludo" | "suede" | "couro" | "algodao" | "boucle";
 
 // ————— Céu / atmosfera —————
 export type SkyMoodId =
-  | "dia" | "noite" | "nublado" | "tempestade"
-  | "blue-hour" | "por-do-sol" | "amanhecer" | "studio";
+  "dia" | "noite" | "nublado" | "tempestade" | "blue-hour" | "por-do-sol" | "amanhecer" | "studio";
 
 export interface SkyPreset {
   readonly id: SkyMoodId;
@@ -56,8 +62,14 @@ export interface LensPreset {
 
 // ————— Assets 3D (arquitetura, sem binários) —————
 export type VegetationKind =
-  | "arvore" | "palmeira" | "arbusto" | "flor"
-  | "planta-interna" | "jardim" | "grama" | "pedra-decorativa";
+  | "arvore"
+  | "palmeira"
+  | "arbusto"
+  | "flor"
+  | "planta-interna"
+  | "jardim"
+  | "grama"
+  | "pedra-decorativa";
 
 export interface VegetationAsset {
   readonly id: string;
@@ -67,8 +79,7 @@ export interface VegetationAsset {
   readonly tags?: readonly string[];
 }
 
-export type PeoplePose =
-  | "em-pe" | "sentado" | "caminhando" | "silhueta";
+export type PeoplePose = "em-pe" | "sentado" | "caminhando" | "silhueta";
 
 export type PeopleAgeGroup = "adulto" | "crianca";
 
@@ -81,9 +92,21 @@ export interface PeopleAsset {
 }
 
 export type PropCategory =
-  | "livros" | "vasos" | "quadros" | "tapetes" | "cortinas" | "persianas"
-  | "tv" | "notebook" | "utensilios" | "loucas" | "sofa" | "poltrona"
-  | "mesa" | "cadeira" | "decorativo";
+  | "livros"
+  | "vasos"
+  | "quadros"
+  | "tapetes"
+  | "cortinas"
+  | "persianas"
+  | "tv"
+  | "notebook"
+  | "utensilios"
+  | "loucas"
+  | "sofa"
+  | "poltrona"
+  | "mesa"
+  | "cadeira"
+  | "decorativo";
 
 export interface PropAsset {
   readonly id: string;
@@ -140,5 +163,7 @@ export interface AiHook {
   readonly label: string;
   readonly description: string;
   readonly capability: readonly ("still" | "video" | "ai" | "marketing" | "panorama")[];
-  readonly requiresProvider: readonly ("dioris.local" | "dioris.cloud" | "dioris.ai" | "dioris.video" | "dioris.marketing")[];
+  readonly requiresProvider: readonly (
+    "dioris.local" | "dioris.cloud" | "dioris.ai" | "dioris.video" | "dioris.marketing"
+  )[];
 }

@@ -11,11 +11,11 @@ import {
   Lightbulb,
   Wrench,
   Palette,
-  Armchair
+  Armchair,
 } from "lucide-react";
 import type { ProjectTreeItem } from "./planner-ui";
 
-const icons: Record<ProjectTreeItem['kind'], any> = {
+const icons: Record<ProjectTreeItem["kind"], any> = {
   room: Box,
   wall: Square,
   floor: Layers3,
@@ -25,7 +25,7 @@ const icons: Record<ProjectTreeItem['kind'], any> = {
   material: Palette,
   lighting: Lightbulb,
   hardware: Wrench,
-  decoration: Armchair
+  decoration: Armchair,
 };
 
 interface Props {
@@ -41,7 +41,7 @@ export function ProjectExplorer({
   collapsed,
   selectedId,
   onSelect,
-  onToggleVisibility
+  onToggleVisibility,
 }: Props) {
   const renderItem = (item: ProjectTreeItem, depth = 0) => {
     const Icon = icons[item.kind];
@@ -51,9 +51,7 @@ export function ProjectExplorer({
       <div key={item.id}>
         <button
           type="button"
-          className={`dioris-tree-row ${
-            selectedId === item.id ? "is-selected" : ""
-          }`}
+          className={`dioris-tree-row ${selectedId === item.id ? "is-selected" : ""}`}
           style={{ paddingLeft: collapsed ? 24 : 10 + depth * 18 }}
           onClick={() => onSelect?.(item.id)}
           title={collapsed ? item.name : undefined}
@@ -80,18 +78,11 @@ export function ProjectExplorer({
                   onToggleVisibility?.(item.id);
                 }}
               >
-                {item.visible === false ? (
-                  <EyeOff size={15} />
-                ) : (
-                  <Eye size={15} />
-                )}
+                {item.visible === false ? <EyeOff size={15} /> : <Eye size={15} />}
               </span>
 
               {item.color && (
-                <span
-                  className="dioris-tree-color"
-                  style={{ background: item.color }}
-                />
+                <span className="dioris-tree-color" style={{ background: item.color }} />
               )}
 
               <MoreHorizontal size={15} className="dioris-tree-more" />
@@ -99,8 +90,7 @@ export function ProjectExplorer({
           )}
         </button>
 
-        {hasChildren &&
-          item.children?.map((child) => renderItem(child, depth + 1))}
+        {hasChildren && item.children?.map((child) => renderItem(child, depth + 1))}
       </div>
     );
   };

@@ -56,7 +56,15 @@ export interface AssemblyPlan {
 
 export interface IndustrialCostRow {
   id: string;
-  group: "material" | "ferragens" | "mao-obra" | "tempo" | "desperdicio" | "overhead" | "lucro" | "imposto";
+  group:
+    | "material"
+    | "ferragens"
+    | "mao-obra"
+    | "tempo"
+    | "desperdicio"
+    | "overhead"
+    | "lucro"
+    | "imposto";
   label: string;
   value: number;
   hint: string;
@@ -103,4 +111,3 @@ export interface BoardPieceState {
   pinned: boolean;
   rotated: boolean;
 }
-

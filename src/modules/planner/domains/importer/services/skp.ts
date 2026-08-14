@@ -8,8 +8,19 @@ export function parseSKP(buffer: ArrayBuffer, filename: string): ImportResult {
     binary: true,
     bytes: buffer.byteLength,
     scale: { factorToMm: 1, detectedUnit: "mm" },
-    bbox: null, layers: [], entities: [], materials: [], texts: [], previewSvg: null,
-    warnings: [{ code: "skp-binary", severity: "warning", message: "SketchUp SKP é binário — exporte para OBJ/GLB/DAE para importação completa." }],
+    bbox: null,
+    layers: [],
+    entities: [],
+    materials: [],
+    texts: [],
+    previewSvg: null,
+    warnings: [
+      {
+        code: "skp-binary",
+        severity: "warning",
+        message: "SketchUp SKP é binário — exporte para OBJ/GLB/DAE para importação completa.",
+      },
+    ],
     createdAt: new Date().toISOString(),
   };
 }

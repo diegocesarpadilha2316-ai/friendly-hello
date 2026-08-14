@@ -18,7 +18,9 @@ export const generic: PostProcessor = (ctx) => {
   const lines = [
     `; Dioris CNC — ${ctx.partCode}`,
     `; Máquina ${ctx.machine.model} · ${ctx.operations.length} operações`,
-    "G21", "G90", "M03 S18000",
+    "G21",
+    "G90",
+    "M03 S18000",
   ];
   for (const o of ctx.operations) {
     const tool = findTool(o.toolId);
@@ -39,11 +41,24 @@ export const generic: PostProcessor = (ctx) => {
 
 export const bpp: PostProcessor = (ctx) => {
   const header = [
-    "[H]", `PAN=${ctx.partCode}`, "DX=2440", "DY=1220", "DZ=18", "[EH]",
-    "[OFFS]", "OFF=", "[EOFFS]",
+    "[H]",
+    `PAN=${ctx.partCode}`,
+    "DX=2440",
+    "DY=1220",
+    "DZ=18",
+    "[EH]",
+    "[OFFS]",
+    "OFF=",
+    "[EOFFS]",
   ];
   const ops = ctx.operations.map((o) => {
-    if (o.kind === "minifix" || o.kind === "cavilha" || o.kind === "hinge" || o.kind === "drill-through" || o.kind === "drill-blind") {
+    if (
+      o.kind === "minifix" ||
+      o.kind === "cavilha" ||
+      o.kind === "hinge" ||
+      o.kind === "drill-through" ||
+      o.kind === "drill-blind"
+    ) {
       return `BH X=${o.x} Y=${o.y} Z=0 D=${o.diameterMm ?? 8} P=${o.depthMm} T="${o.toolId}"`;
     }
     return `RT X=${o.x} Y=${o.y} DX=${o.widthMm ?? 0} DY=${o.heightMm ?? 0} P=${o.depthMm} T="${o.toolId}"`;
@@ -52,19 +67,24 @@ export const bpp: PostProcessor = (ctx) => {
 };
 
 export const cix: PostProcessor = (ctx) => {
-  const ops = ctx.operations.map((o, i) => `[${i}] KIND=${o.kind} X=${o.x} Y=${o.y} Z=${o.z} D=${o.depthMm} T=${o.toolId}`).join("\n");
+  const ops = ctx.operations
+    .map((o, i) => `[${i}] KIND=${o.kind} X=${o.x} Y=${o.y} Z=${o.z} D=${o.depthMm} T=${o.toolId}`)
+    .join("\n");
   return `BIESSE CIX\nPART=${ctx.partCode}\nMACHINE=${ctx.machine.model}\n${ops}\nEND`;
 };
 
 export const cid3: PostProcessor = (ctx) => {
-  const ops = ctx.operations.map((o) => `${o.kind};${o.x};${o.y};${o.z};${o.depthMm};${o.toolId}`).join("\n");
+  const ops = ctx.operations
+    .map((o) => `${o.kind};${o.x};${o.y};${o.z};${o.depthMm};${o.toolId}`)
+    .join("\n");
   return `CID3\nPART;${ctx.partCode}\nMACHINE;${ctx.machine.model}\nOPS\n${ops}\nENDCID3`;
 };
 
 export const mpr: PostProcessor = (ctx) => {
-  const header = ['<<', `Kommentar="Dioris ${ctx.partCode}"`, "L=2440", "B=1220", "D=18", ">>"];
+  const header = ["<<", `Kommentar="Dioris ${ctx.partCode}"`, "L=2440", "B=1220", "D=18", ">>"];
   const ops = ctx.operations.map(
-    (o) => `<100 Kommentar="${o.kind}"\n  XA=${o.x} YA=${o.y} TI=${o.depthMm} DU=${o.diameterMm ?? 0} WZ_NAME="${o.toolId}"\n>`,
+    (o) =>
+      `<100 Kommentar="${o.kind}"\n  XA=${o.x} YA=${o.y} TI=${o.depthMm} DU=${o.diameterMm ?? 0} WZ_NAME="${o.toolId}"\n>`,
   );
   return [...header, ...ops].join("\n");
 };
@@ -92,21 +112,37 @@ export const xml: PostProcessor = (ctx) => {
 
 export const dxf: PostProcessor = (ctx) => {
   const entities = ctx.operations.flatMap((o) => [
-    "0", "CIRCLE", "8", `LAYER_${o.kind}`,
-    "10", String(o.x), "20", String(o.y), "40", String((o.diameterMm ?? 6) / 2),
+    "0",
+    "CIRCLE",
+    "8",
+    `LAYER_${o.kind}`,
+    "10",
+    String(o.x),
+    "20",
+    String(o.y),
+    "40",
+    String((o.diameterMm ?? 6) / 2),
   ]);
   return ["0", "SECTION", "2", "ENTITIES", ...entities, "0", "ENDSEC", "0", "EOF"].join("\n");
 };
 
 export function postProcessor(format: CncFormat): PostProcessor {
   switch (format) {
-    case "bpp":   return bpp;
-    case "cix":   return cix;
-    case "cid3":  return cid3;
-    case "mpr":   return mpr;
-    case "nc":    return nc;
-    case "xml":   return xml;
-    case "dxf":   return dxf;
-    case "gcode": return generic;
+    case "bpp":
+      return bpp;
+    case "cix":
+      return cix;
+    case "cid3":
+      return cid3;
+    case "mpr":
+      return mpr;
+    case "nc":
+      return nc;
+    case "xml":
+      return xml;
+    case "dxf":
+      return dxf;
+    case "gcode":
+      return generic;
   }
 }

@@ -16,15 +16,51 @@ export function InspectionControls() {
   const showAll = useImmersiveStore((s) => s.showAll);
   const selectedRoot = rootId(selectedPart) ?? selectedInstanceId;
   const syncSelection = () => {
-    if (!selectedPart && selectedInstanceId) useImmersiveStore.getState().selectPart(selectedInstanceId);
+    if (!selectedPart && selectedInstanceId)
+      useImmersiveStore.getState().selectPart(selectedInstanceId);
   };
-  return <div className="inspection-toolbar">
-    <button disabled={!selectedRoot} className={mode === "xray" ? "active" : ""} onClick={() => { syncSelection(); setMode(mode === "xray" ? "normal" : "xray"); }}>
-<ScanLine size={16}/>Raio-X</button>
-    <button disabled={!selectedRoot} className={mode === "isolate" ? "active" : ""} onClick={() => { syncSelection(); setMode(mode === "isolate" ? "normal" : "isolate"); }}>
-<Layers3 size={16}/>Isolar</button>
-    <button disabled={!selectedRoot} onClick={() => { syncSelection(); hideSelected(); }}><EyeOff size={16}/>Ocultar</button>
-    <button onClick={showAll}><Eye size={16}/>Mostrar tudo</button>
-    <button onClick={() => setMode("normal")}><Undo2 size={16}/>Normal</button>
-  </div>;
+  return (
+    <div className="inspection-toolbar">
+      <button
+        disabled={!selectedRoot}
+        className={mode === "xray" ? "active" : ""}
+        onClick={() => {
+          syncSelection();
+          setMode(mode === "xray" ? "normal" : "xray");
+        }}
+      >
+        <ScanLine size={16} />
+        Raio-X
+      </button>
+      <button
+        disabled={!selectedRoot}
+        className={mode === "isolate" ? "active" : ""}
+        onClick={() => {
+          syncSelection();
+          setMode(mode === "isolate" ? "normal" : "isolate");
+        }}
+      >
+        <Layers3 size={16} />
+        Isolar
+      </button>
+      <button
+        disabled={!selectedRoot}
+        onClick={() => {
+          syncSelection();
+          hideSelected();
+        }}
+      >
+        <EyeOff size={16} />
+        Ocultar
+      </button>
+      <button onClick={showAll}>
+        <Eye size={16} />
+        Mostrar tudo
+      </button>
+      <button onClick={() => setMode("normal")}>
+        <Undo2 size={16} />
+        Normal
+      </button>
+    </div>
+  );
 }

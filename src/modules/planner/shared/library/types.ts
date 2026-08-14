@@ -135,7 +135,15 @@ export interface CatalogParametricSpec {
   extra?: Readonly<
     Record<
       string,
-      | { kind: "number"; label: string; default: number; min?: number; max?: number; step?: number; unit?: string }
+      | {
+          kind: "number";
+          label: string;
+          default: number;
+          min?: number;
+          max?: number;
+          step?: number;
+          unit?: string;
+        }
       | { kind: "select"; label: string; default: string; options: readonly string[] }
       | { kind: "boolean"; label: string; default: boolean }
       | { kind: "text"; label: string; default: string }

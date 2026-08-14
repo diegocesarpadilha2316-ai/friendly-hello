@@ -9,7 +9,9 @@ export function longestProgram(programs: readonly CncProgram[]): CncProgram | nu
   return [...programs].sort((a, b) => b.estimatedMin - a.estimatedMin)[0];
 }
 
-export function mostDrilledPart(programs: readonly CncProgram[]): { partCode: string; ops: number } | null {
+export function mostDrilledPart(
+  programs: readonly CncProgram[],
+): { partCode: string; ops: number } | null {
   if (programs.length === 0) return null;
   const map = new Map<string, number>();
   for (const p of programs) {
@@ -39,7 +41,10 @@ export function toolChangeAdvice(programs: readonly CncProgram[]): string {
     let last = "";
     let n = 0;
     for (const o of p.operations) {
-      if (o.toolId !== last) { n++; last = o.toolId; }
+      if (o.toolId !== last) {
+        n++;
+        last = o.toolId;
+      }
     }
     return acc + Math.max(0, n - 1);
   }, 0);

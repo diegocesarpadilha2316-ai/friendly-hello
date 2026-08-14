@@ -9,12 +9,7 @@
 import type { ToolName } from "../services/tools";
 
 export type PlannerAgentId =
-  | "designer"
-  | "marceneiro"
-  | "materiais"
-  | "orcamentista"
-  | "producao"
-  | "render";
+  "designer" | "marceneiro" | "materiais" | "orcamentista" | "producao" | "render";
 
 export interface PlannerAgentDefinition {
   readonly id: PlannerAgentId;

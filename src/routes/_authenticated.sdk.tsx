@@ -207,10 +207,7 @@ function PluginsTab({ data }: { data: readonly Plugin[] }) {
   ];
   if (!data.length)
     return (
-      <EmptyState
-        title="Nenhum plugin instalado"
-        description="Instale a partir do Marketplace."
-      />
+      <EmptyState title="Nenhum plugin instalado" description="Instale a partir do Marketplace." />
     );
   return <DataTable data={[...data]} columns={columns} getRowKey={(r) => r.id} />;
 }

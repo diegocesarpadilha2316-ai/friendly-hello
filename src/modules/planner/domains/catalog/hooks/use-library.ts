@@ -26,9 +26,7 @@ export function useLibraryMaterial(id: string | null | undefined): LibraryMateri
   );
 }
 
-export function useLibraryMaterials(
-  ids: readonly string[],
-): Map<string, LibraryMaterial> {
+export function useLibraryMaterials(ids: readonly string[]): Map<string, LibraryMaterial> {
   useEffect(() => {
     for (const id of ids) if (id) requestLibraryMaterial(id);
   }, [ids.join("|")]); // eslint-disable-line react-hooks/exhaustive-deps

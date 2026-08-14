@@ -30,7 +30,12 @@ export function EnginePanel({ engineId, onSelect }: EnginePanelProps) {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <Icon className={cn("h-3.5 w-3.5", e.tier === "free" ? "text-emerald-400" : "text-primary")} />
+                <Icon
+                  className={cn(
+                    "h-3.5 w-3.5",
+                    e.tier === "free" ? "text-emerald-400" : "text-primary",
+                  )}
+                />
                 <span className="text-[12px] font-semibold text-foreground">{e.label}</span>
               </div>
               <span

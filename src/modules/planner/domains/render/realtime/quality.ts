@@ -5,7 +5,11 @@ import type { RealtimeQualityTier } from "./types";
 import { REALTIME_PROFILES } from "./performance";
 
 export const REALTIME_QUALITY_ORDER: readonly RealtimeQualityTier[] = [
-  "baixo", "medio", "alto", "ultra", "cinema",
+  "baixo",
+  "medio",
+  "alto",
+  "ultra",
+  "cinema",
 ];
 
 export function nextQuality(tier: RealtimeQualityTier): RealtimeQualityTier {

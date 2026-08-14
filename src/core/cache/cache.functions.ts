@@ -294,11 +294,7 @@ export const cacheInvalidate = createServerFn({ method: "POST" })
       return { affected: n };
     }
     if (data.scope === "tenant") {
-      const n = await cacheInvalidateTenant(
-        context.supabase,
-        context.tenantId,
-        data.reason,
-      );
+      const n = await cacheInvalidateTenant(context.supabase, context.tenantId, data.reason);
       return { affected: n };
     }
     const n = await cachePurgeExpired(context.supabase, context.tenantId);

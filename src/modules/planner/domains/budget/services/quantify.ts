@@ -187,7 +187,5 @@ export function quantify(input: QuantifyInput): readonly BudgetItem[] {
 
 /** Área total de chapa processada — base do indicador R$/m². */
 export function processedAreaM2(parts: readonly QuantifyPart[]): number {
-  return parts
-    .filter((p) => p.kind !== "fita-borda")
-    .reduce((acc, p) => acc + p.areaM2 * p.qty, 0);
+  return parts.filter((p) => p.kind !== "fita-borda").reduce((acc, p) => acc + p.areaM2 * p.qty, 0);
 }

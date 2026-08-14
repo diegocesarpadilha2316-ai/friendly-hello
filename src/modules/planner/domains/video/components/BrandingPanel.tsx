@@ -16,10 +16,26 @@ export function BrandingPanel({ branding, onChange }: BrandingPanelProps) {
           onChange={(e) => onChange({ enabled: e.target.checked })}
         />
       </label>
-      <Field label="Empresa" value={branding.companyName ?? ""} onChange={(v) => onChange({ companyName: v })} />
-      <Field label="Telefone" value={branding.phone ?? ""} onChange={(v) => onChange({ phone: v })} />
-      <Field label="Instagram" value={branding.instagram ?? ""} onChange={(v) => onChange({ instagram: v })} />
-      <Field label="Site" value={branding.website ?? ""} onChange={(v) => onChange({ website: v })} />
+      <Field
+        label="Empresa"
+        value={branding.companyName ?? ""}
+        onChange={(v) => onChange({ companyName: v })}
+      />
+      <Field
+        label="Telefone"
+        value={branding.phone ?? ""}
+        onChange={(v) => onChange({ phone: v })}
+      />
+      <Field
+        label="Instagram"
+        value={branding.instagram ?? ""}
+        onChange={(v) => onChange({ instagram: v })}
+      />
+      <Field
+        label="Site"
+        value={branding.website ?? ""}
+        onChange={(v) => onChange({ website: v })}
+      />
       <Field
         label="Logo URL"
         value={branding.logoUrl ?? ""}

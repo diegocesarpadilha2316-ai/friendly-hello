@@ -15,7 +15,8 @@ const norm = (s: string) =>
     .replace(/\s+/g, " ")
     .trim();
 
-const DESTRUCTIVE = /\b(remova|remover|apague|apagar|exclu\w*|delet\w*|limpe|zerar|refaz|refazer|comece do zero|do zero)\b/;
+const DESTRUCTIVE =
+  /\b(remova|remover|apague|apagar|exclu\w*|delet\w*|limpe|zerar|refaz|refazer|comece do zero|do zero)\b/;
 const DESTRUCTIVE_WIDE = /\b(tudo|todo|toda|todos|todas|geral|inteir\w+)\b/;
 
 const FULL_PROJECT =
@@ -35,7 +36,8 @@ const QUERY =
 const SMALL_CHANGE =
   /\b(troque|trocar|mude|mudar|altere|alterar|ajuste|ajustar|pinte|pintar|aumente|diminua|renomeie)\b/;
 
-const SINGLE_OP = /\b(adicione|adicionar|inclua|incluir|coloque|colocar|insira|inserir|duplique|espelhe|gire)\b/;
+const SINGLE_OP =
+  /\b(adicione|adicionar|inclua|incluir|coloque|colocar|insira|inserir|duplique|espelhe|gire)\b/;
 
 const CONSULTIVE_CHAIN = /\b(orcamento|orcar|producao|lista de corte|render|renderiza\w*)\b/;
 

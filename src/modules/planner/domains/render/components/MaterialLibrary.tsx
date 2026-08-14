@@ -15,7 +15,9 @@ export function MaterialLibrary() {
             }}
           />
           <div className="mt-2 text-[11px] font-medium leading-tight">{m.label}</div>
-          <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{m.family}</div>
+          <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+            {m.family}
+          </div>
           <div className="mt-1 flex flex-wrap gap-0.5">
             {m.maps.map((mp) => (
               <span

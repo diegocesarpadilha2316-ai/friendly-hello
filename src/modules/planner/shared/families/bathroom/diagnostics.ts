@@ -29,7 +29,10 @@ export interface BathroomDiagnosticEntry {
 
 const isDev = (): boolean => {
   try {
-    return typeof import.meta !== "undefined" && Boolean((import.meta as { env?: { DEV?: boolean } }).env?.DEV);
+    return (
+      typeof import.meta !== "undefined" &&
+      Boolean((import.meta as { env?: { DEV?: boolean } }).env?.DEV)
+    );
   } catch {
     return false;
   }
@@ -67,7 +70,9 @@ export function buildBathroomDiagnostic(input: {
     fillers: pieces.filter((p) => p.partKind === "tapa-vao").map((p) => p.id),
     finishes: pieces.filter((p) => isFinishPart(p.partKind)).map((p) => p.id),
     droppedModules: input.droppedModules ?? [],
-    collisions: validation.issues.filter((i) => i.code === "colisao-hidraulica").map((i) => i.message),
+    collisions: validation.issues
+      .filter((i) => i.code === "colisao-hidraulica")
+      .map((i) => i.message),
     warnings: [
       ...result.warnings,
       ...result.decisions.map((d) => `${d.id}: ${d.action} — ${d.reason}`),

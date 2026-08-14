@@ -89,8 +89,7 @@ export const listCatalogMaterials = createServerFn({ method: "GET" })
       const pattern = (r.padrao as string | null) ?? (r.cor_nome as string | null) ?? null;
       return {
         id: r.id as string,
-        name:
-          [r.fabricante, r.linha, pattern].filter(Boolean).join(" · ") || (r.id as string),
+        name: [r.fabricante, r.linha, pattern].filter(Boolean).join(" · ") || (r.id as string),
         manufacturer: (r.fabricante as string) ?? "",
         line: (r.linha as string | null) ?? null,
         category: (r.categoria as string) ?? "chapa",
@@ -120,14 +119,18 @@ export const listCatalogHardware = createServerFn({ method: "GET" })
   .handler(async ({ data, context }): Promise<readonly PlannerHardwareDTO[]> => {
     let q = context.supabase
       .from("planner_hardware")
-      .select("id,fabricante,marca,categoria,modelo,descricao,imagem_url,preco_unitario,parametros_cnc,furacao,profundidade,folga")
+      .select(
+        "id,fabricante,marca,categoria,modelo,descricao,imagem_url,preco_unitario,parametros_cnc,furacao,profundidade,folga",
+      )
       .eq("ativo", true)
       .limit(data.limit ?? 200);
     if (data.category) q = q.eq("categoria", data.category);
     if (data.manufacturer) q = q.eq("fabricante", data.manufacturer);
     if (data.query) {
       const term = `%${data.query}%`;
-      q = q.or(`modelo.ilike.${term},categoria.ilike.${term},fabricante.ilike.${term},marca.ilike.${term}`);
+      q = q.or(
+        `modelo.ilike.${term},categoria.ilike.${term},fabricante.ilike.${term},marca.ilike.${term}`,
+      );
     }
     const { data: rows, error } = await q;
     if (error) return [];

@@ -118,9 +118,7 @@ export async function isBruteForced(
   email: string,
 ): Promise<{ locked: boolean; failed: number; retryAfterMs: number }> {
   const policy = await getOrCreatePolicy(supabase, tenantId);
-  const windowStart = new Date(
-    Date.now() - policy.bruteForceLockoutMinutes * 60_000,
-  ).toISOString();
+  const windowStart = new Date(Date.now() - policy.bruteForceLockoutMinutes * 60_000).toISOString();
   const { data } = await supabase
     .from("security_login_attempts")
     .select("outcome, created_at")

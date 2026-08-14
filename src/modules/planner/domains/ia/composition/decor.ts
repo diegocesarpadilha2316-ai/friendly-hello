@@ -13,10 +13,7 @@ const MARGIN = 250;
 
 function rectsOverlap(a: Rect, b: Rect, pad = 0): boolean {
   return (
-    a.x - pad < b.x + b.w &&
-    a.x + a.w + pad > b.x &&
-    a.y - pad < b.y + b.d &&
-    a.y + a.d + pad > b.y
+    a.x - pad < b.x + b.w && a.x + a.w + pad > b.x && a.y - pad < b.y + b.d && a.y + a.d + pad > b.y
   );
 }
 

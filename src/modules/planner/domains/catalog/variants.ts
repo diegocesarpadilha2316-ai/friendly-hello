@@ -8,11 +8,19 @@ export function defaultVariant(item: CatalogItem): CatalogVariant {
   return createVariant(item, {});
 }
 
-export function withMaterial(item: CatalogItem, variant: CatalogVariant, materialId: string): CatalogVariant {
+export function withMaterial(
+  item: CatalogItem,
+  variant: CatalogVariant,
+  materialId: string,
+): CatalogVariant {
   return { ...variant, materialId };
 }
 
-export function withHandle(item: CatalogItem, variant: CatalogVariant, handleId: string): CatalogVariant {
+export function withHandle(
+  item: CatalogItem,
+  variant: CatalogVariant,
+  handleId: string,
+): CatalogVariant {
   return { ...variant, handleId };
 }
 

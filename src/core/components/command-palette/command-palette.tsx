@@ -50,15 +50,49 @@ export type CommandEntry = {
 };
 
 const ADMIN_ENTRIES: ReadonlyArray<CommandEntry> = [
-  { id: "dash", label: "Dashboard Executivo", icon: LayoutDashboard, to: "/", group: "Admin", keywords: ["home", "kpi", "resumo"] },
-  { id: "admin", label: "Admin Center", icon: CommandIcon, to: "/admin", group: "Admin", keywords: ["painel", "controle"] },
-  { id: "empresas", label: "Empresas", icon: Building2, to: "/configuracoes/empresa", group: "Admin", keywords: ["tenants", "companies"] },
-  { id: "users", label: "Usuários & Equipes", icon: Users, to: "/configuracoes", group: "Admin", keywords: ["members", "papéis"] },
+  {
+    id: "dash",
+    label: "Dashboard Executivo",
+    icon: LayoutDashboard,
+    to: "/",
+    group: "Admin",
+    keywords: ["home", "kpi", "resumo"],
+  },
+  {
+    id: "admin",
+    label: "Admin Center",
+    icon: CommandIcon,
+    to: "/admin",
+    group: "Admin",
+    keywords: ["painel", "controle"],
+  },
+  {
+    id: "empresas",
+    label: "Empresas",
+    icon: Building2,
+    to: "/configuracoes/empresa",
+    group: "Admin",
+    keywords: ["tenants", "companies"],
+  },
+  {
+    id: "users",
+    label: "Usuários & Equipes",
+    icon: Users,
+    to: "/configuracoes",
+    group: "Admin",
+    keywords: ["members", "papéis"],
+  },
 ];
 
 const PLATFORM_ENTRIES: ReadonlyArray<CommandEntry> = [
   { id: "ai", label: "IA Gateway", icon: Sparkles, to: "/ia", group: "Plataforma" },
-  { id: "storage", label: "Storage & Assets", icon: HardDrive, to: "/storage", group: "Plataforma" },
+  {
+    id: "storage",
+    label: "Storage & Assets",
+    icon: HardDrive,
+    to: "/storage",
+    group: "Plataforma",
+  },
   { id: "notifs", label: "Notificações", icon: Bell, to: "/notificacoes", group: "Plataforma" },
   { id: "integr", label: "Integrações", icon: Plug, to: "/integracoes", group: "Plataforma" },
   { id: "sdk", label: "SDK & Plugins", icon: Puzzle, to: "/sdk", group: "Plataforma" },
@@ -69,7 +103,13 @@ const PLATFORM_ENTRIES: ReadonlyArray<CommandEntry> = [
   { id: "qa", label: "Qualidade", icon: Gauge, to: "/quality", group: "Plataforma" },
   { id: "cicd", label: "CI/CD", icon: Rocket, to: "/cicd", group: "Plataforma" },
   { id: "rec", label: "Recovery", icon: LifeBuoy, to: "/recovery", group: "Plataforma" },
-  { id: "obs", label: "Observabilidade", icon: Activity, to: "/observabilidade", group: "Plataforma" },
+  {
+    id: "obs",
+    label: "Observabilidade",
+    icon: Activity,
+    to: "/observabilidade",
+    group: "Plataforma",
+  },
   { id: "cfg", label: "Configurações", icon: Settings, to: "/configuracoes", group: "Plataforma" },
 ];
 

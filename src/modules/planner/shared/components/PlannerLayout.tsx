@@ -22,13 +22,7 @@ import { Component, useState, type ErrorInfo, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { PlannerAIFab } from "@/modules/planner/domains/ia";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 type Item = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean };
 type Group = { label: string; items: readonly Item[] };
@@ -72,9 +66,7 @@ const GROUPS: readonly Group[] = [
   },
   {
     label: "Sistema",
-    items: [
-      { to: "/planner/configurador", label: "Configurações", icon: Settings },
-    ],
+    items: [{ to: "/planner/configurador", label: "Configurações", icon: Settings }],
   },
 ];
 
@@ -82,13 +74,7 @@ function isActive(pathname: string, item: Item): boolean {
   return item.exact ? pathname === item.to : pathname.startsWith(item.to);
 }
 
-function SidebarNav({
-  pathname,
-  onNavigate,
-}: {
-  pathname: string;
-  onNavigate?: () => void;
-}) {
+function SidebarNav({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
   return (
     <nav aria-label="Planner" className="flex flex-col gap-5">
       {GROUPS.map((group) => (
@@ -142,11 +128,7 @@ export function PlannerLayout({ children }: { children?: ReactNode }) {
         <header className="sticky top-0 z-20 flex h-12 items-center gap-2 border-b border-border/60 bg-background/80 px-4 backdrop-blur lg:hidden">
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Abrir menu do Planner"
-              >
+              <Button variant="ghost" size="icon" aria-label="Abrir menu do Planner">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
@@ -155,10 +137,7 @@ export function PlannerLayout({ children }: { children?: ReactNode }) {
                 <SheetTitle className="text-sm">Dioris Planner</SheetTitle>
               </SheetHeader>
               <div className="mt-4">
-                <SidebarNav
-                  pathname={pathname}
-                  onNavigate={() => setMobileOpen(false)}
-                />
+                <SidebarNav pathname={pathname} onNavigate={() => setMobileOpen(false)} />
               </div>
             </SheetContent>
           </Sheet>
@@ -166,9 +145,7 @@ export function PlannerLayout({ children }: { children?: ReactNode }) {
         </header>
 
         <main className="min-w-0 flex-1">
-          <PlannerErrorBoundary key={pathname}>
-            {children ?? <Outlet />}
-          </PlannerErrorBoundary>
+          <PlannerErrorBoundary key={pathname}>{children ?? <Outlet />}</PlannerErrorBoundary>
         </main>
       </div>
 
@@ -179,10 +156,7 @@ export function PlannerLayout({ children }: { children?: ReactNode }) {
 
 // Boundary local: crash em uma subpágina do Planner não derruba a sidebar.
 // Reset automático por key={pathname} — trocar de página limpa o estado.
-class PlannerErrorBoundary extends Component<
-  { children: ReactNode },
-  { error: Error | null }
-> {
+class PlannerErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
   state = { error: null as Error | null };
   static getDerivedStateFromError(error: Error) {
     return { error };
@@ -196,13 +170,10 @@ class PlannerErrorBoundary extends Component<
     return (
       <div className="flex min-h-[60vh] items-center justify-center px-6">
         <div className="max-w-md text-center">
-          <h2 className="text-lg font-semibold text-foreground">
-            Esta página não carregou
-          </h2>
+          <h2 className="text-lg font-semibold text-foreground">Esta página não carregou</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Ocorreu um erro ao renderizar esta seção do Planner. Seu projeto
-            está seguro — você pode tentar novamente ou navegar para outra
-            área.
+            Ocorreu um erro ao renderizar esta seção do Planner. Seu projeto está seguro — você pode
+            tentar novamente ou navegar para outra área.
           </p>
           <p className="mt-3 text-xs font-mono text-muted-foreground/70">
             {this.state.error.message}

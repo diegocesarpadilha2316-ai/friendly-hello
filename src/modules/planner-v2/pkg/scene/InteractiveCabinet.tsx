@@ -19,7 +19,7 @@ function Panel({
   size,
   position,
   material,
-  selected = false
+  selected = false,
 }: {
   size: [number, number, number];
   position: [number, number, number];
@@ -41,7 +41,7 @@ function HingedDoor({
   depth,
   x,
   hinge,
-  material
+  material,
 }: {
   id: string;
   width: number;
@@ -60,12 +60,7 @@ function HingedDoor({
   useFrame((_, delta) => {
     if (!group.current) return;
     const target = open ? (hinge === "left" ? -Math.PI * 0.57 : Math.PI * 0.57) : 0;
-    group.current.rotation.y = THREE.MathUtils.damp(
-      group.current.rotation.y,
-      target,
-      7.5,
-      delta
-    );
+    group.current.rotation.y = THREE.MathUtils.damp(group.current.rotation.y, target, 7.5, delta);
   });
 
   const pivotX = x + (hinge === "left" ? -width / 2 : width / 2);
@@ -109,7 +104,7 @@ function Drawer({
   height,
   depth,
   y,
-  material
+  material,
 }: {
   id: string;
   width: number;
@@ -127,12 +122,7 @@ function Drawer({
   useFrame((_, delta) => {
     if (!group.current) return;
     const target = open ? depth * 0.82 : 0;
-    group.current.position.z = THREE.MathUtils.damp(
-      group.current.position.z,
-      target,
-      7,
-      delta
-    );
+    group.current.position.z = THREE.MathUtils.damp(group.current.position.z, target, 7, delta);
   });
 
   return (
@@ -177,7 +167,8 @@ export function InteractiveCabinet(props: CabinetProps) {
   const selectPart = useImmersiveStore((s) => s.selectPart);
   const hidden = useImmersiveStore((s) => Boolean(s.hiddenObjects[props.id]));
   const occlusionMode = useImmersiveStore((s) => s.occlusionMode);
-  const selectedBelongs = selectedPart === props.id || Boolean(selectedPart?.startsWith(`${props.id}-`));
+  const selectedBelongs =
+    selectedPart === props.id || Boolean(selectedPart?.startsWith(`${props.id}-`));
   const xrayOpacity = occlusionMode === "xray" && selectedPart && !selectedBelongs ? 0.16 : 1;
 
   if (hidden) return null;
@@ -185,14 +176,36 @@ export function InteractiveCabinet(props: CabinetProps) {
 
   const carcassMaterial = useMemo(
     () =>
-      new THREE.MeshPhysicalMaterial({ map: props.woodMap, color: "#b3835c", roughness: 0.34, metalness: 0.01, clearcoat: 0.12, clearcoatRoughness: 0.3, transparent: xrayOpacity < 1, opacity: xrayOpacity, depthWrite: xrayOpacity >= 1, side: THREE.DoubleSide }),
-    [props.woodMap, xrayOpacity]
+      new THREE.MeshPhysicalMaterial({
+        map: props.woodMap,
+        color: "#b3835c",
+        roughness: 0.34,
+        metalness: 0.01,
+        clearcoat: 0.12,
+        clearcoatRoughness: 0.3,
+        transparent: xrayOpacity < 1,
+        opacity: xrayOpacity,
+        depthWrite: xrayOpacity >= 1,
+        side: THREE.DoubleSide,
+      }),
+    [props.woodMap, xrayOpacity],
   );
 
   const frontMaterial = useMemo(
     () =>
-      new THREE.MeshPhysicalMaterial({ map: props.woodMap, color: props.type === "tower" ? "#956340" : "#b88b65", roughness: 0.29, metalness: 0.01, clearcoat: 0.18, clearcoatRoughness: 0.35, transparent: xrayOpacity < 1, opacity: xrayOpacity, depthWrite: xrayOpacity >= 1, side: THREE.DoubleSide }),
-    [props.type, props.woodMap, xrayOpacity]
+      new THREE.MeshPhysicalMaterial({
+        map: props.woodMap,
+        color: props.type === "tower" ? "#956340" : "#b88b65",
+        roughness: 0.29,
+        metalness: 0.01,
+        clearcoat: 0.18,
+        clearcoatRoughness: 0.35,
+        transparent: xrayOpacity < 1,
+        opacity: xrayOpacity,
+        depthWrite: xrayOpacity >= 1,
+        side: THREE.DoubleSide,
+      }),
+    [props.type, props.woodMap, xrayOpacity],
   );
 
   const thickness = 0.018;
@@ -236,16 +249,19 @@ export function InteractiveCabinet(props: CabinetProps) {
       />
 
       {/* Shelves */}
-      {(props.type === "upper" ? [-0.16, 0.16] : props.type === "tower" ? [-0.62, 0.05, 0.72] : [0.05]).map(
-        (ratio, index) => (
-          <Panel
-            key={index}
-            size={[insideWidth - 0.02, thickness, props.depth - 0.04]}
-            position={[0, ratio * props.height, -0.01]}
-            material={carcassMaterial}
-          />
-        )
-      )}
+      {(props.type === "upper"
+        ? [-0.16, 0.16]
+        : props.type === "tower"
+          ? [-0.62, 0.05, 0.72]
+          : [0.05]
+      ).map((ratio, index) => (
+        <Panel
+          key={index}
+          size={[insideWidth - 0.02, thickness, props.depth - 0.04]}
+          position={[0, ratio * props.height, -0.01]}
+          material={carcassMaterial}
+        />
+      ))}
 
       {/* Hinges */}
       {[-0.28, 0.28].map((ratio) => (

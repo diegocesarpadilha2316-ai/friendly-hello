@@ -14,12 +14,17 @@ function newId(prefix: string): string {
 
 export function makePrimitiveId(kind: Editor2DPrimitive["kind"]): string {
   const p =
-    kind === "wall" ? "w" :
-    kind === "opening" ? "op" :
-    kind === "floor" ? "fl" :
-    kind === "ceiling" ? "cl" :
-    kind === "furniture" ? "fn" :
-    "gd";
+    kind === "wall"
+      ? "w"
+      : kind === "opening"
+        ? "op"
+        : kind === "floor"
+          ? "fl"
+          : kind === "ceiling"
+            ? "cl"
+            : kind === "furniture"
+              ? "fn"
+              : "gd";
   return newId(p);
 }
 
@@ -34,7 +39,10 @@ export function upsertPrimitive(room: PlannerRoom, primitive: Editor2DPrimitive)
   return upsertNode(room, fromPrimitive(primitive));
 }
 
-export function upsertPrimitives(room: PlannerRoom, list: readonly Editor2DPrimitive[]): PlannerRoom {
+export function upsertPrimitives(
+  room: PlannerRoom,
+  list: readonly Editor2DPrimitive[],
+): PlannerRoom {
   let r = room;
   for (const p of list) r = upsertPrimitive(r, p);
   return r;

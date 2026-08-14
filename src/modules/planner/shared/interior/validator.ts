@@ -151,7 +151,13 @@ export function validateInteriorPlan(plan: InteriorPlan): InteriorValidation {
 
   // Espaço negativo: vão inválido.
   if (plan.cavity.widthMm < 50 || plan.cavity.heightMm < 50 || plan.cavity.depthMm < 50) {
-    all.push(issue("warn", "vao-insuficiente", `O vão informado (${Math.round(plan.cavity.widthMm)}mm) é insuficiente para uma montagem segura.`));
+    all.push(
+      issue(
+        "warn",
+        "vao-insuficiente",
+        `O vão informado (${Math.round(plan.cavity.widthMm)}mm) é insuficiente para uma montagem segura.`,
+      ),
+    );
   }
 
   const errors = all.filter((i) => i.level === "error");

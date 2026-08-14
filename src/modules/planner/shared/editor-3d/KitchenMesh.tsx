@@ -6,7 +6,11 @@
  */
 import { useMemo } from "react";
 import { type InterlockBlock } from "../construction";
-import { buildKitchenModule, kitchenSpecFromLegacy, type LegacyKitchenParams } from "../families/kitchen";
+import {
+  buildKitchenModule,
+  kitchenSpecFromLegacy,
+  type LegacyKitchenParams,
+} from "../families/kitchen";
 import { AssemblyMesh, MM } from "./AssemblyMesh";
 
 export interface KitchenMeshProps {

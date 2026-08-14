@@ -99,7 +99,13 @@ function PieceMesh({
       return { color: "#cfd8dc", metalness: 1, roughness: 0.04, envMapIntensity: 2.2 };
     }
     if (piece.substrate === "vidro") {
-      return { color: "#e8f1f2", metalness: 0.1, roughness: 0.08, transparent: true, opacity: 0.35 };
+      return {
+        color: "#e8f1f2",
+        metalness: 0.1,
+        roughness: 0.08,
+        transparent: true,
+        opacity: 0.35,
+      };
     }
     if (piece.substrate === "metal" || piece.substrate === "perfil") {
       return { color: "#9aa1a6", metalness: 0.9, roughness: 0.28 };
@@ -110,7 +116,11 @@ function PieceMesh({
   return (
     <mesh
       name={`piece:${piece.id}:${piece.partKind}`}
-      position={[(box.x + box.width / 2) * MM, (box.y + box.height / 2) * MM, (box.z + box.depth / 2) * MM]}
+      position={[
+        (box.x + box.width / 2) * MM,
+        (box.y + box.height / 2) * MM,
+        (box.z + box.depth / 2) * MM,
+      ]}
       castShadow
       receiveShadow
     >

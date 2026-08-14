@@ -18,8 +18,6 @@ export interface BuildRequest {
   rotationDeg?: { x: number; y: number; z: number };
   room?: RoomBoundsMm;
   instances?: any[]; // Para colisão móvel x móvel
-
-
 }
 
 export interface BuildOutcome {
@@ -51,9 +49,21 @@ export function buildModule(request: BuildRequest): BuildOutcome {
 
   const requested = { ...definition.defaultDimensionsMm, ...request.dimensionsMm };
   const dimensionsMm: Dimensions3 = {
-    width: clamp(requested.width, definition.minDimensionsMm.width, definition.maxDimensionsMm.width),
-    height: clamp(requested.height, definition.minDimensionsMm.height, definition.maxDimensionsMm.height),
-    depth: clamp(requested.depth, definition.minDimensionsMm.depth, definition.maxDimensionsMm.depth),
+    width: clamp(
+      requested.width,
+      definition.minDimensionsMm.width,
+      definition.maxDimensionsMm.width,
+    ),
+    height: clamp(
+      requested.height,
+      definition.minDimensionsMm.height,
+      definition.maxDimensionsMm.height,
+    ),
+    depth: clamp(
+      requested.depth,
+      definition.minDimensionsMm.depth,
+      definition.maxDimensionsMm.depth,
+    ),
   };
 
   const materialId =
@@ -84,7 +94,15 @@ export function buildModule(request: BuildRequest): BuildOutcome {
   const overrides = request.materialOverrides ?? {};
   const parts = result.parts.map((part) => ({
     ...part,
-    volumeType: part.volumeType ?? (part.interactive && part.interactive.type !== "none" ? "opening" : part.role === "hardware" ? "technical" : part.role === "back" ? "safety" : "physical"),
+    volumeType:
+      part.volumeType ??
+      (part.interactive && part.interactive.type !== "none"
+        ? "opening"
+        : part.role === "hardware"
+          ? "technical"
+          : part.role === "back"
+            ? "safety"
+            : "physical"),
     clearanceMm: part.clearanceMm ?? (part.interactive && part.interactive.type !== "none" ? 8 : 0),
     id: part.id.replace(definition.id, request.instanceId),
     moduleId: request.instanceId,
@@ -102,8 +120,6 @@ export function buildModule(request: BuildRequest): BuildOutcome {
     room: request.room,
     instances: request.instances,
   });
-
-
 
   if (!validation.valid) {
     return {

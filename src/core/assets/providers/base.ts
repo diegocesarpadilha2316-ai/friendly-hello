@@ -1,4 +1,9 @@
-import { StorageError, type StorageProvider, type StorageProviderId, type SignedUrl } from "../types";
+import {
+  StorageError,
+  type StorageProvider,
+  type StorageProviderId,
+  type SignedUrl,
+} from "../types";
 
 export abstract class BaseStorageProvider implements StorageProvider {
   abstract readonly id: StorageProviderId;
@@ -6,7 +11,11 @@ export abstract class BaseStorageProvider implements StorageProvider {
   readonly enabled: boolean = false;
 
   protected unsupported(op: string): never {
-    throw new StorageError(`Operação ${op} não suportada no provider ${this.id}`, "provider_error", this.id);
+    throw new StorageError(
+      `Operação ${op} não suportada no provider ${this.id}`,
+      "provider_error",
+      this.id,
+    );
   }
 
   createSignedUploadUrl(_input: {
@@ -36,6 +45,9 @@ export abstract class BaseStorageProvider implements StorageProvider {
     return Promise.resolve(null);
   }
   health(): Promise<{ status: "healthy" | "degraded" | "down" | "unknown"; message?: string }> {
-    return Promise.resolve({ status: this.enabled ? "unknown" : "down", message: this.enabled ? undefined : "não configurado" });
+    return Promise.resolve({
+      status: this.enabled ? "unknown" : "down",
+      message: this.enabled ? undefined : "não configurado",
+    });
   }
 }

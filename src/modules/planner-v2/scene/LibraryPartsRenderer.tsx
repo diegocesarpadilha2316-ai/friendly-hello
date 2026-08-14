@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
-import * as THREE from 'three';
-import { usePlannerStore } from '../pkg/state/usePlannerStore';
-import { resolveMaterial } from '../library/services/resolveMaterial';
+import React, { useMemo } from "react";
+import * as THREE from "three";
+import { usePlannerStore } from "../pkg/state/usePlannerStore";
+import { resolveMaterial } from "../library/services/resolveMaterial";
 
 const mmToM = (mm: number) => mm / 1000;
 
@@ -14,41 +14,48 @@ interface PartProps {
   isXRay: boolean;
 }
 
-
-const PartMesh: React.FC<PartProps> = ({ part, isSelected, onSelect, isOpen, openAmount, isXRay }) => {
+const PartMesh: React.FC<PartProps> = ({
+  part,
+  isSelected,
+  onSelect,
+  isOpen,
+  openAmount,
+  isXRay,
+}) => {
   const material = useMemo(() => resolveMaterial(part.materialId), [part.materialId]);
-  const toggleInstanceAnimation = usePlannerStore(s => s.toggleInstanceAnimation);
+  const toggleInstanceAnimation = usePlannerStore((s) => s.toggleInstanceAnimation);
 
-  
   // Calcula animação
-  let finalPosition = new THREE.Vector3(
+  const finalPosition = new THREE.Vector3(
     mmToM(part.positionMm.x),
     mmToM(part.positionMm.y),
-    mmToM(part.positionMm.z)
+    mmToM(part.positionMm.z),
   );
-  
-  let finalRotation = new THREE.Euler(
+
+  const finalRotation = new THREE.Euler(
     THREE.MathUtils.degToRad(part.rotationDeg.x),
     THREE.MathUtils.degToRad(part.rotationDeg.y),
-    THREE.MathUtils.degToRad(part.rotationDeg.z)
+    THREE.MathUtils.degToRad(part.rotationDeg.z),
   );
 
   if (part.interactive && isOpen) {
-    if (part.interactive.type === 'drawer') {
+    if (part.interactive.type === "drawer") {
       const travel = mmToM(part.interactive.maxTravelMm || 450) * openAmount;
       finalPosition.z += travel;
-    } else if (part.interactive.type === 'door') {
+    } else if (part.interactive.type === "door") {
       // Simplificado: rotação no eixo Y na borda
       const angle = THREE.MathUtils.degToRad(part.interactive.maxOpenAngleDeg || 90) * openAmount;
-      const hingeSide = part.interactive.hingeSide === 'right' ? 1 : -1;
-      
+      const hingeSide = part.interactive.hingeSide === "right" ? 1 : -1;
+
       // Pivot offset calculation (approximate)
       const offset = mmToM(part.dimensionsMm.width / 2) * hingeSide;
       finalPosition.x -= offset;
       finalRotation.y += angle * -hingeSide;
-      
+
       // Re-apply offset after rotation
-      const rotatedOffset = new THREE.Vector3(offset, 0, 0).applyEuler(new THREE.Euler(0, angle * -hingeSide, 0));
+      const rotatedOffset = new THREE.Vector3(offset, 0, 0).applyEuler(
+        new THREE.Euler(0, angle * -hingeSide, 0),
+      );
       finalPosition.x += rotatedOffset.x;
       finalPosition.z += rotatedOffset.z;
     }
@@ -64,25 +71,28 @@ const PartMesh: React.FC<PartProps> = ({ part, isSelected, onSelect, isOpen, ope
         if (part.interactive && part.groupId) {
           toggleInstanceAnimation(part.moduleId, part.groupId);
         }
-
       }}
 
       castShadow
       receiveShadow
     >
-
-      <boxGeometry args={[mmToM(part.dimensionsMm.width), mmToM(part.dimensionsMm.height), mmToM(part.dimensionsMm.depth)]} />
-      <meshStandardMaterial 
-        color={material.baseColor} 
-        roughness={material.roughness} 
+      <boxGeometry
+        args={[
+          mmToM(part.dimensionsMm.width),
+          mmToM(part.dimensionsMm.height),
+          mmToM(part.dimensionsMm.depth),
+        ]}
+      />
+      <meshStandardMaterial
+        color={material.baseColor}
+        roughness={material.roughness}
         metalness={material.metalness}
         transparent={material.transparent || isXRay}
         opacity={isXRay ? 0.4 : (material.opacity ?? 1)}
-        emissive={isSelected ? '#2563EB' : '#000000'}
+        emissive={isSelected ? "#2563EB" : "#000000"}
         emissiveIntensity={isSelected ? 0.2 : 0}
         depthTest={!isXRay}
       />
-
     </mesh>
   );
 };
@@ -95,33 +105,42 @@ export const LibraryPartsRenderer: React.FC = () => {
   return (
     <group name="library-instances">
       {instances.map((instance) => (
-        <group 
-          key={instance.id} 
-          position={[mmToM(instance.positionMm.x), mmToM(instance.positionMm.y), mmToM(instance.positionMm.z)]}
+        <group
+          key={instance.id}
+          position={[
+            mmToM(instance.positionMm.x),
+            mmToM(instance.positionMm.y),
+            mmToM(instance.positionMm.z),
+          ]}
           rotation={[
             THREE.MathUtils.degToRad(instance.rotationDeg.x),
             THREE.MathUtils.degToRad(instance.rotationDeg.y),
-            THREE.MathUtils.degToRad(instance.rotationDeg.z)
+            THREE.MathUtils.degToRad(instance.rotationDeg.z),
           ]}
           visible={instance.visible !== false}
         >
           {instance.parts.map((part) => (
-            <PartMesh 
-              key={part.id} 
-              part={part} 
+            <PartMesh
+              key={part.id}
+              part={part}
               isSelected={!!instance.selected}
               onSelect={selectInstance}
-              isOpen={part.groupId && instance.openStates?.[part.groupId] !== undefined ? instance.openStates[part.groupId] > 0 : !!instance.isOpen}
-              openAmount={part.groupId && instance.openStates?.[part.groupId] !== undefined ? instance.openStates[part.groupId] : (instance.openAmount || 0)}
+              isOpen={
+                part.groupId && instance.openStates?.[part.groupId] !== undefined
+                  ? instance.openStates[part.groupId] > 0
+                  : !!instance.isOpen
+              }
+              openAmount={
+                part.groupId && instance.openStates?.[part.groupId] !== undefined
+                  ? instance.openStates[part.groupId]
+                  : instance.openAmount || 0
+              }
 
               isXRay={!!instance.isXRay}
             />
-
           ))}
-
         </group>
       ))}
     </group>
-
   );
 };

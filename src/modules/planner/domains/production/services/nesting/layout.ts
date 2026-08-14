@@ -25,11 +25,17 @@ export function movePlacement(
 }
 
 export function pinPlacement(board: NestingBoard, partId: string, pinned: boolean): NestingBoard {
-  return { ...board, placements: board.placements.map((p) => (p.partId === partId ? { ...p, pinned } : p)) };
+  return {
+    ...board,
+    placements: board.placements.map((p) => (p.partId === partId ? { ...p, pinned } : p)),
+  };
 }
 
 export function lockPlacement(board: NestingBoard, partId: string, locked: boolean): NestingBoard {
-  return { ...board, placements: board.placements.map((p) => (p.partId === partId ? { ...p, locked } : p)) };
+  return {
+    ...board,
+    placements: board.placements.map((p) => (p.partId === partId ? { ...p, locked } : p)),
+  };
 }
 
 export function rotatePlacement(board: NestingBoard, partId: string): NestingBoard {

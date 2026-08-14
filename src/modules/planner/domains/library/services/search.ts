@@ -7,8 +7,17 @@ export async function searchLibrary(filters: LibrarySearchFilters): Promise<{
   readonly hardware: readonly LibraryHardware[];
 }> {
   const [materials, hardware] = await Promise.all([
-    searchLibraryMaterials({ query: filters.query, category: filters.category, limit: filters.limit ?? 60 }),
-    searchHardware({ query: filters.query, category: filters.category, manufacturer: filters.manufacturer, limit: filters.limit ?? 60 }),
+    searchLibraryMaterials({
+      query: filters.query,
+      category: filters.category,
+      limit: filters.limit ?? 60,
+    }),
+    searchHardware({
+      query: filters.query,
+      category: filters.category,
+      manufacturer: filters.manufacturer,
+      limit: filters.limit ?? 60,
+    }),
   ]);
   return { materials, hardware };
 }

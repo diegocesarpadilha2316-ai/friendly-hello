@@ -26,7 +26,7 @@ export function LibraryMaterialPicker({ materialId, onApply }: Props) {
           style={{
             background: current?.textureUrl
               ? `url(${current.textureUrl}) center/cover`
-              : current?.colorHex ?? "transparent",
+              : (current?.colorHex ?? "transparent"),
           }}
         />
         <div className="min-w-0 flex-1">
@@ -95,20 +95,16 @@ export function LibraryMaterialPicker({ materialId, onApply }: Props) {
                         style={{
                           background: m.textureUrl
                             ? `url(${m.textureUrl}) center/cover`
-                            : m.colorHex ?? "transparent",
+                            : (m.colorHex ?? "transparent"),
                         }}
                       />
                       <div className="min-w-0 flex-1">
-                        <div className="truncate text-xs">
-                          {m.pattern ?? m.colorName ?? m.id}
-                        </div>
+                        <div className="truncate text-xs">{m.pattern ?? m.colorName ?? m.id}</div>
                         <div className="truncate text-[10px] text-muted-foreground">
                           {[m.manufacturer, m.line, `${m.thicknessMm}mm`]
                             .filter(Boolean)
                             .join(" · ")}
-                          {m.pricePerM2 != null
-                            ? ` · R$ ${m.pricePerM2.toFixed(2)}/m²`
-                            : ""}
+                          {m.pricePerM2 != null ? ` · R$ ${m.pricePerM2.toFixed(2)}/m²` : ""}
                         </div>
                       </div>
                     </button>

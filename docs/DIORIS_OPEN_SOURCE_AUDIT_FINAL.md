@@ -14,16 +14,16 @@ Isso ainda não deve ser chamado de “Promob completo” ou de “CAM/CNC pront
 
 ## Auditoria das referências
 
-| Referência | Licença/risco | Contribuição técnica | Decisão |
-|---|---|---|---|
-| WoodworkingShop | MIT [1] | Cabinet planner React/TypeScript, templates paramétricos, peças, MaxRects, veio, BOM, PDF, DXF, G-code | Clonado isoladamente; portar seletivamente contratos e algoritmos puros com atribuição. |
-| FreeCAD Woodworking | GPL-3.0 [2] | Armários, painéis, atributos, listas de produção e exportação DXF | Reimplementar conceitos; não copiar código GPL. |
-| FreeCAD | LGPLv2.1 observada no repositório [3] | Precisão CAD, constraints, coordenadas e transformações | Usar como referência de engenharia; não portar o kernel. |
-| Blueprint3D Modern | MIT [4] | Paredes, snapping, planta, coordenadas 2D/3D e ambiente Three.js | Comparar motores; não colar uma segunda aplicação Next.js. |
-| Aedifex | Licença deve ser confirmada no arquivo LICENSE [5] | IA natural-language, ferramentas estruturadas, ghost preview, zonas e editor arquitetônico WebGPU/Three.js | Referência principal para Dioris AI; auditar licença antes de código. |
-| OpenCutList | GPLv3 [6] | Cut-list, diagramas, etiquetas, custo, peso e vistas explodidas | Reimplementar fluxos de produção, sem copiar código. |
-| Sweet Home 3D | GPL e terceiros [7] | Catálogo, cômodos, planta, câmera e iluminação | Referência conceitual histórica; sem integração direta. |
-| Wood-Frame | GPL-3.0 [8] | Metadados de produção, painéis, atributos e DXF | Usar a ideia de metadados; não integrar código. |
+| Referência          | Licença/risco                                      | Contribuição técnica                                                                                       | Decisão                                                                                 |
+| ------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| WoodworkingShop     | MIT [1]                                            | Cabinet planner React/TypeScript, templates paramétricos, peças, MaxRects, veio, BOM, PDF, DXF, G-code     | Clonado isoladamente; portar seletivamente contratos e algoritmos puros com atribuição. |
+| FreeCAD Woodworking | GPL-3.0 [2]                                        | Armários, painéis, atributos, listas de produção e exportação DXF                                          | Reimplementar conceitos; não copiar código GPL.                                         |
+| FreeCAD             | LGPLv2.1 observada no repositório [3]              | Precisão CAD, constraints, coordenadas e transformações                                                    | Usar como referência de engenharia; não portar o kernel.                                |
+| Blueprint3D Modern  | MIT [4]                                            | Paredes, snapping, planta, coordenadas 2D/3D e ambiente Three.js                                           | Comparar motores; não colar uma segunda aplicação Next.js.                              |
+| Aedifex             | Licença deve ser confirmada no arquivo LICENSE [5] | IA natural-language, ferramentas estruturadas, ghost preview, zonas e editor arquitetônico WebGPU/Three.js | Referência principal para Dioris AI; auditar licença antes de código.                   |
+| OpenCutList         | GPLv3 [6]                                          | Cut-list, diagramas, etiquetas, custo, peso e vistas explodidas                                            | Reimplementar fluxos de produção, sem copiar código.                                    |
+| Sweet Home 3D       | GPL e terceiros [7]                                | Catálogo, cômodos, planta, câmera e iluminação                                                             | Referência conceitual histórica; sem integração direta.                                 |
+| Wood-Frame          | GPL-3.0 [8]                                        | Metadados de produção, painéis, atributos e DXF                                                            | Usar a ideia de metadados; não integrar código.                                         |
 
 ## O que foi implementado no Dioris
 
@@ -49,18 +49,18 @@ A integração passou a aplicar os overrides reconhecidos pela IA aos módulos c
 
 ## Validação executada
 
-| Verificação | Resultado |
-|---|---:|
-| Testes focados de DesignIntent, fabricação, montagem e ETAPA 1 | 11/11 aprovados |
-| Suíte completa do projeto | 33 arquivos, 526 testes aprovados |
-| TypeScript `tsc --noEmit` | Aprovado |
-| Layout Engine sem posicionamento manual | Implementado e coberto por testes |
-| Lista de corte CSV | Implementada |
-| Relatório de montagem | Implementado |
-| Nesting MaxRects | Ainda pendente no Dioris |
-| DXF/G-code de produção | Ainda pendente no Dioris |
-| Furação, cavilha, minifix e joinery detalhada | Ainda pendente |
-| Equivalência visual 100% com o Promob anexado | Ainda pendente de nova rodada de render/ajuste |
+| Verificação                                                    |                                      Resultado |
+| -------------------------------------------------------------- | ---------------------------------------------: |
+| Testes focados de DesignIntent, fabricação, montagem e ETAPA 1 |                                11/11 aprovados |
+| Suíte completa do projeto                                      |              33 arquivos, 526 testes aprovados |
+| TypeScript `tsc --noEmit`                                      |                                       Aprovado |
+| Layout Engine sem posicionamento manual                        |              Implementado e coberto por testes |
+| Lista de corte CSV                                             |                                   Implementada |
+| Relatório de montagem                                          |                                   Implementado |
+| Nesting MaxRects                                               |                       Ainda pendente no Dioris |
+| DXF/G-code de produção                                         |                       Ainda pendente no Dioris |
+| Furação, cavilha, minifix e joinery detalhada                  |                                 Ainda pendente |
+| Equivalência visual 100% com o Promob anexado                  | Ainda pendente de nova rodada de render/ajuste |
 
 ## Próxima implementação correta
 
@@ -71,17 +71,10 @@ Em paralelo, a referência Promob deve ser usada para calibrar famílias reais: 
 ## Referências
 
 [1]: https://github.com/RajwanYair/WoodworkingShop "RajwanYair/WoodworkingShop — Cabinet Planner & Cut-List Optimizer"
-
 [2]: https://github.com/dprojects/Woodworking "dprojects/Woodworking — FreeCAD woodworking workbench"
-
 [3]: https://github.com/FreeCAD/FreeCAD "FreeCAD — Official source code"
-
 [4]: https://github.com/charmlinn/blueprint3d-modern "Blueprint3D Modern — TypeScript 3D floor planner"
-
 [5]: https://github.com/TangSY/aedifex "Aedifex — Open-source 3D architectural editor with AI design assistant"
-
 [6]: https://github.com/lairdubois/lairdubois-opencutlist-sketchup-extension "OpenCutList — SketchUp woodworking cut-list extension"
-
 [7]: https://github.com/Vanuan/sweethome3d "Sweet Home 3D source archive"
-
 [8]: https://github.com/JeromeL63/Wood-Frame "Wood-Frame — FreeCAD workbench for wood frame"

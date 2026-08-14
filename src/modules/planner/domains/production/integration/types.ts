@@ -8,7 +8,11 @@
 import type { NestingAlgorithm, NestingComparison, NestingPlan } from "../services/nesting";
 import type { CncFormat, CncProgram } from "../services/cnc/types";
 import type { FabricationPlan } from "../services/fabrication";
-import type { AssemblyPlan, IndustrialCostSummary, OffcutInventoryItem } from "../services/industrial";
+import type {
+  AssemblyPlan,
+  IndustrialCostSummary,
+  OffcutInventoryItem,
+} from "../services/industrial";
 import type {
   CapacitySnapshot,
   DeliveryEstimate as FactoryDelivery,

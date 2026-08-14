@@ -11,22 +11,48 @@ import { useMemo } from "react";
 import * as THREE from "three";
 
 export type DecorSubtype =
-  | "sofa" | "cama" | "mesa" | "cadeira" | "poltrona"
-  | "estante" | "aparador"
-  | "tapete" | "cortina" | "persiana"
-  | "quadro" | "espelho"
-  | "vaso-planta" | "planta"
-  | "luminaria" | "pendente" | "arandela" | "spot"
-  | "livro" | "objeto-deco";
+  | "sofa"
+  | "cama"
+  | "mesa"
+  | "cadeira"
+  | "poltrona"
+  | "estante"
+  | "aparador"
+  | "tapete"
+  | "cortina"
+  | "persiana"
+  | "quadro"
+  | "espelho"
+  | "vaso-planta"
+  | "planta"
+  | "luminaria"
+  | "pendente"
+  | "arandela"
+  | "spot"
+  | "livro"
+  | "objeto-deco";
 
 const DECOR_SUBTYPES = new Set<DecorSubtype>([
-  "sofa", "cama", "mesa", "cadeira", "poltrona",
-  "estante", "aparador",
-  "tapete", "cortina", "persiana",
-  "quadro", "espelho",
-  "vaso-planta", "planta",
-  "luminaria", "pendente", "arandela", "spot",
-  "livro", "objeto-deco",
+  "sofa",
+  "cama",
+  "mesa",
+  "cadeira",
+  "poltrona",
+  "estante",
+  "aparador",
+  "tapete",
+  "cortina",
+  "persiana",
+  "quadro",
+  "espelho",
+  "vaso-planta",
+  "planta",
+  "luminaria",
+  "pendente",
+  "arandela",
+  "spot",
+  "livro",
+  "objeto-deco",
 ]);
 
 export function isDecorSubtype(s: string | undefined): s is DecorSubtype {
@@ -35,10 +61,10 @@ export function isDecorSubtype(s: string | undefined): s is DecorSubtype {
 
 interface DecorProps {
   subtype: DecorSubtype;
-  width: number;   // X (m)
-  height: number;  // Y (m)
-  depth: number;   // Z (m)
-  color?: string;  // cor principal (tecido/madeira)
+  width: number; // X (m)
+  height: number; // Y (m)
+  depth: number; // Z (m)
+  color?: string; // cor principal (tecido/madeira)
   selected?: boolean;
 }
 
@@ -46,26 +72,26 @@ interface DecorProps {
 // Paletas padrão por subtipo (usadas quando não há overrideColor)
 // -----------------------------------------------------------------------------
 const PALETTE: Record<DecorSubtype, { primary: string; secondary: string; accent: string }> = {
-  sofa:        { primary: "#4a5568", secondary: "#2d3748", accent: "#718096" },
-  cama:        { primary: "#e5e7eb", secondary: "#7c6f5f", accent: "#f3f4f6" },
-  mesa:        { primary: "#8b6f4b", secondary: "#3b2f24", accent: "#8b6f4b" },
-  cadeira:     { primary: "#8b6f4b", secondary: "#3b2f24", accent: "#8b6f4b" },
-  poltrona:    { primary: "#6b7280", secondary: "#374151", accent: "#9ca3af" },
-  estante:     { primary: "#5b4636", secondary: "#3b2f24", accent: "#5b4636" },
-  aparador:    { primary: "#5b4636", secondary: "#3b2f24", accent: "#5b4636" },
-  tapete:      { primary: "#8b7355", secondary: "#6b5744", accent: "#a89078" },
-  cortina:     { primary: "#d6d3c7", secondary: "#a8a498", accent: "#d6d3c7" },
-  persiana:    { primary: "#e5e7eb", secondary: "#9ca3af", accent: "#e5e7eb" },
-  quadro:      { primary: "#8b6f4b", secondary: "#c9d1e0", accent: "#8b6f4b" },
-  espelho:     { primary: "#e5e7eb", secondary: "#8b6f4b", accent: "#e5e7eb" },
-  "vaso-planta":{primary: "#c9b39a", secondary: "#3d6b3a", accent: "#3d6b3a" },
-  planta:      { primary: "#3d6b3a", secondary: "#2d4a2a", accent: "#4a7d47" },
-  luminaria:   { primary: "#f5f0e5", secondary: "#2d2d2d", accent: "#ffe8a3" },
-  pendente:    { primary: "#2d2d2d", secondary: "#f5f0e5", accent: "#ffe8a3" },
-  arandela:    { primary: "#f5f0e5", secondary: "#2d2d2d", accent: "#ffe8a3" },
-  spot:        { primary: "#e5e7eb", secondary: "#2d2d2d", accent: "#ffe8a3" },
-  livro:       { primary: "#8b1e3f", secondary: "#1e3a8a", accent: "#c89b3c" },
-  "objeto-deco":{primary: "#c89b3c", secondary: "#3d3d3d", accent: "#c89b3c" },
+  sofa: { primary: "#4a5568", secondary: "#2d3748", accent: "#718096" },
+  cama: { primary: "#e5e7eb", secondary: "#7c6f5f", accent: "#f3f4f6" },
+  mesa: { primary: "#8b6f4b", secondary: "#3b2f24", accent: "#8b6f4b" },
+  cadeira: { primary: "#8b6f4b", secondary: "#3b2f24", accent: "#8b6f4b" },
+  poltrona: { primary: "#6b7280", secondary: "#374151", accent: "#9ca3af" },
+  estante: { primary: "#5b4636", secondary: "#3b2f24", accent: "#5b4636" },
+  aparador: { primary: "#5b4636", secondary: "#3b2f24", accent: "#5b4636" },
+  tapete: { primary: "#8b7355", secondary: "#6b5744", accent: "#a89078" },
+  cortina: { primary: "#d6d3c7", secondary: "#a8a498", accent: "#d6d3c7" },
+  persiana: { primary: "#e5e7eb", secondary: "#9ca3af", accent: "#e5e7eb" },
+  quadro: { primary: "#8b6f4b", secondary: "#c9d1e0", accent: "#8b6f4b" },
+  espelho: { primary: "#e5e7eb", secondary: "#8b6f4b", accent: "#e5e7eb" },
+  "vaso-planta": { primary: "#c9b39a", secondary: "#3d6b3a", accent: "#3d6b3a" },
+  planta: { primary: "#3d6b3a", secondary: "#2d4a2a", accent: "#4a7d47" },
+  luminaria: { primary: "#f5f0e5", secondary: "#2d2d2d", accent: "#ffe8a3" },
+  pendente: { primary: "#2d2d2d", secondary: "#f5f0e5", accent: "#ffe8a3" },
+  arandela: { primary: "#f5f0e5", secondary: "#2d2d2d", accent: "#ffe8a3" },
+  spot: { primary: "#e5e7eb", secondary: "#2d2d2d", accent: "#ffe8a3" },
+  livro: { primary: "#8b1e3f", secondary: "#1e3a8a", accent: "#c89b3c" },
+  "objeto-deco": { primary: "#c89b3c", secondary: "#3d3d3d", accent: "#c89b3c" },
 };
 
 // -----------------------------------------------------------------------------
@@ -112,7 +138,12 @@ function Sofa({ width, height, depth, color }: DecorProps & { color: string }) {
         </mesh>
       ))}
       {/* pés discretos */}
-      {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz], i) => (
+      {[
+        [-1, -1],
+        [1, -1],
+        [-1, 1],
+        [1, 1],
+      ].map(([sx, sz], i) => (
         <mesh key={i} position={[sx * (width / 2 - 0.05), 0.04, sz * (depth / 2 - 0.05)]}>
           <cylinderGeometry args={[0.02, 0.02, 0.08, 12]} />
           <meshStandardMaterial color={p.secondary} metalness={0.4} roughness={0.4} />
@@ -165,8 +196,17 @@ function Table({ width, height, depth, color }: DecorProps & { color: string }) 
         <boxGeometry args={[width, topT, depth]} />
         <meshStandardMaterial color={color} roughness={0.5} metalness={0.05} />
       </mesh>
-      {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz], i) => (
-        <mesh key={i} position={[sx * (width / 2 - 0.06), (height - topT) / 2, sz * (depth / 2 - 0.06)]} castShadow>
+      {[
+        [-1, -1],
+        [1, -1],
+        [-1, 1],
+        [1, 1],
+      ].map(([sx, sz], i) => (
+        <mesh
+          key={i}
+          position={[sx * (width / 2 - 0.06), (height - topT) / 2, sz * (depth / 2 - 0.06)]}
+          castShadow
+        >
           <cylinderGeometry args={[0.025, 0.03, height - topT, 16]} />
           <meshStandardMaterial color={p.secondary} metalness={0.3} roughness={0.4} />
         </mesh>
@@ -189,8 +229,17 @@ function Chair({ width, height, depth, color }: DecorProps & { color: string }) 
         <boxGeometry args={[width * 0.9, backH, 0.06]} />
         <meshStandardMaterial color={color} roughness={0.6} />
       </mesh>
-      {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz], i) => (
-        <mesh key={i} position={[sx * (width / 2 - 0.04), seatY / 2, sz * (depth / 2 - 0.04)]} castShadow>
+      {[
+        [-1, -1],
+        [1, -1],
+        [-1, 1],
+        [1, 1],
+      ].map(([sx, sz], i) => (
+        <mesh
+          key={i}
+          position={[sx * (width / 2 - 0.04), seatY / 2, sz * (depth / 2 - 0.04)]}
+          castShadow
+        >
           <cylinderGeometry args={[0.02, 0.025, seatY, 12]} />
           <meshStandardMaterial color={p.secondary} metalness={0.3} roughness={0.4} />
         </mesh>
@@ -256,10 +305,19 @@ function Sideboard({ width, height, depth, color }: DecorProps & { color: string
         <boxGeometry args={[width * 0.98, bodyH * 0.9, 0.002]} />
         <meshStandardMaterial color={PALETTE.aparador.secondary} roughness={0.5} />
       </mesh>
-      {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz], i) => (
+      {[
+        [-1, -1],
+        [1, -1],
+        [-1, 1],
+        [1, 1],
+      ].map(([sx, sz], i) => (
         <mesh key={i} position={[sx * (width / 2 - 0.05), legH / 2, sz * (depth / 2 - 0.05)]}>
           <cylinderGeometry args={[0.02, 0.02, legH, 12]} />
-          <meshStandardMaterial color={PALETTE.aparador.secondary} metalness={0.5} roughness={0.4} />
+          <meshStandardMaterial
+            color={PALETTE.aparador.secondary}
+            metalness={0.5}
+            roughness={0.4}
+          />
         </mesh>
       ))}
     </group>
@@ -345,7 +403,7 @@ function Mirror({ width, height, depth, color }: DecorProps & { color: string })
 
 function PottedPlant({ width, height, depth, color }: DecorProps & { color: string }) {
   const potH = Math.min(0.35, height * 0.28);
-  const potR = Math.min(width, depth) / 2 * 0.75;
+  const potR = (Math.min(width, depth) / 2) * 0.75;
   const foliageR = Math.min(width, depth) / 2;
   const foliageY = potH + (height - potH) / 2;
   return (
@@ -400,9 +458,9 @@ function Plant({ width, height, depth }: DecorProps & { color: string }) {
 }
 
 function FloorLamp({ width, height, depth, color }: DecorProps & { color: string }) {
-  const baseR = Math.min(width, depth) / 2 * 0.55;
+  const baseR = (Math.min(width, depth) / 2) * 0.55;
   const shadeH = Math.min(0.35, height * 0.22);
-  const shadeR = Math.min(width, depth) / 2 * 0.9;
+  const shadeR = (Math.min(width, depth) / 2) * 0.9;
   return (
     <group>
       <mesh position={[0, 0.02, 0]} receiveShadow>
@@ -538,36 +596,62 @@ function DecoObject({ width, height, depth, color }: DecorProps & { color: strin
 }
 
 // Marcador consumido só para silenciar TS quando um argumento não é usado.
-function _ignored(_: { depth: number }) { return null; }
+function _ignored(_: { depth: number }) {
+  return null;
+}
 
 // -----------------------------------------------------------------------------
 // Dispatcher
 // -----------------------------------------------------------------------------
 
 export function DecorMesh(props: DecorProps) {
-  const color = useMemo(() => props.color ?? PALETTE[props.subtype].primary, [props.color, props.subtype]);
+  const color = useMemo(
+    () => props.color ?? PALETTE[props.subtype].primary,
+    [props.color, props.subtype],
+  );
   const full = { ...props, color };
   switch (props.subtype) {
-    case "sofa":         return <Sofa {...full} />;
-    case "cama":         return <Bed {...full} />;
-    case "mesa":         return <Table {...full} />;
-    case "cadeira":      return <Chair {...full} />;
-    case "poltrona":     return <Armchair {...full} />;
-    case "estante":      return <Shelf {...full} />;
-    case "aparador":     return <Sideboard {...full} />;
-    case "tapete":       return <Rug {...full} />;
-    case "cortina":      return <Curtain {...full} />;
-    case "persiana":     return <Blind {...full} />;
-    case "quadro":       return <Picture {...full} />;
-    case "espelho":      return <Mirror {...full} />;
-    case "vaso-planta":  return <PottedPlant {...full} />;
-    case "planta":       return <Plant {...full} />;
-    case "luminaria":    return <FloorLamp {...full} />;
-    case "pendente":     return <Pendant {...full} />;
-    case "arandela":     return <WallLamp {...full} />;
-    case "spot":         return <Spot {...full} />;
-    case "livro":        return <Books {...full} />;
-    case "objeto-deco":  return <DecoObject {...full} />;
-    default:             return null;
+    case "sofa":
+      return <Sofa {...full} />;
+    case "cama":
+      return <Bed {...full} />;
+    case "mesa":
+      return <Table {...full} />;
+    case "cadeira":
+      return <Chair {...full} />;
+    case "poltrona":
+      return <Armchair {...full} />;
+    case "estante":
+      return <Shelf {...full} />;
+    case "aparador":
+      return <Sideboard {...full} />;
+    case "tapete":
+      return <Rug {...full} />;
+    case "cortina":
+      return <Curtain {...full} />;
+    case "persiana":
+      return <Blind {...full} />;
+    case "quadro":
+      return <Picture {...full} />;
+    case "espelho":
+      return <Mirror {...full} />;
+    case "vaso-planta":
+      return <PottedPlant {...full} />;
+    case "planta":
+      return <Plant {...full} />;
+    case "luminaria":
+      return <FloorLamp {...full} />;
+    case "pendente":
+      return <Pendant {...full} />;
+    case "arandela":
+      return <WallLamp {...full} />;
+    case "spot":
+      return <Spot {...full} />;
+    case "livro":
+      return <Books {...full} />;
+    case "objeto-deco":
+      return <DecoObject {...full} />;
+    default:
+      return null;
   }
 }

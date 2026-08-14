@@ -6,7 +6,11 @@ export const Route = createFileRoute("/_public/integracoes")({
   head: () => ({
     meta: [
       { title: "Integrações — Dioris" },
-      { name: "description", content: "Supabase, Vercel, Cloudflare, OpenAI, Google, Anthropic, OpenRouter, WhatsApp, N8N, Webhooks e API." },
+      {
+        name: "description",
+        content:
+          "Supabase, Vercel, Cloudflare, OpenAI, Google, Anthropic, OpenRouter, WhatsApp, N8N, Webhooks e API.",
+      },
       { property: "og:title", content: "Integrações Dioris" },
       { property: "og:description", content: "Conecte tudo ao ecossistema." },
       { property: "og:url", content: "/integracoes" },
@@ -17,26 +21,36 @@ export const Route = createFileRoute("/_public/integracoes")({
 });
 
 const groups = [
-  { title: "Infraestrutura", items: [
-    { icon: Cloud, t: "Supabase", d: "Banco de dados, auth e storage." },
-    { icon: Zap, t: "Vercel", d: "Deploy edge global." },
-    { icon: Cloud, t: "Cloudflare", d: "Workers e CDN." },
-  ]},
-  { title: "IA", items: [
-    { icon: Bot, t: "OpenAI", d: "GPT-4, GPT-5 e Realtime." },
-    { icon: Sparkles, t: "Anthropic", d: "Claude Sonnet e Opus." },
-    { icon: Bot, t: "Google", d: "Gemini Pro e Flash." },
-    { icon: Sparkles, t: "OpenRouter", d: "Roteamento multi-modelo." },
-  ]},
-  { title: "Comunicação", items: [
-    { icon: MessageSquare, t: "WhatsApp", d: "Envio e recebimento oficial." },
-  ]},
-  { title: "Automação", items: [
-    { icon: Zap, t: "N8N", d: "Workflows self-hosted." },
-    { icon: Webhook, t: "Webhooks", d: "Entrada e saída com retry." },
-    { icon: Code2, t: "API pública", d: "REST versionada." },
-    { icon: Globe, t: "SDK", d: "Cliente TypeScript oficial." },
-  ]},
+  {
+    title: "Infraestrutura",
+    items: [
+      { icon: Cloud, t: "Supabase", d: "Banco de dados, auth e storage." },
+      { icon: Zap, t: "Vercel", d: "Deploy edge global." },
+      { icon: Cloud, t: "Cloudflare", d: "Workers e CDN." },
+    ],
+  },
+  {
+    title: "IA",
+    items: [
+      { icon: Bot, t: "OpenAI", d: "GPT-4, GPT-5 e Realtime." },
+      { icon: Sparkles, t: "Anthropic", d: "Claude Sonnet e Opus." },
+      { icon: Bot, t: "Google", d: "Gemini Pro e Flash." },
+      { icon: Sparkles, t: "OpenRouter", d: "Roteamento multi-modelo." },
+    ],
+  },
+  {
+    title: "Comunicação",
+    items: [{ icon: MessageSquare, t: "WhatsApp", d: "Envio e recebimento oficial." }],
+  },
+  {
+    title: "Automação",
+    items: [
+      { icon: Zap, t: "N8N", d: "Workflows self-hosted." },
+      { icon: Webhook, t: "Webhooks", d: "Entrada e saída com retry." },
+      { icon: Code2, t: "API pública", d: "REST versionada." },
+      { icon: Globe, t: "SDK", d: "Cliente TypeScript oficial." },
+    ],
+  },
 ];
 
 function Page() {
@@ -54,7 +68,9 @@ function Page() {
       <div className="mt-16 space-y-14">
         {groups.map((g) => (
           <Reveal key={g.title}>
-            <h2 className="text-2xl font-black"><GradientText>{g.title}</GradientText></h2>
+            <h2 className="text-2xl font-black">
+              <GradientText>{g.title}</GradientText>
+            </h2>
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {g.items.map((it) => (
                 <div key={it.t} className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">

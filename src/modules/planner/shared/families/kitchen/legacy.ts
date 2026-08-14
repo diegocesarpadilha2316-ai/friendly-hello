@@ -79,7 +79,8 @@ export function kitchenSpecFromLegacy(f: LegacyKitchenModule): KitchenModuleSpec
     doors: asNumber(pick(p, "mod:doors", "doors", "eng:doors", "portas")),
     drawers: asNumber(pick(p, "mod:drawers", "drawers", "eng:drawers", "gavetas")),
     shelves: asNumber(pick(p, "mod:shelves", "shelves", "prateleiras")),
-    opening: asText(pick(p, "mod:opening", "opening", "abertura")) as KitchenModuleSpec["opening"] | undefined,
+    opening: asText(pick(p, "mod:opening", "opening", "abertura")) as
+      KitchenModuleSpec["opening"] | undefined,
     handle: asText(pick(p, "mod:handle", "handle", "puxador")),
     glassFront: asBool(pick(p, "mod:glass", "frontType", "vidro")),
     led: asBool(pick(p, "mod:led", "led")),
@@ -125,7 +126,9 @@ export function applyKitchenPatch(
  * modo que salvar e reabrir devolve a MESMA composição (tampo, rodapé,
  * recorte, eletrodomésticos, folgas e movimentos).
  */
-export function kitchenLegacyParams(spec: KitchenModuleSpec): Record<string, string | number | boolean> {
+export function kitchenLegacyParams(
+  spec: KitchenModuleSpec,
+): Record<string, string | number | boolean> {
   return {
     "mod:kind": spec.kind,
     "mod:doors": spec.doors,

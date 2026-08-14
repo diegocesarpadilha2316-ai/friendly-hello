@@ -7,8 +7,7 @@ export const Route = createFileRoute("/_authenticated/planner/projetos")({
       { title: "Projetos — Dioris Planner" },
       {
         name: "description",
-        content:
-          "Lista de projetos paramétricos do Dioris Planner, escopados por empresa.",
+        content: "Lista de projetos paramétricos do Dioris Planner, escopados por empresa.",
       },
     ],
   }),

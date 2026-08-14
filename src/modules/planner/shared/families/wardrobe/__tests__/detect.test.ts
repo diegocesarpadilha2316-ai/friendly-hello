@@ -6,7 +6,14 @@ const wardrobe = (i: Parameters<typeof resolveFurnitureRenderer>[0]) =>
 
 describe("roteamento de renderer — nomes legados", () => {
   it("aceita roupeiro, guarda-roupa, guarda roupa e wardrobe", () => {
-    for (const s of ["roupeiro", "Roupeiro", "guarda-roupa", "guarda roupa", "Guarda_Roupa", "wardrobe"]) {
+    for (const s of [
+      "roupeiro",
+      "Roupeiro",
+      "guarda-roupa",
+      "guarda roupa",
+      "Guarda_Roupa",
+      "wardrobe",
+    ]) {
       expect(wardrobe({ subtype: s })).toBe("wardrobe");
     }
   });
@@ -18,7 +25,9 @@ describe("roteamento de renderer — nomes legados", () => {
   });
 
   it("armário genérico com catálogo de roupeiro é convertido", () => {
-    expect(wardrobe({ subtype: "armario", catalogItemId: "mod-roupeiro-3-portas" })).toBe("wardrobe");
+    expect(wardrobe({ subtype: "armario", catalogItemId: "mod-roupeiro-3-portas" })).toBe(
+      "wardrobe",
+    );
     // "balcao-600" agora é família cozinha (convertida), não mais legado.
     expect(wardrobe({ subtype: "armario", catalogItemId: "balcao-600" })).toBe("kitchen");
   });
@@ -33,7 +42,10 @@ describe("roteamento de renderer — nomes legados", () => {
   });
 
   it("nó novo com ficha paramétrica não é marcado como legado", () => {
-    const d = resolveFurnitureRenderer({ subtype: "roupeiro", params: { doors: 2, opening: "abrir" } });
+    const d = resolveFurnitureRenderer({
+      subtype: "roupeiro",
+      params: { doors: 2, opening: "abrir" },
+    });
     expect(d.renderer).toBe("wardrobe");
     expect(d.legacyConverted).toBe(false);
   });

@@ -31,8 +31,7 @@ export function kitchenGeometry(spec: KitchenModuleSpec): KitchenGeometry {
 
   // Frente ocupa espaço à FRENTE da caixa: a caixa recua para que nenhuma
   // folha atravesse lateral, base ou tampo (mesma regra do roupeiro).
-  const frontReserve =
-    spec.opening === "correr" ? t + 12 : spec.opening === "aberto" ? 0 : t;
+  const frontReserve = spec.opening === "correr" ? t + 12 : spec.opening === "aberto" ? 0 : t;
   const caseD = Math.max(120, D - frontReserve);
   const caseY0 = P;
   const caseH = Math.max(150, H - P - CT);
@@ -54,7 +53,11 @@ export function kitchenGeometry(spec: KitchenModuleSpec): KitchenGeometry {
 
 /* ─────────────────────────── blocos reutilizáveis ─────────────────────────── */
 
-function caseSlots(spec: KitchenModuleSpec, g: KitchenGeometry, opts: { withTop?: boolean } = {}): AssemblySlot[] {
+function caseSlots(
+  spec: KitchenModuleSpec,
+  g: KitchenGeometry,
+  opts: { withTop?: boolean } = {},
+): AssemblySlot[] {
   const { widthMm: W, thicknessMm: t, backThicknessMm: bt, finishId } = spec;
   const slots: AssemblySlot[] = [];
 
@@ -81,14 +84,26 @@ function caseSlots(spec: KitchenModuleSpec, g: KitchenGeometry, opts: { withTop?
       component: "lateral",
       at: [0, g.caseY0, 0],
       role: "lateral esquerda",
-      params: { heightMm: g.caseHeightMm, depthMm: g.caseDepthMm, thicknessMm: t, side: "esquerda", finishId },
+      params: {
+        heightMm: g.caseHeightMm,
+        depthMm: g.caseDepthMm,
+        thicknessMm: t,
+        side: "esquerda",
+        finishId,
+      },
     },
     {
       id: "lateral-d",
       component: "lateral",
       at: [W - t, g.caseY0, 0],
       role: "lateral direita",
-      params: { heightMm: g.caseHeightMm, depthMm: g.caseDepthMm, thicknessMm: t, side: "direita", finishId },
+      params: {
+        heightMm: g.caseHeightMm,
+        depthMm: g.caseDepthMm,
+        thicknessMm: t,
+        side: "direita",
+        finishId,
+      },
     },
     {
       id: "base",
@@ -108,7 +123,13 @@ function caseSlots(spec: KitchenModuleSpec, g: KitchenGeometry, opts: { withTop?
       component: "fundo",
       at: [0, g.caseY0, 0],
       role: "fundo",
-      params: { widthMm: W, heightMm: g.caseHeightMm, thicknessMm: bt, mounting: "encaixado", finishId },
+      params: {
+        widthMm: W,
+        heightMm: g.caseHeightMm,
+        thicknessMm: bt,
+        mounting: "encaixado",
+        finishId,
+      },
     },
   );
 
@@ -275,7 +296,10 @@ export function kitchenDrawerHeights(count: number, regionMm: number, gapMm = 3)
   if (count <= 0) return [];
   const usable = Math.max(60 * count, regionMm - gapMm * (count - 1));
   if (count === 1) return [usable];
-  const weights = Array.from({ length: count }, (_, i) => 1 + (0.7 * (count - 1 - i)) / (count - 1));
+  const weights = Array.from(
+    { length: count },
+    (_, i) => 1 + (0.7 * (count - 1 - i)) / (count - 1),
+  );
   const total = weights.reduce((a, b) => a + b, 0);
   return weights.map((w) => (usable * w) / total);
 }
@@ -355,7 +379,14 @@ function nicheSlot(
 export interface KitchenModuleReservation {
   readonly id: string;
   readonly kind: string;
-  readonly box: { readonly x: number; readonly y: number; readonly z: number; readonly width: number; readonly height: number; readonly depth: number };
+  readonly box: {
+    readonly x: number;
+    readonly y: number;
+    readonly z: number;
+    readonly width: number;
+    readonly height: number;
+    readonly depth: number;
+  };
   readonly note: string;
 }
 
@@ -365,7 +396,14 @@ export function kitchenReservedVolumes(
 ): readonly KitchenModuleReservation[] {
   const t = spec.thicknessMm;
   const out: KitchenModuleReservation[] = [];
-  const full = (id: string, kind: string, y: number, h: number, note: string, depth = g.interiorDepthMm) =>
+  const full = (
+    id: string,
+    kind: string,
+    y: number,
+    h: number,
+    note: string,
+    depth = g.interiorDepthMm,
+  ) =>
     out.push({
       id,
       kind,
@@ -375,16 +413,35 @@ export function kitchenReservedVolumes(
 
   if (spec.kind === "balcao-pia") {
     const h = Math.min(400, g.interiorHeightMm);
-    full("cuba", "cuba", g.interiorY0 + g.interiorHeightMm - h, h, "cuba + sifão + área hidráulica");
+    full(
+      "cuba",
+      "cuba",
+      g.interiorY0 + g.interiorHeightMm - h,
+      h,
+      "cuba + sifão + área hidráulica",
+    );
   }
   if (spec.kind === "balcao-cooktop") {
     const h = Math.min(COOKTOP_RESERVE_MM, g.interiorHeightMm);
-    full("cooktop", "cooktop", g.interiorY0 + g.interiorHeightMm - h, h, "caixa do cooktop e ligação de gás/elétrica");
+    full(
+      "cooktop",
+      "cooktop",
+      g.interiorY0 + g.interiorHeightMm - h,
+      h,
+      "caixa do cooktop e ligação de gás/elétrica",
+    );
   }
   if (spec.kind === "torre-quente") {
     const bottomH = Math.max(300, g.interiorHeightMm * 0.35);
     const depth = Math.max(120, g.interiorDepthMm - spec.applianceGapBackMm);
-    full("forno", "forno", g.interiorY0 + bottomH, OVEN_NICHE_MM, "forno embutido com ventilação traseira", depth);
+    full(
+      "forno",
+      "forno",
+      g.interiorY0 + bottomH,
+      OVEN_NICHE_MM,
+      "forno embutido com ventilação traseira",
+      depth,
+    );
     full(
       "microondas",
       "microondas",
@@ -439,7 +496,10 @@ export function kitchenModuleSlots(spec: KitchenModuleSpec, g: KitchenGeometry):
           }),
         );
         slots.push(
-          ...doorSlots({ ...spec, heightMm: spec.heightMm }, { ...g, caseHeightMm: doorRegion, caseY0: g.caseY0 }),
+          ...doorSlots(
+            { ...spec, heightMm: spec.heightMm },
+            { ...g, caseHeightMm: doorRegion, caseY0: g.caseY0 },
+          ),
         );
       } else {
         slots.push(...doorSlots(spec, g));
@@ -452,10 +512,7 @@ export function kitchenModuleSlots(spec: KitchenModuleSpec, g: KitchenGeometry):
       // Sob a cuba não existe prateleira: o sifão ocupa o vão.
       slots.push(...caseSlots(spec, g), ...doorSlots(spec, g));
       slots.push(
-        ...countertopSlots(
-          { ...spec, countertop: { ...spec.countertop, cutout: "cuba" } },
-          g,
-        ),
+        ...countertopSlots({ ...spec, countertop: { ...spec.countertop, cutout: "cuba" } }, g),
       );
       return slots;
     }
@@ -492,7 +549,14 @@ export function kitchenModuleSlots(spec: KitchenModuleSpec, g: KitchenGeometry):
       const cellH = g.interiorHeightMm / cells;
       for (let i = 0; i < cells; i += 1) {
         slots.push(
-          nicheSlot(`garrafeira-${i + 1}`, spec, g, g.interiorY0 + cellH * i, cellH, `garrafeira ${i + 1}`),
+          nicheSlot(
+            `garrafeira-${i + 1}`,
+            spec,
+            g,
+            g.interiorY0 + cellH * i,
+            cellH,
+            `garrafeira ${i + 1}`,
+          ),
         );
       }
       slots.push(...countertopSlots(spec, g));
@@ -502,12 +566,20 @@ export function kitchenModuleSlots(spec: KitchenModuleSpec, g: KitchenGeometry):
     /* ── aéreos ── */
     case "aereo":
     case "aereo-vidro": {
-      slots.push(...caseSlots(spec, g), ...shelfSlots(spec, g, spec.shelves), ...doorSlots(spec, g));
+      slots.push(
+        ...caseSlots(spec, g),
+        ...shelfSlots(spec, g, spec.shelves),
+        ...doorSlots(spec, g),
+      );
       return slots;
     }
 
     case "aereo-basculante": {
-      slots.push(...caseSlots(spec, g), ...shelfSlots(spec, g, spec.shelves), ...doorSlots(spec, g));
+      slots.push(
+        ...caseSlots(spec, g),
+        ...shelfSlots(spec, g, spec.shelves),
+        ...doorSlots(spec, g),
+      );
       return slots;
     }
 
@@ -524,7 +596,9 @@ export function kitchenModuleSlots(spec: KitchenModuleSpec, g: KitchenGeometry):
       slots.push(
         ...caseSlots(spec, g, { withTop: true }),
         // O fundo já vem da caixa: o nicho não repete o painel traseiro.
-        nicheSlot("nicho", spec, g, g.interiorY0, g.interiorHeightMm, "nicho", spec.shelves, { withBack: false }),
+        nicheSlot("nicho", spec, g, g.interiorY0, g.interiorHeightMm, "nicho", spec.shelves, {
+          withBack: false,
+        }),
       );
       return slots;
     }
@@ -555,16 +629,23 @@ export function kitchenModuleSlots(spec: KitchenModuleSpec, g: KitchenGeometry):
         );
       }
       slots.push(
-        nicheSlot("nicho-forno", spec, g, ovenY, ovenH, "nicho do forno", 0, { depthMm: nicheDepth }),
-        nicheSlot("nicho-microondas", spec, g, microY, microH, "nicho do micro-ondas", 0, { depthMm: nicheDepth }),
+        nicheSlot("nicho-forno", spec, g, ovenY, ovenH, "nicho do forno", 0, {
+          depthMm: nicheDepth,
+        }),
+        nicheSlot("nicho-microondas", spec, g, microY, microH, "nicho do micro-ondas", 0, {
+          depthMm: nicheDepth,
+        }),
       );
       if (topH > 250) {
         slots.push(
-          ...doorSlots({ ...spec, doors: Math.max(1, spec.doors) }, {
-            ...g,
-            caseY0: topY,
-            caseHeightMm: topH,
-          }).map((s) => ({ ...s, id: `${s.id}-superior`, role: "porta superior" })),
+          ...doorSlots(
+            { ...spec, doors: Math.max(1, spec.doors) },
+            {
+              ...g,
+              caseY0: topY,
+              caseHeightMm: topH,
+            },
+          ).map((s) => ({ ...s, id: `${s.id}-superior`, role: "porta superior" })),
         );
       }
       return slots;
@@ -581,14 +662,26 @@ export function kitchenModuleSlots(spec: KitchenModuleSpec, g: KitchenGeometry):
           component: "lateral",
           at: [0, g.caseY0, 0],
           role: "painel lateral esquerdo",
-          params: { heightMm: g.caseHeightMm, depthMm: g.caseDepthMm, thicknessMm: t, side: "esquerda", finishId: spec.finishId },
+          params: {
+            heightMm: g.caseHeightMm,
+            depthMm: g.caseDepthMm,
+            thicknessMm: t,
+            side: "esquerda",
+            finishId: spec.finishId,
+          },
         },
         {
           id: "lateral-d",
           component: "lateral",
           at: [spec.widthMm - t, g.caseY0, 0],
           role: "painel lateral direito",
-          params: { heightMm: g.caseHeightMm, depthMm: g.caseDepthMm, thicknessMm: t, side: "direita", finishId: spec.finishId },
+          params: {
+            heightMm: g.caseHeightMm,
+            depthMm: g.caseDepthMm,
+            thicknessMm: t,
+            side: "direita",
+            finishId: spec.finishId,
+          },
         },
         {
           id: "travessa",
@@ -695,14 +788,30 @@ export function kitchenModuleSlots(spec: KitchenModuleSpec, g: KitchenGeometry):
           at: [0, g.caseY0, g.frontZMm],
           role: "aba esquerda do canto diagonal",
           // Aba estrutural fixa: fecha o vão, não tem mecanismo.
-          params: { widthMm: wing, heightMm: g.caseHeightMm, depthMm: t, thicknessMm: t, treatment: "liso", fixedRole: "aba-canto", finishId: spec.finishId },
+          params: {
+            widthMm: wing,
+            heightMm: g.caseHeightMm,
+            depthMm: t,
+            thicknessMm: t,
+            treatment: "liso",
+            fixedRole: "aba-canto",
+            finishId: spec.finishId,
+          },
         },
         {
           id: "aba-d",
           component: "painel",
           at: [spec.widthMm - wing, g.caseY0, g.frontZMm],
           role: "aba direita do canto diagonal",
-          params: { widthMm: wing, heightMm: g.caseHeightMm, depthMm: t, thicknessMm: t, treatment: "liso", fixedRole: "aba-canto", finishId: spec.finishId },
+          params: {
+            widthMm: wing,
+            heightMm: g.caseHeightMm,
+            depthMm: t,
+            thicknessMm: t,
+            treatment: "liso",
+            fixedRole: "aba-canto",
+            finishId: spec.finishId,
+          },
         },
         {
           id: "porta-diagonal",

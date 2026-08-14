@@ -46,7 +46,11 @@ export const adminListMaterials = createServerFn({ method: "GET" })
   .handler(async ({ context, data }) => {
     const { supabase, userId } = context;
     await assertPlatformAdmin(supabase, userId);
-    let q = supabase.from("planner_materials").select("*").order("fabricante").limit(data.limit ?? 200);
+    let q = supabase
+      .from("planner_materials")
+      .select("*")
+      .order("fabricante")
+      .limit(data.limit ?? 200);
     if (data.fabricante) q = q.eq("fabricante", data.fabricante);
     if (data.search) q = q.ilike("padrao", `%${data.search}%`);
     const { data: rows, error } = await q;
@@ -68,7 +72,11 @@ export const adminListHardware = createServerFn({ method: "GET" })
   .handler(async ({ context, data }) => {
     const { supabase, userId } = context;
     await assertPlatformAdmin(supabase, userId);
-    let q = supabase.from("planner_hardware").select("*").order("fabricante").limit(data.limit ?? 200);
+    let q = supabase
+      .from("planner_hardware")
+      .select("*")
+      .order("fabricante")
+      .limit(data.limit ?? 200);
     if (data.fabricante) q = q.eq("fabricante", data.fabricante);
     if (data.search) q = q.ilike("modelo", `%${data.search}%`);
     const { data: rows, error } = await q;
@@ -131,9 +139,7 @@ const HardwareRow = z.object({
 /** Importa materiais em lote (upsert por id). Somente admin. */
 export const adminImportMaterials = createServerFn({ method: "POST" })
   .middleware([requireAuth])
-  .inputValidator((i) =>
-    z.object({ rows: z.array(MaterialRow).min(1).max(5000) }).parse(i),
-  )
+  .inputValidator((i) => z.object({ rows: z.array(MaterialRow).min(1).max(5000) }).parse(i))
   .handler(async ({ context, data }) => {
     const { supabase, userId } = context;
     await assertPlatformAdmin(supabase, userId);
@@ -155,9 +161,7 @@ export const adminImportMaterials = createServerFn({ method: "POST" })
 /** Importa ferragens em lote (upsert por id). Somente admin. */
 export const adminImportHardware = createServerFn({ method: "POST" })
   .middleware([requireAuth])
-  .inputValidator((i) =>
-    z.object({ rows: z.array(HardwareRow).min(1).max(5000) }).parse(i),
-  )
+  .inputValidator((i) => z.object({ rows: z.array(HardwareRow).min(1).max(5000) }).parse(i))
   .handler(async ({ context, data }) => {
     const { supabase, userId } = context;
     await assertPlatformAdmin(supabase, userId);
@@ -227,9 +231,7 @@ export const adminUpdateHardware = createServerFn({ method: "POST" })
 /** Remove (soft: ativo=false) ou apaga (hard) um material. */
 export const adminDeleteMaterial = createServerFn({ method: "POST" })
   .middleware([requireAuth])
-  .inputValidator((i) =>
-    z.object({ id: z.string().min(1), hard: z.boolean().optional() }).parse(i),
-  )
+  .inputValidator((i) => z.object({ id: z.string().min(1), hard: z.boolean().optional() }).parse(i))
   .handler(async ({ context, data }) => {
     const { supabase, userId } = context;
     await assertPlatformAdmin(supabase, userId);
@@ -248,9 +250,7 @@ export const adminDeleteMaterial = createServerFn({ method: "POST" })
 
 export const adminDeleteHardware = createServerFn({ method: "POST" })
   .middleware([requireAuth])
-  .inputValidator((i) =>
-    z.object({ id: z.string().min(1), hard: z.boolean().optional() }).parse(i),
-  )
+  .inputValidator((i) => z.object({ id: z.string().min(1), hard: z.boolean().optional() }).parse(i))
   .handler(async ({ context, data }) => {
     const { supabase, userId } = context;
     await assertPlatformAdmin(supabase, userId);
@@ -364,10 +364,7 @@ export const importPlannerLibrary = createServerFn({ method: "POST" })
     const CHK_BATCH = 500;
     for (let i = 0; i < ids.length; i += CHK_BATCH) {
       const slice = ids.slice(i, i + CHK_BATCH);
-      const { data: rows, error } = await admin
-        .from(table)
-        .select("id")
-        .in("id", slice);
+      const { data: rows, error } = await admin.from(table).select("id").in("id", slice);
       if (error) throw new Error(`Lookup falhou: ${error.message}`);
       for (const r of rows ?? []) existing.add((r as { id: string }).id);
     }
@@ -442,7 +439,9 @@ export const adminListImportHistory = createServerFn({ method: "GET" })
     await assertPlatformAdmin(supabase, userId);
     let q = supabase
       .from("planner_library_imports")
-      .select("id, kind, filename, total_rows, inserted_count, updated_count, skipped_count, error_count, admin_email, admin_user_id, created_at")
+      .select(
+        "id, kind, filename, total_rows, inserted_count, updated_count, skipped_count, error_count, admin_email, admin_user_id, created_at",
+      )
       .order("created_at", { ascending: false })
       .limit(data.limit ?? 50);
     if (data.kind) q = q.eq("kind", data.kind);

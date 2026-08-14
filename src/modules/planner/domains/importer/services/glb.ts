@@ -15,7 +15,12 @@ export function parseGLB(buffer: ArrayBuffer, filename: string): ImportResult {
       binary: true,
       bytes: buffer.byteLength,
       scale: { factorToMm: 1, detectedUnit: "mm" },
-      bbox: null, layers: [], entities: [], materials: [], texts: [], previewSvg: null,
+      bbox: null,
+      layers: [],
+      entities: [],
+      materials: [],
+      texts: [],
+      previewSvg: null,
       warnings: [{ code: "glb-invalid", severity: "error", message: "Assinatura GLB inválida." }],
       createdAt: new Date().toISOString(),
     };

@@ -33,7 +33,13 @@ export function VisionStages({ stages }: { stages: readonly VisionStage[] }) {
                   {active && <span className="ml-1 opacity-70">…</span>}
                 </div>
                 <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                  {s.status === "done" ? "concluído" : s.status === "running" ? "em curso" : s.status === "error" ? "erro" : "aguardando"}
+                  {s.status === "done"
+                    ? "concluído"
+                    : s.status === "running"
+                      ? "em curso"
+                      : s.status === "error"
+                        ? "erro"
+                        : "aguardando"}
                 </div>
               </div>
               <div className="text-xs text-muted-foreground">{s.detail}</div>

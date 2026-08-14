@@ -1,12 +1,24 @@
 import type { AIProvider, AIProviderId } from "../types";
 import { DeepSeekProvider } from "./deepseek";
 import { LovableProvider } from "./lovable";
-import { ClaudeProvider, GeminiProvider, MistralProvider, OSSProvider, OpenAIProvider } from "./stubs";
+import {
+  ClaudeProvider,
+  GeminiProvider,
+  MistralProvider,
+  OSSProvider,
+  OpenAIProvider,
+} from "./stubs";
 
 export { BaseAIProvider } from "./base";
 export { DeepSeekProvider } from "./deepseek";
 export { LovableProvider } from "./lovable";
-export { ClaudeProvider, GeminiProvider, MistralProvider, OSSProvider, OpenAIProvider } from "./stubs";
+export {
+  ClaudeProvider,
+  GeminiProvider,
+  MistralProvider,
+  OSSProvider,
+  OpenAIProvider,
+} from "./stubs";
 
 export interface ProviderCreateOptions {
   readonly apiKey?: string;

@@ -18,13 +18,7 @@ export const KitchenUpperCabinet: ModuleDefinition = {
     minHeightFromFloorMm: 1400,
   },
   defaultMaterialId: "mdf-white",
-  allowedMaterialIds: [
-    "mdf-white",
-    "mdf-wood-natural",
-    "mdf-graphite",
-    "mdf-green",
-    "mdf-taupe",
-  ],
+  allowedMaterialIds: ["mdf-white", "mdf-wood-natural", "mdf-graphite", "mdf-green", "mdf-taupe"],
   defaultHardwareIds: ["hinge-standard", "handle-bar"],
   build: ({ dimensionsMm, materialId }) => {
     const moduleId = KitchenUpperCabinet.id;

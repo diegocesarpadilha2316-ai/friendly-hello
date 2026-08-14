@@ -46,8 +46,18 @@ export function planInteraction(
       const open = req.kind === "open-door";
       const existing = current.doors.find((d) => d.nodeId === req.nodeId);
       const doors = existing
-        ? current.doors.map((d) => (d.nodeId === req.nodeId ? { ...d, openRatio: open ? 1 : 0 } : d))
-        : [...current.doors, { nodeId: req.nodeId, openRatio: open ? 1 : 0, maxAngleDeg: 110, hinge: "left" as const }];
+        ? current.doors.map((d) =>
+            d.nodeId === req.nodeId ? { ...d, openRatio: open ? 1 : 0 } : d,
+          )
+        : [
+            ...current.doors,
+            {
+              nodeId: req.nodeId,
+              openRatio: open ? 1 : 0,
+              maxAngleDeg: 110,
+              hinge: "left" as const,
+            },
+          ];
       return { ...base, doors };
     }
     case "open-drawer":
@@ -55,7 +65,9 @@ export function planInteraction(
       const open = req.kind === "open-drawer";
       const existing = current.drawers.find((d) => d.nodeId === req.nodeId);
       const drawers = existing
-        ? current.drawers.map((d) => (d.nodeId === req.nodeId ? { ...d, openRatio: open ? 1 : 0 } : d))
+        ? current.drawers.map((d) =>
+            d.nodeId === req.nodeId ? { ...d, openRatio: open ? 1 : 0 } : d,
+          )
         : [...current.drawers, { nodeId: req.nodeId, openRatio: open ? 1 : 0, travelMm: 450 }];
       return { ...base, drawers };
     }

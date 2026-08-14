@@ -14,8 +14,7 @@
 import type { PlannerProject, PlannerProjectVersion } from "../types/project";
 
 const STORAGE_VERSION = "v1";
-const PROJECTS_KEY = (tenantId: string) =>
-  `dioris:planner:${STORAGE_VERSION}:${tenantId}:projects`;
+const PROJECTS_KEY = (tenantId: string) => `dioris:planner:${STORAGE_VERSION}:${tenantId}:projects`;
 const VERSIONS_KEY = (tenantId: string, projectId: string) =>
   `dioris:planner:${STORAGE_VERSION}:${tenantId}:versions:${projectId}`;
 
@@ -34,10 +33,7 @@ function safeParse<T>(raw: string | null, fallback: T): T {
 
 export function loadProjects(tenantId: string): PlannerProject[] {
   if (!isBrowser()) return [];
-  return safeParse<PlannerProject[]>(
-    window.localStorage.getItem(PROJECTS_KEY(tenantId)),
-    [],
-  );
+  return safeParse<PlannerProject[]>(window.localStorage.getItem(PROJECTS_KEY(tenantId)), []);
 }
 
 export function saveProjects(tenantId: string, projects: readonly PlannerProject[]): void {
@@ -55,7 +51,9 @@ export function loadProject(tenantId: string, id: string): PlannerProject | null
  * projeto foi criado sob outro escopo (evita "Projeto não encontrado"
  * quando o dado está localmente disponível).
  */
-export function loadProjectAnywhere(id: string): { tenantId: string; project: PlannerProject } | null {
+export function loadProjectAnywhere(
+  id: string,
+): { tenantId: string; project: PlannerProject } | null {
   if (!isBrowser()) return null;
   const prefix = `dioris:planner:${STORAGE_VERSION}:`;
   const suffix = ":projects";
@@ -79,7 +77,10 @@ export function upsertProject(tenantId: string, project: PlannerProject): void {
 }
 
 export function removeProject(tenantId: string, id: string): void {
-  saveProjects(tenantId, loadProjects(tenantId).filter((p) => p.id !== id));
+  saveProjects(
+    tenantId,
+    loadProjects(tenantId).filter((p) => p.id !== id),
+  );
   if (isBrowser()) window.localStorage.removeItem(VERSIONS_KEY(tenantId, id));
 }
 
@@ -97,8 +98,5 @@ export function appendVersion(tenantId: string, version: PlannerProjectVersion):
   list.unshift(version);
   // manter até 50 versões locais
   const trimmed = list.slice(0, 50);
-  window.localStorage.setItem(
-    VERSIONS_KEY(tenantId, version.projectId),
-    JSON.stringify(trimmed),
-  );
+  window.localStorage.setItem(VERSIONS_KEY(tenantId, version.projectId), JSON.stringify(trimmed));
 }

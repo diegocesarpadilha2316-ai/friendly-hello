@@ -28,7 +28,12 @@ function fromCSV(text: string): ImportResult {
       errors.push(`linha ${i + 1}: id/name ausentes`);
       continue;
     }
-    items.push({ id: row.id, name: row.name, sku: row.sku ?? `DR-${row.id}`, description: row.description ?? row.name });
+    items.push({
+      id: row.id,
+      name: row.name,
+      sku: row.sku ?? `DR-${row.id}`,
+      description: row.description ?? row.name,
+    });
   }
   return { format: "csv", items, errors };
 }
@@ -36,7 +41,8 @@ function fromCSV(text: string): ImportResult {
 function fromJSON(text: string): ImportResult {
   try {
     const parsed = JSON.parse(text) as unknown;
-    if (!Array.isArray(parsed)) return { format: "json", items: [], errors: ["esperado array no topo"] };
+    if (!Array.isArray(parsed))
+      return { format: "json", items: [], errors: ["esperado array no topo"] };
     return { format: "json", items: parsed as Partial<CatalogItem>[], errors: [] };
   } catch (err) {
     return { format: "json", items: [], errors: [(err as Error).message] };

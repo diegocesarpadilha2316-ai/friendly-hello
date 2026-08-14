@@ -33,12 +33,7 @@ import {
 } from "./spec";
 
 export type LaundryLayoutSource =
-  | "explicito"
-  | "legado"
-  | "preset"
-  | "entre-paredes"
-  | "preset-automatico"
-  | "fallback";
+  "explicito" | "legado" | "preset" | "entre-paredes" | "preset-automatico" | "fallback";
 
 export interface LaundryPlacement {
   readonly id: string;
@@ -133,7 +128,9 @@ function place(
     }
     const widthMm = Math.min(wanted, available);
     if (widthMm < minWidthMm) {
-      warnings.push(`módulo ${kind} descartado: ${Math.round(widthMm)} mm < mínimo ${minWidthMm} mm`);
+      warnings.push(
+        `módulo ${kind} descartado: ${Math.round(widthMm)} mm < mínimo ${minWidthMm} mm`,
+      );
       dropped.push(kind);
       return;
     }
@@ -181,7 +178,9 @@ function modulesFromPreset(preset: LaundryPreset, widthMm: number): LaundryModul
       kind,
       widthMm: p.defaultWidthMm,
       ...(tubKinds.includes(kind) ? { tub: { type: preset.tub } } : {}),
-      ...(preset.countertop && p.countertop ? { countertop: { material: preset.countertop as never } } : {}),
+      ...(preset.countertop && p.countertop
+        ? { countertop: { material: preset.countertop as never } }
+        : {}),
     };
     const min = laundryMinWidthMm(base);
     if (left < min) continue;

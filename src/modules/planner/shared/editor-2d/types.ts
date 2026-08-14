@@ -7,22 +7,9 @@
  * continua sob `PlannerEditorProvider` do Core do módulo.
  */
 export type Editor2DTool =
-  | "select"
-  | "pan"
-  | "wall"
-  | "door"
-  | "window"
-  | "floor"
-  | "ceiling"
-  | "guide";
+  "select" | "pan" | "wall" | "door" | "window" | "floor" | "ceiling" | "guide";
 
-export type Editor2DLayerId =
-  | "walls"
-  | "openings"
-  | "floors"
-  | "ceilings"
-  | "guides"
-  | "furniture";
+export type Editor2DLayerId = "walls" | "openings" | "floors" | "ceilings" | "guides" | "furniture";
 
 export interface Editor2DLayerState {
   id: Editor2DLayerId;

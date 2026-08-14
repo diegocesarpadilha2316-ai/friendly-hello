@@ -110,13 +110,7 @@ export interface CuttingPlan {
 // ─── Ferragens (BOM) ────────────────────────────────────────────
 
 export type HardwareBomKind =
-  | HardwareKind
-  | "parafuso"
-  | "minifix"
-  | "cavilha"
-  | "confirmat"
-  | "led"
-  | "transformador";
+  HardwareKind | "parafuso" | "minifix" | "cavilha" | "confirmat" | "led" | "transformador";
 
 export interface HardwareBomRow {
   kind: HardwareBomKind;
@@ -175,13 +169,7 @@ export interface TimeBreakdown {
 // ─── Produção (fluxo) ───────────────────────────────────────────
 
 export type ProductionStageId =
-  | "fila"
-  | "separacao"
-  | "producao"
-  | "montagem"
-  | "conferencia"
-  | "expedicao"
-  | "entrega";
+  "fila" | "separacao" | "producao" | "montagem" | "conferencia" | "expedicao" | "entrega";
 
 export interface ProductionStage {
   id: ProductionStageId;

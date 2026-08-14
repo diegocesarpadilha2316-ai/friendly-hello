@@ -5,11 +5,7 @@
  * A instalação de um item transforma-o em `CatalogItem` (Fase 3.24) e a
  * inserção continua passando por `updateProject()` do PlannerEditorProvider.
  */
-import type {
-  CatalogCategoryId,
-  CatalogManufacturerId,
-  CatalogItem,
-} from "../catalog/types";
+import type { CatalogCategoryId, CatalogManufacturerId, CatalogItem } from "../catalog/types";
 
 export type MarketplaceCategoryId =
   | "cozinhas"
@@ -31,11 +27,7 @@ export type MarketplaceCategoryId =
   | "objetos"
   | "ambientes";
 
-export type MarketplaceManufacturerId =
-  | CatalogManufacturerId
-  | "sudati"
-  | "zen"
-  | "metalnox";
+export type MarketplaceManufacturerId = CatalogManufacturerId | "sudati" | "zen" | "metalnox";
 
 export type MarketplaceLicense = "free" | "premium" | "empresa" | "marketplace";
 
@@ -113,10 +105,7 @@ export interface MarketplaceItem {
 }
 
 export type MarketplaceInstallStatus =
-  | "not_installed"
-  | "installed"
-  | "update_available"
-  | "removed";
+  "not_installed" | "installed" | "update_available" | "removed";
 
 export interface MarketplaceInstalledRecord {
   readonly itemId: string;

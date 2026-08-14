@@ -9,9 +9,7 @@ import { requireTenant } from "@/core/middleware/require-tenant";
 export const tickRenderJobs = createServerFn({ method: "POST" })
   .middleware([requireTenant])
   .handler(async () => {
-    const { tickRenderWorkers } = await import(
-      "@/core/workers/render-worker.server"
-    );
+    const { tickRenderWorkers } = await import("@/core/workers/render-worker.server");
     const result = await tickRenderWorkers({ maxJobs: 12 });
     return result;
   });

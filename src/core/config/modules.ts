@@ -96,6 +96,7 @@ export const modules: readonly ModuleDefinition[] = [
   },
 ] as const;
 
-export const moduleById = Object.fromEntries(
-  modules.map((m) => [m.id, m]),
-) as Record<AppModule, ModuleDefinition>;
+export const moduleById = Object.fromEntries(modules.map((m) => [m.id, m])) as Record<
+  AppModule,
+  ModuleDefinition
+>;

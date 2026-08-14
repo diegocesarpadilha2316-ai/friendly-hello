@@ -66,7 +66,12 @@ export function validateKitchenLayout(result: KitchenLayoutResult): KitchenValid
   const wallLength = new Map(result.walls.map((w) => [w.id, w.lengthMm]));
   for (const p of result.placements) {
     if (p.xMm < -1) {
-      errors.push({ code: "fora-parede", level: "error", wallId: p.wallId, message: `${p.id} começa fora da parede.` });
+      errors.push({
+        code: "fora-parede",
+        level: "error",
+        wallId: p.wallId,
+        message: `${p.id} começa fora da parede.`,
+      });
     }
     const len = wallLength.get(p.wallId);
     if (len !== undefined && p.xMm + p.widthMm > len + 1) {
@@ -78,7 +83,12 @@ export function validateKitchenLayout(result: KitchenLayoutResult): KitchenValid
       });
     }
     if (p.widthMm <= 0) {
-      errors.push({ code: "largura-invalida", level: "error", wallId: p.wallId, message: `${p.id} tem largura não positiva.` });
+      errors.push({
+        code: "largura-invalida",
+        level: "error",
+        wallId: p.wallId,
+        message: `${p.id} tem largura não positiva.`,
+      });
     }
     if (p.widthMm < cfg.minModuleWidthMm) {
       warnings.push({
@@ -158,7 +168,10 @@ export function validateKitchenLayout(result: KitchenLayoutResult): KitchenValid
   // A bancada não pode cruzar uma abertura de porta.
   for (const door of result.reservations.filter((r) => r.kind === "porta")) {
     const crossing = result.countertopRuns.find(
-      (r) => r.wallId === door.wallId && r.startMm < door.xMm + door.widthMm - 1 && door.xMm < r.endMm - 1,
+      (r) =>
+        r.wallId === door.wallId &&
+        r.startMm < door.xMm + door.widthMm - 1 &&
+        door.xMm < r.endMm - 1,
     );
     if (crossing) {
       errors.push({
@@ -209,7 +222,10 @@ export function validateKitchenLayout(result: KitchenLayoutResult): KitchenValid
     const pia = list.find((p) => p.kind === "balcao-pia");
     const cook = list.find((p) => p.kind === "balcao-cooktop");
     if (pia && cook) {
-      const gap = pia.xMm < cook.xMm ? cook.xMm - (pia.xMm + pia.widthMm) : pia.xMm - (cook.xMm + cook.widthMm);
+      const gap =
+        pia.xMm < cook.xMm
+          ? cook.xMm - (pia.xMm + pia.widthMm)
+          : pia.xMm - (cook.xMm + cook.widthMm);
       if (gap < e.prepAreaMinMm) {
         warnings.push({
           code: "area-preparo",
@@ -238,7 +254,10 @@ export function validateKitchenLayout(result: KitchenLayoutResult): KitchenValid
   const uppers = result.placements.filter((p) => p.level === "superior");
   for (const cook of result.reservations.filter((r) => r.kind === "cooktop")) {
     const above = uppers.find(
-      (u) => u.wallId === cook.wallId && u.xMm < cook.xMm + cook.widthMm - 1 && cook.xMm < u.xMm + u.widthMm - 1,
+      (u) =>
+        u.wallId === cook.wallId &&
+        u.xMm < cook.xMm + cook.widthMm - 1 &&
+        cook.xMm < u.xMm + u.widthMm - 1,
     );
     if (above) {
       errors.push({
@@ -253,7 +272,10 @@ export function validateKitchenLayout(result: KitchenLayoutResult): KitchenValid
   /* ── 8. aéreo atravessando janela ── */
   for (const janela of result.reservations.filter((r) => r.kind === "janela")) {
     const hit = uppers.find(
-      (u) => u.wallId === janela.wallId && u.xMm < janela.xMm + janela.widthMm - 1 && janela.xMm < u.xMm + u.widthMm - 1,
+      (u) =>
+        u.wallId === janela.wallId &&
+        u.xMm < janela.xMm + janela.widthMm - 1 &&
+        janela.xMm < u.xMm + u.widthMm - 1,
     );
     if (hit) {
       errors.push({
@@ -318,7 +340,11 @@ export function validateKitchenLayout(result: KitchenLayoutResult): KitchenValid
 
   /* ── 11. cozinha sem pia ── */
   if (result.placements.length > 0 && !result.placements.some((p) => p.kind === "balcao-pia")) {
-    warnings.push({ code: "sem-pia", level: "info", message: "Nenhum módulo de pia definido no layout." });
+    warnings.push({
+      code: "sem-pia",
+      level: "info",
+      message: "Nenhum módulo de pia definido no layout.",
+    });
   }
 
   return { ok: errors.length === 0, errors, warnings };

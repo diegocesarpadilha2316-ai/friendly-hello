@@ -80,11 +80,23 @@ export async function apiCall<T = unknown>(
         lastError = `HTTP ${res.status}: ${body.slice(0, 200)}`;
         if (res.status < 500) {
           recordFailure(key);
-          return { ok: false, status: res.status, data, error: lastError, durationMs: Date.now() - started };
+          return {
+            ok: false,
+            status: res.status,
+            data,
+            error: lastError,
+            durationMs: Date.now() - started,
+          };
         }
       } else {
         recordSuccess(key);
-        return { ok: true, status: res.status, data, error: null, durationMs: Date.now() - started };
+        return {
+          ok: true,
+          status: res.status,
+          data,
+          error: null,
+          durationMs: Date.now() - started,
+        };
       }
     } catch (err) {
       clearTimeout(timer);

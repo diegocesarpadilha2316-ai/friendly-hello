@@ -13,11 +13,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Event, EventPayload, EventPriority } from "@/core/events/types";
 import { renderTemplate } from "./templates";
-import type {
-  Notification,
-  NotificationChannel,
-  NotificationRule,
-} from "./types";
+import type { Notification, NotificationChannel, NotificationRule } from "./types";
 
 interface Ctx {
   supabase: SupabaseClient;
@@ -87,7 +83,9 @@ async function resolveAudience(
       .from("company_members")
       .select("user_id, role")
       .eq("company_id", ctx.tenantId);
-    return (data ?? []).filter((m) => roles.includes(m.role as string)).map((m) => m.user_id as string);
+    return (data ?? [])
+      .filter((m) => roles.includes(m.role as string))
+      .map((m) => m.user_id as string);
   }
   // Default: todos os membros ativos do tenant
   const { data } = await ctx.supabase
@@ -126,7 +124,7 @@ export const NotificationManager = {
       .eq("enabled", true)
       .eq("event_type", event.type);
     const created: Notification[] = [];
-    for (const r of (rulesRaw ?? [])) {
+    for (const r of rulesRaw ?? []) {
       const rule = mapRule(r);
       const audience = await resolveAudience(ctx, rule);
       for (const userId of audience) {

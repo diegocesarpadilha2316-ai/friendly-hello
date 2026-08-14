@@ -6,7 +6,8 @@ import type { CncOperation } from "./types";
 
 export function deriveGrooves(row: CutListRow): readonly CncOperation[] {
   const ops: CncOperation[] = [];
-  const L = row.lengthMm, W = row.widthMm;
+  const L = row.lengthMm,
+    W = row.widthMm;
 
   // Canal para fundo — 6mm de profundidade em laterais/base/tampo
   if (/lateral|base|tampo/i.test(row.name)) {
@@ -15,7 +16,9 @@ export function deriveGrooves(row: CutListRow): readonly CncOperation[] {
       partId: row.code,
       partCode: row.code,
       kind: "groove-back",
-      x: 10, y: 10, z: 0,
+      x: 10,
+      y: 10,
+      z: 0,
       widthMm: L - 20,
       heightMm: 6,
       depthMm: 8,
@@ -31,7 +34,9 @@ export function deriveGrooves(row: CutListRow): readonly CncOperation[] {
       partId: row.code,
       partCode: row.code,
       kind: "groove-led",
-      x: 40, y: W / 2, z: 0,
+      x: 40,
+      y: W / 2,
+      z: 0,
       widthMm: L - 80,
       heightMm: 12,
       depthMm: 10,
@@ -47,8 +52,12 @@ export function deriveGrooves(row: CutListRow): readonly CncOperation[] {
       partId: row.code,
       partCode: row.code,
       kind: "pocket",
-      x: 60, y: 60, z: 0,
-      widthMm: 40, heightMm: 20, depthMm: 10,
+      x: 60,
+      y: 60,
+      z: 0,
+      widthMm: 40,
+      heightMm: 20,
+      depthMm: 10,
       toolId: "endmill-8",
       estimatedSec: 14,
     });

@@ -15,10 +15,18 @@ import type {
 type Opt<T extends string> = { value: T; label: string; description: string };
 
 export const BACK_OPTIONS: readonly Opt<BackKind>[] = [
-  { value: "pregado", label: "Pregado", description: "Fundo pregado por fora — mais rápido, menos rígido." },
+  {
+    value: "pregado",
+    label: "Pregado",
+    description: "Fundo pregado por fora — mais rápido, menos rígido.",
+  },
   { value: "encaixado", label: "Encaixado", description: "Fundo encaixado em rebaixo de 6–9 mm." },
   { value: "canal", label: "Canal", description: "Canal fresado 4 mm, ideal para MDF 3 mm." },
-  { value: "rebaixado", label: "Rebaixado", description: "Rebaixo total nas laterais, base e tampo." },
+  {
+    value: "rebaixado",
+    label: "Rebaixado",
+    description: "Rebaixo total nas laterais, base e tampo.",
+  },
 ];
 
 export const BASE_OPTIONS: readonly Opt<BaseKind>[] = [

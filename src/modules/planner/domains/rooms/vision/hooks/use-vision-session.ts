@@ -80,7 +80,9 @@ export interface UseVisionSession {
 
 export function useVisionSession(): UseVisionSession {
   const editor = usePlannerEditor();
-  const [session, setSession] = useState<VisionSession>(() => emptySession(DEFAULT_VISION_PROVIDER_ID));
+  const [session, setSession] = useState<VisionSession>(() =>
+    emptySession(DEFAULT_VISION_PROVIDER_ID),
+  );
   const abortRef = useRef<AbortController | null>(null);
 
   // Limpa ObjectURLs ao desmontar.
@@ -116,7 +118,9 @@ export function useVisionSession(): UseVisionSession {
         setSession((prev) => ({
           ...prev,
           uploads: prev.uploads.map((u) =>
-            u.id === upload.id ? { ...u, status: "ready", width: meta.width, height: meta.height } : u,
+            u.id === upload.id
+              ? { ...u, status: "ready", width: meta.width, height: meta.height }
+              : u,
           ),
           updatedAt: new Date().toISOString(),
         }));
@@ -165,7 +169,9 @@ export function useVisionSession(): UseVisionSession {
     setSession((prev) => ({
       ...prev,
       status: prev.model ? "review" : "idle",
-      stages: prev.stages.map((s) => (s.status === "running" ? { ...s, status: "pending", progress: 0 } : s)),
+      stages: prev.stages.map((s) =>
+        s.status === "running" ? { ...s, status: "pending", progress: 0 } : s,
+      ),
       updatedAt: new Date().toISOString(),
     }));
   }, []);
@@ -271,7 +277,8 @@ export function useVisionSession(): UseVisionSession {
     session,
     mergedModel,
     isBusy: session.status === "processing" || session.status === "uploading",
-    canAnalyze: session.uploads.some((u) => u.status === "ready") && session.status !== "processing",
+    canAnalyze:
+      session.uploads.some((u) => u.status === "ready") && session.status !== "processing",
     canApply: !!mergedModel && (session.status === "review" || session.status === "applied"),
     addFiles,
     removeUpload,

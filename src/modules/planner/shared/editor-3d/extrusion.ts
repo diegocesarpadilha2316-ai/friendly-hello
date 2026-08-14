@@ -63,10 +63,10 @@ export interface FurnitureDescriptor {
   catalogItemId: string;
   cx: number;
   cz: number;
-  width: number;   // m (X)
-  depth: number;   // m (Z)
-  height: number;  // m (Y)
-  y: number;       // altura do centro (m)
+  width: number; // m (X)
+  depth: number; // m (Z)
+  height: number; // m (Y)
+  y: number; // altura do centro (m)
   rotationY: number; // rad
   materialId?: string;
   overrideColor?: string;
@@ -101,7 +101,10 @@ export interface Scene3DModel {
   bounds: { minX: number; maxX: number; minZ: number; maxZ: number; maxY: number };
 }
 
-function extrudeWall(p: Extract<Editor2DPrimitive, { kind: "wall" }>, wallHeight: number): WallDescriptor {
+function extrudeWall(
+  p: Extract<Editor2DPrimitive, { kind: "wall" }>,
+  wallHeight: number,
+): WallDescriptor {
   const x1 = p.x1 * MM;
   const y1 = p.y1 * MM;
   const x2 = p.x2 * MM;
@@ -172,10 +175,14 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
   };
 
   for (const p of primitives) {
-    if (p.kind === "wall") walls.push({ ...extrudeWall(p, wallHeight), overrideColor: colorFor(p.id) });
-    else if (p.kind === "floor") floors.push({ ...extrudeSlab(p, FLOOR_CENTER_Y), overrideColor: colorFor(p.id) });
-    else if (p.kind === "ceiling") ceilings.push({ ...extrudeSlab(p, CEILING_CENTER_Y), overrideColor: colorFor(p.id) });
-    else if (p.kind === "opening") openings.push({ ...extrudeOpening(p), overrideColor: colorFor(p.id) });
+    if (p.kind === "wall")
+      walls.push({ ...extrudeWall(p, wallHeight), overrideColor: colorFor(p.id) });
+    else if (p.kind === "floor")
+      floors.push({ ...extrudeSlab(p, FLOOR_CENTER_Y), overrideColor: colorFor(p.id) });
+    else if (p.kind === "ceiling")
+      ceilings.push({ ...extrudeSlab(p, CEILING_CENTER_Y), overrideColor: colorFor(p.id) });
+    else if (p.kind === "opening")
+      openings.push({ ...extrudeOpening(p), overrideColor: colorFor(p.id) });
     else if (p.kind === "furniture") {
       const w = p.width * MM;
       const d = p.depth * MM;
@@ -185,7 +192,10 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
         ft === "vidro" || ft === "reeded" || ft === "solid" || ft === "aberto"
           ? (ft as "vidro" | "reeded" | "solid" | "aberto")
           : undefined;
-      const tint = typeof p.params?.["glass:tint"] === "string" ? (p.params["glass:tint"] as string) : undefined;
+      const tint =
+        typeof p.params?.["glass:tint"] === "string"
+          ? (p.params["glass:tint"] as string)
+          : undefined;
       const strParam = (...keys: string[]): string | undefined => {
         for (const k of keys) {
           const v = p.params?.[k];
@@ -196,7 +206,8 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
       const numParam = (k: string): number | undefined => {
         const v = p.params?.[k];
         if (typeof v === "number" && Number.isFinite(v)) return v;
-        if (typeof v === "string" && v.trim() !== "" && Number.isFinite(Number(v))) return Number(v);
+        if (typeof v === "string" && v.trim() !== "" && Number.isFinite(Number(v)))
+          return Number(v);
         return undefined;
       };
       const boolParam = (k: string): boolean | undefined => {
@@ -209,7 +220,9 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
       const hasSink =
         boolParam("eng:sink") === true ||
         boolParam("hasSink") === true ||
-        /(?:pia|cuba|sob-pia|balcao-gourmet)/i.test(`${p.catalogItemId} ${p.params?.["eng:plumbing"] ?? ""}`);
+        /(?:pia|cuba|sob-pia|balcao-gourmet)/i.test(
+          `${p.catalogItemId} ${p.params?.["eng:plumbing"] ?? ""}`,
+        );
       // ── Ancoragem Y do móvel (Y = 0 é o TOPO do piso) ──
       // Módulos DE PAREDE reais (suspensos a 1400 mm do piso): apenas
       // aéreo, nicho e prateleira. Painel, cristaleira, roupeiro, torre
@@ -227,7 +240,7 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
       } else if (uppers.has(p.subtype)) {
         bottomY = 1.4; // suspenso a 1.4 m
       } else {
-        bottomY = 0;   // apoiado no piso (y=0)
+        bottomY = 0; // apoiado no piso (y=0)
       }
       // Clamp: nunca enterra abaixo do piso, nunca ultrapassa o teto.
       const ceilY = wallH > 0 ? wallH : Infinity;
@@ -278,18 +291,32 @@ export function buildScene3D(room: PlannerRoom, wallHeight: number): Scene3DMode
     });
   }
 
-  let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
+  let minX = Infinity,
+    maxX = -Infinity,
+    minZ = Infinity,
+    maxZ = -Infinity;
   const consider = (cx: number, cz: number, w: number, d: number) => {
-    minX = Math.min(minX, cx - w / 2); maxX = Math.max(maxX, cx + w / 2);
-    minZ = Math.min(minZ, cz - d / 2); maxZ = Math.max(maxZ, cz + d / 2);
+    minX = Math.min(minX, cx - w / 2);
+    maxX = Math.max(maxX, cx + w / 2);
+    minZ = Math.min(minZ, cz - d / 2);
+    maxZ = Math.max(maxZ, cz + d / 2);
   };
   for (const w of walls) consider(w.cx, w.cz, w.length, w.thickness);
   for (const s of floors) consider(s.cx, s.cz, s.width, s.depth);
   for (const f of furniture) consider(f.cx, f.cz, f.width, f.depth);
   if (!Number.isFinite(minX)) {
-    minX = 0; maxX = (room.dimensions.width || 5000) * MM;
-    minZ = 0; maxZ = (room.dimensions.depth || 5000) * MM;
+    minX = 0;
+    maxX = (room.dimensions.width || 5000) * MM;
+    minZ = 0;
+    maxZ = (room.dimensions.depth || 5000) * MM;
   }
 
-  return { walls, floors, ceilings, openings, furniture, bounds: { minX, maxX, minZ, maxZ, maxY: wallH } };
+  return {
+    walls,
+    floors,
+    ceilings,
+    openings,
+    furniture,
+    bounds: { minX, maxX, minZ, maxZ, maxY: wallH },
+  };
 }

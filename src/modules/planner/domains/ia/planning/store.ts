@@ -47,7 +47,11 @@ export function readStoredPlan(tenantId: string, projectId: string | null): Proj
   }
 }
 
-export function writeStoredPlan(plan: ProjectPlan | null, tenantId: string, projectId: string | null): void {
+export function writeStoredPlan(
+  plan: ProjectPlan | null,
+  tenantId: string,
+  projectId: string | null,
+): void {
   if (typeof window === "undefined" || !projectId) return;
   try {
     const k = key(tenantId, projectId);

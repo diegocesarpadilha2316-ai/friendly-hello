@@ -20,7 +20,11 @@ export function parseDWG(bytes: ArrayBuffer, filename: string): ImportResult {
     texts: [],
     previewSvg: null,
     warnings: [
-      { code: "dwg-binary", severity: "warning", message: "DWG é binário proprietário — exporte como DXF R12 para importação completa." },
+      {
+        code: "dwg-binary",
+        severity: "warning",
+        message: "DWG é binário proprietário — exporte como DXF R12 para importação completa.",
+      },
     ],
     createdAt: new Date().toISOString(),
   };

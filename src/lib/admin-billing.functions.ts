@@ -88,7 +88,10 @@ export const updatePaymentProvider = createServerFn({ method: "POST" })
   .inputValidator((raw) => updateInput.parse(raw))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const patch: Record<string, unknown> = { updated_by: context.userId, updated_at: new Date().toISOString() };
+    const patch: Record<string, unknown> = {
+      updated_by: context.userId,
+      updated_at: new Date().toISOString(),
+    };
     if (data.enabled !== undefined) patch.enabled = data.enabled;
     if (data.mode !== undefined) patch.mode = data.mode;
     if (data.publicKey !== undefined) patch.public_key = data.publicKey;

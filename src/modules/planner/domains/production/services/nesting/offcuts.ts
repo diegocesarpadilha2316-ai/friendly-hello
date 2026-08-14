@@ -4,7 +4,12 @@
  */
 import type { NestingBoard, NestingBoardSpec, NestingOffcut, NestingPlacement } from "./types";
 
-interface Rect { x: number; y: number; w: number; h: number }
+interface Rect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
 
 export function computeOffcuts(
   boardIndex: number,
@@ -17,14 +22,29 @@ export function computeOffcuts(
     const used: Rect = { x: pl.x, y: pl.y, w: pl.w, h: pl.h };
     const next: Rect[] = [];
     for (const r of free) {
-      if (!intersects(r, used)) { next.push(r); continue; }
+      if (!intersects(r, used)) {
+        next.push(r);
+        continue;
+      }
       // split into up to 4 rectangles around the used area
       if (used.y > r.y) next.push({ x: r.x, y: r.y, w: r.w, h: used.y - r.y });
       const bottomY = used.y + used.h;
       if (bottomY < r.y + r.h) next.push({ x: r.x, y: bottomY, w: r.w, h: r.y + r.h - bottomY });
-      if (used.x > r.x) next.push({ x: r.x, y: Math.max(r.y, used.y), w: used.x - r.x, h: Math.min(r.y + r.h, used.y + used.h) - Math.max(r.y, used.y) });
+      if (used.x > r.x)
+        next.push({
+          x: r.x,
+          y: Math.max(r.y, used.y),
+          w: used.x - r.x,
+          h: Math.min(r.y + r.h, used.y + used.h) - Math.max(r.y, used.y),
+        });
       const rightX = used.x + used.w;
-      if (rightX < r.x + r.w) next.push({ x: rightX, y: Math.max(r.y, used.y), w: r.x + r.w - rightX, h: Math.min(r.y + r.h, used.y + used.h) - Math.max(r.y, used.y) });
+      if (rightX < r.x + r.w)
+        next.push({
+          x: rightX,
+          y: Math.max(r.y, used.y),
+          w: r.x + r.w - rightX,
+          h: Math.min(r.y + r.h, used.y + used.h) - Math.max(r.y, used.y),
+        });
     }
     free.splice(0, free.length, ...next.filter((r) => r.w > 0 && r.h > 0));
   }

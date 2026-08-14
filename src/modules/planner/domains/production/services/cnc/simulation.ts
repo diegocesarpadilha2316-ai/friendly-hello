@@ -23,17 +23,53 @@ export function simulateProgram(row: CutListRow, machineId: string): CncSimulati
     }
     const tool = findTool(op.toolId);
     // aproximação em Z5
-    frames.push({ t, x: op.x, y: op.y, z: 5, toolId: op.toolId, operationId: op.id, rpm: tool?.rpm ?? 0, feed: 0 });
+    frames.push({
+      t,
+      x: op.x,
+      y: op.y,
+      z: 5,
+      toolId: op.toolId,
+      operationId: op.id,
+      rpm: tool?.rpm ?? 0,
+      feed: 0,
+    });
     // descida
     t += 1;
-    frames.push({ t, x: op.x, y: op.y, z: -op.depthMm, toolId: op.toolId, operationId: op.id, rpm: tool?.rpm ?? 0, feed: tool?.feedMmMin ?? 0 });
+    frames.push({
+      t,
+      x: op.x,
+      y: op.y,
+      z: -op.depthMm,
+      toolId: op.toolId,
+      operationId: op.id,
+      rpm: tool?.rpm ?? 0,
+      feed: tool?.feedMmMin ?? 0,
+    });
     // percurso lateral (rasgos)
     if (op.widthMm && op.heightMm) {
       t += Math.max(1, Math.round(op.widthMm / 100));
-      frames.push({ t, x: op.x + op.widthMm, y: op.y + op.heightMm, z: -op.depthMm, toolId: op.toolId, operationId: op.id, rpm: tool?.rpm ?? 0, feed: tool?.feedMmMin ?? 0 });
+      frames.push({
+        t,
+        x: op.x + op.widthMm,
+        y: op.y + op.heightMm,
+        z: -op.depthMm,
+        toolId: op.toolId,
+        operationId: op.id,
+        rpm: tool?.rpm ?? 0,
+        feed: tool?.feedMmMin ?? 0,
+      });
     }
     t += op.estimatedSec;
-    frames.push({ t, x: op.x, y: op.y, z: 5, toolId: op.toolId, operationId: op.id, rpm: tool?.rpm ?? 0, feed: 0 });
+    frames.push({
+      t,
+      x: op.x,
+      y: op.y,
+      z: 5,
+      toolId: op.toolId,
+      operationId: op.id,
+      rpm: tool?.rpm ?? 0,
+      feed: 0,
+    });
   }
 
   const issues = [
@@ -55,16 +91,23 @@ function detectCollisions(ops: readonly CncOperation[]): readonly import("./type
   const out: import("./types").CncIssue[] = [];
   for (let i = 0; i < ops.length; i++) {
     for (let j = i + 1; j < ops.length; j++) {
-      const a = ops[i], b = ops[j];
+      const a = ops[i],
+        b = ops[j];
       if (a.widthMm && a.heightMm && b.widthMm && b.heightMm) {
-        const overlap = !(b.x >= a.x + a.widthMm || b.x + b.widthMm <= a.x || b.y >= a.y + a.heightMm || b.y + b.heightMm <= a.y);
-        if (overlap) out.push({
-          severity: "warn",
-          kind: "collision",
-          operationId: b.id,
-          partCode: b.partCode,
-          message: `rasgos sobrepostos: ${a.id} × ${b.id}`,
-        });
+        const overlap = !(
+          b.x >= a.x + a.widthMm ||
+          b.x + b.widthMm <= a.x ||
+          b.y >= a.y + a.heightMm ||
+          b.y + b.heightMm <= a.y
+        );
+        if (overlap)
+          out.push({
+            severity: "warn",
+            kind: "collision",
+            operationId: b.id,
+            partCode: b.partCode,
+            message: `rasgos sobrepostos: ${a.id} × ${b.id}`,
+          });
       }
     }
   }

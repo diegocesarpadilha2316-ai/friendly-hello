@@ -12,8 +12,11 @@ export interface RealLightingRig {
   readonly ledPresets: readonly RenderLightPreset[];
 }
 
-export function buildLightingRig(hdriId: string | null, extraIds: readonly string[] = []): RealLightingRig {
-  const hdri = hdriId ? RENDER_HDRIS.find((h) => h.id === hdriId) ?? null : null;
+export function buildLightingRig(
+  hdriId: string | null,
+  extraIds: readonly string[] = [],
+): RealLightingRig {
+  const hdri = hdriId ? (RENDER_HDRIS.find((h) => h.id === hdriId) ?? null) : null;
   const sun = RENDER_LIGHT_PRESETS.find((l) => l.id === "light.sun.physical") ?? null;
   const ambient = RENDER_LIGHT_PRESETS.find((l) => l.id === "light.ambient.soft") ?? null;
   const extras = RENDER_LIGHT_PRESETS.filter((l) => extraIds.includes(l.id));

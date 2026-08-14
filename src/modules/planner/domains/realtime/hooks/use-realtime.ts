@@ -12,9 +12,19 @@ import { DEFAULT_REALTIME_CAMERA, switchCameraMode } from "../camera";
 import { DEFAULT_MOVEMENT } from "../movement";
 import { DEFAULT_COLLISION } from "../collision";
 import { DEFAULT_GRAVITY } from "../gravity";
-import { DEFAULT_LIGHTING, setTime as setLightTime, setWeather as setLightWeather } from "../lighting";
+import {
+  DEFAULT_LIGHTING,
+  setTime as setLightTime,
+  setWeather as setLightWeather,
+} from "../lighting";
 import { DEFAULT_ENVIRONMENT, environmentForWeather } from "../environment";
-import { EMPTY_SELECTION, selectOne, clearSelection, setHover, toggleSelection } from "../selection";
+import {
+  EMPTY_SELECTION,
+  selectOne,
+  clearSelection,
+  setHover,
+  toggleSelection,
+} from "../selection";
 import { autoQualityFor, detectHardware, performanceFor } from "../performance";
 import { reflectionForQuality } from "../reflection";
 import { planInteraction } from "../interaction";
@@ -132,45 +142,57 @@ export function useRealtime(): UseRealtime {
   }, []);
 
   const selectNode = useCallback((id: string) => setSelection((s) => selectOne(s, id)), []);
-  const toggleSelectNode = useCallback((id: string) => setSelection((s) => toggleSelection(s, id)), []);
+  const toggleSelectNode = useCallback(
+    (id: string) => setSelection((s) => toggleSelection(s, id)),
+    [],
+  );
   const hoverNode = useCallback((id: string | null) => setSelection((s) => setHover(s, id)), []);
   const clearSelectionAll = useCallback(() => setSelection((s) => clearSelection(s)), []);
 
-  const interact = useCallback((req: RealtimeInteractionRequest) => {
-    const outcome = planInteraction(req, { doors, drawers, leds });
-    if (outcome.doors.length) {
-      setDoors((cur) => outcome.doors.reduce((acc, d) => upsertDoor(acc, d), cur));
-    }
-    if (outcome.drawers.length) {
-      setDrawers((cur) => outcome.drawers.reduce((acc, d) => upsertDrawer(acc, d), cur));
-    }
-    if (outcome.leds.length) {
-      setLeds((cur) => {
-        let next = cur;
-        for (const l of outcome.leds) {
-          const idx = next.findIndex((x) => x.nodeId === l.nodeId);
-          if (idx < 0) next = [...next, l];
-          else {
-            const clone = [...next];
-            clone[idx] = l;
-            next = clone;
+  const interact = useCallback(
+    (req: RealtimeInteractionRequest) => {
+      const outcome = planInteraction(req, { doors, drawers, leds });
+      if (outcome.doors.length) {
+        setDoors((cur) => outcome.doors.reduce((acc, d) => upsertDoor(acc, d), cur));
+      }
+      if (outcome.drawers.length) {
+        setDrawers((cur) => outcome.drawers.reduce((acc, d) => upsertDrawer(acc, d), cur));
+      }
+      if (outcome.leds.length) {
+        setLeds((cur) => {
+          let next = cur;
+          for (const l of outcome.leds) {
+            const idx = next.findIndex((x) => x.nodeId === l.nodeId);
+            if (idx < 0) next = [...next, l];
+            else {
+              const clone = [...next];
+              clone[idx] = l;
+              next = clone;
+            }
           }
-        }
-        return next;
-      });
-    }
-    if (outcome.materials.length) {
-      setMaterials((cur) => outcome.materials.reduce((acc, m) => upsertOverride(acc, m), cur));
-    }
-  }, [doors, drawers, leds]);
+          return next;
+        });
+      }
+      if (outcome.materials.length) {
+        setMaterials((cur) => outcome.materials.reduce((acc, m) => upsertOverride(acc, m), cur));
+      }
+    },
+    [doors, drawers, leds],
+  );
 
   const addMeasure = useCallback((mode: RealtimeMeasureMode, a: RealtimeVec3, b: RealtimeVec3) => {
     setMeasures((cur) => [...cur, createMeasure(mode, a, b)]);
   }, []);
   const clearMeasures = useCallback(() => setMeasures([]), []);
 
-  const addHotspotFn = useCallback((h: RealtimeHotspot) => setHotspots((cur) => addHotspot(cur, h)), []);
-  const removeHotspotFn = useCallback((id: string) => setHotspots((cur) => removeHotspot(cur, id)), []);
+  const addHotspotFn = useCallback(
+    (h: RealtimeHotspot) => setHotspots((cur) => addHotspot(cur, h)),
+    [],
+  );
+  const removeHotspotFn = useCallback(
+    (id: string) => setHotspots((cur) => removeHotspot(cur, id)),
+    [],
+  );
 
   const screenshot = useCallback((): RealtimeMeasurePoint | null => {
     // Marcador determinístico para o consumidor decidir como capturar.
@@ -178,12 +200,37 @@ export function useRealtime(): UseRealtime {
   }, []);
 
   return {
-    viewport, camera, movement, collision, gravity, lighting, environment,
-    selection, doors, drawers, leds, materials, hotspots, measures,
-    hardware, performance, reflection, hasProject,
-    setNavigationMode, setQuality, setTime, setWeather,
-    selectNode, toggleSelectNode, hoverNode, clearSelectionAll,
-    interact, addMeasure, clearMeasures,
-    addHotspot: addHotspotFn, removeHotspot: removeHotspotFn, screenshot,
+    viewport,
+    camera,
+    movement,
+    collision,
+    gravity,
+    lighting,
+    environment,
+    selection,
+    doors,
+    drawers,
+    leds,
+    materials,
+    hotspots,
+    measures,
+    hardware,
+    performance,
+    reflection,
+    hasProject,
+    setNavigationMode,
+    setQuality,
+    setTime,
+    setWeather,
+    selectNode,
+    toggleSelectNode,
+    hoverNode,
+    clearSelectionAll,
+    interact,
+    addMeasure,
+    clearMeasures,
+    addHotspot: addHotspotFn,
+    removeHotspot: removeHotspotFn,
+    screenshot,
   };
 }

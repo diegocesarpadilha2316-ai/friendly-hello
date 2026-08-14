@@ -8,7 +8,7 @@ function seededNoise(x: number, y: number, seed = 1) {
 function canvasTexture(
   width: number,
   height: number,
-  draw: (ctx: CanvasRenderingContext2D, width: number, height: number) => void
+  draw: (ctx: CanvasRenderingContext2D, width: number, height: number) => void,
 ) {
   const canvas = document.createElement("canvas");
   canvas.width = width;
@@ -82,10 +82,16 @@ export function createFloorTexture() {
     ctx.strokeStyle = "rgba(70,50,38,0.28)";
     ctx.lineWidth = 5;
     for (let x = 0; x <= width; x += tile) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
     }
     for (let y = 0; y <= height; y += tile) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
     }
     for (let i = 0; i < 1800; i++) {
       const x = seededNoise(i, 4, 5) * width;
@@ -97,7 +103,6 @@ export function createFloorTexture() {
   texture.repeat.set(3, 2.4);
   return texture;
 }
-
 
 import type { MaterialDefinition } from "../../library/contracts/MaterialDefinition";
 

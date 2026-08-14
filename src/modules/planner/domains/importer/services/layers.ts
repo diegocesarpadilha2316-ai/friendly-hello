@@ -15,26 +15,46 @@ function classify(name: string): ImporterEntityRole {
   return "unknown";
 }
 
-export function summarizeLayers(entities: readonly ImporterEntity[], rawLayerNames: readonly string[] = []): readonly ImporterLayer[] {
+export function summarizeLayers(
+  entities: readonly ImporterEntity[],
+  rawLayerNames: readonly string[] = [],
+): readonly ImporterLayer[] {
   const map = new Map<string, ImporterLayer>();
   for (const name of rawLayerNames) {
     map.set(name, { id: name, name, visible: true, locked: false, count: 0, role: classify(name) });
   }
   for (const e of entities) {
-    const cur = map.get(e.layerId) ?? { id: e.layerId, name: e.layerId, visible: true, locked: false, count: 0, role: classify(e.layerId) };
+    const cur = map.get(e.layerId) ?? {
+      id: e.layerId,
+      name: e.layerId,
+      visible: true,
+      locked: false,
+      count: 0,
+      role: classify(e.layerId),
+    };
     map.set(e.layerId, { ...cur, count: cur.count + 1 });
   }
   return Array.from(map.values());
 }
 
-export function toggleLayerVisibility(layers: readonly ImporterLayer[], id: string): readonly ImporterLayer[] {
-  return layers.map((l) => l.id === id ? { ...l, visible: !l.visible } : l);
+export function toggleLayerVisibility(
+  layers: readonly ImporterLayer[],
+  id: string,
+): readonly ImporterLayer[] {
+  return layers.map((l) => (l.id === id ? { ...l, visible: !l.visible } : l));
 }
 
-export function toggleLayerLock(layers: readonly ImporterLayer[], id: string): readonly ImporterLayer[] {
-  return layers.map((l) => l.id === id ? { ...l, locked: !l.locked } : l);
+export function toggleLayerLock(
+  layers: readonly ImporterLayer[],
+  id: string,
+): readonly ImporterLayer[] {
+  return layers.map((l) => (l.id === id ? { ...l, locked: !l.locked } : l));
 }
 
-export function reassignLayerRole(layers: readonly ImporterLayer[], id: string, role: ImporterEntityRole): readonly ImporterLayer[] {
-  return layers.map((l) => l.id === id ? { ...l, role } : l);
+export function reassignLayerRole(
+  layers: readonly ImporterLayer[],
+  id: string,
+  role: ImporterEntityRole,
+): readonly ImporterLayer[] {
+  return layers.map((l) => (l.id === id ? { ...l, role } : l));
 }

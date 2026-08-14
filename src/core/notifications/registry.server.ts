@@ -14,9 +14,15 @@ import {
 
 class NotificationRegistryImpl {
   private readonly map = new Map<NotificationChannel, NotificationProviderDriver>();
-  register(p: NotificationProviderDriver) { this.map.set(p.channel, p); }
-  get(c: NotificationChannel) { return this.map.get(c); }
-  all(): readonly NotificationProviderDriver[] { return Array.from(this.map.values()); }
+  register(p: NotificationProviderDriver) {
+    this.map.set(p.channel, p);
+  }
+  get(c: NotificationChannel) {
+    return this.map.get(c);
+  }
+  all(): readonly NotificationProviderDriver[] {
+    return Array.from(this.map.values());
+  }
 }
 
 export const NotificationRegistry = new NotificationRegistryImpl();

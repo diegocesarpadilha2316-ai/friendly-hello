@@ -93,8 +93,7 @@ export function useInvalidateCache() {
   const fn = useServerFn(cacheInvalidate);
   const invalidate = useInvalidate();
   return useMutation({
-    mutationFn: (data: InvalidateInput) =>
-      fn({ data: { target: "", ...data } } as never),
+    mutationFn: (data: InvalidateInput) => fn({ data: { target: "", ...data } } as never),
     onSuccess: () => invalidate(),
   });
 }

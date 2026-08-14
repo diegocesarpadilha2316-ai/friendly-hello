@@ -41,9 +41,7 @@ function BibliotecaPage() {
         eyebrow="Planner"
         title="Biblioteca Inteligente"
         description="Catálogo paramétrico compartilhado por 2D, 3D, IA, Produção, Render e Lista de Corte."
-        actions={
-          <StatusBadge tone="success">{CATALOG_ITEMS.length} peças ativas</StatusBadge>
-        }
+        actions={<StatusBadge tone="success">{CATALOG_ITEMS.length} peças ativas</StatusBadge>}
       />
       <div className="mt-4 inline-flex items-center gap-1 rounded-lg border border-border/60 bg-background/60 p-1">
         {tabs.map((t) => (

@@ -58,7 +58,9 @@ function writeUsage(u: Record<string, number>) {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.setItem(KEY_USAGE, JSON.stringify(u));
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 export function useLibraryFavorites() {

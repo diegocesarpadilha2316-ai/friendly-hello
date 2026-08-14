@@ -51,7 +51,14 @@ export interface UsePlanningResult {
 }
 
 export function usePlanning(): UsePlanningResult {
-  const { report, orders: productionOrders, hasProject, isEmpty, projectName, clientName } = useProduction();
+  const {
+    report,
+    orders: productionOrders,
+    hasProject,
+    isEmpty,
+    projectName,
+    clientName,
+  } = useProduction();
   const [strategy, setStrategy] = useState<SequencingStrategy>("ia");
   const [reportScope, setReportScope] = useState<"diario" | "semanal" | "mensal">("semanal");
 
@@ -142,5 +149,14 @@ export function usePlanning(): UsePlanningResult {
       setReportScope,
       ai: planningAi,
     } satisfies UsePlanningResult;
-  }, [report, productionOrders, hasProject, isEmpty, projectName, clientName, strategy, reportScope]);
+  }, [
+    report,
+    productionOrders,
+    hasProject,
+    isEmpty,
+    projectName,
+    clientName,
+    strategy,
+    reportScope,
+  ]);
 }

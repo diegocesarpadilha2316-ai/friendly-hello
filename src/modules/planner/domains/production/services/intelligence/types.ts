@@ -9,12 +9,7 @@
 // ─── Máquinas & Operadores (catálogo determinístico) ───────────
 
 export type FactoryMachineKind =
-  | "seccionadora"
-  | "coladeira"
-  | "furadeira"
-  | "router"
-  | "montagem"
-  | "embalagem";
+  "seccionadora" | "coladeira" | "furadeira" | "router" | "montagem" | "embalagem";
 
 export interface FactoryMachine {
   id: string;
@@ -28,13 +23,7 @@ export interface FactoryMachine {
 }
 
 export type OperatorSkill =
-  | "corte"
-  | "usinagem"
-  | "montagem"
-  | "acabamento"
-  | "conferencia"
-  | "embalagem"
-  | "logistica";
+  "corte" | "usinagem" | "montagem" | "acabamento" | "conferencia" | "embalagem" | "logistica";
 
 export interface FactoryOperator {
   id: string;
@@ -66,13 +55,7 @@ export interface PrioritizedOrder {
 }
 
 export type RoutingStage =
-  | "corte"
-  | "coladeira"
-  | "usinagem"
-  | "montagem"
-  | "conferencia"
-  | "embalagem"
-  | "expedicao";
+  "corte" | "coladeira" | "usinagem" | "montagem" | "conferencia" | "embalagem" | "expedicao";
 
 export interface RoutingStep {
   stage: RoutingStage;
@@ -92,12 +75,7 @@ export interface RoutingPlan {
 
 // ─── Filas de produção ─────────────────────────────────────────
 
-export type QueueKind =
-  | "producao"
-  | "cnc"
-  | "montagem"
-  | "embalagem"
-  | "entrega";
+export type QueueKind = "producao" | "cnc" | "montagem" | "embalagem" | "entrega";
 
 export interface QueueTicket {
   id: string;

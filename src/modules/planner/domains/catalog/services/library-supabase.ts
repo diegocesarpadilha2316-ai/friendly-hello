@@ -8,7 +8,11 @@
  * store ou motor é criado.
  */
 import { getSupabaseBrowser } from "@/core/lib/supabase/client";
-import { getPbrMaterial, isPbrId, listPbrMaterials } from "@/modules/planner/shared/materials/pbr-catalog";
+import {
+  getPbrMaterial,
+  isPbrId,
+  listPbrMaterials,
+} from "@/modules/planner/shared/materials/pbr-catalog";
 
 export interface LibraryMaterial {
   readonly id: string;
@@ -206,9 +210,7 @@ export async function searchLibraryMaterials(params: {
 }
 
 /** Resolver síncrono para consumidores em batch (pricing, exportações). */
-export function resolveLibraryMaterialsSync(
-  ids: readonly string[],
-): Map<string, LibraryMaterial> {
+export function resolveLibraryMaterialsSync(ids: readonly string[]): Map<string, LibraryMaterial> {
   const out = new Map<string, LibraryMaterial>();
   for (const id of ids) {
     const m = cache.get(id);

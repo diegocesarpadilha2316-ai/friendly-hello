@@ -12,7 +12,10 @@ export const DEFAULT_RETRY_POLICY: RetryPolicy = {
   jitter: true,
 };
 
-export function nextRetryDelayMs(attempt: number, policy: RetryPolicy = DEFAULT_RETRY_POLICY): number {
+export function nextRetryDelayMs(
+  attempt: number,
+  policy: RetryPolicy = DEFAULT_RETRY_POLICY,
+): number {
   const exp = Math.min(policy.maxMs, policy.baseMs * 2 ** Math.max(0, attempt - 1));
   if (!policy.jitter) return exp;
   const rand = 0.5 + Math.random() * 0.5;

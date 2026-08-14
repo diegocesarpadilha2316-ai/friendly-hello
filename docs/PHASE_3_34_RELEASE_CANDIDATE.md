@@ -16,28 +16,28 @@
 
 ### Contagens
 
-| Item | Quantidade |
-| --- | --- |
-| Domínios do Planner | **20** (`src/modules/planner/domains/*`) |
-| Diretórios de código no Planner | **122** |
-| Arquivos `.ts` / `.tsx` no Planner | **546** |
-| Hooks (`use-*`) na plataforma | **46** |
-| Componentes React | **129** |
-| Rotas TanStack | **77** |
-| Rotas do Planner | **16** |
-| Server functions (`*.functions.ts`) | **19** |
-| Migrations SQL | **20** (`db/migrations/001..020`) |
-| Providers de IA suportados | **9** (Lovable, DeepSeek, OpenAI, Google, Anthropic, OpenRouter, Mistral, Grok, Ollama) |
-| Fabricantes na Biblioteca Premium | **18+** |
-| Categorias na Biblioteca Premium | **24** |
-| Módulos da plataforma | **8** (Planner, Sites, Sistemas, CRM, Financeiro, Marketplace, Automação, IA) |
-| Domínios administrativos | **16+** |
+| Item                                | Quantidade                                                                              |
+| ----------------------------------- | --------------------------------------------------------------------------------------- |
+| Domínios do Planner                 | **20** (`src/modules/planner/domains/*`)                                                |
+| Diretórios de código no Planner     | **122**                                                                                 |
+| Arquivos `.ts` / `.tsx` no Planner  | **546**                                                                                 |
+| Hooks (`use-*`) na plataforma       | **46**                                                                                  |
+| Componentes React                   | **129**                                                                                 |
+| Rotas TanStack                      | **77**                                                                                  |
+| Rotas do Planner                    | **16**                                                                                  |
+| Server functions (`*.functions.ts`) | **19**                                                                                  |
+| Migrations SQL                      | **20** (`db/migrations/001..020`)                                                       |
+| Providers de IA suportados          | **9** (Lovable, DeepSeek, OpenAI, Google, Anthropic, OpenRouter, Mistral, Grok, Ollama) |
+| Fabricantes na Biblioteca Premium   | **18+**                                                                                 |
+| Categorias na Biblioteca Premium    | **24**                                                                                  |
+| Módulos da plataforma               | **8** (Planner, Sites, Sistemas, CRM, Financeiro, Marketplace, Automação, IA)           |
+| Domínios administrativos            | **16+**                                                                                 |
 
 ### Auditoria por domínio
 
 Editor 2D · Editor 3D · Realtime · Render · Render Local · Ultra · Vídeo ·
 Vídeo Local · IA · Importador · Biblioteca · Biblioteca Premium ·
-Marketplace *(beta)* · Catálogo · Configurador · Produção · Industrial ·
+Marketplace _(beta)_ · Catálogo · Configurador · Produção · Industrial ·
 Fábrica 4.0 · Plano de Corte · CNC · PCP · MRP · SQL · Auth · Storage ·
 Créditos · Planos · Admin — **27 domínios OK · 1 beta · 0 stubs**.
 
@@ -64,15 +64,15 @@ library/marketplace.
 
 ### Classificação
 
-| Categoria | Nota |
-| --- | --- |
-| Arquitetura | **A+** |
-| Escalabilidade | **A+** |
-| Performance | **A** |
-| Segurança | **A** |
-| Qualidade de código | **A+** |
-| Organização | **A+** |
-| Preparação comercial | **A** |
+| Categoria                | Nota                               |
+| ------------------------ | ---------------------------------- |
+| Arquitetura              | **A+**                             |
+| Escalabilidade           | **A+**                             |
+| Performance              | **A**                              |
+| Segurança                | **A**                              |
+| Qualidade de código      | **A+**                             |
+| Organização              | **A+**                             |
+| Preparação comercial     | **A**                              |
 | **Pronto para produção** | **✅ Sim — Beta Fechado liberado** |
 
 ### Checklist final

@@ -1,8 +1,8 @@
-import { RoomSpec } from './types';
+import { RoomSpec } from "./types";
 
 export const DEFAULT_ROOM: RoomSpec = {
-  id: 'default-room',
-  name: 'Cozinha',
+  id: "default-room",
+  name: "Cozinha",
   widthMm: 3000,
   depthMm: 4000,
   heightMm: 2700,

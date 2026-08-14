@@ -27,8 +27,9 @@ const KIND_LABELS: Record<VideoTrackKind, string> = {
 
 export function Timeline({ timeline }: TimelineProps) {
   const total = Math.max(1, totalDuration(timeline));
-  const marks = Array.from({ length: Math.min(20, Math.ceil(total)) + 1 }, (_, i) =>
-    (i * total) / Math.min(20, Math.ceil(total)),
+  const marks = Array.from(
+    { length: Math.min(20, Math.ceil(total)) + 1 },
+    (_, i) => (i * total) / Math.min(20, Math.ceil(total)),
   );
   const rows: readonly VideoTrackKind[] = [
     "camera",
@@ -43,8 +44,12 @@ export function Timeline({ timeline }: TimelineProps) {
   return (
     <div className="rounded-2xl border border-border/60 bg-background/50 p-3 backdrop-blur">
       <div className="mb-2 flex items-center justify-between text-[10px] uppercase tracking-widest text-muted-foreground">
-        <span>Timeline · {timeline.fps}fps · {total.toFixed(1)}s</span>
-        <span>{timeline.sequences.length} seq · {timeline.tracks.length} tracks</span>
+        <span>
+          Timeline · {timeline.fps}fps · {total.toFixed(1)}s
+        </span>
+        <span>
+          {timeline.sequences.length} seq · {timeline.tracks.length} tracks
+        </span>
       </div>
 
       {/* Régua */}

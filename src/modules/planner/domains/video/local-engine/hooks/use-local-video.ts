@@ -90,7 +90,14 @@ export function useLocalVideo(): UseLocalVideo {
   );
 
   const active = useMemo(
-    () => queue.find((j) => j.status !== "queued" && j.status !== "done" && j.status !== "cancelled" && j.status !== "failed") ?? null,
+    () =>
+      queue.find(
+        (j) =>
+          j.status !== "queued" &&
+          j.status !== "done" &&
+          j.status !== "cancelled" &&
+          j.status !== "failed",
+      ) ?? null,
     [queue],
   );
 
@@ -129,7 +136,9 @@ export function useLocalVideo(): UseLocalVideo {
     };
 
     void run();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [queue, active, finish]);
 
   const enqueue = useCallback(

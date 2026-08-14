@@ -6,16 +6,19 @@ import type { CncProgram, CncTool } from "./types";
 
 export function programToCsv(programs: readonly CncProgram[]): string {
   const header = ["part", "machine", "format", "operations", "tools", "estimatedMin"].join(",");
-  const rows = programs.map(
-    (p) =>
-      [p.partCode, p.machineId, p.format, p.operations.length, p.tools.length, p.estimatedMin].join(","),
+  const rows = programs.map((p) =>
+    [p.partCode, p.machineId, p.format, p.operations.length, p.tools.length, p.estimatedMin].join(
+      ",",
+    ),
   );
   return [header, ...rows].join("\n");
 }
 
 export function toolListCsv(tools: readonly CncTool[]): string {
   const header = ["id", "kind", "diameter", "rpm", "feed", "maxDepth", "material"].join(",");
-  const rows = tools.map((t) => [t.id, t.kind, t.diameterMm, t.rpm, t.feedMmMin, t.maxDepthMm, t.material].join(","));
+  const rows = tools.map((t) =>
+    [t.id, t.kind, t.diameterMm, t.rpm, t.feedMmMin, t.maxDepthMm, t.material].join(","),
+  );
   return [header, ...rows].join("\n");
 }
 
@@ -42,7 +45,9 @@ export function programToExcelXml(programs: readonly CncProgram[]): string {
 export function zipManifest(programs: readonly CncProgram[]): string {
   const lines = ["# Dioris CNC — manifesto"];
   for (const p of programs) {
-    lines.push(`${p.partCode}.${p.format} (${p.operations.length} operações · ${p.estimatedMin}min)`);
+    lines.push(
+      `${p.partCode}.${p.format} (${p.operations.length} operações · ${p.estimatedMin}min)`,
+    );
   }
   return lines.join("\n");
 }

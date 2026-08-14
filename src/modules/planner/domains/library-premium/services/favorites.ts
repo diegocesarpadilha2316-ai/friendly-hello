@@ -25,7 +25,10 @@ export function listFavorites(): readonly PremiumFavorite[] {
   return read();
 }
 
-export function toggleFavorite(id: string, kind: PremiumFavorite["kind"]): readonly PremiumFavorite[] {
+export function toggleFavorite(
+  id: string,
+  kind: PremiumFavorite["kind"],
+): readonly PremiumFavorite[] {
   const list = read();
   const i = list.findIndex((f) => f.id === id && f.kind === kind);
   if (i >= 0) list.splice(i, 1);

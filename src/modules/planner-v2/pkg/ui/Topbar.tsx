@@ -15,7 +15,7 @@ import {
   Save,
   Share2,
   Undo2,
-  ZoomIn
+  ZoomIn,
 } from "lucide-react";
 import { usePlannerStore } from "../state/usePlannerStore";
 import { useImmersiveStore } from "../state/useImmersiveStore";
@@ -38,7 +38,7 @@ const toolList: { label: string; icon: React.ReactNode; mode?: ToolMode }[] = [
   { label: "Render", icon: <Camera size={17} /> },
   { label: "Planta 2D", icon: <Grid2X2 size={17} /> },
   { label: "Lista de Corte", icon: <ListTree size={17} /> },
-  { label: "Orçamento", icon: <Calculator size={17} /> }
+  { label: "Orçamento", icon: <Calculator size={17} /> },
 ];
 
 export function Topbar() {
@@ -72,7 +72,13 @@ export function Topbar() {
             type="button"
             key={tool.label}
             className={`tool ${tool.mode === toolMode ? "active" : ""}`}
-            disabled={tool.label === "Desfazer" ? !canUndo() : tool.label === "Refazer" ? !canRedo() : undefined}
+            disabled={
+              tool.label === "Desfazer"
+                ? !canUndo()
+                : tool.label === "Refazer"
+                  ? !canRedo()
+                  : undefined
+            }
             onClick={() => {
               if (tool.mode) setToolMode(tool.mode);
               if (tool.label === "Novo") newProject();
@@ -80,7 +86,8 @@ export function Topbar() {
               if (tool.label === "Salvar") saveProject();
               if (tool.label === "Desfazer") undo();
               if (tool.label === "Refazer") redo();
-              if (tool.label === "Render") window.dispatchEvent(new CustomEvent("dioris:open-render-final"));
+              if (tool.label === "Render")
+                window.dispatchEvent(new CustomEvent("dioris:open-render-final"));
               if (tool.label === "Lista de Corte") setRightTab("fabrication");
             }}
           >
@@ -88,15 +95,24 @@ export function Topbar() {
             <span>{tool.label}</span>
           </button>
         ))}
-        <button type="button" className={`tool ${navigationMode === "walk" ? "active" : ""}`} onClick={() => setNavigationMode(navigationMode === "walk" ? "orbit" : "walk")} aria-pressed={navigationMode === "walk"}>
+        <button
+          type="button"
+          className={`tool ${navigationMode === "walk" ? "active" : ""}`}
+          onClick={() => setNavigationMode(navigationMode === "walk" ? "orbit" : "walk")}
+          aria-pressed={navigationMode === "walk"}
+        >
           <DoorOpen size={17} />
           <span>{navigationMode === "walk" ? "Sair do modo Entrar" : "Entrar"}</span>
         </button>
       </nav>
 
       <div className="top-actions">
-        <button type="button" className="primary" onClick={saveProject}><Save size={16} /> Salvar</button>
-        <button type="button" className="secondary"><Share2 size={16} /> Compartilhar</button>
+        <button type="button" className="primary" onClick={saveProject}>
+          <Save size={16} /> Salvar
+        </button>
+        <button type="button" className="secondary">
+          <Share2 size={16} /> Compartilhar
+        </button>
       </div>
     </header>
   );

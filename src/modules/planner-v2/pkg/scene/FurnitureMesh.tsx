@@ -7,7 +7,7 @@ const colors: Record<string, string> = {
   wood: "#7a4f2c",
   stone: "#cbbba6",
   white: "#e8e5df",
-  graphite: "#4a4745"
+  graphite: "#4a4745",
 };
 
 export function FurnitureMesh({ item }: { item: FurnitureItem }) {

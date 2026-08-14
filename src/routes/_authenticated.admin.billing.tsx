@@ -15,12 +15,7 @@ import {
   Settings2,
 } from "lucide-react";
 import { app } from "@/core/config";
-import {
-  PageContainer,
-  PageHeader,
-  StatusBadge,
-  EmptyState,
-} from "@/core/components/ui-kit";
+import { PageContainer, PageHeader, StatusBadge, EmptyState } from "@/core/components/ui-kit";
 import { useIsPlatformAdmin } from "@/core/hooks";
 import {
   listPaymentProviders,
@@ -107,18 +102,18 @@ function AdminBillingContent() {
           <Settings2 className="mt-0.5 h-4 w-4 text-primary" />
           <div>
             <p className="text-foreground">
-              Cada provedor é um adaptador plugável. Chaves secretas (Access Token, Secret Key, etc.)
-              ficam armazenadas com segurança no cofre da plataforma —{" "}
+              Cada provedor é um adaptador plugável. Chaves secretas (Access Token, Secret Key,
+              etc.) ficam armazenadas com segurança no cofre da plataforma —{" "}
               <strong className="text-foreground">nunca no banco</strong>.
             </p>
             <p className="mt-1">
-              Preencha aqui o modo (sandbox/live), a chave pública e ative quando estiver pronto.
-              A URL do webhook é gerada automaticamente e você cola no painel do provedor.
+              Preencha aqui o modo (sandbox/live), a chave pública e ative quando estiver pronto. A
+              URL do webhook é gerada automaticamente e você cola no painel do provedor.
             </p>
             <p className="mt-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-[12px] text-primary">
-              <strong>Modo padrão: Checkout Transparente.</strong> Todo pagamento (Pix, cartão, boleto,
-              assinatura) roda inline dentro da Dioris via SDK do provedor — nunca redireciona para
-              Checkout Pro / hosted checkout. Isso preserva marca, UX e conversão.
+              <strong>Modo padrão: Checkout Transparente.</strong> Todo pagamento (Pix, cartão,
+              boleto, assinatura) roda inline dentro da Dioris via SDK do provedor — nunca
+              redireciona para Checkout Pro / hosted checkout. Isso preserva marca, UX e conversão.
             </p>
           </div>
         </div>
@@ -135,12 +130,12 @@ function AdminBillingContent() {
           <div className="flex items-center gap-2 font-medium">
             <AlertTriangle className="h-4 w-4" /> Erro ao carregar provedores
           </div>
-          <p className="mt-2 text-destructive/80">
-            {(query.error as Error).message}
-          </p>
+          <p className="mt-2 text-destructive/80">{(query.error as Error).message}</p>
           <p className="mt-2 text-xs text-destructive/70">
             Se a mensagem citar a tabela <code>payment_providers</code>, rode a migration
-            <code className="mx-1 rounded bg-destructive/10 px-1">db/migrations/042_payment_providers.sql</code>
+            <code className="mx-1 rounded bg-destructive/10 px-1">
+              db/migrations/042_payment_providers.sql
+            </code>
             no Supabase.
           </p>
         </div>
@@ -171,7 +166,8 @@ function ProviderCard({ provider }: { provider: PaymentProviderDTO }) {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "payment-providers"] }),
   });
 
-  const webhookUrl = provider.webhookUrl ??
+  const webhookUrl =
+    provider.webhookUrl ??
     `${typeof window !== "undefined" ? window.location.origin : ""}/api/public/webhooks/${provider.code}`;
 
   const statusTone: "success" | "warning" | "danger" | "neutral" =
@@ -216,7 +212,11 @@ function ProviderCard({ provider }: { provider: PaymentProviderDTO }) {
             mutation.mutate({
               code: provider.code,
               enabled: !provider.enabled,
-              status: !provider.enabled ? (provider.publicKey ? "test" : "not_configured") : "disabled",
+              status: !provider.enabled
+                ? provider.publicKey
+                  ? "test"
+                  : "not_configured"
+                : "disabled",
             })
           }
           className={`relative h-6 w-11 rounded-full transition ${
@@ -286,8 +286,8 @@ function ProviderCard({ provider }: { provider: PaymentProviderDTO }) {
                 ))}
               </ul>
               <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-                Adicione essas chaves no cofre de secrets da plataforma quando quiser ativar.
-                Depois volte aqui e ligue o toggle.
+                Adicione essas chaves no cofre de secrets da plataforma quando quiser ativar. Depois
+                volte aqui e ligue o toggle.
               </p>
             </div>
           </div>

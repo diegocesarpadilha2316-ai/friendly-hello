@@ -57,12 +57,7 @@ export interface ConstructionBox {
  * "rodabanca" NÃO são frentes: são peças de acabamento (partKind
  * `acabamento`), entram na produção mas nunca no intertravamento.
  */
-export type FrontRole =
-  | "painel-fixo"
-  | "aba-canto"
-  | "tapa-vao"
-  | "acabamento"
-  | "rodabanca";
+export type FrontRole = "painel-fixo" | "aba-canto" | "tapa-vao" | "acabamento" | "rodabanca";
 
 /** Peça sólida produzida por um componente (chapa, frente, régua...). */
 export interface ConstructionPiece {

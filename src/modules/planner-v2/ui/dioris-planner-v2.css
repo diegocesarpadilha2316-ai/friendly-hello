@@ -51,7 +51,7 @@
   padding: 0 16px;
   background: #0c0e14;
   border-bottom: 1px solid var(--dioris-line);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   z-index: 20;
 }
 
@@ -130,7 +130,7 @@
 }
 
 .dioris-tool:hover {
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--dioris-text);
 }
 
@@ -276,7 +276,7 @@
 .dioris-left-tabs button:hover,
 .dioris-right-tabs button:hover {
   color: var(--dioris-text);
-  background: rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .dioris-left-tabs button.is-active,
@@ -312,7 +312,7 @@
 }
 
 .dioris-tree-row:hover {
-  background: rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.03);
   color: var(--dioris-text);
 }
 
@@ -409,7 +409,7 @@
   background: rgba(10, 12, 18, 0.95);
   border: 1px solid var(--dioris-line);
   border-radius: 12px;
-  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
 }
 
 .dioris-floating-toolbar button {

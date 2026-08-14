@@ -192,9 +192,7 @@ export function computeHealth(input: {
     ? Number(total.linesPct)
     : input.coverage.length === 0
       ? 0
-      : Math.round(
-          input.coverage.reduce((a, c) => a + c.linesPct, 0) / input.coverage.length,
-        );
+      : Math.round(input.coverage.reduce((a, c) => a + c.linesPct, 0) / input.coverage.length);
   return {
     totalSuites: input.suites.length,
     enabledSuites: input.suites.filter((s) => s.enabled).length,

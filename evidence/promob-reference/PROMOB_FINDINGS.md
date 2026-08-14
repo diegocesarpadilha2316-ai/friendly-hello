@@ -10,18 +10,18 @@ O ambiente possui piso/teto com dimensão aproximada de 5611,099 mm de largura p
 
 ## Módulos inferiores relevantes identificados
 
-| ID Promob | Dimensões W × H × D (mm) | Base X/Y/Z (mm) | Indicação técnica |
-|---|---:|---:|---|
-| `coz_inf_bal_1p_2015` | 700 × 700 × 580 | 1368,124 / 4326,688 / 150 | Balcão inferior de uma porta; componentes de corpo interno, fitas e corpo externo em `cin_cor_000`. |
-| `coz_cai_inf_bal_2015` | 700 × 700 × 580 | 1368,124 / 4326,688 / 150 | Caixa/corpo associado ao balcão inferior. |
-| `coz_cav_inf_bal_pt_lat_pt_tem` | 200 × 700 × 580 | 1168,124 / 4326,688 / 150 | Módulo estreito com frente externa em `sudati_unicolores_amazonia`, porta reta e corpo invertido. |
-| `coz_cai_gav_mod_ccf_2015_pt_tem` | 196 × 650 × 556 | 1170,124 / 4296,688 / 152 | Caixa de gavetas com componentes de alumínio e MDF/fitas. |
-| `coz_cai_div_gav_2015_pt_tem_sup` | 144 × 150 × 556 | 1196,124 / 4296,688 / 502 | Divisor/parte superior do gaveteiro. |
-| `coz_cai_div_gav_2015_pt_tem_inf` | 144 × 200 × 556 | 1196,124 / 4296,688 / 182 | Divisor/parte inferior do gaveteiro. |
-| `coz_cav_inf_can_l_2p_dir` | 1000 × 700 × 834 | 2902,124 / 4326,688 / 150 | Módulo inferior de canto com duas portas, profundidade especial de 834 mm. |
-| `coz_cav_inf_bal_2p` | 800 × 700 × 600 | 2902,124 / 2904,688 / 150 | Balcão inferior de duas portas. |
-| `coz_cav_inf_gav_2g_1gav_3` | 500 × 700 × 600 | 2902,124 / 2104,688 / 150 | Gaveteiro com duas gavetas e uma gaveta adicional; acabamento externo em `sudati_unicolores_amazonia`. |
-| `coz_cav_cai_bal_1rec_gave` | 500 × 700 × 600 | 2902,124 / 2104,688 / 150 | Caixa correspondente ao módulo de gavetas. |
+| ID Promob                         | Dimensões W × H × D (mm) |           Base X/Y/Z (mm) | Indicação técnica                                                                                      |
+| --------------------------------- | -----------------------: | ------------------------: | ------------------------------------------------------------------------------------------------------ |
+| `coz_inf_bal_1p_2015`             |          700 × 700 × 580 | 1368,124 / 4326,688 / 150 | Balcão inferior de uma porta; componentes de corpo interno, fitas e corpo externo em `cin_cor_000`.    |
+| `coz_cai_inf_bal_2015`            |          700 × 700 × 580 | 1368,124 / 4326,688 / 150 | Caixa/corpo associado ao balcão inferior.                                                              |
+| `coz_cav_inf_bal_pt_lat_pt_tem`   |          200 × 700 × 580 | 1168,124 / 4326,688 / 150 | Módulo estreito com frente externa em `sudati_unicolores_amazonia`, porta reta e corpo invertido.      |
+| `coz_cai_gav_mod_ccf_2015_pt_tem` |          196 × 650 × 556 | 1170,124 / 4296,688 / 152 | Caixa de gavetas com componentes de alumínio e MDF/fitas.                                              |
+| `coz_cai_div_gav_2015_pt_tem_sup` |          144 × 150 × 556 | 1196,124 / 4296,688 / 502 | Divisor/parte superior do gaveteiro.                                                                   |
+| `coz_cai_div_gav_2015_pt_tem_inf` |          144 × 200 × 556 | 1196,124 / 4296,688 / 182 | Divisor/parte inferior do gaveteiro.                                                                   |
+| `coz_cav_inf_can_l_2p_dir`        |         1000 × 700 × 834 | 2902,124 / 4326,688 / 150 | Módulo inferior de canto com duas portas, profundidade especial de 834 mm.                             |
+| `coz_cav_inf_bal_2p`              |          800 × 700 × 600 | 2902,124 / 2904,688 / 150 | Balcão inferior de duas portas.                                                                        |
+| `coz_cav_inf_gav_2g_1gav_3`       |          500 × 700 × 600 | 2902,124 / 2104,688 / 150 | Gaveteiro com duas gavetas e uma gaveta adicional; acabamento externo em `sudati_unicolores_amazonia`. |
+| `coz_cav_cai_bal_1rec_gave`       |          500 × 700 × 600 | 2902,124 / 2104,688 / 150 | Caixa correspondente ao módulo de gavetas.                                                             |
 
 ## Materiais e ferragens observados
 

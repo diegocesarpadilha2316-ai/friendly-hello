@@ -166,12 +166,7 @@ export interface VisionCorrectionPatch {
 }
 
 export type VisionSessionStatus =
-  | "idle"
-  | "uploading"
-  | "processing"
-  | "review"
-  | "applied"
-  | "error";
+  "idle" | "uploading" | "processing" | "review" | "applied" | "error";
 
 export interface VisionSession {
   id: string;

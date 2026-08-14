@@ -14,9 +14,16 @@ export const Route = createFileRoute("/_authenticated/ia")({
   head: () => ({
     meta: [
       { title: "IA Gateway — Dioris Hub" },
-      { name: "description", content: "Painel do Gateway Central de IA da Dioris Hub — providers, saúde, uso e catálogo de modelos." },
+      {
+        name: "description",
+        content:
+          "Painel do Gateway Central de IA da Dioris Hub — providers, saúde, uso e catálogo de modelos.",
+      },
       { property: "og:title", content: "IA Gateway — Dioris Hub" },
-      { property: "og:description", content: "Painel do Gateway Central de IA — providers, saúde e uso." },
+      {
+        property: "og:description",
+        content: "Painel do Gateway Central de IA — providers, saúde e uso.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

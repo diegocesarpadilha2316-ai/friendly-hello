@@ -1,10 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Calendar, ArrowLeft } from "lucide-react";
-import {
-  Reveal,
-  GradientText,
-  SectionEyebrow,
-} from "@/core/components/public/PublicLayout";
+import { Reveal, GradientText, SectionEyebrow } from "@/core/components/public/PublicLayout";
 import { getPublicBlogPost } from "@/lib/public-blog.functions";
 
 export const Route = createFileRoute("/_public/blog/$slug")({
@@ -16,10 +12,7 @@ export const Route = createFileRoute("/_public/blog/$slug")({
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [
-          { title: "Artigo não encontrado — Dioris" },
-          { name: "robots", content: "noindex" },
-        ],
+        meta: [{ title: "Artigo não encontrado — Dioris" }, { name: "robots", content: "noindex" }],
       };
     }
     const { post } = loaderData;
@@ -76,9 +69,7 @@ function Page() {
         </div>
       )}
       <div className="mt-10 space-y-5 text-[15px] leading-relaxed text-foreground/85">
-        {post.excerpt && (
-          <p className="text-lg text-foreground/90">{post.excerpt}</p>
-        )}
+        {post.excerpt && <p className="text-lg text-foreground/90">{post.excerpt}</p>}
         {paragraphs.map((p: string, i: number) => (
           <p key={i}>{p}</p>
         ))}

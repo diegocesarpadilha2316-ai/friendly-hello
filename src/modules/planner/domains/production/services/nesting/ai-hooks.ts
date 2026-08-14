@@ -10,7 +10,9 @@ export function worstBoard(plan: NestingPlan): { index: number; wasteM2: number 
   return { index: worst.index, wasteM2: worst.wasteM2 };
 }
 
-export function largestReusableOffcut(plan: NestingPlan): { boardIndex: number; areaM2: number } | null {
+export function largestReusableOffcut(
+  plan: NestingPlan,
+): { boardIndex: number; areaM2: number } | null {
   let best: { boardIndex: number; areaM2: number } | null = null;
   for (const b of plan.boards) {
     for (const o of b.offcuts) {
@@ -29,8 +31,7 @@ export function bestAlgorithm(comparisons: readonly NestingComparison[]): Nestin
 
 export function savingsSummary(baseline: NestingPlan, current: NestingPlan): string {
   const delta = baseline.statistics.wasteAreaM2 - current.statistics.wasteAreaM2;
-  const pct = baseline.statistics.wasteAreaM2 > 0
-    ? (delta / baseline.statistics.wasteAreaM2) * 100
-    : 0;
+  const pct =
+    baseline.statistics.wasteAreaM2 > 0 ? (delta / baseline.statistics.wasteAreaM2) * 100 : 0;
   return `Economia de ${delta.toFixed(2)} m² (${pct.toFixed(1)}%) e ${baseline.statistics.boardsCount - current.statistics.boardsCount} chapa(s).`;
 }

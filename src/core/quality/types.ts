@@ -17,22 +17,10 @@ export type SuiteKind =
   | "smoke";
 
 export type SuiteRunner =
-  | "vitest"
-  | "playwright"
-  | "cypress"
-  | "lighthouse"
-  | "k6"
-  | "zap"
-  | "custom";
+  "vitest" | "playwright" | "cypress" | "lighthouse" | "k6" | "zap" | "custom";
 
 export type RunStatus =
-  | "queued"
-  | "running"
-  | "passed"
-  | "failed"
-  | "skipped"
-  | "error"
-  | "cancelled";
+  "queued" | "running" | "passed" | "failed" | "skipped" | "error" | "cancelled";
 
 export type RunTrigger = "manual" | "ci" | "cron" | "event" | "webhook" | "regression";
 

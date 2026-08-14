@@ -29,13 +29,7 @@ export interface LocalOutputSpec {
 }
 
 // ————— Presets de qualidade locais —————
-export type LocalQualityId =
-  | "rascunho"
-  | "baixa"
-  | "media"
-  | "alta"
-  | "ultra"
-  | "cinema";
+export type LocalQualityId = "rascunho" | "baixa" | "media" | "alta" | "ultra" | "cinema";
 
 export interface LocalQualityPreset {
   readonly id: LocalQualityId;
@@ -82,11 +76,7 @@ export interface LocalMaterialSelection {
 }
 
 // ————— Câmeras —————
-export type LocalCameraKind =
-  | RenderCameraKind
-  | "cliente"
-  | "apresentacao"
-  | "livre";
+export type LocalCameraKind = RenderCameraKind | "cliente" | "apresentacao" | "livre";
 
 export interface LocalCameraPreset {
   readonly id: string;
@@ -138,11 +128,7 @@ export interface LocalTextureConfig {
 
 // ————— Animação / captura —————
 export type LocalCaptureScope =
-  | "single"
-  | "batch"
-  | "all-environments"
-  | "current-environment"
-  | "selection";
+  "single" | "batch" | "all-environments" | "current-environment" | "selection";
 
 export interface LocalCaptureRequest {
   readonly scope: LocalCaptureScope;
@@ -209,11 +195,7 @@ export interface LocalPerformanceConfig {
 
 // ————— Viewport —————
 export type LocalViewportMode =
-  | "realtime"
-  | "preview"
-  | "fullscreen"
-  | "before-after"
-  | "quality-compare";
+  "realtime" | "preview" | "fullscreen" | "before-after" | "quality-compare";
 
 export interface LocalViewportState {
   readonly mode: LocalViewportMode;

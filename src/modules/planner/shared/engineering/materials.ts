@@ -5,7 +5,12 @@
  */
 import type { MaterialBrand } from "./types";
 
-function finish(id: string, label: string, swatch: string, grain: "vertical" | "horizontal" | "livre" = "livre") {
+function finish(
+  id: string,
+  label: string,
+  swatch: string,
+  grain: "vertical" | "horizontal" | "livre" = "livre",
+) {
   return { id, label, swatch, grain };
 }
 
@@ -20,9 +25,7 @@ const COMMON_FINISHES = [
   finish("itapua", "Itapuã", "#9E7B4F", "vertical"),
 ];
 
-const STD_THICK = [
-  { mm: 3 }, { mm: 6 }, { mm: 9 }, { mm: 15 }, { mm: 18 }, { mm: 25 },
-];
+const STD_THICK = [{ mm: 3 }, { mm: 6 }, { mm: 9 }, { mm: 15 }, { mm: 18 }, { mm: 25 }];
 
 export const MATERIAL_BRANDS: readonly MaterialBrand[] = [
   {

@@ -3,15 +3,24 @@
  */
 import type { RealtimeHotspot } from "./types";
 
-export function addHotspot(list: readonly RealtimeHotspot[], h: RealtimeHotspot): readonly RealtimeHotspot[] {
+export function addHotspot(
+  list: readonly RealtimeHotspot[],
+  h: RealtimeHotspot,
+): readonly RealtimeHotspot[] {
   return [...list.filter((x) => x.id !== h.id), h];
 }
 
-export function removeHotspot(list: readonly RealtimeHotspot[], id: string): readonly RealtimeHotspot[] {
+export function removeHotspot(
+  list: readonly RealtimeHotspot[],
+  id: string,
+): readonly RealtimeHotspot[] {
   return list.filter((x) => x.id !== id);
 }
 
-export function hotspotsFor(node: string, list: readonly RealtimeHotspot[]): readonly RealtimeHotspot[] {
+export function hotspotsFor(
+  node: string,
+  list: readonly RealtimeHotspot[],
+): readonly RealtimeHotspot[] {
   return list.filter((x) => x.nodeId === node);
 }
 

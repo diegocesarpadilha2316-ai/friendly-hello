@@ -20,7 +20,10 @@ export function recommendationsFor(item: MarketplaceItem, limit = 6): readonly M
     .map((entry) => entry.item);
 }
 
-export function recommendationsForUser(installedIds: readonly string[], limit = 6): readonly MarketplaceItem[] {
+export function recommendationsForUser(
+  installedIds: readonly string[],
+  limit = 6,
+): readonly MarketplaceItem[] {
   const installed = MARKETPLACE_ITEMS.filter((i) => installedIds.includes(i.id));
   const scored = new Map<string, number>();
   for (const inst of installed) {
@@ -30,5 +33,8 @@ export function recommendationsForUser(installedIds: readonly string[], limit = 
     }
   }
   const ordered = [...scored.entries()].sort((a, b) => b[1] - a[1]);
-  return ordered.map(([id]) => MARKETPLACE_ITEMS.find((i) => i.id === id)!).filter(Boolean).slice(0, limit);
+  return ordered
+    .map(([id]) => MARKETPLACE_ITEMS.find((i) => i.id === id)!)
+    .filter(Boolean)
+    .slice(0, limit);
 }

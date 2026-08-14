@@ -1,6 +1,7 @@
 # Planner / Produção
 
 ## Subdomínios previstos
+
 - OP
 - Separação
 - Etiquetas
@@ -10,12 +11,14 @@
 - Dashboard
 
 ## Regras
+
 - Consome exclusivamente `@/core` (Auth, Tenant, RBAC, IA Gateway, Créditos, Uploads, Auditoria).
 - Comunicação com outros domínios apenas via contratos em `@/modules/planner/shared`.
 - Não duplicar stores, providers, tipos ou serviços já existentes no Core.
 - Pontos de extensão via `PlannerExtensionHost`.
 
 ## Fase 3.13 — Motor de Fabricação (arquitetural)
+
 Camada aditiva em `services/fabrication/` — zero migrations, zero providers, zero stores.
 
 - `types.ts` — otimizador v2, furações, máquinas, KPIs, intents e exportações.
