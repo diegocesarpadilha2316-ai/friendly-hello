@@ -6,9 +6,19 @@ import { createServerFn } from "@tanstack/react-start";
  * Never exposes service_role.
  */
 export const getPublicSupabaseConfig = createServerFn({ method: "GET" }).handler(async () => {
-  const url = process.env.VITE_SUPABASE_URL || process.env.EXTERNAL_SUPABASE_URL;
+  const buildEnv = import.meta.env as Record<string, string | undefined> | undefined;
+  const runtimeEnv =
+    typeof process !== "undefined"
+      ? (process.env as Record<string, string | undefined> | undefined)
+      : undefined;
+  const url =
+    buildEnv?.VITE_SUPABASE_URL ||
+    runtimeEnv?.VITE_SUPABASE_URL ||
+    runtimeEnv?.EXTERNAL_SUPABASE_URL;
   const publishableKey =
-    process.env.VITE_SUPABASE_ANON_KEY || process.env.EXTERNAL_SUPABASE_PUBLISHABLE_KEY;
+    buildEnv?.VITE_SUPABASE_ANON_KEY ||
+    runtimeEnv?.VITE_SUPABASE_ANON_KEY ||
+    runtimeEnv?.EXTERNAL_SUPABASE_PUBLISHABLE_KEY;
 
   if (!url || !publishableKey) {
     const missing = [];
