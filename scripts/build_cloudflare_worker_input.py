@@ -17,6 +17,11 @@ bindings = [
     if env_values.get(key)
 ]
 parts = [{'name': 'worker.js', 'content': '''export default { fetch: async (request, env, ctx) => {
+  const url = new URL(request.url);
+  const assetPath = url.pathname;
+  if (assetPath.startsWith('/assets/') || assetPath === '/dioris-favicon.png' || assetPath === '/dioris-logo.png' || assetPath.startsWith('/src/assets/')) {
+    return fetch(`https://diegocesarpadilha2316-ai.github.io/friendly-hello${assetPath}`);
+  }
   try {
     const mod = await import('./index.mjs');
     const handler = mod.default || mod;
