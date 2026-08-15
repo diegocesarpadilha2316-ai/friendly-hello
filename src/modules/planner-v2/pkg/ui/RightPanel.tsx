@@ -8,6 +8,10 @@ import {
 } from "../../library/services/fabricationReport";
 import { buildJoineryReport } from "../../library/services/joineryReport";
 import { buildNestingPlanFromPartDefinitions } from "../../library/services/nestingPlan";
+import {
+  toCsv as nestingPlanToCsv,
+  toSvg as nestingBoardToSvg,
+} from "@/modules/planner/domains/production/services/nesting/exports";
 import { MaterialRegistry } from "../../library/registry/MaterialRegistry";
 import type { FurnitureInstance } from "../../library/contracts/FurnitureInstance";
 import { usePlannerStore } from "../state/usePlannerStore";
@@ -77,16 +81,32 @@ export function RightPanel() {
   const assemblyReport = buildAssemblyReport(instances);
   const joineryReport = buildJoineryReport(instances);
   const nestingPlan = buildNestingPlanFromPartDefinitions(instances.flatMap((item) => item.parts));
-  const downloadCutList = () => {
-    const blob = new Blob([fabricationReportToCsv(fabricationReport)], {
-      type: "text/csv;charset=utf-8",
-    });
+  const downloadFile = (content: string, filename: string, type: string) => {
+    const blob = new Blob([content], { type });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = "dioris-lista-de-corte.csv";
+    anchor.download = filename;
     anchor.click();
     URL.revokeObjectURL(url);
+  };
+  const downloadCutList = () =>
+    downloadFile(
+      fabricationReportToCsv(fabricationReport),
+      "dioris-lista-de-corte.csv",
+      "text/csv;charset=utf-8",
+    );
+  const downloadNestingCsv = () =>
+    downloadFile(
+      nestingPlanToCsv(nestingPlan),
+      "dioris-plano-de-corte-nesting.csv",
+      "text/csv;charset=utf-8",
+    );
+  const downloadNestingSvg = () => {
+    const svg = nestingPlan.boards
+      .map((board) => nestingBoardToSvg(board))
+      .join("\n");
+    downloadFile(svg, "dioris-plano-de-corte-nesting.svg", "image/svg+xml;charset=utf-8");
   };
 
   const selected = furniture.find((item) => item.id === selectedId);
@@ -542,7 +562,13 @@ export function RightPanel() {
                     físicas
                   </span>
                   <button type="button" onClick={downloadCutList}>
-                    Baixar CSV
+                    Lista CSV
+                  </button>
+                  <button type="button" onClick={downloadNestingCsv}>
+                    Nesting CSV
+                  </button>
+                  <button type="button" onClick={downloadNestingSvg}>
+                    Nesting SVG
                   </button>
                 </div>
                 {fabricationReport.warnings.length > 0 && (
