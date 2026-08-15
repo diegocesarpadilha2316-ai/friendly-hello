@@ -1143,9 +1143,8 @@ export const usePlannerStore = create<PlannerState>()(
           const moduleNames = compositionSpec.modules
             .map((module) => ModuleRegistry.get(module.moduleId)?.name ?? module.moduleId)
             .join(", ");
-          const hasFabricationRequest = /corte|nesting|fabrica[cç][aã]o|marcenaria|bom|ferragens/i.test(
-            normalized,
-          );
+          const hasFabricationRequest =
+            /corte|nesting|fabrica[cç][aã]o|marcenaria|bom|ferragens/i.test(normalized);
           const fabricationNotice = hasFabricationRequest
             ? "O Plano de Corte foi recalculado com lista de peças, nesting MaxRects, ferragens e usinagem."
             : "A aba Plano de Corte está disponível para gerar a lista de peças e o nesting deste projeto.";
