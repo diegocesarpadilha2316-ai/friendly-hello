@@ -37,7 +37,7 @@ const toolList: { label: string; icon: React.ReactNode; mode?: ToolMode }[] = [
   { label: "Medidas", icon: <Ruler size={17} />, mode: "dimensions" },
   { label: "Render", icon: <Camera size={17} /> },
   { label: "Planta 2D", icon: <Grid2X2 size={17} /> },
-  { label: "Lista de Corte", icon: <ListTree size={17} /> },
+  { label: "Plano de Corte", icon: <ListTree size={17} /> },
   { label: "Orçamento", icon: <Calculator size={17} /> },
 ];
 
@@ -88,7 +88,7 @@ export function Topbar() {
               if (tool.label === "Refazer") redo();
               if (tool.label === "Render")
                 window.dispatchEvent(new CustomEvent("dioris:open-render-final"));
-              if (tool.label === "Lista de Corte") setRightTab("fabrication");
+              if (tool.label === "Plano de Corte") setRightTab("fabrication");
             }}
           >
             {tool.icon}

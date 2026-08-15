@@ -18,7 +18,7 @@ const tabs: { id: RightTab; label: string }[] = [
   { id: "inspector", label: "Inspetor" },
   { id: "materials", label: "Materiais" },
   { id: "hardware", label: "Ferragens" },
-  { id: "fabrication", label: "Fabricação" },
+  { id: "fabrication", label: "Plano de Corte" },
 ];
 
 const materials = [
@@ -548,7 +548,7 @@ export function RightPanel() {
                 {fabricationReport.warnings.length > 0 && (
                   <div className="panel-note">Avisos: {fabricationReport.warnings.join(" ")}</div>
                 )}
-                <h4>Lista de corte</h4>
+                <h4>Plano de Corte · Lista de peças</h4>
                 <div className="fabrication-list">
                   {fabricationReport.cutItems.map((item) => (
                     <div key={item.key} className="fabrication-row">
@@ -561,7 +561,7 @@ export function RightPanel() {
                     </div>
                   ))}
                 </div>
-                <h4>Nesting MaxRects</h4>
+                <h4>Plano de Corte · Nesting MaxRects</h4>
                 <div className="form-actions">
                   <span>{nestingPlan.statistics.boardsCount} chapas</span>
                   <span>

@@ -1140,12 +1140,21 @@ export const usePlannerStore = create<PlannerState>()(
           }
         }
         if (created.length === compositionSpec.modules.length + (countertop ? 1 : 0)) {
+          const moduleNames = compositionSpec.modules
+            .map((module) => ModuleRegistry.get(module.moduleId)?.name ?? module.moduleId)
+            .join(", ");
+          const hasFabricationRequest = /corte|nesting|fabrica[cç][aã]o|marcenaria|bom|ferragens/i.test(
+            normalized,
+          );
+          const fabricationNotice = hasFabricationRequest
+            ? "O Plano de Corte foi recalculado com lista de peças, nesting MaxRects, ferragens e usinagem."
+            : "A aba Plano de Corte está disponível para gerar a lista de peças e o nesting deste projeto.";
           reply(
-            `Layout Engine aprovou a sequência em ${compositionSpec.modules.length} ModuleSpec(s), com bancada derivada: parede, âncoras, suporte, bancada contínua e colisões validados. MDF ${compositionSpec.thicknessMm.panelMm} mm aplicado.`,
+            `Projeto atualizado: ${moduleNames}. Foram construídos ${created.length} elementos com MDF ${compositionSpec.thicknessMm.panelMm} mm; corpo/frentes ${compositionSpec.materials.body}, bancada ${compositionSpec.materials.countertop}, puxador ${compositionSpec.hardware.handle}. ${fabricationNotice}`,
           );
         } else {
           reply(
-            `O Layout Engine aprovou a geometria, mas ${compositionSpec.modules.length - created.length} módulo(s) não foram construídos pela biblioteca.`,
+            `Interpretei ${compositionSpec.modules.length} módulos (${created.length} construídos). Os itens não construídos foram bloqueados pelo Layout Engine para evitar uma fabricação inválida; revise as dimensões ou o espaço disponível.`,
           );
         }
         return;
@@ -1295,8 +1304,36 @@ export const usePlannerStore = create<PlannerState>()(
         reply("Abri o painel Render Final; o tour WebM usa a cena atual e a câmera do Planner.");
         return;
       }
+      const currentCount = get().instances.length;
+      if (/plano de corte|lista de corte|nesting|corte/i.test(normalized)) {
+        set({ rightTab: "fabrication" });
+        reply(
+          currentCount > 0
+            ? `Abri o Plano de Corte para ${currentCount} módulo(s). A lista física, o aproveitamento das chapas, as ferragens e as operações de usinagem foram recalculados agora.`
+            : "Ainda não há módulos fabricáveis. Diga, por exemplo, 'crie uma cozinha de 3000 x 2400 mm em MDF 18 mm' e eu gero o Plano de Corte a partir do projeto.",
+        );
+        return;
+      }
+      if (/fechar|abrir|porta|gaveta/i.test(normalized)) {
+        if (currentCount > 0) {
+          if (/fechar/i.test(normalized)) get().closeAllAnimations();
+          else get().openAllAnimations();
+          reply(
+            /fechar/i.test(normalized)
+              ? `Fechei as frentes e gavetas dos ${currentCount} módulo(s) atuais.`
+              : `Abri as frentes e gavetas dos ${currentCount} módulo(s) atuais para inspeção da ferragem e do interior.`,
+          );
+        } else reply("Ainda não há um módulo selecionado para abrir ou fechar.");
+        return;
+      }
+      if (/ajuda|o que|comando|pode fazer/i.test(normalized)) {
+        reply(
+          "Posso criar cozinhas e armários por medidas, trocar MDF e pedra, configurar puxador, dobradiça e corrediça, abrir portas e gavetas, recalcular o Plano de Corte, gerar BOM e nesting, ajustar iluminação e abrir o Render Final.",
+        );
+        return;
+      }
       reply(
-        "Entendi o pedido. Posso executar materiais, ilha, iluminação, Render Final e vídeo quando o comando corresponder a uma operação disponível.",
+        `Recebi “${content.trim()}”, mas esse pedido ainda não corresponde a uma operação reconhecida. Tente especificar ação + objeto + medida, por exemplo: “crie um gaveteiro de 600 x 870 x 580 mm”, “use MDF Freijó”, “abra as portas” ou “mostrar Plano de Corte”.`,
       );
     },
 
