@@ -1,0 +1,1 @@
+import{n as e,s as t}from"./jsx-runtime-B5yqYJvp.js";import{Tt as n,pt as r}from"./index-CSZyAKiO.js";var i=t(e(),1);function a(){let e=r()?.role??null;return(0,i.useMemo)(()=>({role:e,can:t=>n(e,t),canAny:t=>t.some(t=>n(e,t)),canAll:t=>t.every(t=>n(e,t))}),[e])}export{a as t};

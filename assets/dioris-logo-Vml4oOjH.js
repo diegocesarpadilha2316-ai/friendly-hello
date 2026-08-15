@@ -1,0 +1,1 @@
+var e=`/assets/dioris-logo-BTtMxKTr.png`;export{e as t};

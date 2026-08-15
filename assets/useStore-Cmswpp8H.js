@@ -1,0 +1,1 @@
+import{n as e,s as t}from"./jsx-runtime-B5yqYJvp.js";import{t as n}from"./with-selector-Bn15C_7X.js";var r=t(e(),1),i=t(n(),1);function a(e,t){return e===t}function o(e,t,n=a){let o=(0,r.useCallback)(t=>{if(!e)return()=>{};let{unsubscribe:n}=e.subscribe(t);return n},[e]),s=(0,r.useCallback)(()=>e?.get(),[e]);return(0,i.useSyncExternalStoreWithSelector)(o,s,s,t,n)}export{o as t};
