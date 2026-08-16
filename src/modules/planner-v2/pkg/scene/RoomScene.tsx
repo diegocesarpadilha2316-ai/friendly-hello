@@ -819,6 +819,17 @@ function SceneControls() {
   );
 }
 
+function WebGLCompatibilityFallback() {
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[#121214] px-6 text-center text-white">
+      <strong className="text-base">Modo de compatibilidade 3D</strong>
+      <span className="max-w-md text-sm text-white/70">
+        O viewport 3D não conseguiu inicializar neste dispositivo. O projeto, a Biblioteca e o Plano de Corte continuam disponíveis.
+      </span>
+    </div>
+  );
+}
+
 export function RoomScene() {
   const gridVisible = usePlannerStore((s) => s.gridVisible);
   const lightsEnabled = usePlannerStore((s) => s.lightsEnabled);
@@ -830,6 +841,7 @@ export function RoomScene() {
 
   return (
     <Canvas
+      fallback={<WebGLCompatibilityFallback />}
       style={{ width: "100%", height: "100%", display: "block" }}
       shadows={qualityMode !== "work"}
       dpr={lighting.dpr}

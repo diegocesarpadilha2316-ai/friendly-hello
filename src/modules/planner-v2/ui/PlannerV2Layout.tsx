@@ -10,6 +10,7 @@ import { RenderFinalPanel } from "../pkg/ui/RenderFinalPanel";
 import { TransformGizmoOverlay } from "../pkg/ui/TransformGizmoOverlay";
 import { useRoomBuilderStore } from "../pkg/state/useRoomBuilderStore";
 import { RoomScene } from "../pkg/scene/RoomScene";
+import { AppErrorBoundary } from "../pkg/ui/AppErrorBoundary";
 import "../pkg/styles/package.css";
 
 export function PlannerV2Layout() {
@@ -116,7 +117,9 @@ export function PlannerV2Layout() {
               clearDragPreview();
           }}
         >
-          <RoomScene />
+          <AppErrorBoundary>
+            <RoomScene />
+          </AppErrorBoundary>
           {dragPreview && (
             <div className="drag-preview-feedback" role="status" aria-live="polite">
               <strong>{dragPreview.valid ? "Posição válida" : "Posição inválida"}</strong>
