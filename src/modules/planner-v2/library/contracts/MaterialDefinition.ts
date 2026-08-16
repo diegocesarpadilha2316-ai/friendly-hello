@@ -49,6 +49,10 @@ export interface MaterialDefinition {
   collection?: string;
   pattern?: string;
   availableThicknessesMm?: number[];
+  /** Espessura padrão usada quando o projeto não informa um perfil explícito. */
+  defaultThicknessMm?: number;
+  /** Espessura padrão de fundos quando o material é aplicado a painéis de fundo. */
+  defaultBackThicknessMm?: number;
   sheetDimensionsMm?: { width: number; height: number };
   moistureResistance?: boolean;
   fireResistance?: boolean;

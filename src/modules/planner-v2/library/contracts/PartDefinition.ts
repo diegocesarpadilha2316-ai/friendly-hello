@@ -42,6 +42,10 @@ export interface PartDefinition {
   pivotMm?: { x: number; y: number; z: number };
   rotationDeg: { x: number; y: number; z: number };
   materialId: string;
+  /** Categoria técnica resolvida do material, por exemplo mdf, stone ou metal. */
+  materialType?: string;
+  /** Espessura física da peça, resolvida da ficha de material/perfil do módulo. */
+  thicknessMm?: number;
   grainDirection?: GrainDirection;
   edgeBanding?: Partial<Record<EdgeBand, string>>;
   hardwareId?: string;

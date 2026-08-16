@@ -2,6 +2,7 @@ export interface ValidationIssue {
   code: string;
   message: string;
   partId?: string;
+  constraints?: { min?: number; max?: number; requested?: number };
 }
 
 export interface ValidationResult {

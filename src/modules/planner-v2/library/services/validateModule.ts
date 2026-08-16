@@ -34,12 +34,14 @@ export function validateModule(input: ValidateModuleInput): ValidationResult {
       errors.push({
         code: "dimension-below-min",
         message: `${axis} ${value}mm abaixo do mínimo (${definition.minDimensionsMm[axis]}mm).`,
+        constraints: { min: definition.minDimensionsMm[axis], requested: value },
       });
     }
     if (value > definition.maxDimensionsMm[axis]) {
       errors.push({
         code: "dimension-above-max",
         message: `${axis} ${value}mm acima do máximo (${definition.maxDimensionsMm[axis]}mm).`,
+        constraints: { max: definition.maxDimensionsMm[axis], requested: value },
       });
     }
   });

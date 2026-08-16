@@ -32,7 +32,8 @@ export function toNestingPartsFromPartDefinitions(
     const dimensions = [part.dimensionsMm.width, part.dimensionsMm.height, part.dimensionsMm.depth]
       .map((value) => Math.max(1, value))
       .sort((a, b) => b - a);
-    const [longSide, shortSide, thickness] = dimensions;
+    const [longSide, shortSide, inferredThickness] = dimensions;
+    const thickness = Math.max(1, part.thicknessMm ?? inferredThickness);
     return {
       id: part.id,
       code: part.id,

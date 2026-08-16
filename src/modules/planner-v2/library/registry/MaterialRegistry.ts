@@ -1,4 +1,5 @@
 import type { MaterialDefinition } from "../contracts/MaterialDefinition";
+import type { ThicknessProfileMm } from "../contracts/ModuleDefinition";
 
 const ALL_ROLES = ["*"];
 
@@ -541,6 +542,12 @@ const V10_MATERIAL_PROFILES: Record<string, Partial<MaterialDefinition>> = {
 for (const material of MATERIALS) {
   const profile = V10_MATERIAL_PROFILES[material.id];
   if (profile) Object.assign(material, profile);
+  if (material.category === "mdf") {
+    material.defaultThicknessMm ??= 18;
+    material.defaultBackThicknessMm ??= 6;
+    material.availableThicknessesMm ??= [6, 9, 12, 15, 18, 25];
+    material.sheetDimensionsMm ??= { width: 2750, height: 1850 };
+  }
 }
 
 const byId = new Map(MATERIALS.map((material) => [material.id, material]));
@@ -552,6 +559,21 @@ export const MaterialRegistry = {
   listByCategory: (category: MaterialDefinition["category"]) =>
     MATERIALS.filter((material) => material.category === category),
 };
+
+export function resolveMaterialThicknessProfile(
+  materialId: string,
+  overrides?: Partial<ThicknessProfileMm>,
+): ThicknessProfileMm {
+  const material = MaterialRegistry.get(materialId) ?? MaterialRegistry.get(DEFAULT_MATERIAL_ID)!;
+  const panelMm = overrides?.panelMm ?? material.defaultThicknessMm ?? material.availableThicknessesMm?.[0] ?? 18;
+  const backMm = overrides?.backMm ?? material.defaultBackThicknessMm ?? 6;
+  return {
+    panelMm,
+    doorMm: overrides?.doorMm ?? panelMm,
+    shelfMm: overrides?.shelfMm ?? panelMm,
+    backMm,
+  };
+}
 
 export const DEFAULT_MATERIAL_ID = "mdf-white";
 export const HARDWARE_MATERIAL_ID = "metal-black";

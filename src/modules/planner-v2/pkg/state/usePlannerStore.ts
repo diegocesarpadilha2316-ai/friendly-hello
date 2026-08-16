@@ -590,6 +590,7 @@ export const usePlannerStore = create<PlannerState>()(
           rotationDeg: saved.rotationDeg,
           materialOverrides: saved.materialOverrides,
           hardwareOverrides: saved.hardwareOverrides,
+          thicknessMm: saved.thicknessMm,
           room: roomBounds,
           instances: restored,
         });
@@ -603,6 +604,7 @@ export const usePlannerStore = create<PlannerState>()(
           ...saved,
           parts: outcome.parts,
           dimensionsMm: outcome.dimensionsMm,
+          thicknessMm: outcome.thicknessMm ?? saved.thicknessMm,
           selected: saved.id === project.planner.selectedId,
         });
       }
@@ -1034,9 +1036,13 @@ export const usePlannerStore = create<PlannerState>()(
         ? get().instances.find((instance) => instance.id === selectedId)
         : undefined;
 
-      const selectedDimensionMatch = normalized.match(
-        /(?:largura|largo|width|altura|alto|height|profundidade|fundo|depth)[^0-9]*(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?/i,
-      );
+      const selectedDimensionMatch =
+        normalized.match(
+          /(?:largura|largo|width|altura|alto|height|profundidade|fundo|depth)[^0-9]*(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?/i,
+        ) ??
+        normalized.match(
+          /(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?[^0-9]{0,20}(?:largura|largo|width|altura|alto|height|profundidade|fundo|depth)/i,
+        );
       const requestedHandle = /gola/i.test(normalized)
         ? "handle-gola"
         : /cava/i.test(normalized)
@@ -1449,9 +1455,9 @@ export const usePlannerStore = create<PlannerState>()(
         moduleDefinitionId: moduleId,
         familyId: definition.familyId,
         name: definition.name,
-        dimensionsMm: outcome.dimensionsMm,
-        thicknessMm,
-        layout,
+          dimensionsMm: outcome.dimensionsMm,
+          thicknessMm: outcome.thicknessMm,
+          layout,
         positionMm,
         rotationDeg: { x: 0, y: 0, z: 0 },
         materialOverrides: {},
@@ -1496,7 +1502,13 @@ export const usePlannerStore = create<PlannerState>()(
       });
 
       if (!outcome.ok) {
-        set({ lastLibraryError: outcome.error ?? "Não foi possível atualizar o móvel." });
+        const issue = outcome.validation?.errors[0];
+        const constraintText = issue?.constraints
+          ? ` Limites: mínimo ${issue.constraints.min ?? "—"} mm, máximo ${issue.constraints.max ?? "—"} mm, solicitado ${issue.constraints.requested ?? "—"} mm.`
+          : "";
+        set({
+          lastLibraryError: `${outcome.error ?? "Não foi possível atualizar o móvel."}${constraintText}`,
+        });
         return false;
       }
 
@@ -1505,8 +1517,13 @@ export const usePlannerStore = create<PlannerState>()(
         lastLibraryError: null,
         instances: s.instances.map((item) =>
           item.id === id
-            ? { ...updated, parts: outcome.parts, dimensionsMm: outcome.dimensionsMm }
-            : item,
+              ? {
+                  ...updated,
+                  parts: outcome.parts,
+                  dimensionsMm: outcome.dimensionsMm,
+                  thicknessMm: outcome.thicknessMm ?? updated.thicknessMm,
+                }
+              : item,
         ),
       }));
       return true;

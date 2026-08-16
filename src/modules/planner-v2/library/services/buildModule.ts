@@ -1,7 +1,7 @@
 import type { Dimensions3, ModuleBuildResult } from "../contracts/ModuleDefinition";
 import type { PartDefinition } from "../contracts/PartDefinition";
 import { ModuleRegistry } from "../registry/ModuleRegistry";
-import { MaterialRegistry } from "../registry/MaterialRegistry";
+import { MaterialRegistry, resolveMaterialThicknessProfile } from "../registry/MaterialRegistry";
 import { validateModule, type RoomBoundsMm } from "./validateModule";
 import type { ValidationResult } from "../contracts/ValidationResult";
 import type { ThicknessProfileMm } from "../contracts/ModuleDefinition";
@@ -28,6 +28,7 @@ export interface BuildOutcome {
   hardwareIds: string[];
   validation?: ValidationResult;
   result?: ModuleBuildResult;
+  thicknessMm?: ThicknessProfileMm;
 }
 
 function clamp(value: number, min: number, max: number) {
@@ -48,6 +49,44 @@ export function buildModule(request: BuildRequest): BuildOutcome {
   }
 
   const requested = { ...definition.defaultDimensionsMm, ...request.dimensionsMm };
+  const dimensionErrors = (['width', 'height', 'depth'] as const).flatMap((axis) => {
+    const value = request.dimensionsMm?.[axis];
+    if (value === undefined) return [];
+    if (value < definition.minDimensionsMm[axis]) {
+      return [{
+        code: 'dimension-below-min',
+        message: `${axis} ${value}mm abaixo do mínimo (${definition.minDimensionsMm[axis]}mm).`,
+        constraints: { min: definition.minDimensionsMm[axis], requested: value },
+      }];
+    }
+    if (value > definition.maxDimensionsMm[axis]) {
+      return [{
+        code: 'dimension-above-max',
+        message: `${axis} ${value}mm acima do máximo (${definition.maxDimensionsMm[axis]}mm).`,
+        constraints: { max: definition.maxDimensionsMm[axis], requested: value },
+      }];
+    }
+    return [];
+  });
+  if (dimensionErrors.length > 0) {
+    return {
+      ok: false,
+      error: dimensionErrors.map((issue) => `[${issue.code}] ${issue.message}`).join(' | '),
+      parts: [],
+      dimensionsMm: requested as Dimensions3,
+      hardwareIds: [],
+      validation: {
+        valid: false,
+        errors: dimensionErrors,
+        warnings: [],
+        metadata: {
+          partCount: 0,
+          checkedAt: new Date().toISOString(),
+          moduleId: definition.id,
+        },
+      },
+    };
+  }
   const dimensionsMm: Dimensions3 = {
     width: clamp(
       requested.width,
@@ -70,6 +109,8 @@ export function buildModule(request: BuildRequest): BuildOutcome {
     request.materialId && MaterialRegistry.has(request.materialId)
       ? request.materialId
       : definition.defaultMaterialId;
+  const effectiveMaterialId = request.materialOverrides?.body ?? materialId;
+  const thicknessMm = resolveMaterialThicknessProfile(effectiveMaterialId, request.thicknessMm);
 
   let result: ModuleBuildResult;
   try {
@@ -79,7 +120,7 @@ export function buildModule(request: BuildRequest): BuildOutcome {
       materialId,
       materialOverrides: request.materialOverrides,
       hardwareOverrides: request.hardwareOverrides,
-      thicknessMm: request.thicknessMm,
+      thicknessMm,
     });
   } catch (error) {
     return {
@@ -92,8 +133,23 @@ export function buildModule(request: BuildRequest): BuildOutcome {
   }
 
   const overrides = request.materialOverrides ?? {};
-  const parts = result.parts.map((part) => ({
+  const parts = result.parts.map((part) => {
+    const resolvedMaterialId = overrides[part.role] ?? overrides[part.id] ?? part.materialId;
+    const resolvedMaterial = MaterialRegistry.get(resolvedMaterialId);
+    const partThicknessMm =
+      part.role === "countertop"
+        ? resolvedMaterial?.stone?.thicknessMm ?? thicknessMm.panelMm
+        : part.role === "back"
+          ? thicknessMm.backMm
+          : part.role === "door" || part.role === "drawer-front"
+            ? thicknessMm.doorMm
+            : part.role === "shelf" || part.role === "drawer-bottom"
+              ? thicknessMm.shelfMm
+              : thicknessMm.panelMm;
+    return {
     ...part,
+    materialType: resolvedMaterial?.category,
+    thicknessMm: part.role === "hardware" ? undefined : partThicknessMm,
     volumeType:
       part.volumeType ??
       (part.interactive && part.interactive.type !== "none"
@@ -108,8 +164,9 @@ export function buildModule(request: BuildRequest): BuildOutcome {
     moduleId: request.instanceId,
     parentInstanceId: request.instanceId,
     groupId: part.groupId?.replace(definition.id, request.instanceId),
-    materialId: overrides[part.role] ?? overrides[part.id] ?? part.materialId,
-  }));
+    materialId: resolvedMaterialId,
+    };
+  });
 
   const validation = validateModule({
     definition,
@@ -130,6 +187,7 @@ export function buildModule(request: BuildRequest): BuildOutcome {
       hardwareIds: result.hardwareIds,
       validation,
       result,
+      thicknessMm,
     };
   }
 
@@ -140,5 +198,6 @@ export function buildModule(request: BuildRequest): BuildOutcome {
     hardwareIds: result.hardwareIds,
     validation,
     result,
+    thicknessMm,
   };
 }

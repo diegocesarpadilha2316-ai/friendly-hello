@@ -8,6 +8,8 @@ export type FabricationCutItem = {
   names: string[];
   role: PartDefinition["role"];
   materialId: string;
+  materialType?: string;
+  thicknessMm?: number;
   quantity: number;
   widthMm: number;
   heightMm: number;
@@ -68,6 +70,7 @@ function cutKey(part: PartDefinition) {
     depthMm: part.dimensionsMm.depth,
     grainDirection: part.grainDirection ?? "none",
     edgeBanding: normalizedEdgeBanding(part),
+    thicknessMm: part.thicknessMm,
     volumeType: part.volumeType ?? "physical",
   });
 }
@@ -125,6 +128,8 @@ export function buildFabricationReport(instances: FurnitureInstance[]): Fabricat
         names: [part.name],
         role: part.role,
         materialId: part.materialId,
+        materialType: part.materialType,
+        thicknessMm: part.thicknessMm,
         quantity: 1,
         widthMm: part.dimensionsMm.width,
         heightMm: part.dimensionsMm.height,
@@ -174,6 +179,8 @@ export function fabricationReportToCsv(report: FabricationReport) {
     "largura_mm",
     "altura_mm",
     "profundidade_mm",
+    "espessura_mm",
+    "tipo_material",
     "funcao",
     "material",
     "veio",
@@ -191,6 +198,8 @@ export function fabricationReportToCsv(report: FabricationReport) {
       item.widthMm,
       item.heightMm,
       item.depthMm,
+      item.thicknessMm ?? "",
+      item.materialType ?? "",
       item.role,
       item.materialId,
       item.grainDirection ?? "none",
