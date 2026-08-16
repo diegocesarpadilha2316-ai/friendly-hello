@@ -2,7 +2,7 @@
   "request": "Crie uma cozinha nessa parede. Quero uma torre de forno e micro-ondas na esquerda, um balcão de 800 com duas portas, um gaveteiro de 600 com quatro gavetas, um balcão de pia de 1200 com duas portas e aéreos em cima. Use MDF 18 mm.",
   "modules": [
     {
-      "id": "furniture-1786745216207",
+      "id": "furniture-1786891485209",
       "moduleDefinitionId": "kitchen-tower-oven-microwave",
       "dimensionsMm": {
         "width": 800,
@@ -18,7 +18,7 @@
       "partCount": 19
     },
     {
-      "id": "furniture-1786745216209",
+      "id": "furniture-1786891485212",
       "moduleDefinitionId": "kitchen-base-2-doors",
       "dimensionsMm": {
         "width": 800,
@@ -34,7 +34,7 @@
       "partCount": 16
     },
     {
-      "id": "furniture-1786745216210",
+      "id": "furniture-1786891485213",
       "moduleDefinitionId": "kitchen-drawer-4",
       "dimensionsMm": {
         "width": 600,
@@ -50,7 +50,7 @@
       "partCount": 42
     },
     {
-      "id": "furniture-1786745216212",
+      "id": "furniture-1786891485215",
       "moduleDefinitionId": "kitchen-sink-cabinet",
       "dimensionsMm": {
         "width": 1200,
@@ -66,7 +66,7 @@
       "partCount": 23
     },
     {
-      "id": "furniture-1786745216214",
+      "id": "furniture-1786891485217",
       "moduleDefinitionId": "kitchen-golden-upper-800",
       "dimensionsMm": {
         "width": 800,
@@ -83,16 +83,24 @@
     }
   ],
   "fabrication": {
-    "generatedAt": "2026-08-14T22:06:56.216Z",
+    "generatedAt": "2026-08-16T14:44:45.221Z",
     "moduleCount": 5,
     "cutItems": [
       {
-        "key": "{\"role\":\"side-left\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":2050,\"depthMm\":620,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": ["furniture-1786745216207:side-left"],
-        "moduleIds": ["kitchen-tower-oven-microwave"],
-        "names": ["Lateral esquerda"],
+        "key": "{\"role\":\"side-left\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":2050,\"depthMm\":620,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786891485209:side-left"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave"
+        ],
+        "names": [
+          "Lateral esquerda"
+        ],
         "role": "side-left",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 1,
         "widthMm": 18,
         "heightMm": 2050,
@@ -104,12 +112,20 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"side-right\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":2050,\"depthMm\":620,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": ["furniture-1786745216207:side-right"],
-        "moduleIds": ["kitchen-tower-oven-microwave"],
-        "names": ["Lateral direita"],
+        "key": "{\"role\":\"side-right\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":2050,\"depthMm\":620,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786891485209:side-right"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave"
+        ],
+        "names": [
+          "Lateral direita"
+        ],
         "role": "side-right",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 1,
         "widthMm": 18,
         "heightMm": 2050,
@@ -121,12 +137,20 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":620,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": ["furniture-1786745216207:base"],
-        "moduleIds": ["kitchen-tower-oven-microwave"],
-        "names": ["Base"],
+        "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":620,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786891485209:base"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave"
+        ],
+        "names": [
+          "Base"
+        ],
         "role": "base",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 1,
         "widthMm": 764,
         "heightMm": 18,
@@ -138,12 +162,20 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":620,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": ["furniture-1786745216207:top"],
-        "moduleIds": ["kitchen-tower-oven-microwave"],
-        "names": ["Topo"],
+        "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":620,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786891485209:top"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave"
+        ],
+        "names": [
+          "Topo"
+        ],
         "role": "top",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 1,
         "widthMm": 764,
         "heightMm": 18,
@@ -155,12 +187,20 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":2014,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"safety\"}",
-        "partIds": ["furniture-1786745216207:back"],
-        "moduleIds": ["kitchen-tower-oven-microwave"],
-        "names": ["Fundo"],
+        "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":2014,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"thicknessMm\":6,\"volumeType\":\"safety\"}",
+        "partIds": [
+          "furniture-1786891485209:back"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave"
+        ],
+        "names": [
+          "Fundo"
+        ],
         "role": "back",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 6,
         "quantity": 1,
         "widthMm": 764,
         "heightMm": 2014,
@@ -170,12 +210,22 @@
         "volumeType": "safety"
       },
       {
-        "key": "{\"role\":\"toe-kick\",\"materialId\":\"metal-black\",\"widthMm\":764,\"heightMm\":150,\"depthMm\":18,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"physical\"}",
-        "partIds": ["furniture-1786745216207:toe-kick", "furniture-1786745216209:toe-kick"],
-        "moduleIds": ["kitchen-tower-oven-microwave", "kitchen-base-2-doors"],
-        "names": ["Rodapé"],
+        "key": "{\"role\":\"toe-kick\",\"materialId\":\"metal-black\",\"widthMm\":764,\"heightMm\":150,\"depthMm\":18,\"grainDirection\":\"none\",\"edgeBanding\":{},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786891485209:toe-kick",
+          "furniture-1786891485212:toe-kick"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave",
+          "kitchen-base-2-doors"
+        ],
+        "names": [
+          "Rodapé"
+        ],
         "role": "toe-kick",
         "materialId": "metal-black",
+        "materialType": "metal",
+        "thicknessMm": 18,
         "quantity": 2,
         "widthMm": 764,
         "heightMm": 150,
@@ -185,12 +235,20 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"divider\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":584,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": ["furniture-1786745216207:appliance-divider"],
-        "moduleIds": ["kitchen-tower-oven-microwave"],
-        "names": ["Divisória entre forno e micro-ondas"],
+        "key": "{\"role\":\"divider\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":584,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786891485209:appliance-divider"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave"
+        ],
+        "names": [
+          "Divisória entre forno e micro-ondas"
+        ],
         "role": "divider",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 1,
         "widthMm": 764,
         "heightMm": 18,
@@ -202,12 +260,22 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"door\",\"materialId\":\"mdf-white\",\"widthMm\":396,\"heightMm\":1346,\"depthMm\":18,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"volumeType\":\"opening\"}",
-        "partIds": ["furniture-1786745216207:door-1", "furniture-1786745216207:door-2"],
-        "moduleIds": ["kitchen-tower-oven-microwave"],
-        "names": ["Porta 1", "Porta 2"],
+        "key": "{\"role\":\"door\",\"materialId\":\"mdf-white\",\"widthMm\":396,\"heightMm\":1346,\"depthMm\":18,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"opening\"}",
+        "partIds": [
+          "furniture-1786891485209:door-1",
+          "furniture-1786891485209:door-2"
+        ],
+        "moduleIds": [
+          "kitchen-tower-oven-microwave"
+        ],
+        "names": [
+          "Porta 1",
+          "Porta 2"
+        ],
         "role": "door",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 2,
         "widthMm": 396,
         "heightMm": 1346,
@@ -222,16 +290,24 @@
         "volumeType": "opening"
       },
       {
-        "key": "{\"role\":\"side-left\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":720,\"depthMm\":580,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "key": "{\"role\":\"side-left\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":720,\"depthMm\":580,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
         "partIds": [
-          "furniture-1786745216209:side-left",
-          "furniture-1786745216210:side-left",
-          "furniture-1786745216212:side-left"
+          "furniture-1786891485212:side-left",
+          "furniture-1786891485213:side-left",
+          "furniture-1786891485215:side-left"
         ],
-        "moduleIds": ["kitchen-base-2-doors", "kitchen-drawer-4", "kitchen-sink-cabinet"],
-        "names": ["Lateral esquerda"],
+        "moduleIds": [
+          "kitchen-base-2-doors",
+          "kitchen-drawer-4",
+          "kitchen-sink-cabinet"
+        ],
+        "names": [
+          "Lateral esquerda"
+        ],
         "role": "side-left",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 3,
         "widthMm": 18,
         "heightMm": 720,
@@ -243,16 +319,24 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"side-right\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":720,\"depthMm\":580,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "key": "{\"role\":\"side-right\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":720,\"depthMm\":580,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
         "partIds": [
-          "furniture-1786745216209:side-right",
-          "furniture-1786745216210:side-right",
-          "furniture-1786745216212:side-right"
+          "furniture-1786891485212:side-right",
+          "furniture-1786891485213:side-right",
+          "furniture-1786891485215:side-right"
         ],
-        "moduleIds": ["kitchen-base-2-doors", "kitchen-drawer-4", "kitchen-sink-cabinet"],
-        "names": ["Lateral direita"],
+        "moduleIds": [
+          "kitchen-base-2-doors",
+          "kitchen-drawer-4",
+          "kitchen-sink-cabinet"
+        ],
+        "names": [
+          "Lateral direita"
+        ],
         "role": "side-right",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 3,
         "widthMm": 18,
         "heightMm": 720,
@@ -264,12 +348,20 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": ["furniture-1786745216209:base"],
-        "moduleIds": ["kitchen-base-2-doors"],
-        "names": ["Base"],
+        "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786891485212:base"
+        ],
+        "moduleIds": [
+          "kitchen-base-2-doors"
+        ],
+        "names": [
+          "Base"
+        ],
         "role": "base",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 1,
         "widthMm": 764,
         "heightMm": 18,
@@ -281,12 +373,20 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": ["furniture-1786745216209:top"],
-        "moduleIds": ["kitchen-base-2-doors"],
-        "names": ["Topo"],
+        "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786891485212:top"
+        ],
+        "moduleIds": [
+          "kitchen-base-2-doors"
+        ],
+        "names": [
+          "Topo"
+        ],
         "role": "top",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 1,
         "widthMm": 764,
         "heightMm": 18,
@@ -298,12 +398,20 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":684,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"safety\"}",
-        "partIds": ["furniture-1786745216209:back"],
-        "moduleIds": ["kitchen-base-2-doors"],
-        "names": ["Fundo"],
+        "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":684,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"thicknessMm\":6,\"volumeType\":\"safety\"}",
+        "partIds": [
+          "furniture-1786891485212:back"
+        ],
+        "moduleIds": [
+          "kitchen-base-2-doors"
+        ],
+        "names": [
+          "Fundo"
+        ],
         "role": "back",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 6,
         "quantity": 1,
         "widthMm": 764,
         "heightMm": 684,
@@ -313,12 +421,22 @@
         "volumeType": "safety"
       },
       {
-        "key": "{\"role\":\"door\",\"materialId\":\"mdf-white\",\"widthMm\":396,\"heightMm\":716,\"depthMm\":18,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"volumeType\":\"opening\"}",
-        "partIds": ["furniture-1786745216209:door-1", "furniture-1786745216209:door-2"],
-        "moduleIds": ["kitchen-base-2-doors"],
-        "names": ["Porta 1", "Porta 2"],
+        "key": "{\"role\":\"door\",\"materialId\":\"mdf-white\",\"widthMm\":396,\"heightMm\":716,\"depthMm\":18,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"opening\"}",
+        "partIds": [
+          "furniture-1786891485212:door-1",
+          "furniture-1786891485212:door-2"
+        ],
+        "moduleIds": [
+          "kitchen-base-2-doors"
+        ],
+        "names": [
+          "Porta 1",
+          "Porta 2"
+        ],
         "role": "door",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 2,
         "widthMm": 396,
         "heightMm": 716,
@@ -333,12 +451,20 @@
         "volumeType": "opening"
       },
       {
-        "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":564,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": ["furniture-1786745216210:base"],
-        "moduleIds": ["kitchen-drawer-4"],
-        "names": ["Base"],
+        "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":564,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786891485213:base"
+        ],
+        "moduleIds": [
+          "kitchen-drawer-4"
+        ],
+        "names": [
+          "Base"
+        ],
         "role": "base",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 1,
         "widthMm": 564,
         "heightMm": 18,
@@ -350,12 +476,20 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":564,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": ["furniture-1786745216210:top"],
-        "moduleIds": ["kitchen-drawer-4"],
-        "names": ["Topo"],
+        "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":564,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786891485213:top"
+        ],
+        "moduleIds": [
+          "kitchen-drawer-4"
+        ],
+        "names": [
+          "Topo"
+        ],
         "role": "top",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 1,
         "widthMm": 564,
         "heightMm": 18,
@@ -367,12 +501,20 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":564,\"heightMm\":684,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"safety\"}",
-        "partIds": ["furniture-1786745216210:back"],
-        "moduleIds": ["kitchen-drawer-4"],
-        "names": ["Fundo"],
+        "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":564,\"heightMm\":684,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"thicknessMm\":6,\"volumeType\":\"safety\"}",
+        "partIds": [
+          "furniture-1786891485213:back"
+        ],
+        "moduleIds": [
+          "kitchen-drawer-4"
+        ],
+        "names": [
+          "Fundo"
+        ],
         "role": "back",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 6,
         "quantity": 1,
         "widthMm": 564,
         "heightMm": 684,
@@ -382,12 +524,20 @@
         "volumeType": "safety"
       },
       {
-        "key": "{\"role\":\"toe-kick\",\"materialId\":\"metal-black\",\"widthMm\":564,\"heightMm\":150,\"depthMm\":18,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"physical\"}",
-        "partIds": ["furniture-1786745216210:toe-kick"],
-        "moduleIds": ["kitchen-drawer-4"],
-        "names": ["Rodapé"],
+        "key": "{\"role\":\"toe-kick\",\"materialId\":\"metal-black\",\"widthMm\":564,\"heightMm\":150,\"depthMm\":18,\"grainDirection\":\"none\",\"edgeBanding\":{},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786891485213:toe-kick"
+        ],
+        "moduleIds": [
+          "kitchen-drawer-4"
+        ],
+        "names": [
+          "Rodapé"
+        ],
         "role": "toe-kick",
         "materialId": "metal-black",
+        "materialType": "metal",
+        "thicknessMm": 18,
         "quantity": 1,
         "widthMm": 564,
         "heightMm": 150,
@@ -397,17 +547,26 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"drawer-front\",\"materialId\":\"mdf-white\",\"widthMm\":596,\"heightMm\":173,\"depthMm\":18,\"grainDirection\":\"none\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"volumeType\":\"opening\"}",
+        "key": "{\"role\":\"drawer-front\",\"materialId\":\"mdf-white\",\"widthMm\":596,\"heightMm\":173,\"depthMm\":18,\"grainDirection\":\"none\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"opening\"}",
         "partIds": [
-          "furniture-1786745216210:drawer-1:front",
-          "furniture-1786745216210:drawer-2:front",
-          "furniture-1786745216210:drawer-3:front",
-          "furniture-1786745216210:drawer-4:front"
+          "furniture-1786891485213:drawer-1:front",
+          "furniture-1786891485213:drawer-2:front",
+          "furniture-1786891485213:drawer-3:front",
+          "furniture-1786891485213:drawer-4:front"
         ],
-        "moduleIds": ["kitchen-drawer-4"],
-        "names": ["Frente gaveta 1", "Frente gaveta 2", "Frente gaveta 3", "Frente gaveta 4"],
+        "moduleIds": [
+          "kitchen-drawer-4"
+        ],
+        "names": [
+          "Frente gaveta 1",
+          "Frente gaveta 2",
+          "Frente gaveta 3",
+          "Frente gaveta 4"
+        ],
         "role": "drawer-front",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 4,
         "widthMm": 596,
         "heightMm": 173,
@@ -422,18 +581,20 @@
         "volumeType": "opening"
       },
       {
-        "key": "{\"role\":\"drawer-side\",\"materialId\":\"mdf-white\",\"widthMm\":15,\"heightMm\":133,\"depthMm\":520,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"opening\"}",
+        "key": "{\"role\":\"drawer-side\",\"materialId\":\"mdf-white\",\"widthMm\":15,\"heightMm\":133,\"depthMm\":520,\"grainDirection\":\"none\",\"edgeBanding\":{},\"thicknessMm\":18,\"volumeType\":\"opening\"}",
         "partIds": [
-          "furniture-1786745216210:drawer-1:side-left",
-          "furniture-1786745216210:drawer-1:side-right",
-          "furniture-1786745216210:drawer-2:side-left",
-          "furniture-1786745216210:drawer-2:side-right",
-          "furniture-1786745216210:drawer-3:side-left",
-          "furniture-1786745216210:drawer-3:side-right",
-          "furniture-1786745216210:drawer-4:side-left",
-          "furniture-1786745216210:drawer-4:side-right"
+          "furniture-1786891485213:drawer-1:side-left",
+          "furniture-1786891485213:drawer-1:side-right",
+          "furniture-1786891485213:drawer-2:side-left",
+          "furniture-1786891485213:drawer-2:side-right",
+          "furniture-1786891485213:drawer-3:side-left",
+          "furniture-1786891485213:drawer-3:side-right",
+          "furniture-1786891485213:drawer-4:side-left",
+          "furniture-1786891485213:drawer-4:side-right"
         ],
-        "moduleIds": ["kitchen-drawer-4"],
+        "moduleIds": [
+          "kitchen-drawer-4"
+        ],
         "names": [
           "Lateral gaveta 1 esquerda",
           "Lateral gaveta 1 direita",
@@ -446,6 +607,8 @@
         ],
         "role": "drawer-side",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 8,
         "widthMm": 15,
         "heightMm": 133,
@@ -455,14 +618,16 @@
         "volumeType": "opening"
       },
       {
-        "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":538,\"heightMm\":133,\"depthMm\":18,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"opening\"}",
+        "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":538,\"heightMm\":133,\"depthMm\":18,\"grainDirection\":\"none\",\"edgeBanding\":{},\"thicknessMm\":6,\"volumeType\":\"opening\"}",
         "partIds": [
-          "furniture-1786745216210:drawer-1:back",
-          "furniture-1786745216210:drawer-2:back",
-          "furniture-1786745216210:drawer-3:back",
-          "furniture-1786745216210:drawer-4:back"
+          "furniture-1786891485213:drawer-1:back",
+          "furniture-1786891485213:drawer-2:back",
+          "furniture-1786891485213:drawer-3:back",
+          "furniture-1786891485213:drawer-4:back"
         ],
-        "moduleIds": ["kitchen-drawer-4"],
+        "moduleIds": [
+          "kitchen-drawer-4"
+        ],
         "names": [
           "Traseira gaveta 1",
           "Traseira gaveta 2",
@@ -471,6 +636,8 @@
         ],
         "role": "back",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 6,
         "quantity": 4,
         "widthMm": 538,
         "heightMm": 133,
@@ -480,17 +647,26 @@
         "volumeType": "opening"
       },
       {
-        "key": "{\"role\":\"drawer-bottom\",\"materialId\":\"mdf-white\",\"widthMm\":523,\"heightMm\":6,\"depthMm\":520,\"grainDirection\":\"horizontal\",\"edgeBanding\":{},\"volumeType\":\"opening\"}",
+        "key": "{\"role\":\"drawer-bottom\",\"materialId\":\"mdf-white\",\"widthMm\":523,\"heightMm\":6,\"depthMm\":520,\"grainDirection\":\"horizontal\",\"edgeBanding\":{},\"thicknessMm\":18,\"volumeType\":\"opening\"}",
         "partIds": [
-          "furniture-1786745216210:drawer-1:bottom",
-          "furniture-1786745216210:drawer-2:bottom",
-          "furniture-1786745216210:drawer-3:bottom",
-          "furniture-1786745216210:drawer-4:bottom"
+          "furniture-1786891485213:drawer-1:bottom",
+          "furniture-1786891485213:drawer-2:bottom",
+          "furniture-1786891485213:drawer-3:bottom",
+          "furniture-1786891485213:drawer-4:bottom"
         ],
-        "moduleIds": ["kitchen-drawer-4"],
-        "names": ["Fundo gaveta 1", "Fundo gaveta 2", "Fundo gaveta 3", "Fundo gaveta 4"],
+        "moduleIds": [
+          "kitchen-drawer-4"
+        ],
+        "names": [
+          "Fundo gaveta 1",
+          "Fundo gaveta 2",
+          "Fundo gaveta 3",
+          "Fundo gaveta 4"
+        ],
         "role": "drawer-bottom",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 4,
         "widthMm": 523,
         "heightMm": 6,
@@ -500,12 +676,20 @@
         "volumeType": "opening"
       },
       {
-        "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":1164,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": ["furniture-1786745216212:base"],
-        "moduleIds": ["kitchen-sink-cabinet"],
-        "names": ["Base"],
+        "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":1164,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786891485215:base"
+        ],
+        "moduleIds": [
+          "kitchen-sink-cabinet"
+        ],
+        "names": [
+          "Base"
+        ],
         "role": "base",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 1,
         "widthMm": 1164,
         "heightMm": 18,
@@ -517,12 +701,20 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":1164,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": ["furniture-1786745216212:top"],
-        "moduleIds": ["kitchen-sink-cabinet"],
-        "names": ["Topo"],
+        "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":1164,\"heightMm\":18,\"depthMm\":580,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786891485215:top"
+        ],
+        "moduleIds": [
+          "kitchen-sink-cabinet"
+        ],
+        "names": [
+          "Topo"
+        ],
         "role": "top",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 1,
         "widthMm": 1164,
         "heightMm": 18,
@@ -534,12 +726,20 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":1164,\"heightMm\":684,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"safety\"}",
-        "partIds": ["furniture-1786745216212:back"],
-        "moduleIds": ["kitchen-sink-cabinet"],
-        "names": ["Fundo"],
+        "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":1164,\"heightMm\":684,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"thicknessMm\":6,\"volumeType\":\"safety\"}",
+        "partIds": [
+          "furniture-1786891485215:back"
+        ],
+        "moduleIds": [
+          "kitchen-sink-cabinet"
+        ],
+        "names": [
+          "Fundo"
+        ],
         "role": "back",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 6,
         "quantity": 1,
         "widthMm": 1164,
         "heightMm": 684,
@@ -549,12 +749,20 @@
         "volumeType": "safety"
       },
       {
-        "key": "{\"role\":\"toe-kick\",\"materialId\":\"metal-black\",\"widthMm\":1164,\"heightMm\":150,\"depthMm\":18,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"physical\"}",
-        "partIds": ["furniture-1786745216212:toe-kick"],
-        "moduleIds": ["kitchen-sink-cabinet"],
-        "names": ["Rodapé"],
+        "key": "{\"role\":\"toe-kick\",\"materialId\":\"metal-black\",\"widthMm\":1164,\"heightMm\":150,\"depthMm\":18,\"grainDirection\":\"none\",\"edgeBanding\":{},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786891485215:toe-kick"
+        ],
+        "moduleIds": [
+          "kitchen-sink-cabinet"
+        ],
+        "names": [
+          "Rodapé"
+        ],
         "role": "toe-kick",
         "materialId": "metal-black",
+        "materialType": "metal",
+        "thicknessMm": 18,
         "quantity": 1,
         "widthMm": 1164,
         "heightMm": 150,
@@ -564,12 +772,22 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"door\",\"materialId\":\"mdf-white\",\"widthMm\":596,\"heightMm\":716,\"depthMm\":18,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"volumeType\":\"opening\"}",
-        "partIds": ["furniture-1786745216212:door-1", "furniture-1786745216212:door-2"],
-        "moduleIds": ["kitchen-sink-cabinet"],
-        "names": ["Porta 1", "Porta 2"],
+        "key": "{\"role\":\"door\",\"materialId\":\"mdf-white\",\"widthMm\":596,\"heightMm\":716,\"depthMm\":18,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"opening\"}",
+        "partIds": [
+          "furniture-1786891485215:door-1",
+          "furniture-1786891485215:door-2"
+        ],
+        "moduleIds": [
+          "kitchen-sink-cabinet"
+        ],
+        "names": [
+          "Porta 1",
+          "Porta 2"
+        ],
         "role": "door",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 2,
         "widthMm": 596,
         "heightMm": 716,
@@ -584,12 +802,20 @@
         "volumeType": "opening"
       },
       {
-        "key": "{\"role\":\"side-left\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":700,\"depthMm\":350,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": ["furniture-1786745216214:side-left"],
-        "moduleIds": ["kitchen-golden-upper-800"],
-        "names": ["Lateral esquerda"],
+        "key": "{\"role\":\"side-left\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":700,\"depthMm\":350,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786891485217:side-left"
+        ],
+        "moduleIds": [
+          "kitchen-golden-upper-800"
+        ],
+        "names": [
+          "Lateral esquerda"
+        ],
         "role": "side-left",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 1,
         "widthMm": 18,
         "heightMm": 700,
@@ -601,12 +827,20 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"side-right\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":700,\"depthMm\":350,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": ["furniture-1786745216214:side-right"],
-        "moduleIds": ["kitchen-golden-upper-800"],
-        "names": ["Lateral direita"],
+        "key": "{\"role\":\"side-right\",\"materialId\":\"mdf-white\",\"widthMm\":18,\"heightMm\":700,\"depthMm\":350,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786891485217:side-right"
+        ],
+        "moduleIds": [
+          "kitchen-golden-upper-800"
+        ],
+        "names": [
+          "Lateral direita"
+        ],
         "role": "side-right",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 1,
         "widthMm": 18,
         "heightMm": 700,
@@ -618,12 +852,20 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":350,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": ["furniture-1786745216214:base"],
-        "moduleIds": ["kitchen-golden-upper-800"],
-        "names": ["Base"],
+        "key": "{\"role\":\"base\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":350,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786891485217:base"
+        ],
+        "moduleIds": [
+          "kitchen-golden-upper-800"
+        ],
+        "names": [
+          "Base"
+        ],
         "role": "base",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 1,
         "widthMm": 764,
         "heightMm": 18,
@@ -635,12 +877,20 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":350,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
-        "partIds": ["furniture-1786745216214:top"],
-        "moduleIds": ["kitchen-golden-upper-800"],
-        "names": ["Topo"],
+        "key": "{\"role\":\"top\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":18,\"depthMm\":350,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
+        "partIds": [
+          "furniture-1786891485217:top"
+        ],
+        "moduleIds": [
+          "kitchen-golden-upper-800"
+        ],
+        "names": [
+          "Topo"
+        ],
         "role": "top",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 1,
         "widthMm": 764,
         "heightMm": 18,
@@ -652,12 +902,20 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":664,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"volumeType\":\"safety\"}",
-        "partIds": ["furniture-1786745216214:back"],
-        "moduleIds": ["kitchen-golden-upper-800"],
-        "names": ["Fundo"],
+        "key": "{\"role\":\"back\",\"materialId\":\"mdf-white\",\"widthMm\":764,\"heightMm\":664,\"depthMm\":6,\"grainDirection\":\"none\",\"edgeBanding\":{},\"thicknessMm\":6,\"volumeType\":\"safety\"}",
+        "partIds": [
+          "furniture-1786891485217:back"
+        ],
+        "moduleIds": [
+          "kitchen-golden-upper-800"
+        ],
+        "names": [
+          "Fundo"
+        ],
         "role": "back",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 6,
         "quantity": 1,
         "widthMm": 764,
         "heightMm": 664,
@@ -667,16 +925,24 @@
         "volumeType": "safety"
       },
       {
-        "key": "{\"role\":\"shelf\",\"materialId\":\"mdf-white\",\"widthMm\":762,\"heightMm\":18,\"depthMm\":330,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"volumeType\":\"physical\"}",
+        "key": "{\"role\":\"shelf\",\"materialId\":\"mdf-white\",\"widthMm\":762,\"heightMm\":18,\"depthMm\":330,\"grainDirection\":\"horizontal\",\"edgeBanding\":{\"front\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"physical\"}",
         "partIds": [
-          "furniture-1786745216214:shelf-1",
-          "furniture-1786745216214:shelf-2",
-          "furniture-1786745216214:shelf-3"
+          "furniture-1786891485217:shelf-1",
+          "furniture-1786891485217:shelf-2",
+          "furniture-1786891485217:shelf-3"
         ],
-        "moduleIds": ["kitchen-golden-upper-800"],
-        "names": ["Prateleira 1", "Prateleira 2", "Prateleira 3"],
+        "moduleIds": [
+          "kitchen-golden-upper-800"
+        ],
+        "names": [
+          "Prateleira 1",
+          "Prateleira 2",
+          "Prateleira 3"
+        ],
         "role": "shelf",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 3,
         "widthMm": 762,
         "heightMm": 18,
@@ -688,12 +954,22 @@
         "volumeType": "physical"
       },
       {
-        "key": "{\"role\":\"door\",\"materialId\":\"mdf-white\",\"widthMm\":396,\"heightMm\":696,\"depthMm\":18,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"volumeType\":\"opening\"}",
-        "partIds": ["furniture-1786745216214:door-1", "furniture-1786745216214:door-2"],
-        "moduleIds": ["kitchen-golden-upper-800"],
-        "names": ["Porta 1", "Porta 2"],
+        "key": "{\"role\":\"door\",\"materialId\":\"mdf-white\",\"widthMm\":396,\"heightMm\":696,\"depthMm\":18,\"grainDirection\":\"vertical\",\"edgeBanding\":{\"top\":\"mdf-white\",\"bottom\":\"mdf-white\",\"left\":\"mdf-white\",\"right\":\"mdf-white\"},\"thicknessMm\":18,\"volumeType\":\"opening\"}",
+        "partIds": [
+          "furniture-1786891485217:door-1",
+          "furniture-1786891485217:door-2"
+        ],
+        "moduleIds": [
+          "kitchen-golden-upper-800"
+        ],
+        "names": [
+          "Porta 1",
+          "Porta 2"
+        ],
         "role": "door",
         "materialId": "mdf-white",
+        "materialType": "mdf",
+        "thicknessMm": 18,
         "quantity": 2,
         "widthMm": 396,
         "heightMm": 696,
@@ -713,22 +989,22 @@
         "hardwareId": "leg-adjustable",
         "quantity": 16,
         "partIds": [
-          "furniture-1786745216207:foot-left-back",
-          "furniture-1786745216207:foot-right-back",
-          "furniture-1786745216207:foot-left-front",
-          "furniture-1786745216207:foot-right-front",
-          "furniture-1786745216209:foot-left-back",
-          "furniture-1786745216209:foot-right-back",
-          "furniture-1786745216209:foot-left-front",
-          "furniture-1786745216209:foot-right-front",
-          "furniture-1786745216210:foot-left-back",
-          "furniture-1786745216210:foot-right-back",
-          "furniture-1786745216210:foot-left-front",
-          "furniture-1786745216210:foot-right-front",
-          "furniture-1786745216212:foot-left-back",
-          "furniture-1786745216212:foot-right-back",
-          "furniture-1786745216212:foot-left-front",
-          "furniture-1786745216212:foot-right-front"
+          "furniture-1786891485209:foot-left-back",
+          "furniture-1786891485209:foot-right-back",
+          "furniture-1786891485209:foot-left-front",
+          "furniture-1786891485209:foot-right-front",
+          "furniture-1786891485212:foot-left-back",
+          "furniture-1786891485212:foot-right-back",
+          "furniture-1786891485212:foot-left-front",
+          "furniture-1786891485212:foot-right-front",
+          "furniture-1786891485213:foot-left-back",
+          "furniture-1786891485213:foot-right-back",
+          "furniture-1786891485213:foot-left-front",
+          "furniture-1786891485213:foot-right-front",
+          "furniture-1786891485215:foot-left-back",
+          "furniture-1786891485215:foot-right-back",
+          "furniture-1786891485215:foot-left-front",
+          "furniture-1786891485215:foot-right-front"
         ],
         "moduleIds": [
           "kitchen-tower-oven-microwave",
@@ -741,14 +1017,14 @@
         "hardwareId": "hinge-soft-close",
         "quantity": 8,
         "partIds": [
-          "furniture-1786745216207:door-1:hinge",
-          "furniture-1786745216207:door-2:hinge",
-          "furniture-1786745216209:door-1:hinge",
-          "furniture-1786745216209:door-2:hinge",
-          "furniture-1786745216212:door-1:hinge",
-          "furniture-1786745216212:door-2:hinge",
-          "furniture-1786745216214:door-1:hinge",
-          "furniture-1786745216214:door-2:hinge"
+          "furniture-1786891485209:door-1:hinge",
+          "furniture-1786891485209:door-2:hinge",
+          "furniture-1786891485212:door-1:hinge",
+          "furniture-1786891485212:door-2:hinge",
+          "furniture-1786891485215:door-1:hinge",
+          "furniture-1786891485215:door-2:hinge",
+          "furniture-1786891485217:door-1:hinge",
+          "furniture-1786891485217:door-2:hinge"
         ],
         "moduleIds": [
           "kitchen-tower-oven-microwave",
@@ -761,18 +1037,18 @@
         "hardwareId": "handle-bar",
         "quantity": 12,
         "partIds": [
-          "furniture-1786745216207:door-1:handle",
-          "furniture-1786745216207:door-2:handle",
-          "furniture-1786745216209:door-1:handle",
-          "furniture-1786745216209:door-2:handle",
-          "furniture-1786745216210:drawer-1:handle",
-          "furniture-1786745216210:drawer-2:handle",
-          "furniture-1786745216210:drawer-3:handle",
-          "furniture-1786745216210:drawer-4:handle",
-          "furniture-1786745216212:door-1:handle",
-          "furniture-1786745216212:door-2:handle",
-          "furniture-1786745216214:door-1:handle",
-          "furniture-1786745216214:door-2:handle"
+          "furniture-1786891485209:door-1:handle",
+          "furniture-1786891485209:door-2:handle",
+          "furniture-1786891485212:door-1:handle",
+          "furniture-1786891485212:door-2:handle",
+          "furniture-1786891485213:drawer-1:handle",
+          "furniture-1786891485213:drawer-2:handle",
+          "furniture-1786891485213:drawer-3:handle",
+          "furniture-1786891485213:drawer-4:handle",
+          "furniture-1786891485215:door-1:handle",
+          "furniture-1786891485215:door-2:handle",
+          "furniture-1786891485217:door-1:handle",
+          "furniture-1786891485217:door-2:handle"
         ],
         "moduleIds": [
           "kitchen-tower-oven-microwave",
@@ -786,32 +1062,36 @@
         "hardwareId": "slide-hidden-soft-close",
         "quantity": 8,
         "partIds": [
-          "furniture-1786745216210:drawer-1:slide-left",
-          "furniture-1786745216210:drawer-1:slide-right",
-          "furniture-1786745216210:drawer-2:slide-left",
-          "furniture-1786745216210:drawer-2:slide-right",
-          "furniture-1786745216210:drawer-3:slide-left",
-          "furniture-1786745216210:drawer-3:slide-right",
-          "furniture-1786745216210:drawer-4:slide-left",
-          "furniture-1786745216210:drawer-4:slide-right"
+          "furniture-1786891485213:drawer-1:slide-left",
+          "furniture-1786891485213:drawer-1:slide-right",
+          "furniture-1786891485213:drawer-2:slide-left",
+          "furniture-1786891485213:drawer-2:slide-right",
+          "furniture-1786891485213:drawer-3:slide-left",
+          "furniture-1786891485213:drawer-3:slide-right",
+          "furniture-1786891485213:drawer-4:slide-left",
+          "furniture-1786891485213:drawer-4:slide-right"
         ],
-        "moduleIds": ["kitchen-drawer-4"]
+        "moduleIds": [
+          "kitchen-drawer-4"
+        ]
       },
       {
         "hardwareId": "sink-bowl",
         "quantity": 4,
         "partIds": [
-          "furniture-1786745216212:sink-rim-front",
-          "furniture-1786745216212:sink-rim-back",
-          "furniture-1786745216212:sink-rim-left",
-          "furniture-1786745216212:sink-rim-right"
+          "furniture-1786891485215:sink-rim-front",
+          "furniture-1786891485215:sink-rim-back",
+          "furniture-1786891485215:sink-rim-left",
+          "furniture-1786891485215:sink-rim-right"
         ],
-        "moduleIds": ["kitchen-sink-cabinet"]
+        "moduleIds": [
+          "kitchen-sink-cabinet"
+        ]
       }
     ],
     "modules": [
       {
-        "instanceId": "furniture-1786745216207",
+        "instanceId": "furniture-1786891485209",
         "moduleDefinitionId": "kitchen-tower-oven-microwave",
         "name": "Torre Forno + Micro-ondas",
         "dimensionsMm": {
@@ -826,7 +1106,7 @@
         "warningCount": 0
       },
       {
-        "instanceId": "furniture-1786745216209",
+        "instanceId": "furniture-1786891485212",
         "moduleDefinitionId": "kitchen-base-2-doors",
         "name": "Balcão 2 Portas",
         "dimensionsMm": {
@@ -841,7 +1121,7 @@
         "warningCount": 0
       },
       {
-        "instanceId": "furniture-1786745216210",
+        "instanceId": "furniture-1786891485213",
         "moduleDefinitionId": "kitchen-drawer-4",
         "name": "Gaveteiro 4 Gavetas",
         "dimensionsMm": {
@@ -856,7 +1136,7 @@
         "warningCount": 0
       },
       {
-        "instanceId": "furniture-1786745216212",
+        "instanceId": "furniture-1786891485215",
         "moduleDefinitionId": "kitchen-sink-cabinet",
         "name": "Balcão para Pia",
         "dimensionsMm": {
@@ -871,7 +1151,7 @@
         "warningCount": 0
       },
       {
-        "instanceId": "furniture-1786745216214",
+        "instanceId": "furniture-1786891485217",
         "moduleDefinitionId": "kitchen-golden-upper-800",
         "name": "Golden Module — Aéreo 800×700×350",
         "dimensionsMm": {
@@ -891,9 +1171,9 @@
   "joinery": {
     "operations": [
       {
-        "id": "furniture-1786745216207-furniture-1786745216207:side-left-confirmat-0",
-        "moduleInstanceId": "furniture-1786745216207",
-        "partId": "furniture-1786745216207:side-left",
+        "id": "furniture-1786891485209-furniture-1786891485209:side-left-confirmat-0",
+        "moduleInstanceId": "furniture-1786891485209",
+        "partId": "furniture-1786891485209:side-left",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -906,9 +1186,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216207-furniture-1786745216207:side-left-dowel-0",
-        "moduleInstanceId": "furniture-1786745216207",
-        "partId": "furniture-1786745216207:side-left",
+        "id": "furniture-1786891485209-furniture-1786891485209:side-left-dowel-0",
+        "moduleInstanceId": "furniture-1786891485209",
+        "partId": "furniture-1786891485209:side-left",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -921,9 +1201,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216207-furniture-1786745216207:side-right-confirmat-1",
-        "moduleInstanceId": "furniture-1786745216207",
-        "partId": "furniture-1786745216207:side-right",
+        "id": "furniture-1786891485209-furniture-1786891485209:side-right-confirmat-1",
+        "moduleInstanceId": "furniture-1786891485209",
+        "partId": "furniture-1786891485209:side-right",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -936,9 +1216,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216207-furniture-1786745216207:side-right-dowel-1",
-        "moduleInstanceId": "furniture-1786745216207",
-        "partId": "furniture-1786745216207:side-right",
+        "id": "furniture-1786891485209-furniture-1786891485209:side-right-dowel-1",
+        "moduleInstanceId": "furniture-1786891485209",
+        "partId": "furniture-1786891485209:side-right",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -951,9 +1231,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216207-furniture-1786745216207:base-confirmat-2",
-        "moduleInstanceId": "furniture-1786745216207",
-        "partId": "furniture-1786745216207:base",
+        "id": "furniture-1786891485209-furniture-1786891485209:base-confirmat-2",
+        "moduleInstanceId": "furniture-1786891485209",
+        "partId": "furniture-1786891485209:base",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -966,9 +1246,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216207-furniture-1786745216207:base-dowel-2",
-        "moduleInstanceId": "furniture-1786745216207",
-        "partId": "furniture-1786745216207:base",
+        "id": "furniture-1786891485209-furniture-1786891485209:base-dowel-2",
+        "moduleInstanceId": "furniture-1786891485209",
+        "partId": "furniture-1786891485209:base",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -981,9 +1261,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216207-furniture-1786745216207:top-confirmat-3",
-        "moduleInstanceId": "furniture-1786745216207",
-        "partId": "furniture-1786745216207:top",
+        "id": "furniture-1786891485209-furniture-1786891485209:top-confirmat-3",
+        "moduleInstanceId": "furniture-1786891485209",
+        "partId": "furniture-1786891485209:top",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -996,9 +1276,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216207-furniture-1786745216207:top-dowel-3",
-        "moduleInstanceId": "furniture-1786745216207",
-        "partId": "furniture-1786745216207:top",
+        "id": "furniture-1786891485209-furniture-1786891485209:top-dowel-3",
+        "moduleInstanceId": "furniture-1786891485209",
+        "partId": "furniture-1786891485209:top",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1011,9 +1291,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216207-furniture-1786745216207:back-confirmat-4",
-        "moduleInstanceId": "furniture-1786745216207",
-        "partId": "furniture-1786745216207:back",
+        "id": "furniture-1786891485209-furniture-1786891485209:back-confirmat-4",
+        "moduleInstanceId": "furniture-1786891485209",
+        "partId": "furniture-1786891485209:back",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1026,9 +1306,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216207-furniture-1786745216207:back-dowel-4",
-        "moduleInstanceId": "furniture-1786745216207",
-        "partId": "furniture-1786745216207:back",
+        "id": "furniture-1786891485209-furniture-1786891485209:back-dowel-4",
+        "moduleInstanceId": "furniture-1786891485209",
+        "partId": "furniture-1786891485209:back",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1041,9 +1321,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216207-furniture-1786745216207:appliance-divider-confirmat-5",
-        "moduleInstanceId": "furniture-1786745216207",
-        "partId": "furniture-1786745216207:appliance-divider",
+        "id": "furniture-1786891485209-furniture-1786891485209:appliance-divider-confirmat-5",
+        "moduleInstanceId": "furniture-1786891485209",
+        "partId": "furniture-1786891485209:appliance-divider",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1056,9 +1336,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216207-furniture-1786745216207:appliance-divider-dowel-5",
-        "moduleInstanceId": "furniture-1786745216207",
-        "partId": "furniture-1786745216207:appliance-divider",
+        "id": "furniture-1786891485209-furniture-1786891485209:appliance-divider-dowel-5",
+        "moduleInstanceId": "furniture-1786891485209",
+        "partId": "furniture-1786891485209:appliance-divider",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1071,9 +1351,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216207-furniture-1786745216207:door-1-hinge-cup-0",
-        "moduleInstanceId": "furniture-1786745216207",
-        "partId": "furniture-1786745216207:door-1",
+        "id": "furniture-1786891485209-furniture-1786891485209:door-1-hinge-cup-0",
+        "moduleInstanceId": "furniture-1786891485209",
+        "partId": "furniture-1786891485209:door-1",
         "kind": "hinge-cup",
         "face": "F1",
         "positionMm": {
@@ -1087,9 +1367,9 @@
         "notes": "Copo de dobradiça; repetir no topo e base da porta conforme altura."
       },
       {
-        "id": "furniture-1786745216207-furniture-1786745216207:door-1-hinge-fixing-0",
-        "moduleInstanceId": "furniture-1786745216207",
-        "partId": "furniture-1786745216207:door-1",
+        "id": "furniture-1786891485209-furniture-1786891485209:door-1-hinge-fixing-0",
+        "moduleInstanceId": "furniture-1786891485209",
+        "partId": "furniture-1786891485209:door-1",
         "kind": "hinge-fixing",
         "face": "F1",
         "positionMm": {
@@ -1102,9 +1382,9 @@
         "hardwareId": "hinge-soft-close"
       },
       {
-        "id": "furniture-1786745216207-furniture-1786745216207:door-2-hinge-cup-1",
-        "moduleInstanceId": "furniture-1786745216207",
-        "partId": "furniture-1786745216207:door-2",
+        "id": "furniture-1786891485209-furniture-1786891485209:door-2-hinge-cup-1",
+        "moduleInstanceId": "furniture-1786891485209",
+        "partId": "furniture-1786891485209:door-2",
         "kind": "hinge-cup",
         "face": "F1",
         "positionMm": {
@@ -1118,9 +1398,9 @@
         "notes": "Copo de dobradiça; repetir no topo e base da porta conforme altura."
       },
       {
-        "id": "furniture-1786745216207-furniture-1786745216207:door-2-hinge-fixing-1",
-        "moduleInstanceId": "furniture-1786745216207",
-        "partId": "furniture-1786745216207:door-2",
+        "id": "furniture-1786891485209-furniture-1786891485209:door-2-hinge-fixing-1",
+        "moduleInstanceId": "furniture-1786891485209",
+        "partId": "furniture-1786891485209:door-2",
         "kind": "hinge-fixing",
         "face": "F1",
         "positionMm": {
@@ -1133,9 +1413,9 @@
         "hardwareId": "hinge-soft-close"
       },
       {
-        "id": "furniture-1786745216209-furniture-1786745216209:side-left-confirmat-0",
-        "moduleInstanceId": "furniture-1786745216209",
-        "partId": "furniture-1786745216209:side-left",
+        "id": "furniture-1786891485212-furniture-1786891485212:side-left-confirmat-0",
+        "moduleInstanceId": "furniture-1786891485212",
+        "partId": "furniture-1786891485212:side-left",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1148,9 +1428,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216209-furniture-1786745216209:side-left-dowel-0",
-        "moduleInstanceId": "furniture-1786745216209",
-        "partId": "furniture-1786745216209:side-left",
+        "id": "furniture-1786891485212-furniture-1786891485212:side-left-dowel-0",
+        "moduleInstanceId": "furniture-1786891485212",
+        "partId": "furniture-1786891485212:side-left",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1163,9 +1443,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216209-furniture-1786745216209:side-right-confirmat-1",
-        "moduleInstanceId": "furniture-1786745216209",
-        "partId": "furniture-1786745216209:side-right",
+        "id": "furniture-1786891485212-furniture-1786891485212:side-right-confirmat-1",
+        "moduleInstanceId": "furniture-1786891485212",
+        "partId": "furniture-1786891485212:side-right",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1178,9 +1458,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216209-furniture-1786745216209:side-right-dowel-1",
-        "moduleInstanceId": "furniture-1786745216209",
-        "partId": "furniture-1786745216209:side-right",
+        "id": "furniture-1786891485212-furniture-1786891485212:side-right-dowel-1",
+        "moduleInstanceId": "furniture-1786891485212",
+        "partId": "furniture-1786891485212:side-right",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1193,9 +1473,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216209-furniture-1786745216209:base-confirmat-2",
-        "moduleInstanceId": "furniture-1786745216209",
-        "partId": "furniture-1786745216209:base",
+        "id": "furniture-1786891485212-furniture-1786891485212:base-confirmat-2",
+        "moduleInstanceId": "furniture-1786891485212",
+        "partId": "furniture-1786891485212:base",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1208,9 +1488,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216209-furniture-1786745216209:base-dowel-2",
-        "moduleInstanceId": "furniture-1786745216209",
-        "partId": "furniture-1786745216209:base",
+        "id": "furniture-1786891485212-furniture-1786891485212:base-dowel-2",
+        "moduleInstanceId": "furniture-1786891485212",
+        "partId": "furniture-1786891485212:base",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1223,9 +1503,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216209-furniture-1786745216209:top-confirmat-3",
-        "moduleInstanceId": "furniture-1786745216209",
-        "partId": "furniture-1786745216209:top",
+        "id": "furniture-1786891485212-furniture-1786891485212:top-confirmat-3",
+        "moduleInstanceId": "furniture-1786891485212",
+        "partId": "furniture-1786891485212:top",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1238,9 +1518,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216209-furniture-1786745216209:top-dowel-3",
-        "moduleInstanceId": "furniture-1786745216209",
-        "partId": "furniture-1786745216209:top",
+        "id": "furniture-1786891485212-furniture-1786891485212:top-dowel-3",
+        "moduleInstanceId": "furniture-1786891485212",
+        "partId": "furniture-1786891485212:top",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1253,9 +1533,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216209-furniture-1786745216209:back-confirmat-4",
-        "moduleInstanceId": "furniture-1786745216209",
-        "partId": "furniture-1786745216209:back",
+        "id": "furniture-1786891485212-furniture-1786891485212:back-confirmat-4",
+        "moduleInstanceId": "furniture-1786891485212",
+        "partId": "furniture-1786891485212:back",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1268,9 +1548,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216209-furniture-1786745216209:back-dowel-4",
-        "moduleInstanceId": "furniture-1786745216209",
-        "partId": "furniture-1786745216209:back",
+        "id": "furniture-1786891485212-furniture-1786891485212:back-dowel-4",
+        "moduleInstanceId": "furniture-1786891485212",
+        "partId": "furniture-1786891485212:back",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1283,9 +1563,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216209-furniture-1786745216209:door-1-hinge-cup-0",
-        "moduleInstanceId": "furniture-1786745216209",
-        "partId": "furniture-1786745216209:door-1",
+        "id": "furniture-1786891485212-furniture-1786891485212:door-1-hinge-cup-0",
+        "moduleInstanceId": "furniture-1786891485212",
+        "partId": "furniture-1786891485212:door-1",
         "kind": "hinge-cup",
         "face": "F1",
         "positionMm": {
@@ -1299,9 +1579,9 @@
         "notes": "Copo de dobradiça; repetir no topo e base da porta conforme altura."
       },
       {
-        "id": "furniture-1786745216209-furniture-1786745216209:door-1-hinge-fixing-0",
-        "moduleInstanceId": "furniture-1786745216209",
-        "partId": "furniture-1786745216209:door-1",
+        "id": "furniture-1786891485212-furniture-1786891485212:door-1-hinge-fixing-0",
+        "moduleInstanceId": "furniture-1786891485212",
+        "partId": "furniture-1786891485212:door-1",
         "kind": "hinge-fixing",
         "face": "F1",
         "positionMm": {
@@ -1314,9 +1594,9 @@
         "hardwareId": "hinge-soft-close"
       },
       {
-        "id": "furniture-1786745216209-furniture-1786745216209:door-2-hinge-cup-1",
-        "moduleInstanceId": "furniture-1786745216209",
-        "partId": "furniture-1786745216209:door-2",
+        "id": "furniture-1786891485212-furniture-1786891485212:door-2-hinge-cup-1",
+        "moduleInstanceId": "furniture-1786891485212",
+        "partId": "furniture-1786891485212:door-2",
         "kind": "hinge-cup",
         "face": "F1",
         "positionMm": {
@@ -1330,9 +1610,9 @@
         "notes": "Copo de dobradiça; repetir no topo e base da porta conforme altura."
       },
       {
-        "id": "furniture-1786745216209-furniture-1786745216209:door-2-hinge-fixing-1",
-        "moduleInstanceId": "furniture-1786745216209",
-        "partId": "furniture-1786745216209:door-2",
+        "id": "furniture-1786891485212-furniture-1786891485212:door-2-hinge-fixing-1",
+        "moduleInstanceId": "furniture-1786891485212",
+        "partId": "furniture-1786891485212:door-2",
         "kind": "hinge-fixing",
         "face": "F1",
         "positionMm": {
@@ -1345,9 +1625,9 @@
         "hardwareId": "hinge-soft-close"
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:side-left-confirmat-0",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:side-left",
+        "id": "furniture-1786891485213-furniture-1786891485213:side-left-confirmat-0",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:side-left",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1360,9 +1640,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:side-left-dowel-0",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:side-left",
+        "id": "furniture-1786891485213-furniture-1786891485213:side-left-dowel-0",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:side-left",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1375,9 +1655,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:side-right-confirmat-1",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:side-right",
+        "id": "furniture-1786891485213-furniture-1786891485213:side-right-confirmat-1",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:side-right",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1390,9 +1670,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:side-right-dowel-1",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:side-right",
+        "id": "furniture-1786891485213-furniture-1786891485213:side-right-dowel-1",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:side-right",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1405,9 +1685,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:base-confirmat-2",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:base",
+        "id": "furniture-1786891485213-furniture-1786891485213:base-confirmat-2",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:base",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1420,9 +1700,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:base-dowel-2",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:base",
+        "id": "furniture-1786891485213-furniture-1786891485213:base-dowel-2",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:base",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1435,9 +1715,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:top-confirmat-3",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:top",
+        "id": "furniture-1786891485213-furniture-1786891485213:top-confirmat-3",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:top",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1450,9 +1730,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:top-dowel-3",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:top",
+        "id": "furniture-1786891485213-furniture-1786891485213:top-dowel-3",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:top",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1465,9 +1745,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:back-confirmat-4",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:back",
+        "id": "furniture-1786891485213-furniture-1786891485213:back-confirmat-4",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:back",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1480,9 +1760,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:back-dowel-4",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:back",
+        "id": "furniture-1786891485213-furniture-1786891485213:back-dowel-4",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:back",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1495,9 +1775,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-1:back-confirmat-5",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-1:back",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-1:back-confirmat-5",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-1:back",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1510,9 +1790,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-1:back-dowel-5",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-1:back",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-1:back-dowel-5",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-1:back",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1525,9 +1805,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-2:back-confirmat-6",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-2:back",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-2:back-confirmat-6",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-2:back",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1540,9 +1820,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-2:back-dowel-6",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-2:back",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-2:back-dowel-6",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-2:back",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1555,9 +1835,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-3:back-confirmat-7",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-3:back",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-3:back-confirmat-7",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-3:back",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1570,9 +1850,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-3:back-dowel-7",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-3:back",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-3:back-dowel-7",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-3:back",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1585,9 +1865,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-4:back-confirmat-8",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-4:back",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-4:back-confirmat-8",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-4:back",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1600,9 +1880,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-4:back-dowel-8",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-4:back",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-4:back-dowel-8",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-4:back",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1615,9 +1895,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-1:front-handle-through-0",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-1:front",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-1:front-handle-through-0",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-1:front",
         "kind": "handle-through",
         "face": "F1",
         "positionMm": {
@@ -1631,9 +1911,9 @@
         "notes": "Furação do puxador conforme gabarito do fabricante."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-2:front-handle-through-1",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-2:front",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-2:front-handle-through-1",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-2:front",
         "kind": "handle-through",
         "face": "F1",
         "positionMm": {
@@ -1647,9 +1927,9 @@
         "notes": "Furação do puxador conforme gabarito do fabricante."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-3:front-handle-through-2",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-3:front",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-3:front-handle-through-2",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-3:front",
         "kind": "handle-through",
         "face": "F1",
         "positionMm": {
@@ -1663,9 +1943,9 @@
         "notes": "Furação do puxador conforme gabarito do fabricante."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-4:front-handle-through-3",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-4:front",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-4:front-handle-through-3",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-4:front",
         "kind": "handle-through",
         "face": "F1",
         "positionMm": {
@@ -1679,9 +1959,9 @@
         "notes": "Furação do puxador conforme gabarito do fabricante."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-1:side-left-slide-fixing-0",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-1:side-left",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-1:side-left-slide-fixing-0",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-1:side-left",
         "kind": "slide-fixing",
         "face": "F1",
         "positionMm": {
@@ -1695,9 +1975,9 @@
         "notes": "Furação da corrediça com paralelismo obrigatório."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-1:side-right-slide-fixing-1",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-1:side-right",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-1:side-right-slide-fixing-1",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-1:side-right",
         "kind": "slide-fixing",
         "face": "F1",
         "positionMm": {
@@ -1711,9 +1991,9 @@
         "notes": "Furação da corrediça com paralelismo obrigatório."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-1:bottom-slide-fixing-2",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-1:bottom",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-1:bottom-slide-fixing-2",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-1:bottom",
         "kind": "slide-fixing",
         "face": "F1",
         "positionMm": {
@@ -1727,9 +2007,9 @@
         "notes": "Furação da corrediça com paralelismo obrigatório."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-2:side-left-slide-fixing-3",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-2:side-left",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-2:side-left-slide-fixing-3",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-2:side-left",
         "kind": "slide-fixing",
         "face": "F1",
         "positionMm": {
@@ -1743,9 +2023,9 @@
         "notes": "Furação da corrediça com paralelismo obrigatório."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-2:side-right-slide-fixing-4",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-2:side-right",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-2:side-right-slide-fixing-4",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-2:side-right",
         "kind": "slide-fixing",
         "face": "F1",
         "positionMm": {
@@ -1759,9 +2039,9 @@
         "notes": "Furação da corrediça com paralelismo obrigatório."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-2:bottom-slide-fixing-5",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-2:bottom",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-2:bottom-slide-fixing-5",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-2:bottom",
         "kind": "slide-fixing",
         "face": "F1",
         "positionMm": {
@@ -1775,9 +2055,9 @@
         "notes": "Furação da corrediça com paralelismo obrigatório."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-3:side-left-slide-fixing-6",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-3:side-left",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-3:side-left-slide-fixing-6",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-3:side-left",
         "kind": "slide-fixing",
         "face": "F1",
         "positionMm": {
@@ -1791,9 +2071,9 @@
         "notes": "Furação da corrediça com paralelismo obrigatório."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-3:side-right-slide-fixing-7",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-3:side-right",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-3:side-right-slide-fixing-7",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-3:side-right",
         "kind": "slide-fixing",
         "face": "F1",
         "positionMm": {
@@ -1807,9 +2087,9 @@
         "notes": "Furação da corrediça com paralelismo obrigatório."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-3:bottom-slide-fixing-8",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-3:bottom",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-3:bottom-slide-fixing-8",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-3:bottom",
         "kind": "slide-fixing",
         "face": "F1",
         "positionMm": {
@@ -1823,9 +2103,9 @@
         "notes": "Furação da corrediça com paralelismo obrigatório."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-4:side-left-slide-fixing-9",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-4:side-left",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-4:side-left-slide-fixing-9",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-4:side-left",
         "kind": "slide-fixing",
         "face": "F1",
         "positionMm": {
@@ -1839,9 +2119,9 @@
         "notes": "Furação da corrediça com paralelismo obrigatório."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-4:side-right-slide-fixing-10",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-4:side-right",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-4:side-right-slide-fixing-10",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-4:side-right",
         "kind": "slide-fixing",
         "face": "F1",
         "positionMm": {
@@ -1855,9 +2135,9 @@
         "notes": "Furação da corrediça com paralelismo obrigatório."
       },
       {
-        "id": "furniture-1786745216210-furniture-1786745216210:drawer-4:bottom-slide-fixing-11",
-        "moduleInstanceId": "furniture-1786745216210",
-        "partId": "furniture-1786745216210:drawer-4:bottom",
+        "id": "furniture-1786891485213-furniture-1786891485213:drawer-4:bottom-slide-fixing-11",
+        "moduleInstanceId": "furniture-1786891485213",
+        "partId": "furniture-1786891485213:drawer-4:bottom",
         "kind": "slide-fixing",
         "face": "F1",
         "positionMm": {
@@ -1871,9 +2151,9 @@
         "notes": "Furação da corrediça com paralelismo obrigatório."
       },
       {
-        "id": "furniture-1786745216212-furniture-1786745216212:side-left-confirmat-0",
-        "moduleInstanceId": "furniture-1786745216212",
-        "partId": "furniture-1786745216212:side-left",
+        "id": "furniture-1786891485215-furniture-1786891485215:side-left-confirmat-0",
+        "moduleInstanceId": "furniture-1786891485215",
+        "partId": "furniture-1786891485215:side-left",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1886,9 +2166,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216212-furniture-1786745216212:side-left-dowel-0",
-        "moduleInstanceId": "furniture-1786745216212",
-        "partId": "furniture-1786745216212:side-left",
+        "id": "furniture-1786891485215-furniture-1786891485215:side-left-dowel-0",
+        "moduleInstanceId": "furniture-1786891485215",
+        "partId": "furniture-1786891485215:side-left",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1901,9 +2181,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216212-furniture-1786745216212:side-right-confirmat-1",
-        "moduleInstanceId": "furniture-1786745216212",
-        "partId": "furniture-1786745216212:side-right",
+        "id": "furniture-1786891485215-furniture-1786891485215:side-right-confirmat-1",
+        "moduleInstanceId": "furniture-1786891485215",
+        "partId": "furniture-1786891485215:side-right",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1916,9 +2196,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216212-furniture-1786745216212:side-right-dowel-1",
-        "moduleInstanceId": "furniture-1786745216212",
-        "partId": "furniture-1786745216212:side-right",
+        "id": "furniture-1786891485215-furniture-1786891485215:side-right-dowel-1",
+        "moduleInstanceId": "furniture-1786891485215",
+        "partId": "furniture-1786891485215:side-right",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1931,9 +2211,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216212-furniture-1786745216212:base-confirmat-2",
-        "moduleInstanceId": "furniture-1786745216212",
-        "partId": "furniture-1786745216212:base",
+        "id": "furniture-1786891485215-furniture-1786891485215:base-confirmat-2",
+        "moduleInstanceId": "furniture-1786891485215",
+        "partId": "furniture-1786891485215:base",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1946,9 +2226,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216212-furniture-1786745216212:base-dowel-2",
-        "moduleInstanceId": "furniture-1786745216212",
-        "partId": "furniture-1786745216212:base",
+        "id": "furniture-1786891485215-furniture-1786891485215:base-dowel-2",
+        "moduleInstanceId": "furniture-1786891485215",
+        "partId": "furniture-1786891485215:base",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1961,9 +2241,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216212-furniture-1786745216212:top-confirmat-3",
-        "moduleInstanceId": "furniture-1786745216212",
-        "partId": "furniture-1786745216212:top",
+        "id": "furniture-1786891485215-furniture-1786891485215:top-confirmat-3",
+        "moduleInstanceId": "furniture-1786891485215",
+        "partId": "furniture-1786891485215:top",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -1976,9 +2256,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216212-furniture-1786745216212:top-dowel-3",
-        "moduleInstanceId": "furniture-1786745216212",
-        "partId": "furniture-1786745216212:top",
+        "id": "furniture-1786891485215-furniture-1786891485215:top-dowel-3",
+        "moduleInstanceId": "furniture-1786891485215",
+        "partId": "furniture-1786891485215:top",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -1991,9 +2271,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216212-furniture-1786745216212:back-confirmat-4",
-        "moduleInstanceId": "furniture-1786745216212",
-        "partId": "furniture-1786745216212:back",
+        "id": "furniture-1786891485215-furniture-1786891485215:back-confirmat-4",
+        "moduleInstanceId": "furniture-1786891485215",
+        "partId": "furniture-1786891485215:back",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -2006,9 +2286,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216212-furniture-1786745216212:back-dowel-4",
-        "moduleInstanceId": "furniture-1786745216212",
-        "partId": "furniture-1786745216212:back",
+        "id": "furniture-1786891485215-furniture-1786891485215:back-dowel-4",
+        "moduleInstanceId": "furniture-1786891485215",
+        "partId": "furniture-1786891485215:back",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -2021,9 +2301,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216212-furniture-1786745216212:sink-plumbing-recess-confirmat-5",
-        "moduleInstanceId": "furniture-1786745216212",
-        "partId": "furniture-1786745216212:sink-plumbing-recess",
+        "id": "furniture-1786891485215-furniture-1786891485215:sink-plumbing-recess-confirmat-5",
+        "moduleInstanceId": "furniture-1786891485215",
+        "partId": "furniture-1786891485215:sink-plumbing-recess",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -2036,9 +2316,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216212-furniture-1786745216212:sink-plumbing-recess-dowel-5",
-        "moduleInstanceId": "furniture-1786745216212",
-        "partId": "furniture-1786745216212:sink-plumbing-recess",
+        "id": "furniture-1786891485215-furniture-1786891485215:sink-plumbing-recess-dowel-5",
+        "moduleInstanceId": "furniture-1786891485215",
+        "partId": "furniture-1786891485215:sink-plumbing-recess",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -2051,9 +2331,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216212-furniture-1786745216212:door-1-hinge-cup-0",
-        "moduleInstanceId": "furniture-1786745216212",
-        "partId": "furniture-1786745216212:door-1",
+        "id": "furniture-1786891485215-furniture-1786891485215:door-1-hinge-cup-0",
+        "moduleInstanceId": "furniture-1786891485215",
+        "partId": "furniture-1786891485215:door-1",
         "kind": "hinge-cup",
         "face": "F1",
         "positionMm": {
@@ -2067,9 +2347,9 @@
         "notes": "Copo de dobradiça; repetir no topo e base da porta conforme altura."
       },
       {
-        "id": "furniture-1786745216212-furniture-1786745216212:door-1-hinge-fixing-0",
-        "moduleInstanceId": "furniture-1786745216212",
-        "partId": "furniture-1786745216212:door-1",
+        "id": "furniture-1786891485215-furniture-1786891485215:door-1-hinge-fixing-0",
+        "moduleInstanceId": "furniture-1786891485215",
+        "partId": "furniture-1786891485215:door-1",
         "kind": "hinge-fixing",
         "face": "F1",
         "positionMm": {
@@ -2082,9 +2362,9 @@
         "hardwareId": "hinge-soft-close"
       },
       {
-        "id": "furniture-1786745216212-furniture-1786745216212:door-2-hinge-cup-1",
-        "moduleInstanceId": "furniture-1786745216212",
-        "partId": "furniture-1786745216212:door-2",
+        "id": "furniture-1786891485215-furniture-1786891485215:door-2-hinge-cup-1",
+        "moduleInstanceId": "furniture-1786891485215",
+        "partId": "furniture-1786891485215:door-2",
         "kind": "hinge-cup",
         "face": "F1",
         "positionMm": {
@@ -2098,9 +2378,9 @@
         "notes": "Copo de dobradiça; repetir no topo e base da porta conforme altura."
       },
       {
-        "id": "furniture-1786745216212-furniture-1786745216212:door-2-hinge-fixing-1",
-        "moduleInstanceId": "furniture-1786745216212",
-        "partId": "furniture-1786745216212:door-2",
+        "id": "furniture-1786891485215-furniture-1786891485215:door-2-hinge-fixing-1",
+        "moduleInstanceId": "furniture-1786891485215",
+        "partId": "furniture-1786891485215:door-2",
         "kind": "hinge-fixing",
         "face": "F1",
         "positionMm": {
@@ -2113,9 +2393,9 @@
         "hardwareId": "hinge-soft-close"
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:side-left-confirmat-0",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:side-left",
+        "id": "furniture-1786891485217-furniture-1786891485217:side-left-confirmat-0",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:side-left",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -2128,9 +2408,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:side-left-dowel-0",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:side-left",
+        "id": "furniture-1786891485217-furniture-1786891485217:side-left-dowel-0",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:side-left",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -2143,9 +2423,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:side-right-confirmat-1",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:side-right",
+        "id": "furniture-1786891485217-furniture-1786891485217:side-right-confirmat-1",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:side-right",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -2158,9 +2438,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:side-right-dowel-1",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:side-right",
+        "id": "furniture-1786891485217-furniture-1786891485217:side-right-dowel-1",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:side-right",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -2173,9 +2453,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:base-confirmat-2",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:base",
+        "id": "furniture-1786891485217-furniture-1786891485217:base-confirmat-2",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:base",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -2188,9 +2468,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:base-dowel-2",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:base",
+        "id": "furniture-1786891485217-furniture-1786891485217:base-dowel-2",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:base",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -2203,9 +2483,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:top-confirmat-3",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:top",
+        "id": "furniture-1786891485217-furniture-1786891485217:top-confirmat-3",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:top",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -2218,9 +2498,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:top-dowel-3",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:top",
+        "id": "furniture-1786891485217-furniture-1786891485217:top-dowel-3",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:top",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -2233,9 +2513,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:back-confirmat-4",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:back",
+        "id": "furniture-1786891485217-furniture-1786891485217:back-confirmat-4",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:back",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -2248,9 +2528,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:back-dowel-4",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:back",
+        "id": "furniture-1786891485217-furniture-1786891485217:back-dowel-4",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:back",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -2263,9 +2543,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:shelf-1-confirmat-5",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:shelf-1",
+        "id": "furniture-1786891485217-furniture-1786891485217:shelf-1-confirmat-5",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:shelf-1",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -2278,9 +2558,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:shelf-1-dowel-5",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:shelf-1",
+        "id": "furniture-1786891485217-furniture-1786891485217:shelf-1-dowel-5",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:shelf-1",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -2293,9 +2573,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:shelf-2-confirmat-6",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:shelf-2",
+        "id": "furniture-1786891485217-furniture-1786891485217:shelf-2-confirmat-6",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:shelf-2",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -2308,9 +2588,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:shelf-2-dowel-6",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:shelf-2",
+        "id": "furniture-1786891485217-furniture-1786891485217:shelf-2-dowel-6",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:shelf-2",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -2323,9 +2603,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:shelf-3-confirmat-7",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:shelf-3",
+        "id": "furniture-1786891485217-furniture-1786891485217:shelf-3-confirmat-7",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:shelf-3",
         "kind": "confirmat",
         "face": "F1",
         "positionMm": {
@@ -2338,9 +2618,9 @@
         "notes": "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem."
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:shelf-3-dowel-7",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:shelf-3",
+        "id": "furniture-1786891485217-furniture-1786891485217:shelf-3-dowel-7",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:shelf-3",
         "kind": "dowel",
         "face": "F1",
         "positionMm": {
@@ -2353,9 +2633,9 @@
         "notes": "Cavilha de alinhamento estrutural."
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:door-1-hinge-cup-0",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:door-1",
+        "id": "furniture-1786891485217-furniture-1786891485217:door-1-hinge-cup-0",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:door-1",
         "kind": "hinge-cup",
         "face": "F1",
         "positionMm": {
@@ -2369,9 +2649,9 @@
         "notes": "Copo de dobradiça; repetir no topo e base da porta conforme altura."
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:door-1-hinge-fixing-0",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:door-1",
+        "id": "furniture-1786891485217-furniture-1786891485217:door-1-hinge-fixing-0",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:door-1",
         "kind": "hinge-fixing",
         "face": "F1",
         "positionMm": {
@@ -2384,9 +2664,9 @@
         "hardwareId": "hinge-soft-close"
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:door-2-hinge-cup-1",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:door-2",
+        "id": "furniture-1786891485217-furniture-1786891485217:door-2-hinge-cup-1",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:door-2",
         "kind": "hinge-cup",
         "face": "F1",
         "positionMm": {
@@ -2400,9 +2680,9 @@
         "notes": "Copo de dobradiça; repetir no topo e base da porta conforme altura."
       },
       {
-        "id": "furniture-1786745216214-furniture-1786745216214:door-2-hinge-fixing-1",
-        "moduleInstanceId": "furniture-1786745216214",
-        "partId": "furniture-1786745216214:door-2",
+        "id": "furniture-1786891485217-furniture-1786891485217:door-2-hinge-fixing-1",
+        "moduleInstanceId": "furniture-1786891485217",
+        "partId": "furniture-1786891485217:door-2",
         "kind": "hinge-fixing",
         "face": "F1",
         "positionMm": {
@@ -2445,8 +2725,8 @@
         },
         "placements": [
           {
-            "partId": "furniture-1786745216207:back:0",
-            "code": "furniture-1786745216207:back",
+            "partId": "furniture-1786891485209:back:0",
+            "code": "furniture-1786891485209:back",
             "x": 10,
             "y": 10,
             "w": 2014,
@@ -2457,8 +2737,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216212:back:0",
-            "code": "furniture-1786745216212:back",
+            "partId": "furniture-1786891485215:back:0",
+            "code": "furniture-1786891485215:back",
             "x": 2028,
             "y": 10,
             "w": 684,
@@ -2469,8 +2749,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216209:back:0",
-            "code": "furniture-1786745216209:back",
+            "partId": "furniture-1786891485212:back:0",
+            "code": "furniture-1786891485212:back",
             "x": 10,
             "y": 778,
             "w": 684,
@@ -2481,8 +2761,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216214:back:0",
-            "code": "furniture-1786745216214:back",
+            "partId": "furniture-1786891485217:back:0",
+            "code": "furniture-1786891485217:back",
             "x": 698,
             "y": 778,
             "w": 664,
@@ -2493,8 +2773,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216210:back:0",
-            "code": "furniture-1786745216210:back",
+            "partId": "furniture-1786891485213:back:0",
+            "code": "furniture-1786891485213:back",
             "x": 1366,
             "y": 778,
             "w": 564,
@@ -2553,8 +2833,8 @@
         },
         "placements": [
           {
-            "partId": "furniture-1786745216207:side-left:0",
-            "code": "furniture-1786745216207:side-left",
+            "partId": "furniture-1786891485209:side-left:0",
+            "code": "furniture-1786891485209:side-left",
             "x": 10,
             "y": 10,
             "w": 2050,
@@ -2565,8 +2845,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216207:side-right:0",
-            "code": "furniture-1786745216207:side-right",
+            "partId": "furniture-1786891485209:side-right:0",
+            "code": "furniture-1786891485209:side-right",
             "x": 10,
             "y": 634,
             "w": 2050,
@@ -2577,8 +2857,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216212:base:0",
-            "code": "furniture-1786745216212:base",
+            "partId": "furniture-1786891485215:base:0",
+            "code": "furniture-1786891485215:base",
             "x": 10,
             "y": 1258,
             "w": 1164,
@@ -2589,8 +2869,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216212:top:0",
-            "code": "furniture-1786745216212:top",
+            "partId": "furniture-1786891485215:top:0",
+            "code": "furniture-1786891485215:top",
             "x": 1178,
             "y": 1258,
             "w": 1164,
@@ -2601,8 +2881,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216210:base:0",
-            "code": "furniture-1786745216210:base",
+            "partId": "furniture-1786891485213:base:0",
+            "code": "furniture-1786891485213:base",
             "x": 2064,
             "y": 10,
             "w": 580,
@@ -2613,8 +2893,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216210:top:0",
-            "code": "furniture-1786745216210:top",
+            "partId": "furniture-1786891485213:top:0",
+            "code": "furniture-1786891485213:top",
             "x": 2064,
             "y": 578,
             "w": 580,
@@ -2697,8 +2977,8 @@
         },
         "placements": [
           {
-            "partId": "furniture-1786745216207:base:0",
-            "code": "furniture-1786745216207:base",
+            "partId": "furniture-1786891485209:base:0",
+            "code": "furniture-1786891485209:base",
             "x": 10,
             "y": 10,
             "w": 764,
@@ -2709,8 +2989,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216207:top:0",
-            "code": "furniture-1786745216207:top",
+            "partId": "furniture-1786891485209:top:0",
+            "code": "furniture-1786891485209:top",
             "x": 10,
             "y": 634,
             "w": 764,
@@ -2721,8 +3001,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216207:appliance-divider:0",
-            "code": "furniture-1786745216207:appliance-divider",
+            "partId": "furniture-1786891485209:appliance-divider:0",
+            "code": "furniture-1786891485209:appliance-divider",
             "x": 778,
             "y": 10,
             "w": 764,
@@ -2733,8 +3013,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216209:base:0",
-            "code": "furniture-1786745216209:base",
+            "partId": "furniture-1786891485212:base:0",
+            "code": "furniture-1786891485212:base",
             "x": 10,
             "y": 1258,
             "w": 764,
@@ -2745,8 +3025,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216209:top:0",
-            "code": "furniture-1786745216209:top",
+            "partId": "furniture-1786891485212:top:0",
+            "code": "furniture-1786891485212:top",
             "x": 1546,
             "y": 10,
             "w": 764,
@@ -2757,8 +3037,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216209:side-left:0",
-            "code": "furniture-1786745216209:side-left",
+            "partId": "furniture-1786891485212:side-left:0",
+            "code": "furniture-1786891485212:side-left",
             "x": 1546,
             "y": 594,
             "w": 720,
@@ -2769,8 +3049,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216209:side-right:0",
-            "code": "furniture-1786745216209:side-right",
+            "partId": "furniture-1786891485212:side-right:0",
+            "code": "furniture-1786891485212:side-right",
             "x": 778,
             "y": 598,
             "w": 720,
@@ -2781,8 +3061,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216210:side-left:0",
-            "code": "furniture-1786745216210:side-left",
+            "partId": "furniture-1786891485213:side-left:0",
+            "code": "furniture-1786891485213:side-left",
             "x": 778,
             "y": 1182,
             "w": 720,
@@ -2793,8 +3073,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216210:side-right:0",
-            "code": "furniture-1786745216210:side-right",
+            "partId": "furniture-1786891485213:side-right:0",
+            "code": "furniture-1786891485213:side-right",
             "x": 1502,
             "y": 598,
             "w": 720,
@@ -2805,8 +3085,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216212:side-left:0",
-            "code": "furniture-1786745216212:side-left",
+            "partId": "furniture-1786891485215:side-left:0",
+            "code": "furniture-1786891485215:side-left",
             "x": 1502,
             "y": 1182,
             "w": 720,
@@ -2877,8 +3157,8 @@
         },
         "placements": [
           {
-            "partId": "furniture-1786745216212:side-right:0",
-            "code": "furniture-1786745216212:side-right",
+            "partId": "furniture-1786891485215:side-right:0",
+            "code": "furniture-1786891485215:side-right",
             "x": 10,
             "y": 10,
             "w": 720,
@@ -2889,8 +3169,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216214:base:0",
-            "code": "furniture-1786745216214:base",
+            "partId": "furniture-1786891485217:base:0",
+            "code": "furniture-1786891485217:base",
             "x": 10,
             "y": 594,
             "w": 764,
@@ -2901,8 +3181,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216214:top:0",
-            "code": "furniture-1786745216214:top",
+            "partId": "furniture-1786891485217:top:0",
+            "code": "furniture-1786891485217:top",
             "x": 10,
             "y": 948,
             "w": 764,
@@ -2913,8 +3193,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216214:side-left:0",
-            "code": "furniture-1786745216214:side-left",
+            "partId": "furniture-1786891485217:side-left:0",
+            "code": "furniture-1786891485217:side-left",
             "x": 10,
             "y": 1302,
             "w": 700,
@@ -2925,8 +3205,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216214:side-right:0",
-            "code": "furniture-1786745216214:side-right",
+            "partId": "furniture-1786891485217:side-right:0",
+            "code": "furniture-1786891485217:side-right",
             "x": 714,
             "y": 1302,
             "w": 700,
@@ -2937,8 +3217,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216214:shelf-1:0",
-            "code": "furniture-1786745216214:shelf-1",
+            "partId": "furniture-1786891485217:shelf-1:0",
+            "code": "furniture-1786891485217:shelf-1",
             "x": 734,
             "y": 10,
             "w": 762,
@@ -2949,8 +3229,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216214:shelf-2:0",
-            "code": "furniture-1786745216214:shelf-2",
+            "partId": "furniture-1786891485217:shelf-2:0",
+            "code": "furniture-1786891485217:shelf-2",
             "x": 1500,
             "y": 10,
             "w": 762,
@@ -2961,8 +3241,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216214:shelf-3:0",
-            "code": "furniture-1786745216214:shelf-3",
+            "partId": "furniture-1786891485217:shelf-3:0",
+            "code": "furniture-1786891485217:shelf-3",
             "x": 734,
             "y": 344,
             "w": 762,
@@ -3069,8 +3349,8 @@
         },
         "placements": [
           {
-            "partId": "furniture-1786745216212:toe-kick:0",
-            "code": "furniture-1786745216212:toe-kick",
+            "partId": "furniture-1786891485215:toe-kick:0",
+            "code": "furniture-1786891485215:toe-kick",
             "x": 10,
             "y": 10,
             "w": 150,
@@ -3081,8 +3361,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216207:toe-kick:0",
-            "code": "furniture-1786745216207:toe-kick",
+            "partId": "furniture-1786891485209:toe-kick:0",
+            "code": "furniture-1786891485209:toe-kick",
             "x": 10,
             "y": 1178,
             "w": 764,
@@ -3093,8 +3373,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216209:toe-kick:0",
-            "code": "furniture-1786745216209:toe-kick",
+            "partId": "furniture-1786891485212:toe-kick:0",
+            "code": "furniture-1786891485212:toe-kick",
             "x": 10,
             "y": 1332,
             "w": 764,
@@ -3105,8 +3385,8 @@
             "pinned": false
           },
           {
-            "partId": "furniture-1786745216210:toe-kick:0",
-            "code": "furniture-1786745216210:toe-kick",
+            "partId": "furniture-1786891485213:toe-kick:0",
+            "code": "furniture-1786891485213:toe-kick",
             "x": 10,
             "y": 1486,
             "w": 564,
@@ -3197,6 +3477,6 @@
       "totalCost": 1600,
       "estimatedTimeMin": 57
     },
-    "generatedAt": "2026-08-14T22:06:56.219Z"
+    "generatedAt": "2026-08-16T14:44:45.224Z"
   }
 }
