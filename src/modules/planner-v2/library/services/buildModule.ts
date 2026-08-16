@@ -3,7 +3,7 @@ import type { PartDefinition } from "../contracts/PartDefinition";
 import { ModuleRegistry } from "../registry/ModuleRegistry";
 import { MaterialRegistry, resolveMaterialThicknessProfile } from "../registry/MaterialRegistry";
 import { validateModule, type RoomBoundsMm } from "./validateModule";
-import type { ValidationResult } from "../contracts/ValidationResult";
+import type { ValidationIssue, ValidationResult } from "../contracts/ValidationResult";
 import type { ThicknessProfileMm } from "../contracts/ModuleDefinition";
 
 export interface BuildRequest {
@@ -49,7 +49,8 @@ export function buildModule(request: BuildRequest): BuildOutcome {
   }
 
   const requested = { ...definition.defaultDimensionsMm, ...request.dimensionsMm };
-  const dimensionErrors = (['width', 'height', 'depth'] as const).flatMap((axis) => {
+  const dimensionErrors: ValidationIssue[] = (['width', 'height', 'depth'] as const).flatMap(
+    (axis): ValidationIssue[] => {
     const value = request.dimensionsMm?.[axis];
     if (value === undefined) return [];
     if (value < definition.minDimensionsMm[axis]) {
@@ -66,8 +67,9 @@ export function buildModule(request: BuildRequest): BuildOutcome {
         constraints: { max: definition.maxDimensionsMm[axis], requested: value },
       }];
     }
-    return [];
-  });
+      return [];
+    },
+  );
   if (dimensionErrors.length > 0) {
     return {
       ok: false,

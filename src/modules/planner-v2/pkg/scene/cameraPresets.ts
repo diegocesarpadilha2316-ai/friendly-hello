@@ -29,15 +29,26 @@ function isPresentationContent(object: THREE.Object3D) {
   return false;
 }
 
-export function autoFrameKitchen(scene: THREE.Scene) {
+function belongsToInstance(object: THREE.Object3D, instanceId: string) {
+  let current: THREE.Object3D | null = object;
+  for (let depth = 0; depth < 10 && current; depth += 1) {
+    if (current.userData?.instanceId === instanceId) return true;
+    current = current.parent;
+  }
+  return false;
+}
+
+export function autoFrameKitchen(scene: THREE.Scene, instanceId?: string | null) {
   const bounds = new THREE.Box3();
+  scene.updateMatrixWorld(true);
   scene.traverse((object) => {
-    if (!object.visible || !isPresentationContent(object)) return;
-    if (object instanceof THREE.Mesh || object.userData?.contentType === "decoration")
-      bounds.expandByObject(object);
+    if (!object.visible) return;
+    if (instanceId ? !belongsToInstance(object, instanceId) : !isPresentationContent(object)) return;
+    if (object instanceof THREE.Mesh || object instanceof THREE.InstancedMesh)
+      bounds.expandByObject(object, true);
   });
   if (bounds.isEmpty())
-    bounds.setFromCenterAndSize(new THREE.Vector3(0, 1.1, -0.6), new THREE.Vector3(3.8, 2.4, 2.8));
+    bounds.setFromCenterAndSize(new THREE.Vector3(0, 1.05, -0.6), new THREE.Vector3(4.8, 2.5, 3.2));
   const size = bounds.getSize(new THREE.Vector3());
   const center = bounds.getCenter(new THREE.Vector3());
   return { bounds, size, center, radius: Math.max(size.x, size.y, size.z) * 0.5 };
@@ -48,54 +59,37 @@ export function applyKitchenCamera(
   scene: THREE.Scene,
   view: KitchenRenderView,
   aspect = 16 / 9,
+  instanceId?: string | null,
 ) {
-  const frame = autoFrameKitchen(scene);
+  const frame = autoFrameKitchen(scene, instanceId);
   const { center, size, radius } = frame;
-  const horizontal = Math.max(size.x, size.z, 2.4);
-  const distance = Math.max(
-    3.05,
-    horizontal *
-      (view === "detail" ? 0.78 : view === "overview" ? 1.18 : view === "front" ? 1.08 : 1.12),
-  );
+  const isDetail = view === "detail";
+  const fov = isDetail ? 40 : view === "overview" ? 34 : view === "front" ? 33 : 36;
+  const margin = isDetail ? 1.24 : 1.42;
+  const distance = Math.max(2.8, (radius / Math.tan((fov * Math.PI) / 360)) * margin);
   const target = center.clone();
-  target.y = Math.max(0.85, Math.min(center.y, 1.35));
   let direction = new THREE.Vector3(0, 0, 1);
-  let height = Math.max(1.35, target.y + radius * (view === "overview" ? 0.9 : 0.35));
 
-  if (view === "three-quarter-left") direction = new THREE.Vector3(-0.78, 0, 0.62).normalize();
-  if (view === "top") {
-    direction = new THREE.Vector3(0, 1, 0.001).normalize();
-    height = Math.max(4.2, target.y + horizontal * 1.15);
-  }
+  if (view === "three-quarter-left") direction = new THREE.Vector3(-0.78, 0.08, 0.62).normalize();
+  if (view === "top") direction = new THREE.Vector3(0, 1, 0.001).normalize();
   if (view === "lateral") direction = new THREE.Vector3(1, 0.08, 0).normalize();
-  if (view === "three-quarter-right") direction = new THREE.Vector3(0.78, 0, 0.62).normalize();
-  if (view === "island") {
-    direction = new THREE.Vector3(0.12, 0, 1).normalize();
-    target.z += Math.min(0.4, size.z * 0.12);
-    height = Math.max(1.45, target.y + 0.25);
-  }
-  if (view === "detail") {
-    direction = new THREE.Vector3(0.42, 0.08, 0.9).normalize();
-    target.y = Math.max(0.95, target.y);
-    height = target.y + 0.08;
-  }
-  if (view === "overview") {
-    direction = new THREE.Vector3(0.72, 0.32, 0.72).normalize();
-    target.y = Math.max(1.05, Math.min(center.y, 1.2));
-  }
+  if (view === "three-quarter-right" || view === "overview")
+    direction = new THREE.Vector3(0.72, 0.22, 0.72).normalize();
+  if (view === "island") direction = new THREE.Vector3(0.12, 0.05, 1).normalize();
+  if (view === "detail") direction = new THREE.Vector3(0.42, 0.08, 0.9).normalize();
 
   const position = target.clone().add(direction.multiplyScalar(distance));
-  position.y = height;
+  if (view === "top") position.y = Math.max(position.y, target.y + Math.max(3.6, size.x * 1.15));
   camera.position.copy(position);
   camera.lookAt(target);
   if (camera instanceof THREE.PerspectiveCamera) {
     camera.aspect = aspect;
-    camera.fov = view === "detail" ? 40 : view === "overview" ? 34 : view === "front" ? 33 : 34;
+    camera.fov = fov;
     camera.near = 0.035;
-    camera.far = 100;
+    camera.far = Math.max(100, distance * 20);
     camera.updateProjectionMatrix();
   } else if (camera instanceof THREE.OrthographicCamera) {
-    const half = Math.max(2.2, horizontal * 0.75);
+    const half = Math.max(1.8, Math.max(size.x, size.y, size.z) * 0.72);
     camera.left = -half * aspect;
     camera.right = half * aspect;
     camera.top = half;

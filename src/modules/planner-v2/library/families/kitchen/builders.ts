@@ -208,11 +208,15 @@ export function buildCarcass(
       part(
         moduleId,
         "toe-kick",
-        "toe-kick",
-        "Rodapé",
+        "hardware",
+        "Rodapé — HARDWARE/PROFILE",
         { width: innerWidth, height: toe, depth: panel },
         { x: 0, y: toe / 2, z: dims.depth / 2 - panel },
         HARDWARE_MATERIAL_ID,
+        {
+          hardwareId: "toe-kick-profile",
+          hardwareGeometry: { kind: "profile", radiusMm: 3 },
+        },
       ),
     );
     const footWidth = Math.min(50, Math.max(30, (dims.width - panel * 2) / 8));

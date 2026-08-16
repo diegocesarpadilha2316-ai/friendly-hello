@@ -9,14 +9,17 @@ import type {
   NestingPlan,
 } from "@/modules/planner/domains/production/services/nesting/types";
 
-function isNestingPart(part: PartDefinition): boolean {
-  return (
-    part.role !== "hardware" &&
-    part.role !== "decorative" &&
-    part.volumeType !== "technical" &&
-    part.volumeType !== "opening"
-  );
+export function isNestingPart(part: PartDefinition): boolean {
+  return part.role !== "hardware" && part.role !== "decorative" && part.volumeType !== "technical";
 }
+
+export type NestingIntegrityResult = {
+  cuttableIds: string[];
+  nestingPartIds: string[];
+  missingInNesting: string[];
+  duplicateInNesting: string[];
+  unknownInNesting: string[];
+};
 
 function grainFor(part: PartDefinition): NestingPart["grain"] {
   if (!part.grainDirection || part.grainDirection === "none") return "none";
@@ -61,4 +64,25 @@ export function buildNestingPlanFromPartDefinitions(
 ): NestingPlan {
   const nestingParts = toNestingPartsFromPartDefinitions(parts);
   return runNesting(nestingParts, { ...DEFAULT_OPTIONS, ...options });
+}
+
+export function validateNestingIntegrity(
+  parts: readonly PartDefinition[],
+  plan: NestingPlan,
+): NestingIntegrityResult {
+  const cuttableIds = parts.filter(isNestingPart).map((part) => part.id);
+  const nestingPartIds = [
+    ...plan.boards.flatMap((board) => board.placements.map((placement) => placement.code)),
+    ...plan.unplaced.map((part) => part.id),
+  ];
+  const cuttableSet = new Set(cuttableIds);
+  const counts = new Map<string, number>();
+  for (const id of nestingPartIds) counts.set(id, (counts.get(id) ?? 0) + 1);
+  return {
+    cuttableIds,
+    nestingPartIds,
+    missingInNesting: cuttableIds.filter((id) => !counts.has(id)),
+    duplicateInNesting: [...counts.entries()].filter(([, count]) => count > 1).map(([id]) => id),
+    unknownInNesting: [...counts.keys()].filter((id) => !cuttableSet.has(id)),
+  };
 }

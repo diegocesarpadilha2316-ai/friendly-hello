@@ -221,7 +221,9 @@ function ScenePerformanceReporter() {
 
 function CameraEventBridge() {
   const { camera, scene, size } = useThree();
+  const selectedId = usePlannerStore((s) => s.selectedId);
   useEffect(() => {
+    const aspect = Math.max(0.65, size.width / Math.max(size.height, 1));
     const zoomIn = () => {
       const d = new THREE.Vector3();
       camera.getWorldDirection(d);
@@ -232,22 +234,30 @@ function CameraEventBridge() {
       camera.getWorldDirection(d);
       camera.position.addScaledVector(d, -0.55);
     };
-    const focus = () =>
-      applyKitchenCamera(
-        camera,
-        scene,
-        "three-quarter-right",
-        Math.max(0.65, size.width / Math.max(size.height, 1)),
-      );
+    const focusProject = () => applyKitchenCamera(camera, scene, "overview", aspect);
+    const focusSelection = () => {
+      if (selectedId) applyKitchenCamera(camera, scene, "detail", aspect, selectedId);
+      else focusProject();
+    };
+    const focusFront = () => applyKitchenCamera(camera, scene, "front", aspect);
+    const focusPerspective = () => applyKitchenCamera(camera, scene, "overview", aspect);
     window.addEventListener("dioris:zoom-in", zoomIn);
     window.addEventListener("dioris:zoom-out", zoomOut);
-    window.addEventListener("dioris:focus-scene", focus);
+    window.addEventListener("dioris:focus-scene", focusProject);
+    window.addEventListener("dioris:fit-project", focusProject);
+    window.addEventListener("dioris:fit-selection", focusSelection);
+    window.addEventListener("dioris:view-front", focusFront);
+    window.addEventListener("dioris:view-perspective", focusPerspective);
     return () => {
       window.removeEventListener("dioris:zoom-in", zoomIn);
       window.removeEventListener("dioris:zoom-out", zoomOut);
-      window.removeEventListener("dioris:focus-scene", focus);
+      window.removeEventListener("dioris:focus-scene", focusProject);
+      window.removeEventListener("dioris:fit-project", focusProject);
+      window.removeEventListener("dioris:fit-selection", focusSelection);
+      window.removeEventListener("dioris:view-front", focusFront);
+      window.removeEventListener("dioris:view-perspective", focusPerspective);
     };
-  }, [camera, scene, size.height, size.width]);
+  }, [camera, scene, selectedId, size.height, size.width]);
   return null;
 }
 

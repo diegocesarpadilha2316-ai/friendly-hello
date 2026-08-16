@@ -189,7 +189,13 @@ export function RightPanel() {
                   <button type="button" onClick={closeAll}>
                     Fechar Tudo
                   </button>
-                  <button type="button" onClick={showAll}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      showAll();
+                      window.setTimeout(() => window.dispatchEvent(new CustomEvent("dioris:fit-project")), 0);
+                    }}
+                  >
                     Mostrar Tudo
                   </button>
                   <button type="button" onClick={() => sendMessage("Trocar material")}>
@@ -247,9 +253,12 @@ export function RightPanel() {
                     <div className="form-actions">
                       <button
                         type="button"
-                        onClick={() =>
-                          isolate(activeInstance.isIsolated ? null : activeInstance.id)
-                        }
+                        onClick={() => {
+                          const nextId = activeInstance.isIsolated ? null : activeInstance.id;
+                          isolate(nextId);
+                          if (nextId) window.setTimeout(() => window.dispatchEvent(new CustomEvent("dioris:fit-selection")), 0);
+                          else window.setTimeout(() => window.dispatchEvent(new CustomEvent("dioris:fit-project")), 0);
+                        }}
                       >
                         {activeInstance.isIsolated ? "Sair do Isolar" : "Isolar"}
                       </button>
