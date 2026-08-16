@@ -19,7 +19,9 @@ import {
   saveProjectToStorage,
   serializeProject,
 } from "../../library/services/projectPersistence";
-import "../../library";
+import { bootstrapLibrary } from "../../library";
+
+bootstrapLibrary();
 
 function createFurnitureInstanceId(existing: FurnitureInstance[]) {
   const stamp = Date.now();
@@ -659,6 +661,7 @@ export const usePlannerStore = create<PlannerState>()(
       // se for resetado antes, pode persistir o projeto antigo no envelope V4.
       set((state) => ({
         ...state,
+        furniture: [],
         instances: [],
         selectedId: null,
         lastLibraryError: null,
@@ -1030,6 +1033,41 @@ export const usePlannerStore = create<PlannerState>()(
       const selected = selectedId
         ? get().instances.find((instance) => instance.id === selectedId)
         : undefined;
+
+      const selectedDimensionMatch = normalized.match(
+        /(?:largura|largo|width|altura|alto|height|profundidade|fundo|depth)[^0-9]*(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?/i,
+      );
+      const requestedHandle = /gola/i.test(normalized)
+        ? "handle-gola"
+        : /cava/i.test(normalized)
+          ? "handle-cava"
+          : /perfil/i.test(normalized)
+            ? "handle-profile"
+            : /puxador[^a-z]*(barra|bar)|puxador barra/i.test(normalized)
+              ? "handle-bar"
+              : null;
+      if (selected && (selectedDimensionMatch || requestedHandle)) {
+        const patch: Partial<FurnitureInstance> = {};
+        if (selectedDimensionMatch) {
+          const value = measurementToMm(selectedDimensionMatch[1], selectedDimensionMatch[2]);
+          const dimensionPatch = { ...selected.dimensionsMm };
+          if (/(largura|largo|width)/i.test(selectedDimensionMatch[0])) dimensionPatch.width = value ?? dimensionPatch.width;
+          else if (/(altura|alto|height)/i.test(selectedDimensionMatch[0])) dimensionPatch.height = value ?? dimensionPatch.height;
+          else dimensionPatch.depth = value ?? dimensionPatch.depth;
+          patch.dimensionsMm = dimensionPatch;
+        }
+        if (requestedHandle) {
+          patch.hardwareOverrides = { ...selected.hardwareOverrides, handle: requestedHandle };
+        }
+        const ok = get().updateFurnitureInstance(selected.id, patch);
+        const current = get().instances.find((instance) => instance.id === selected.id);
+        reply(
+          ok
+            ? `Atualizei ${current?.name ?? "o móvel selecionado"}${selectedDimensionMatch ? ` para ${current?.dimensionsMm.width} × ${current?.dimensionsMm.height} × ${current?.dimensionsMm.depth} mm` : ""}${requestedHandle ? ` com puxador ${requestedHandle}` : ""}.`
+            : get().lastLibraryError ?? "A alteração foi bloqueada pela validação de medidas e clearance.",
+        );
+        return;
+      }
 
       const roomMatch = normalized.match(
         /(?:cozinha|sala|ambiente)[^0-9]{0,24}(\d+(?:[.,]\d+)?)\s*[x×]\s*(\d+(?:[.,]\d+)?)\s*(m|cm|mm)/i,

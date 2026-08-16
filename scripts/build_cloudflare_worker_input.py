@@ -20,7 +20,7 @@ parts = [{'name': 'worker.js', 'content': '''export default { fetch: async (requ
   const url = new URL(request.url);
   const assetPath = url.pathname;
   if (assetPath.startsWith('/assets/') || assetPath === '/dioris-favicon.png' || assetPath === '/dioris-logo.png' || assetPath.startsWith('/src/assets/')) {
-    const assetResponse = await fetch(`https://raw.githubusercontent.com/diegocesarpadilha2316-ai/friendly-hello/gh-pages${assetPath}`);
+    const     assetResponse = await fetch(`https://raw.githubusercontent.com/diegocesarpadilha2316-ai/friendly-hello/gh-pages${assetPath}?v=20260816`);
     const headers = new Headers(assetResponse.headers);
     if (assetPath.endsWith('.js')) headers.set('content-type', 'application/javascript; charset=utf-8');
     if (assetPath.endsWith('.css')) headers.set('content-type', 'text/css; charset=utf-8');
