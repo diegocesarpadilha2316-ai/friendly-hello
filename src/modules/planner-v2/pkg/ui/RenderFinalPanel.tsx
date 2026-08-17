@@ -81,9 +81,9 @@ export function RenderFinalPanel({ onClose }: { onClose: () => void }) {
         value={quality}
         onChange={(event) => setQuality(event.target.value as RenderQuality)}
       >
-        <option value="quick">Render rápido — 1280×720</option>
-        <option value="quality">Render qualidade — 1920×1080</option>
-        <option value="maximum">Render máxima — 2560×1440</option>
+        <option value="quick">Prévia rápida — 1280×720</option>
+        <option value="quality">Render profissional — 1920×1080</option>
+        <option value="maximum">Render catálogo — 2560×1440</option>
       </select>
       <div className="render-view-grid">
         {views.map((view) => (
@@ -99,13 +99,13 @@ export function RenderFinalPanel({ onClose }: { onClose: () => void }) {
         <strong>Vídeo de apresentação</strong>
         <div className="render-video-grid">
           <button type="button" onClick={() => video("quick")} disabled={busy}>
-            Tour rápido
+            Prévia 6 s
           </button>
           <button type="button" onClick={() => video("professional")} disabled={busy}>
-            Tour profissional
+            Tour profissional 9 s
           </button>
           <button type="button" onClick={() => video("client")} disabled={busy}>
-            Apresentação cliente
+            Apresentação cliente 12 s
           </button>
         </div>
       </div>

@@ -27,10 +27,18 @@ const tabs: { id: RightTab; label: string }[] = [
 
 const materials = [
   ["Branco", "mdf-white", "#e8e5df"],
-  ["Freijó", "mdf-wood-natural", "#7a4f2c"],
-  ["Verde", "mdf-green", "#4f6f52"],
-  ["Grafite", "mdf-graphite", "#4a4745"],
-  ["Taupe", "mdf-taupe", "#8b7564"],
+  ["Louro Freijó", "mdf-freijo", "#a0805d"],
+  ["Preto", "mdf-black", "#18191b"],
+  ["Cinza Sagrado", "mdf-cinza-sagrado", "#5e6062"],
+  ["Verde Amazônia", "sudati-amazonia", "#3f5a48"],
+  ["Carvalho", "mdf-oak", "#c39a62"],
+] as const;
+
+const baseSizePresets = [
+  ["Compacto", 600, 870, 580],
+  ["Padrão", 800, 870, 580],
+  ["Largo", 900, 870, 580],
+  ["Pia", 1200, 870, 580],
 ] as const;
 
 const materialSlots = [
@@ -396,6 +404,24 @@ export function RightPanel() {
                       </button>
                     </div>
                     {lastSnapMessage && <small className="panel-note">{lastSnapMessage}</small>}
+                    {activeInstance.moduleDefinitionId.startsWith("kitchen-base") && (
+                      <div className="form-actions">
+                        {baseSizePresets.map(([label, width, height, depth]) => (
+                          <button
+                            type="button"
+                            key={label}
+                            title={`${width} × ${height} × ${depth} mm`}
+                            onClick={() =>
+                              updateInstance(activeInstance.id, {
+                                dimensionsMm: { width, height, depth },
+                              })
+                            }
+                          >
+                            {label} {width}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                     {(["width", "height", "depth"] as const).map((axis) => (
                       <label key={axis}>
                         {axis === "width"

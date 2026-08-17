@@ -115,15 +115,21 @@ export function parseKitchenComposition(text: string): KitchenCompositionSpec | 
   const thicknessMatch = text.match(/mdf[^0-9]*(15|18|25)\s*mm/i);
   const panelMm = thicknessMatch ? Number(thicknessMatch[1]) : 18;
   const thicknessMm = { panelMm, doorMm: panelMm, shelfMm: panelMm, backMm: 6 };
-  const bodyMaterial = /freij[oó]/i.test(text)
+  const bodyMaterial = /louro\s*freij[oó]|freij[oó]/i.test(text)
     ? "mdf-freijo"
-    : /grafite/i.test(text)
-      ? "mdf-graphite"
-      : /verde/i.test(text)
-        ? "mdf-green"
-        : /amadeirado|madeira/i.test(text)
-          ? "mdf-wood-natural"
-          : "mdf-white";
+    : /preto|black/i.test(text)
+      ? "mdf-black"
+      : /cinza\s*sagrado/i.test(text)
+        ? "mdf-cinza-sagrado"
+        : /grafite/i.test(text)
+          ? "mdf-graphite"
+          : /amaz[oô]nia|verde/i.test(text)
+            ? "sudati-amazonia"
+            : /carvalho|oak/i.test(text)
+              ? "mdf-oak"
+              : /amadeirado|madeira/i.test(text)
+                ? "mdf-wood-natural"
+                : "mdf-white";
   const countertopMaterial = /granito|preto/i.test(text)
     ? "stone-granite"
     : /m[aá]rmore/i.test(text)
@@ -1052,7 +1058,22 @@ export const usePlannerStore = create<PlannerState>()(
             : /puxador[^a-z]*(barra|bar)|puxador barra/i.test(normalized)
               ? "handle-bar"
               : null;
-      if (selected && (selectedDimensionMatch || requestedHandle)) {
+      const requestedMaterial = /louro\s*freij[oó]|freij[oó]/i.test(normalized)
+        ? "mdf-freijo"
+        : /branco|branca|white/i.test(normalized)
+          ? "mdf-white"
+          : /preto|preta|black/i.test(normalized)
+            ? "mdf-black"
+            : /cinza\s*sagrado/i.test(normalized)
+              ? "mdf-cinza-sagrado"
+              : /amaz[oô]nia|verde/i.test(normalized)
+                ? "sudati-amazonia"
+                : /carvalho|oak/i.test(normalized)
+                  ? "mdf-oak"
+                  : /grafite/i.test(normalized)
+                    ? "mdf-graphite"
+                    : null;
+      if (selected && (selectedDimensionMatch || requestedHandle || requestedMaterial)) {
         const patch: Partial<FurnitureInstance> = {};
         if (selectedDimensionMatch) {
           const value = measurementToMm(selectedDimensionMatch[1], selectedDimensionMatch[2]);
@@ -1065,11 +1086,21 @@ export const usePlannerStore = create<PlannerState>()(
         if (requestedHandle) {
           patch.hardwareOverrides = { ...selected.hardwareOverrides, handle: requestedHandle };
         }
+        if (requestedMaterial) {
+          patch.materialOverrides = {
+            ...selected.materialOverrides,
+            body: requestedMaterial,
+            front: requestedMaterial,
+            door: requestedMaterial,
+            drawer: requestedMaterial,
+            "drawer-front": requestedMaterial,
+          };
+        }
         const ok = get().updateFurnitureInstance(selected.id, patch);
         const current = get().instances.find((instance) => instance.id === selected.id);
         reply(
           ok
-            ? `Atualizei ${current?.name ?? "o móvel selecionado"}${selectedDimensionMatch ? ` para ${current?.dimensionsMm.width} × ${current?.dimensionsMm.height} × ${current?.dimensionsMm.depth} mm` : ""}${requestedHandle ? ` com puxador ${requestedHandle}` : ""}.`
+            ? `Atualizei ${current?.name ?? "o móvel selecionado"}${selectedDimensionMatch ? ` para ${current?.dimensionsMm.width} × ${current?.dimensionsMm.height} × ${current?.dimensionsMm.depth} mm` : ""}${requestedHandle ? ` com puxador ${requestedHandle}` : ""}${requestedMaterial ? ` com acabamento ${requestedMaterial}` : ""}.`
             : get().lastLibraryError ?? "A alteração foi bloqueada pela validação de medidas e clearance.",
         );
         return;

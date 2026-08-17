@@ -23,6 +23,24 @@ describe("IA do Planner V2 — interação natural", () => {
     expect(assistant).not.toContain("Entendi o pedido");
   });
 
+  it("aplica cor, puxador e medida ao balcão selecionado", () => {
+    const store = usePlannerStore.getState();
+    const id = store.addFurnitureInstance("kitchen-base-2-doors", { x: 0, y: 0, z: -900 });
+    expect(id).toBeTruthy();
+
+    store.sendMessage("quero uma cor Louro Freijó com puxador gola e largura 900 mm");
+
+    const current = usePlannerStore.getState().instances.find((instance) => instance.id === id);
+    expect(current?.dimensionsMm.width).toBe(900);
+    expect(current?.materialOverrides.body).toBe("mdf-freijo");
+    expect(current?.materialOverrides.front).toBe("mdf-freijo");
+    expect(current?.hardwareOverrides.handle).toBe("handle-gola");
+    expect(usePlannerStore.getState().messages.at(-1)?.content).toContain("acabamento mdf-freijo");
+
+    store.sendMessage("agora quero branco");
+    expect(usePlannerStore.getState().instances.find((instance) => instance.id === id)?.materialOverrides.body).toBe("mdf-white");
+  });
+
   it("abre o Plano de Corte e responde diferente de uma criação", () => {
     const store = usePlannerStore.getState();
     const id = store.addFurnitureInstance("kitchen-base-2-doors");
