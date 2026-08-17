@@ -83,7 +83,7 @@ const base = (config: {
         thicknessMm,
         doorLeaves: config.doorLeaves ?? 2,
         drawerCount: config.drawerCount ?? 0,
-        shelves: config.shelves,
+        shelves: config.shelves ?? (config.doorLeaves && config.doorLeaves > 0 ? 1 : 0),
         handle: hardwareOverrides?.handle,
         hinge: hardwareOverrides?.hinge,
         slide: hardwareOverrides?.slide,

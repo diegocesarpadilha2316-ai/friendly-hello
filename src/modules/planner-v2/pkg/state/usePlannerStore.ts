@@ -778,19 +778,19 @@ export const usePlannerStore = create<PlannerState>()(
         createdIds.push(id);
         const current = get().instances.find((instance) => instance.id === id);
         if (!current) continue;
-        get().updateFurnitureInstance(id, {
-          rotationDeg: entry.rotationDeg ?? current.rotationDeg,
-          materialOverrides: {
-            ...current.materialOverrides,
-            body: entry.materialId ?? "mdf-freijo",
-            front: entry.materialId ?? "mdf-freijo",
-            door: entry.materialId ?? "mdf-freijo",
-            drawer: entry.materialId ?? "mdf-freijo",
-            "drawer-front": entry.materialId ?? "mdf-freijo",
-            edge: entry.materialId ?? "mdf-freijo",
-            countertop: "stone-quartzite",
-          },
-        });
+	        get().updateFurnitureInstance(id, {
+	          rotationDeg: entry.rotationDeg ?? current.rotationDeg,
+	          materialOverrides: {
+	            ...current.materialOverrides,
+	            body: "mdf-cinza-sagrado",
+	            front: "sudati-amazonia",
+	            door: "sudati-amazonia",
+	            drawer: "sudati-amazonia",
+	            "drawer-front": "sudati-amazonia",
+	            edge: "sudati-amazonia",
+	            countertop: "stone-dark",
+	          },
+	        });
       }
       get().selectFurnitureInstance(null);
       historyApplying = false;
@@ -896,20 +896,20 @@ export const usePlannerStore = create<PlannerState>()(
         createdIds.push(id);
         const current = get().instances.find((instance) => instance.id === id);
         if (!current) continue;
-        get().updateFurnitureInstance(id, {
-          rotationDeg: entry.rotationDeg ?? current.rotationDeg,
-          materialOverrides: {
-            ...current.materialOverrides,
-            body: entry.moduleId === "kitchen-countertop" ? "stone-granite" : "mdf-graphite",
-            front: entry.moduleId === "kitchen-countertop" ? "stone-granite" : "mdf-green",
-            door: entry.moduleId === "kitchen-countertop" ? "stone-granite" : "mdf-green",
-            drawer: entry.moduleId === "kitchen-countertop" ? "stone-granite" : "mdf-green",
-            "drawer-front": entry.moduleId === "kitchen-countertop" ? "stone-granite" : "mdf-green",
-            edge: entry.moduleId === "kitchen-countertop" ? "stone-granite" : "mdf-green",
-            countertop: "stone-granite",
-          },
-          hardwareOverrides: { ...current.hardwareOverrides, ...(entry.hardwareOverrides ?? {}) },
-        });
+	        get().updateFurnitureInstance(id, {
+	          rotationDeg: entry.rotationDeg ?? current.rotationDeg,
+	          materialOverrides: {
+	            ...current.materialOverrides,
+	            body: entry.moduleId === "kitchen-countertop" ? "stone-dark" : "mdf-cinza-sagrado",
+	            front: entry.moduleId === "kitchen-countertop" ? "stone-dark" : "sudati-amazonia",
+	            door: entry.moduleId === "kitchen-countertop" ? "stone-dark" : "sudati-amazonia",
+	            drawer: entry.moduleId === "kitchen-countertop" ? "stone-dark" : "sudati-amazonia",
+	            "drawer-front": entry.moduleId === "kitchen-countertop" ? "stone-dark" : "sudati-amazonia",
+	            edge: entry.moduleId === "kitchen-countertop" ? "stone-dark" : "sudati-amazonia",
+	            countertop: "stone-dark",
+	          },
+	          hardwareOverrides: { ...current.hardwareOverrides, ...(entry.hardwareOverrides ?? {}) },
+	        });
       }
       get().selectFurnitureInstance(null);
       historyApplying = false;
@@ -1913,7 +1913,26 @@ if (typeof window !== "undefined") {
   queueMicrotask(() => {
     usePlannerStore.getState().loadProject();
     const query = new URLSearchParams(window.location.search);
-    if (query.get("goldenmodule") === "1") usePlannerStore.getState().applyGoldenModuleTest();
+    if (query.get("balcao") === "1") {
+      const store = usePlannerStore.getState();
+      store.newProject();
+      const baseId = store.addFurnitureInstance(
+        "kitchen-base-2-doors",
+        { x: 0, y: 0, z: -900 },
+        { width: 800, height: 870, depth: 580 },
+      );
+      if (baseId) {
+        store.updateFurnitureInstance(baseId, {
+          materialOverrides: { body: "mdf-cinza-sagrado", front: "mdf-cinza-sagrado" },
+          hardwareOverrides: { handle: "handle-gola", hinge: "hinge-soft-close" },
+        });
+      }
+      store.addFurnitureInstance(
+        "kitchen-countertop",
+        { x: 0, y: 870, z: -900 },
+        { width: 800, height: 870, depth: 580 },
+      );
+    } else if (query.get("goldenmodule") === "1") usePlannerStore.getState().applyGoldenModuleTest();
     else if (query.get("golden") === "1") usePlannerStore.getState().applyGoldenKitchen();
   });
 }

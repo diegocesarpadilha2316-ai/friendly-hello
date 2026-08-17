@@ -14,7 +14,7 @@ import { getKitchenLighting } from "./lighting";
 import { WalkControls } from "./WalkControls";
 import { usePresentationCapture } from "./presentationCapture";
 import { applyKitchenCamera } from "./cameraPresets";
-import { createFloorTexture, createMarbleTexture, createWoodTexture } from "./materials";
+import { createFloorTexture, createMarbleTexture, createWoodTexture, loadRealTexture } from "./materials";
 
 function CameraSetup() {
   const { camera, scene, size } = useThree();
@@ -234,9 +234,9 @@ function CameraEventBridge() {
       camera.getWorldDirection(d);
       camera.position.addScaledVector(d, -0.55);
     };
-    const focusProject = () => applyKitchenCamera(camera, scene, "overview", aspect);
+    const focusProject = () => applyKitchenCamera(camera, scene, "front", aspect);
     const focusSelection = () => {
-      if (selectedId) applyKitchenCamera(camera, scene, "detail", aspect, selectedId);
+      if (selectedId) applyKitchenCamera(camera, scene, "front", aspect, selectedId);
       else focusProject();
     };
     const focusFront = () => applyKitchenCamera(camera, scene, "front", aspect);
@@ -577,7 +577,13 @@ function Architecture() {
     if (nextWall !== occludingWall) setOccludingWall(nextWall);
   });
   const floorMap = useMemo(() => createFloorTexture(), []);
-  const backsplashMap = useMemo(() => createMarbleTexture(), []);
+  const backsplashMap = useMemo(() => loadRealTexture("green_mosaic.jpg"), []);
+  useEffect(() => {
+    if (backsplashMap) {
+      backsplashMap.repeat.set(4, 1);
+      backsplashMap.needsUpdate = true;
+    }
+  }, [backsplashMap]);
 
   const backOpening = openings.find((opening) => opening.wall === "back");
   const leftOpening = openings.find((opening) => opening.wall === "left");
@@ -595,24 +601,28 @@ function Architecture() {
       </mesh>
 
       <>
-        <group position={[0, 0, -depth / 2]}>
-          <BackWall
-            widthMm={widthMm}
-            heightMm={heightMm}
-            thicknessMm={thicknessMm}
-            opening={presentationCapture ? undefined : backOpening}
-            autoOcclusion={effectiveAutoOcclusion && occludingWall === "back"}
-          />
-        </group>
+        {!presentationCapture && (
+          <group position={[0, 0, -depth / 2]}>
+            <BackWall
+              widthMm={widthMm}
+              heightMm={heightMm}
+              thicknessMm={thicknessMm}
+              opening={backOpening}
+              autoOcclusion={effectiveAutoOcclusion && occludingWall === "back"}
+            />
+          </group>
+        )}
 
-        <mesh
-          position={[0, 1.18, -depth / 2 + 0.025]}
-          receiveShadow
-          userData={{ renderLayer: "SCENE_CONTENT", contentType: "architecture" }}
-        >
-          <boxGeometry args={[width * 0.82, 0.72, 0.025]} />
-          <meshStandardMaterial map={backsplashMap} color="#fbf6ea" roughness={0.18} />
-        </mesh>
+        {!presentationCapture && (
+          <mesh
+            position={[0, 1.18, -depth / 2 + 0.025]}
+            receiveShadow
+            userData={{ renderLayer: "SCENE_CONTENT", contentType: "architecture" }}
+          >
+            <boxGeometry args={[width * 0.82, 0.72, 0.025]} />
+            <meshStandardMaterial map={backsplashMap} color="#fbf6ea" roughness={0.18} />
+          </mesh>
+        )}
         {!presentationCapture &&
           [
             { x: -0.82, y: 1.28, length: 1.35, angle: -0.28 },
@@ -884,11 +894,18 @@ export function RoomScene() {
 
       <directionalLight
         position={[3.8, 6.8, 4.2]}
-        intensity={lightsEnabled ? lighting.directional : lighting.directional * 0.22}
+        intensity={lightsEnabled ? lighting.directional * 1.2 : lighting.directional * 0.22}
         color={lighting.keyColor}
         castShadow={qualityMode !== "work"}
         shadow-mapSize-width={lighting.shadowMap}
         shadow-mapSize-height={lighting.shadowMap}
+      />
+      <spotLight
+        position={[5, 8, 5]}
+        intensity={lightsEnabled ? 2.5 : 0}
+        angle={0.15}
+        penumbra={1}
+        castShadow
       />
 
       <pointLight
@@ -937,16 +954,22 @@ export function RoomScene() {
         distance={5}
       />
 
-      <group userData={{ renderLayer: "SCENE_CONTENT", contentType: "architecture" }}>
-        <Architecture />
-      </group>
+      {!presentationCapture && (
+        <group userData={{ renderLayer: "SCENE_CONTENT", contentType: "architecture" }}>
+          <Architecture />
+        </group>
+      )}
       <LibraryPartsRenderer />
-      <group userData={{ renderLayer: "SCENE_CONTENT", contentType: "decoration" }}>
-        <DecorativeKitchenLayer />
-      </group>
-      <group userData={{ renderLayer: "SCENE_CONTENT", contentType: "appliances" }}>
-        <KitchenApplianceLayer />
-      </group>
+      {!presentationCapture && (
+        <group userData={{ renderLayer: "SCENE_CONTENT", contentType: "decoration" }}>
+          <DecorativeKitchenLayer />
+        </group>
+      )}
+      {!presentationCapture && (
+        <group userData={{ renderLayer: "SCENE_CONTENT", contentType: "appliances" }}>
+          <KitchenApplianceLayer />
+        </group>
+      )}
 
       {gridVisible && !presentationCapture && (
         <gridHelper

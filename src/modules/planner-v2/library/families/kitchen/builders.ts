@@ -189,18 +189,40 @@ export function buildCarcass(
 
   for (let index = 0; index < shelves; index += 1) {
     const ratio = (index + 1) / (shelves + 1);
+    const shelfId = `shelf-${index + 1}`;
+    const shelfY = toe + panel + innerHeight * ratio;
     parts.push(
       part(
         moduleId,
-        `shelf-${index + 1}`,
+        shelfId,
         "shelf",
         `Prateleira ${index + 1}`,
         { width: innerWidth - 2, height: shelf, depth: Math.max(shelf, dims.depth - 20) },
-        { x: 0, y: toe + panel + innerHeight * ratio, z: 10 },
+        { x: 0, y: shelfY, z: 10 },
         body,
         { edgeBanding: { front: body } },
       ),
     );
+    const supportY = shelfY - shelf / 2 - 4;
+    for (const side of [-1, 1] as const) {
+      for (const depthSign of [-1, 1] as const) {
+        parts.push(
+          hardware(
+            moduleId,
+            `${shelfId}:support-${side < 0 ? "left" : "right"}-${depthSign < 0 ? "back" : "front"}`,
+            "Suporte de prateleira",
+            { width: 8, height: 8, depth: 14 },
+            {
+              x: side * Math.max(20, innerWidth / 2 - 24),
+              y: supportY,
+              z: depthSign * Math.max(24, dims.depth / 2 - 34),
+            },
+            "shelf-support",
+            shelfId,
+          ),
+        );
+      }
+    }
   }
 
   if (toe > 0) {
@@ -292,21 +314,24 @@ export function buildDoors(
         },
       ),
     );
-    parts.push(
-      hardware(
-        moduleId,
-        `${doorId}:hinge`,
-        "Dobradiça",
-        { width: 35, height: 70, depth: 16 },
-        {
-          x: x + (hingeSide === "left" ? -doorWidth / 2 + 35 : doorWidth / 2 - 35),
-          y: toe + doorHeight / 2,
-          z: dims.depth / 2 + doorMm,
-        },
-        hingeId,
-        groupId,
-      ),
-    );
+    const hingeX = x + (hingeSide === "left" ? -doorWidth / 2 + 35 : doorWidth / 2 - 35);
+    const hingeCount = doorHeight >= 900 ? 3 : 2;
+    const hingeYs = hingeCount === 3
+      ? [toe + 110, toe + doorHeight / 2, toe + doorHeight - 110]
+      : [toe + 110, toe + doorHeight - 110];
+    hingeYs.forEach((hingeY, hingeIndex) => {
+      parts.push(
+        hardware(
+          moduleId,
+          `${doorId}:hinge-${hingeIndex + 1}`,
+          "Dobradiça",
+          { width: 35, height: 72, depth: 18 },
+          { x: hingeX, y: hingeY, z: dims.depth / 2 + doorMm },
+          hingeId,
+          groupId,
+        ),
+      );
+    });
     if (handleId !== "handle-none") {
       const handleSize = handleDimensions(doorWidth, handleId, {
         width: 160,
@@ -488,15 +513,14 @@ export function buildBase(
       ? buildDrawers(moduleId, dims, options)
       : []),
   ];
+  const hardwareIds = new Set<string>([options.handle ?? "handle-bar", "leg-adjustable"]);
+  if ((options.doorLeaves ?? 0) > 0) hardwareIds.add(options.hinge ?? "hinge-soft-close");
+  if ((options.drawerCount ?? 0) > 0) hardwareIds.add(options.slide ?? "slide-hidden-soft-close");
+  if ((options.shelves ?? 0) > 0) hardwareIds.add("shelf-support");
   return {
     parts,
     boundingBoxMm: dims,
-    hardwareIds: [
-      options.hinge ?? "hinge-soft-close",
-      options.slide ?? "slide-hidden-soft-close",
-      options.handle ?? "handle-bar",
-      "leg-adjustable",
-    ],
+    hardwareIds: [...hardwareIds],
     warnings: [],
   };
 }

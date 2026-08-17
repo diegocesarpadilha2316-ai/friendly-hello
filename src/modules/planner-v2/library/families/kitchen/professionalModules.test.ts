@@ -231,6 +231,46 @@ describe("Cozinha Profissional V1", () => {
     ).toBe(true);
   });
 
+  it("gera um balcão 800 mm com ferragens e peças de fabricação completas", () => {
+    const outcome = buildModule({
+      instanceId: "professional-base-800",
+      moduleId: "kitchen-base-2-doors",
+      hardwareOverrides: { handle: "handle-gola" },
+      room,
+    });
+    expect(outcome.ok, outcome.error).toBe(true);
+    expect(outcome.parts.filter((part) => part.role === "door")).toHaveLength(2);
+    expect(outcome.parts.filter((part) => part.name === "Dobradiça")).toHaveLength(4);
+    expect(outcome.parts.filter((part) => part.name === "Suporte de prateleira")).toHaveLength(4);
+    expect(outcome.parts.filter((part) => part.name === "Pé regulável")).toHaveLength(4);
+    expect(outcome.parts.some((part) => part.name.includes("Rodapé"))).toBe(true);
+    expect(outcome.parts.filter((part) => part.role === "hardware").every((part) => !part.thicknessMm)).toBe(true);
+  });
+
+  it("reconstrói portas, prateleira e ferragens ao passar de 800 para 900 mm", () => {
+    const base800 = buildModule({
+      instanceId: "base-800",
+      moduleId: "kitchen-base-2-doors",
+      dimensionsMm: { width: 800 },
+      room,
+    });
+    const base900 = buildModule({
+      instanceId: "base-900",
+      moduleId: "kitchen-base-2-doors",
+      dimensionsMm: { width: 900 },
+      room,
+    });
+    const door800 = base800.parts.filter((part) => part.role === "door");
+    const door900 = base900.parts.filter((part) => part.role === "door");
+    expect(base800.ok && base900.ok).toBe(true);
+    expect(door900[0].dimensionsMm.width).toBeGreaterThan(door800[0].dimensionsMm.width);
+    expect(base900.parts.find((part) => part.id.endsWith(":shelf-1"))?.dimensionsMm.width).toBeGreaterThan(
+      base800.parts.find((part) => part.id.endsWith(":shelf-1"))?.dimensionsMm.width ?? 0,
+    );
+    expect(base900.parts.filter((part) => part.name === "Dobradiça")).toHaveLength(4);
+    expect(new Set(base900.parts.map((part) => part.id)).size).toBe(base900.parts.length);
+  });
+
   it("encontra Snap entre módulos e para parede dentro da tolerância", () => {
     const make = (id: string, x: number, z: number): FurnitureInstance => ({
       id,
