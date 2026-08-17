@@ -241,6 +241,7 @@ function CameraEventBridge() {
     };
     const focusFront = () => applyKitchenCamera(camera, scene, "front", aspect);
     const focusPerspective = () => applyKitchenCamera(camera, scene, "overview", aspect);
+    const focusTop = () => applyKitchenCamera(camera, scene, "top", aspect, selectedId);
     window.addEventListener("dioris:zoom-in", zoomIn);
     window.addEventListener("dioris:zoom-out", zoomOut);
     window.addEventListener("dioris:focus-scene", focusProject);
@@ -248,6 +249,7 @@ function CameraEventBridge() {
     window.addEventListener("dioris:fit-selection", focusSelection);
     window.addEventListener("dioris:view-front", focusFront);
     window.addEventListener("dioris:view-perspective", focusPerspective);
+    window.addEventListener("dioris:view-top", focusTop);
     return () => {
       window.removeEventListener("dioris:zoom-in", zoomIn);
       window.removeEventListener("dioris:zoom-out", zoomOut);
@@ -256,6 +258,7 @@ function CameraEventBridge() {
       window.removeEventListener("dioris:fit-selection", focusSelection);
       window.removeEventListener("dioris:view-front", focusFront);
       window.removeEventListener("dioris:view-perspective", focusPerspective);
+      window.removeEventListener("dioris:view-top", focusTop);
     };
   }, [camera, scene, selectedId, size.height, size.width]);
   return null;

@@ -232,12 +232,13 @@ export function buildCarcass(
         "toe-kick",
         "hardware",
         "Rodapé — HARDWARE/PROFILE",
-        { width: innerWidth, height: toe, depth: panel },
-        { x: 0, y: toe / 2, z: dims.depth / 2 - panel },
-        HARDWARE_MATERIAL_ID,
+        { width: innerWidth, height: toe, depth: c.toeKickInsetMm },
+        { x: 0, y: toe / 2, z: dims.depth / 2 - c.toeKickInsetMm - c.toeKickInsetMm / 2 },
+        "mdf-cinza-sagrado",
         {
           hardwareId: "toe-kick-profile",
-          hardwareGeometry: { kind: "profile", radiusMm: 3 },
+          hardwareGeometry: { kind: "profile", radiusMm: 2, removable: true, fixedTo: "adjustable-feet" },
+          groupId: `${moduleId}:toe-kick`,
         },
       ),
     );
@@ -253,16 +254,31 @@ export function buildCarcass(
       [footX, footZ],
     ];
     for (const [footXPosition, footZPosition] of footPositions) {
+      const footLabel = `foot-${footXPosition < 0 ? "left" : "right"}-${footZPosition < 0 ? "back" : "front"}`;
       parts.push(
         hardware(
           moduleId,
-          `foot-${footXPosition < 0 ? "left" : "right"}-${footZPosition < 0 ? "back" : "front"}`,
+          footLabel,
           "Pé regulável",
           { width: footWidth, height: 50, depth: footDepth },
           { x: footXPosition, y: footY, z: footZPosition },
           "leg-adjustable",
+          `${moduleId}:toe-kick`,
         ),
       );
+      if (footZPosition > 0) {
+        parts.push(
+          hardware(
+            moduleId,
+            `${footLabel}:toe-kick-clip`,
+            "Clip de fixação do rodapé",
+            { width: 18, height: 35, depth: 12 },
+            { x: footXPosition, y: c.toeKickClipHeightMm, z: dims.depth / 2 - c.toeKickInsetMm },
+            "toe-kick-clip",
+            `${moduleId}:toe-kick`,
+          ),
+        );
+      }
     }
   }
   return parts;
@@ -517,6 +533,10 @@ export function buildBase(
   if ((options.doorLeaves ?? 0) > 0) hardwareIds.add(options.hinge ?? "hinge-soft-close");
   if ((options.drawerCount ?? 0) > 0) hardwareIds.add(options.slide ?? "slide-hidden-soft-close");
   if ((options.shelves ?? 0) > 0) hardwareIds.add("shelf-support");
+  if ((options.toeKickMm ?? c.toeKickMm) > 0) {
+    hardwareIds.add("toe-kick-profile");
+    hardwareIds.add("toe-kick-clip");
+  }
   return {
     parts,
     boundingBoxMm: dims,

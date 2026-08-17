@@ -1,4 +1,4 @@
-import { Expand, Grid3X3, Lightbulb } from "lucide-react";
+import { ArrowUp, Expand, Grid3X3, Lightbulb } from "lucide-react";
 import { usePlannerStore } from "../state/usePlannerStore";
 import { useImmersiveStore } from "../state/useImmersiveStore";
 
@@ -13,6 +13,7 @@ export function ViewportControls() {
   const setAutoOcclusion = useImmersiveStore((s) => s.setAutoOcclusion);
 
   const focusScene = () => window.dispatchEvent(new CustomEvent("dioris:focus-scene"));
+  const focusTop = () => window.dispatchEvent(new CustomEvent("dioris:view-top"));
 
   return (
     <>
@@ -67,6 +68,9 @@ export function ViewportControls() {
           onClick={() => setQualityMode("presentation")}
         >
           Apresentação
+        </button>
+        <button type="button" aria-label="Vista superior" title="Vista superior do móvel" onClick={focusTop}>
+          <ArrowUp size={15} />
         </button>
         <button type="button" aria-label="Focar cena" onClick={focusScene}>
           <Expand size={15} />

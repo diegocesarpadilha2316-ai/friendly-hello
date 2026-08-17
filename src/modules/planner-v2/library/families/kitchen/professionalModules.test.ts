@@ -243,6 +243,10 @@ describe("Cozinha Profissional V1", () => {
     expect(outcome.parts.filter((part) => part.name === "Dobradiça")).toHaveLength(4);
     expect(outcome.parts.filter((part) => part.name === "Suporte de prateleira")).toHaveLength(4);
     expect(outcome.parts.filter((part) => part.name === "Pé regulável")).toHaveLength(4);
+    const toeKick = outcome.parts.find((part) => part.id.endsWith(":toe-kick"));
+    expect(toeKick?.hardwareId).toBe("toe-kick-profile");
+    expect(toeKick?.dimensionsMm.depth).toBe(20);
+    expect(outcome.parts.filter((part) => part.hardwareId === "toe-kick-clip")).toHaveLength(2);
     expect(outcome.parts.some((part) => part.name.includes("Rodapé"))).toBe(true);
     expect(outcome.parts.filter((part) => part.role === "hardware").every((part) => !part.thicknessMm)).toBe(true);
   });

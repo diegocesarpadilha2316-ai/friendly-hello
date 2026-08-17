@@ -8,6 +8,8 @@ export const KITCHEN_CONFIG = {
   drawerGapMm: 2,
   doorSideGapMm: 2,
   toeKickMm: 150,
+  toeKickInsetMm: 20,
+  toeKickClipHeightMm: 85,
   rearGapMm: 10,
   sideGapMm: 0,
   countertopThicknessMm: 20,
