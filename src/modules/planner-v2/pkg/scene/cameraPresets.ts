@@ -64,8 +64,8 @@ export function applyKitchenCamera(
   const frame = autoFrameKitchen(scene, instanceId);
   const { center, size, radius } = frame;
   const isDetail = view === "detail";
-  const fov = isDetail ? 40 : view === "overview" ? 34 : view === "front" ? 33 : 36;
-  const margin = isDetail ? 1.24 : 1.42;
+  const fov = isDetail ? 40 : view === "overview" ? 34 : view === "front" ? 38 : 36;
+  const margin = isDetail ? 1.24 : view === "front" ? 1.72 : 1.42;
   const distance = Math.max(2.8, (radius / Math.tan((fov * Math.PI) / 360)) * margin);
   const target = center.clone();
   let direction = new THREE.Vector3(0, 0, 1);
