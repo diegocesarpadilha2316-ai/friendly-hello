@@ -49,6 +49,7 @@ const base = (config: {
   doorLeaves?: 0 | 1 | 2 | 3;
   drawerCount?: number;
   shelves?: number;
+  includeCountertop?: boolean;
   description: string;
   kind?: ModuleDefinition["kind"];
 }) =>
@@ -87,6 +88,7 @@ const base = (config: {
         handle: hardwareOverrides?.handle,
         hinge: hardwareOverrides?.hinge,
         slide: hardwareOverrides?.slide,
+        includeCountertop: config.includeCountertop,
       }),
   );
 
@@ -199,7 +201,8 @@ export const professionalKitchenModules: ModuleDefinition[] = [
     name: "Balcão 2 Portas",
     defaultWidth: 800,
     doorLeaves: 2,
-    description: "Balcão inferior com duas portas e prateleira interna.",
+    includeCountertop: true,
+    description: "Balcão inferior com duas portas, prateleira interna e tampo de bancada.",
   }),
   base({
     id: "kitchen-base-3-doors",

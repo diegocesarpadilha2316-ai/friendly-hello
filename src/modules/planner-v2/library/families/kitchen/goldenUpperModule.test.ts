@@ -63,7 +63,7 @@ describe("Golden Module — Aéreo 800×700×350 mm", () => {
       (part) => part.role === "hardware" && part.hardwareId === "hinge-soft-close",
     );
     expect(handles).toHaveLength(2);
-    expect(hinges).toHaveLength(2);
+    expect(hinges).toHaveLength(4);
     expect(handles.every((part) => part.hardwareGeometry?.kind === "cava")).toBe(true);
     expect(MaterialRegistry.has("mdf-freijo")).toBe(true);
     expect(HardwareRegistry.get("handle-cava")?.dimensionsMm.depth).toBeGreaterThan(0);

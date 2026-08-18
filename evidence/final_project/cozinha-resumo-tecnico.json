@@ -11,23 +11,56 @@
     }
   ],
   "stats": {
-    "parts": 14,
-    "hardware": 4,
+    "parts": 28,
+    "hardware": 18,
     "machining_ops": 20,
     "boards": 2
   },
   "hardware": [
     {
+      "hardwareId": "shelf-support",
+      "quantity": 12,
+      "partIds": [
+        "furniture-1787023006904:shelf-1:support-left-back",
+        "furniture-1787023006904:shelf-1:support-left-front",
+        "furniture-1787023006904:shelf-1:support-right-back",
+        "furniture-1787023006904:shelf-1:support-right-front",
+        "furniture-1787023006904:shelf-2:support-left-back",
+        "furniture-1787023006904:shelf-2:support-left-front",
+        "furniture-1787023006904:shelf-2:support-right-back",
+        "furniture-1787023006904:shelf-2:support-right-front",
+        "furniture-1787023006904:shelf-3:support-left-back",
+        "furniture-1787023006904:shelf-3:support-left-front",
+        "furniture-1787023006904:shelf-3:support-right-back",
+        "furniture-1787023006904:shelf-3:support-right-front"
+      ],
+      "moduleIds": [
+        "kitchen-golden-upper-800"
+      ]
+    },
+    {
       "hardwareId": "hinge-soft-close",
-      "quantity": 2,
-      "partIds": ["furniture-1786746188887:door-1:hinge", "furniture-1786746188887:door-2:hinge"],
-      "moduleIds": ["kitchen-golden-upper-800"]
+      "quantity": 4,
+      "partIds": [
+        "furniture-1787023006904:door-1:hinge-1",
+        "furniture-1787023006904:door-1:hinge-2",
+        "furniture-1787023006904:door-2:hinge-1",
+        "furniture-1787023006904:door-2:hinge-2"
+      ],
+      "moduleIds": [
+        "kitchen-golden-upper-800"
+      ]
     },
     {
       "hardwareId": "handle-bar",
       "quantity": 2,
-      "partIds": ["furniture-1786746188887:door-1:handle", "furniture-1786746188887:door-2:handle"],
-      "moduleIds": ["kitchen-golden-upper-800"]
+      "partIds": [
+        "furniture-1787023006904:door-1:handle",
+        "furniture-1787023006904:door-2:handle"
+      ],
+      "moduleIds": [
+        "kitchen-golden-upper-800"
+      ]
     }
   ]
 }

@@ -23,6 +23,58 @@ describe("Golden Manufacturing Module — Balcão 2 Portas", () => {
     usePlannerStore.getState().newProject();
   });
 
+  it("interpreta o comando completo com corpo branco e frente Louro Freijó", () => {
+    const store = usePlannerStore.getState();
+    const id = store.addFurnitureInstance("kitchen-base-2-doors");
+    expect(id).toBeTruthy();
+    store.sendMessage(
+      "Quero um Balcão 2 Portas com largura 900 mm, altura 870 mm, profundidade 580 mm, corpo branco, frente Louro Freijó e puxador Gola.",
+    );
+    const instance = usePlannerStore.getState().instances[0];
+    expect(instance.dimensionsMm).toEqual({ width: 900, height: 870, depth: 580 });
+    expect(instance.materialOverrides.body).toBe("mdf-white");
+    expect(instance.materialOverrides.front).toBe("mdf-freijo");
+    expect(instance.materialOverrides.door).toBe("mdf-freijo");
+    expect(instance.hardwareOverrides.handle).toBe("handle-gola");
+    expect(instance.parts.find((part) => part.role === "side-left")?.materialId).toBe("mdf-white");
+    expect(instance.parts.find((part) => part.role === "door")?.materialId).toBe("mdf-freijo");
+  });
+
+  it("recalcula peças, cut-list e nesting em 900 → 1000 → 900 mm", () => {
+    const store = usePlannerStore.getState();
+    const id = store.addFurnitureInstance("kitchen-base-2-doors", undefined, { width: 900, height: 870, depth: 580 });
+    expect(id).toBeTruthy();
+    let instance = usePlannerStore.getState().instances[0];
+    const beforeParts = instance.parts.map((part) => ({ id: part.id, width: part.dimensionsMm.width, height: part.dimensionsMm.height }));
+    const beforeCut = buildFabricationReport([instance]);
+    const beforeNesting = buildNestingPlanFromPartDefinitions(instance.parts);
+
+    store.sendMessage("Altere a largura do Balcão 2 Portas para 1000 mm.");
+    instance = usePlannerStore.getState().instances[0];
+    expect(instance.dimensionsMm.width).toBe(1000);
+    expect(instance.parts.map((part) => ({ id: part.id, width: part.dimensionsMm.width, height: part.dimensionsMm.height }))).not.toEqual(beforeParts);
+    const afterCut = buildFabricationReport([instance]);
+    const afterNesting = buildNestingPlanFromPartDefinitions(instance.parts);
+    expect(afterCut.cutItems.map((item) => [item.key, item.quantity, item.widthMm, item.heightMm])).not.toEqual(
+      beforeCut.cutItems.map((item) => [item.key, item.quantity, item.widthMm, item.heightMm]),
+    );
+    expect(afterNesting.boards.flatMap((board) => board.placements.map((placement) => [placement.code, placement.x, placement.y, placement.w, placement.h]))).not.toEqual(
+      beforeNesting.boards.flatMap((board) => board.placements.map((placement) => [placement.code, placement.x, placement.y, placement.w, placement.h])),
+    );
+
+    store.sendMessage("Altere a largura do Balcão 2 Portas para 900 mm.");
+    instance = usePlannerStore.getState().instances[0];
+    expect(instance.dimensionsMm.width).toBe(900);
+    const restoredCut = buildFabricationReport([instance]);
+    const restoredNesting = buildNestingPlanFromPartDefinitions(instance.parts);
+    expect(restoredCut.cutItems.map((item) => [item.key, item.quantity, item.widthMm, item.heightMm])).toEqual(
+      beforeCut.cutItems.map((item) => [item.key, item.quantity, item.widthMm, item.heightMm]),
+    );
+    expect(restoredNesting.boards.flatMap((board) => board.placements.map((placement) => [placement.code, placement.x, placement.y, placement.w, placement.h]))).toEqual(
+      beforeNesting.boards.flatMap((board) => board.placements.map((placement) => [placement.code, placement.x, placement.y, placement.w, placement.h])),
+    );
+  });
+
   it("mantém material, espessura, peças e fabricação após IA e reload", () => {
     const store = usePlannerStore.getState();
     expect(store.furniture).toEqual([]);

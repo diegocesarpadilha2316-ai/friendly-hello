@@ -28,6 +28,7 @@ type BuildOptions = {
   handle?: string;
   hinge?: string;
   slide?: string;
+  includeCountertop?: boolean;
   towerLayout?: "oven" | "oven-microwave" | "fridge" | "pantry";
   glass?: boolean;
 };
@@ -528,6 +529,7 @@ export function buildBase(
     ...(options.drawerCount && options.drawerCount > 0
       ? buildDrawers(moduleId, dims, options)
       : []),
+    ...(options.includeCountertop ? buildCountertop(`${moduleId}:countertop`, dims, options).parts : []),
   ];
   const hardwareIds = new Set<string>([options.handle ?? "handle-bar", "leg-adjustable"]);
   if ((options.doorLeaves ?? 0) > 0) hardwareIds.add(options.hinge ?? "hinge-soft-close");

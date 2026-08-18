@@ -8,9 +8,12 @@ import { LibraryModuleCard } from "./LibraryModuleCard";
 import { LibrarySearch } from "./LibrarySearch";
 import "../../library";
 
+const BALCAO_CATEGORIES = new Set(["Inferiores", "Cantos"]);
+const ALL_BALCOES = "Todos os balcões";
+
 export function LibraryPanel() {
   const [activeFamily, setActiveFamily] = useState<FamilyId>("kitchen");
-  const [activeCategory, setActiveCategory] = useState<string>("Todas");
+  const [activeCategory, setActiveCategory] = useState<string>(ALL_BALCOES);
   const [query, setQuery] = useState("");
   const addFurnitureInstance = usePlannerStore((s) => s.addFurnitureInstance);
   const lastLibraryError = usePlannerStore((s) => s.lastLibraryError);
@@ -18,19 +21,25 @@ export function LibraryPanel() {
   const setDragPreview = usePlannerStore((s) => s.setDragPreview);
   const clearDragPreview = usePlannerStore((s) => s.clearDragPreview);
 
-  const families = useMemo(() => FamilyRegistry.list(), []);
+  const families = useMemo(
+    () => FamilyRegistry.list().filter((candidate) => candidate.id === "kitchen"),
+    [],
+  );
   const family = FamilyRegistry.get(activeFamily);
 
-  const familyModules = useMemo(() => ModuleRegistry.listByFamily(activeFamily), [activeFamily]);
+  const familyModules = useMemo(
+    () => ModuleRegistry.listByFamily(activeFamily).filter((module) => BALCAO_CATEGORIES.has(module.category)),
+    [activeFamily],
+  );
   const categories = useMemo(
-    () => ["Todas", ...Array.from(new Set(familyModules.map((module) => module.category)))],
+    () => [ALL_BALCOES, ...Array.from(new Set(familyModules.map((module) => module.subcategory ?? "Balcões")))],
     [familyModules],
   );
   const modules = useMemo(() => {
     const term = query.trim().toLowerCase();
     return familyModules.filter(
       (module) =>
-        (activeCategory === "Todas" || module.category === activeCategory) &&
+        (activeCategory === ALL_BALCOES || (module.subcategory ?? "Balcões") === activeCategory) &&
         (term
           ? `${module.name} ${module.category} ${module.subcategory ?? ""} ${module.kind ?? ""}`
               .toLowerCase()
@@ -46,8 +55,9 @@ export function LibraryPanel() {
         families={families}
         activeId={activeFamily}
         onSelect={(familyId) => {
+          if (familyId !== "kitchen") return;
           setActiveFamily(familyId);
-          setActiveCategory("Todas");
+          setActiveCategory(ALL_BALCOES);
         }}
       />
       <div className="library-subcategories" role="tablist" aria-label="Categorias da biblioteca">

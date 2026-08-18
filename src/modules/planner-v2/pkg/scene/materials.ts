@@ -104,6 +104,15 @@ export function createFloorTexture() {
   return texture;
 }
 
+export function loadRealTexture(name: string) {
+  const loader = new THREE.TextureLoader();
+  const texture = loader.load(`/textures/${name}`);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
 import type { MaterialDefinition } from "../../library/contracts/MaterialDefinition";
 
 const materialTextureCache = new Map<string, string>();

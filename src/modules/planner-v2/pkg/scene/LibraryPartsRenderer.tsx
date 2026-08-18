@@ -219,31 +219,32 @@ function HardwareVisual({
     );
   }
 
-  const radius = geometry.kind === "profile" ? mmToScene(geometry.radiusMm) : 0.003;
-  const grooveColor = new THREE.Color(material.baseColor).offsetHSL(0, 0, -0.14);
-  const grooveWidth = Math.max(0.003, size[0] * 0.82);
+  const radius = geometry.kind === "profile" ? mmToScene(geometry.radiusMm) : 0.002;
+  const grooveColor = new THREE.Color(material.baseColor).offsetHSL(0, 0, -0.22);
+  const grooveWidth = size[0];
   const grooveLipMm =
     geometry.kind === "gola" || geometry.kind === "cava" ? geometry.lipMm : geometry.radiusMm;
-  const grooveHeight = Math.min(size[1] * 0.28, mmToScene(grooveLipMm));
+  const grooveHeight = Math.min(size[1] * 0.35, mmToScene(grooveLipMm));
 
   return (
     <group>
-      <RoundedBox args={size} radius={radius} smoothness={3}>
+      <RoundedBox args={size} radius={radius} smoothness={4}>
         <meshPhysicalMaterial
           color={material.baseColor}
-          roughness={material.roughness}
-          metalness={material.metalness}
-          clearcoat={material.clearcoat ?? 0.35}
-          clearcoatRoughness={material.clearcoatRoughness ?? 0.18}
+          roughness={0.12}
+          metalness={0.92}
+          clearcoat={1.0}
+          clearcoatRoughness={0.1}
+          envMapIntensity={1.5}
         />
       </RoundedBox>
       {(geometry.kind === "gola" || geometry.kind === "cava") && (
         <mesh
-          position={[0, geometry.kind === "gola" ? -size[1] * 0.18 : 0, size[2] / 2 + 0.001]}
+          position={[0, geometry.kind === "gola" ? -size[1] * 0.12 : 0, size[2] / 2 - 0.002]}
           raycast={() => null}
         >
           <boxGeometry args={[grooveWidth, grooveHeight, mmToScene(geometry.recessMm)]} />
-          <meshStandardMaterial color={grooveColor} roughness={0.24} metalness={0.78} />
+          <meshStandardMaterial color={grooveColor} roughness={0.1} metalness={1.0} />
         </mesh>
       )}
     </group>

@@ -8,8 +8,6 @@ import { OpeningSpec, useRoomBuilderStore } from "../state/useRoomBuilderStore";
 import { InteractiveCabinet } from "./InteractiveCabinet";
 import { LibraryPartsRenderer } from "./LibraryPartsRenderer";
 import { RenderController } from "./RenderController";
-import { DecorativeKitchenLayer } from "./DecorativeKitchenLayer";
-import { KitchenApplianceLayer } from "./KitchenApplianceLayer";
 import { getKitchenLighting } from "./lighting";
 import { WalkControls } from "./WalkControls";
 import { usePresentationCapture } from "./presentationCapture";
@@ -956,6 +954,16 @@ export function RoomScene() {
         decay={1.5}
         distance={5}
       />
+      <spotLight
+        position={[0, 2.05, 2.45]}
+        target-position={[0, 0.92, -1.35]}
+        intensity={lightsEnabled ? lighting.directional * 0.62 : 0}
+        color={lighting.fillColor}
+        angle={0.58}
+        penumbra={0.92}
+        decay={1.35}
+        distance={7}
+      />
 
       {!presentationCapture && (
         <group userData={{ renderLayer: "SCENE_CONTENT", contentType: "architecture" }}>
@@ -963,17 +971,6 @@ export function RoomScene() {
         </group>
       )}
       <LibraryPartsRenderer />
-      {!presentationCapture && (
-        <group userData={{ renderLayer: "SCENE_CONTENT", contentType: "decoration" }}>
-          <DecorativeKitchenLayer />
-        </group>
-      )}
-      {!presentationCapture && (
-        <group userData={{ renderLayer: "SCENE_CONTENT", contentType: "appliances" }}>
-          <KitchenApplianceLayer />
-        </group>
-      )}
-
       {gridVisible && !presentationCapture && (
         <gridHelper
           userData={{ renderLayer: "EDITOR_ONLY", editorObject: "grid" }}

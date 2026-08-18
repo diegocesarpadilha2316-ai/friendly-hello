@@ -1,8 +1,8 @@
-quantidade,largura_mm,altura_mm,profundidade_mm,funcao,material,veio,fita_topo,fita_base,fita_esquerda,fita_direita,fita_frente,fita_fundo,nomes
-"1","18","700","350","side-left","mdf-white","vertical","","","","","mdf-white","","Lateral esquerda"
-"1","18","700","350","side-right","mdf-white","vertical","","","","","mdf-white","","Lateral direita"
-"1","764","18","350","base","mdf-white","horizontal","","","","","mdf-white","","Base"
-"1","764","18","350","top","mdf-white","horizontal","","","","","mdf-white","","Topo"
-"1","764","664","6","back","mdf-white","none","","","","","","","Fundo"
-"3","762","18","330","shelf","mdf-white","horizontal","","","","","mdf-white","","Prateleira 1 / Prateleira 2 / Prateleira 3"
-"2","396","696","18","door","mdf-white","vertical","mdf-white","mdf-white","mdf-white","mdf-white","","","Porta 1 / Porta 2"
+quantidade,largura_mm,altura_mm,profundidade_mm,espessura_mm,tipo_material,funcao,material,veio,fita_topo,fita_base,fita_esquerda,fita_direita,fita_frente,fita_fundo,nomes
+"1","18","700","350","18","mdf","side-left","mdf-white","vertical","","","","","mdf-white","","Lateral esquerda"
+"1","18","700","350","18","mdf","side-right","mdf-white","vertical","","","","","mdf-white","","Lateral direita"
+"1","764","18","350","18","mdf","base","mdf-white","horizontal","","","","","mdf-white","","Base"
+"1","764","18","350","18","mdf","top","mdf-white","horizontal","","","","","mdf-white","","Topo"
+"1","764","664","6","6","mdf","back","mdf-white","none","","","","","","","Fundo"
+"3","762","18","330","18","mdf","shelf","mdf-white","horizontal","","","","","mdf-white","","Prateleira 1 / Prateleira 2 / Prateleira 3"
+"2","396","696","18","18","mdf","door","mdf-white","vertical","mdf-white","mdf-white","mdf-white","mdf-white","","","Porta 1 / Porta 2"

@@ -34,12 +34,40 @@ function createFurnitureInstanceId(existing: FurnitureInstance[]) {
   return id;
 }
 
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
 function measurementToMm(raw: string, unit?: string) {
   const value = Number(raw.replace(",", "."));
   if (!Number.isFinite(value)) return null;
   if (unit === "m") return Math.round(value * 1000);
   if (unit === "cm") return Math.round(value * 10);
   return Math.round(value);
+}
+
+function extractNamedDimensions(text: string, current: { width: number; height: number; depth: number }) {
+  const next = { ...current };
+  let changed = false;
+  const fields = [
+    { key: "width" as const, label: /largura|largo|width/i },
+    { key: "height" as const, label: /altura|alto|height/i },
+    { key: "depth" as const, label: /profundidade|fundo|depth/i },
+  ];
+  for (const field of fields) {
+    const labelMatch = field.label.exec(text);
+    if (!labelMatch) continue;
+    const rest = text.slice(labelMatch.index + labelMatch[0].length).split(/(?:largura|largo|width|altura|alto|height|profundidade|fundo|depth)/i)[0];
+    const matches = [...rest.matchAll(/(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?/gi)];
+    const match = matches.at(-1);
+    if (!match) continue;
+    const value = measurementToMm(match[1], match[2]);
+    if (value !== null) {
+      next[field.key] = value;
+      changed = true;
+    }
+  }
+  return changed ? next : null;
 }
 
 function extractDimensionTuple(text: string) {
@@ -115,21 +143,31 @@ export function parseKitchenComposition(text: string): KitchenCompositionSpec | 
   const thicknessMatch = text.match(/mdf[^0-9]*(15|18|25)\s*mm/i);
   const panelMm = thicknessMatch ? Number(thicknessMatch[1]) : 18;
   const thicknessMm = { panelMm, doorMm: panelMm, shelfMm: panelMm, backMm: 6 };
-  const bodyMaterial = /louro\s*freij[oó]|freij[oó]/i.test(text)
-    ? "mdf-freijo"
-    : /preto|black/i.test(text)
-      ? "mdf-black"
-      : /cinza\s*sagrado/i.test(text)
-        ? "mdf-cinza-sagrado"
-        : /grafite/i.test(text)
-          ? "mdf-graphite"
-          : /amaz[oô]nia|verde/i.test(text)
-            ? "sudati-amazonia"
-            : /carvalho|oak/i.test(text)
-              ? "mdf-oak"
-              : /amadeirado|madeira/i.test(text)
-                ? "mdf-wood-natural"
-                : "mdf-white";
+  const materialFromText = (value: string, fallback: string) =>
+    /louro\s*freij[oó]|freij[oó]/i.test(value)
+      ? "mdf-freijo"
+      : /preto|black/i.test(value)
+        ? "mdf-black"
+        : /cinza\s*sagrado/i.test(value)
+          ? "mdf-cinza-sagrado"
+          : /grafite/i.test(value)
+            ? "mdf-graphite"
+            : /amaz[oô]nia|verde/i.test(value)
+              ? "sudati-amazonia"
+              : /carvalho|oak/i.test(value)
+                ? "mdf-oak"
+                : /amadeirado|madeira/i.test(value)
+                  ? "mdf-wood-natural"
+                  : fallback;
+  const bodyMaterial = /corpo\s+(?:em\s+)?(?:mdf\s+)?(?:branco|branca|white)/i.test(text)
+    ? "mdf-white"
+    : materialFromText(text, "mdf-white");
+  const frontMaterialMatch = text.match(
+    /(?:frente|frentes|porta|portas)\s+(?:em\s+)?(?:mdf\s+)?([^,.]+?)(?=\s+(?:e|com|puxador|corpo)\b|[,.]|$)/i,
+  );
+  const frontMaterial = frontMaterialMatch
+    ? materialFromText(frontMaterialMatch[1], bodyMaterial)
+    : bodyMaterial;
   const countertopMaterial = /granito|preto/i.test(text)
     ? "stone-granite"
     : /m[aá]rmore/i.test(text)
@@ -144,7 +182,7 @@ export function parseKitchenComposition(text: string): KitchenCompositionSpec | 
       : /perfil/i.test(text)
         ? "handle-profile"
         : "handle-bar";
-  const materials = { body: bodyMaterial, front: bodyMaterial, countertop: countertopMaterial };
+  const materials = { body: bodyMaterial, front: frontMaterial, countertop: countertopMaterial };
   const hardware = { handle, hinge: "hinge-soft-close", slide: "slide-hidden-soft-close" };
   const widthFrom = (pattern: RegExp, fallback: number) => {
     const match = text.match(pattern);
@@ -444,63 +482,7 @@ interface PlannerState {
   applyGoldenModuleTest: () => void;
 }
 
-const initialFurniture: FurnitureItem[] = [
-  {
-    id: "base-1",
-    name: "Armário Base",
-    kind: "base",
-    visible: true,
-    selected: true,
-    position: [-2.2, 0.36, -1.7],
-    rotationY: 0,
-    size: [1.5, 0.72, 0.56],
-    material: "taupe",
-  },
-  {
-    id: "base-2",
-    name: "Balcão",
-    kind: "base",
-    visible: true,
-    selected: false,
-    position: [-0.65, 0.36, -1.7],
-    rotationY: 0,
-    size: [1.35, 0.72, 0.56],
-    material: "taupe",
-  },
-  {
-    id: "tower-1",
-    name: "Torre Quente",
-    kind: "tower",
-    visible: true,
-    selected: false,
-    position: [2.3, 1.15, -1.7],
-    rotationY: 0,
-    size: [0.72, 2.3, 0.62],
-    material: "wood",
-  },
-  {
-    id: "upper-1",
-    name: "Armário Aéreo",
-    kind: "upper",
-    visible: true,
-    selected: false,
-    position: [-0.6, 2.0, -1.75],
-    rotationY: 0,
-    size: [2.6, 0.78, 0.38],
-    material: "taupe",
-  },
-  {
-    id: "island-1",
-    name: "Ilha Central",
-    kind: "island",
-    visible: true,
-    selected: false,
-    position: [0.4, 0.46, 0.25],
-    rotationY: 0,
-    size: [2.25, 0.92, 0.95],
-    material: "stone",
-  },
-];
+const initialFurniture: FurnitureItem[] = [];
 
 const initialMessages: ChatMessage[] = [];
 
@@ -534,7 +516,7 @@ export const usePlannerStore = create<PlannerState>()(
     toolMode: "orbit",
     gridVisible: false,
     lightsEnabled: true,
-    selectedId: "base-1",
+    selectedId: null,
     furniture: initialFurniture,
     messages: initialMessages,
     instances: [],
@@ -788,15 +770,15 @@ export const usePlannerStore = create<PlannerState>()(
 	          rotationDeg: entry.rotationDeg ?? current.rotationDeg,
 	          materialOverrides: {
 	            ...current.materialOverrides,
-	            body: "mdf-cinza-sagrado",
-	            front: "sudati-amazonia",
+            body: entry.materialId ?? "mdf-white",
+            front: "sudati-amazonia",
 	            door: "sudati-amazonia",
 	            drawer: "sudati-amazonia",
 	            "drawer-front": "sudati-amazonia",
-	            edge: "sudati-amazonia",
-	            countertop: "stone-dark",
-	          },
-	        });
+            edge: "sudati-amazonia",
+            countertop: entry.moduleId === "kitchen-countertop" ? entry.materialId ?? "stone-light" : "stone-dark",
+          },
+        });
       }
       get().selectFurnitureInstance(null);
       historyApplying = false;
@@ -1042,6 +1024,7 @@ export const usePlannerStore = create<PlannerState>()(
         ? get().instances.find((instance) => instance.id === selectedId)
         : undefined;
 
+      const namedDimensions = selected ? extractNamedDimensions(normalized, selected.dimensionsMm) : null;
       const selectedDimensionMatch =
         normalized.match(
           /(?:largura|largo|width|altura|alto|height|profundidade|fundo|depth)[^0-9]*(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?/i,
@@ -1058,7 +1041,17 @@ export const usePlannerStore = create<PlannerState>()(
             : /puxador[^a-z]*(barra|bar)|puxador barra/i.test(normalized)
               ? "handle-bar"
               : null;
-      const requestedMaterial = /louro\s*freij[oó]|freij[oó]/i.test(normalized)
+      const requestedBodyMaterial = /corpo\s+(?:em\s+)?(?:mdf\s+)?(?:branco|branca|white)/i.test(normalized)
+        ? "mdf-white"
+        : /corpo[^,.]*(?:louro\s*freij[oó]|freij[oó])/i.test(normalized)
+          ? "mdf-freijo"
+          : null;
+      const requestedFrontMaterial = /(?:frente|frentes|porta|portas)\s+(?:em\s+)?(?:mdf\s+)?(?:louro\s*freij[oó]|freij[oó])/i.test(normalized)
+        ? "mdf-freijo"
+        : /(?:frente|frentes|porta|portas)\s+(?:em\s+)?(?:mdf\s+)?(?:branco|branca|white)/i.test(normalized)
+          ? "mdf-white"
+          : null;
+      const requestedMaterial = requestedFrontMaterial ?? requestedBodyMaterial ?? (/louro\s*freij[oó]|freij[oó]/i.test(normalized)
         ? "mdf-freijo"
         : /branco|branca|white/i.test(normalized)
           ? "mdf-white"
@@ -1072,10 +1065,12 @@ export const usePlannerStore = create<PlannerState>()(
                   ? "mdf-oak"
                   : /grafite/i.test(normalized)
                     ? "mdf-graphite"
-                    : null;
-      if (selected && (selectedDimensionMatch || requestedHandle || requestedMaterial)) {
+                    : null);
+      if (selected && (namedDimensions || selectedDimensionMatch || requestedHandle || requestedMaterial || requestedBodyMaterial || requestedFrontMaterial)) {
         const patch: Partial<FurnitureInstance> = {};
-        if (selectedDimensionMatch) {
+        if (namedDimensions) {
+          patch.dimensionsMm = namedDimensions;
+        } else if (selectedDimensionMatch) {
           const value = measurementToMm(selectedDimensionMatch[1], selectedDimensionMatch[2]);
           const dimensionPatch = { ...selected.dimensionsMm };
           if (/(largura|largo|width)/i.test(selectedDimensionMatch[0])) dimensionPatch.width = value ?? dimensionPatch.width;
@@ -1086,21 +1081,23 @@ export const usePlannerStore = create<PlannerState>()(
         if (requestedHandle) {
           patch.hardwareOverrides = { ...selected.hardwareOverrides, handle: requestedHandle };
         }
-        if (requestedMaterial) {
+        if (requestedMaterial || requestedBodyMaterial || requestedFrontMaterial) {
+          const bodyMaterial = requestedBodyMaterial ?? (requestedFrontMaterial ? selected.materialOverrides.body ?? "mdf-white" : requestedMaterial);
+          const frontMaterial = requestedFrontMaterial ?? requestedMaterial ?? bodyMaterial;
           patch.materialOverrides = {
             ...selected.materialOverrides,
-            body: requestedMaterial,
-            front: requestedMaterial,
-            door: requestedMaterial,
-            drawer: requestedMaterial,
-            "drawer-front": requestedMaterial,
+            body: bodyMaterial,
+            front: frontMaterial,
+            door: frontMaterial,
+            drawer: frontMaterial,
+            "drawer-front": frontMaterial,
           };
         }
         const ok = get().updateFurnitureInstance(selected.id, patch);
         const current = get().instances.find((instance) => instance.id === selected.id);
         reply(
-          ok
-            ? `Atualizei ${current?.name ?? "o móvel selecionado"}${selectedDimensionMatch ? ` para ${current?.dimensionsMm.width} × ${current?.dimensionsMm.height} × ${current?.dimensionsMm.depth} mm` : ""}${requestedHandle ? ` com puxador ${requestedHandle}` : ""}${requestedMaterial ? ` com acabamento ${requestedMaterial}` : ""}.`
+            ok
+            ? `Atualizei ${current?.name ?? "o móvel selecionado"}${namedDimensions || selectedDimensionMatch ? ` para ${current?.dimensionsMm.width} × ${current?.dimensionsMm.height} × ${current?.dimensionsMm.depth} mm` : ""}${requestedHandle ? ` com puxador ${requestedHandle}` : ""}${requestedMaterial ? ` com acabamento ${requestedMaterial}` : ""}.`
             : get().lastLibraryError ?? "A alteração foi bloqueada pela validação de medidas e clearance.",
         );
         return;
@@ -1518,8 +1515,9 @@ export const usePlannerStore = create<PlannerState>()(
       }
 
       const room = useRoomBuilderStore.getState();
-      const updated = { ...current, ...patch };
-      const outcome = buildModule({
+      let updated = { ...current, ...patch };
+      const roomBounds = { widthMm: room.width, depthMm: room.depth, heightMm: room.height };
+      let outcome = buildModule({
         instanceId: id,
         moduleId: updated.moduleDefinitionId,
         dimensionsMm: updated.dimensionsMm,
@@ -1528,9 +1526,35 @@ export const usePlannerStore = create<PlannerState>()(
         materialOverrides: updated.materialOverrides,
         hardwareOverrides: updated.hardwareOverrides,
         thicknessMm: updated.thicknessMm,
-        room: { widthMm: room.width, depthMm: room.depth, heightMm: room.height },
+        room: roomBounds,
         instances: state.instances.filter((item) => item.id !== id),
       });
+
+      if (!outcome.ok && outcome.validation?.errors.some((issue) => issue.code === "module-outside-room")) {
+        const halfWidth = updated.dimensionsMm.width / 2;
+        const halfDepth = updated.dimensionsMm.depth / 2;
+        const safePositionMm = {
+          ...updated.positionMm,
+          x: clamp(updated.positionMm.x, -room.width / 2 + halfWidth + 20, room.width / 2 - halfWidth - 20),
+          z: clamp(updated.positionMm.z, -room.depth / 2 + halfDepth + 20, room.depth / 2 - halfDepth - 20),
+        };
+        const repositioned = buildModule({
+          instanceId: id,
+          moduleId: updated.moduleDefinitionId,
+          dimensionsMm: updated.dimensionsMm,
+          positionMm: safePositionMm,
+          rotationDeg: updated.rotationDeg,
+          materialOverrides: updated.materialOverrides,
+          hardwareOverrides: updated.hardwareOverrides,
+          thicknessMm: updated.thicknessMm,
+          room: roomBounds,
+          instances: state.instances.filter((item) => item.id !== id),
+        });
+        if (repositioned.ok) {
+          updated = { ...updated, positionMm: safePositionMm };
+          outcome = repositioned;
+        }
+      }
 
       if (!outcome.ok) {
         const issue = outcome.validation?.errors[0];
