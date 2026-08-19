@@ -1,0 +1,1 @@
+BOM: shelf-support=12, hinge-soft-close=4, mounting-plate-37-32=4, handle-cava=2.

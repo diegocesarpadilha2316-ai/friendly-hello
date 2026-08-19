@@ -1,0 +1,54 @@
+The plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the resolve.tsconfigPaths option. You can remove the plugin and set resolve.tsconfigPaths: true in your Vite config instead.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90m/home/ubuntu/dioris-audit-repo[39m
+
+ [31m❯[39m src/modules/planner-v2/pkg/state/step8UpperWiring.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 21[2mms[22m[39m
+[31m     [31m×[31m prova Definition → factory upper → carcass/front/hardware resolvers pelo store real[39m[32m 16[2mms[22m[39m
+[31m     [31m×[31m mantém o Golden Base em regra própria e não vaza a regra Upper[39m[32m 3[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/modules/planner-v2/pkg/state/step8UpperWiring.test.ts[2m > [22mStep 8.1 — Upper real wiring and identity acceptance lock[2m > [22mprova Definition → factory upper → carcass/front/hardware resolvers pelo store real
+[31m[1mAssertionError[22m: expected [] to have a length of 1 but got +0[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2m❯[22m src/modules/planner-v2/pkg/state/step8UpperWiring.test.ts:[2m59:29[22m[39m
+    [90m 57|[39m       input.moduleDefinitionId === UPPER_ID && rule.moduleDefinitionId…
+    [90m 58|[39m     )[33m;[39m
+    [90m 59|[39m     [34mexpect[39m(upperFrontCalls)[33m.[39m[34mtoHaveLength[39m([34m1[39m)[33m;[39m
+    [90m   |[39m                             [31m^[39m
+    [90m 60|[39m     [34mexpect[39m(upperFrontCalls[[34m0[39m][[34m0[39m][33m.[39mmoduleDefinitionId)[33m.[39m[34mtoBe[39m([33mUPPER_ID[39m)[33m;[39m
+    [90m 61|[39m     expect(upperFrontCalls[0][1].id).toBe("kitchen-golden-upper-800:ba…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/modules/planner-v2/pkg/state/step8UpperWiring.test.ts[2m > [22mStep 8.1 — Upper real wiring and identity acceptance lock[2m > [22mmantém o Golden Base em regra própria e não vaza a regra Upper
+[31m[1mAssertionError[22m: expected undefined to be 'kitchen-base-2-doors:symmetric-front-…' // Object.is equality[39m
+
+[32m- Expected:[39m
+"kitchen-base-2-doors:symmetric-front-layout-v1"
+
+[31m+ Received:[39m
+undefined
+
+[36m [2m❯[22m src/modules/planner-v2/pkg/state/step8UpperWiring.test.ts:[2m100:31[22m[39m
+    [90m 98|[39m     const baseFront = frontSpy.mock.calls.find(([input, rule]) => inpu…
+    [90m 99|[39m     expect(baseCarcass?.[0].rule.id).toBe("kitchen-base-2-doors:golden…
+    [90m100|[39m     expect(baseFront?.[1].id).toBe("kitchen-base-2-doors:symmetric-fro…
+    [90m   |[39m                               [31m^[39m
+    [90m101|[39m     expect(usePlannerStore.getState().instances.find((item) => item.id…
+    [90m102|[39m   })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m   Start at [22m 01:16:07
+[2m   Duration [22m 1.22s[2m (transform 871ms, setup 0ms, import 985ms, tests 21ms, environment 0ms)[22m
+

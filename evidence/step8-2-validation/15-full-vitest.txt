@@ -1,0 +1,271 @@
+The plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the resolve.tsconfigPaths option. You can remove the plugin and set resolve.tsconfigPaths: true in your Vite config instead.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90m/home/ubuntu/dioris-audit-repo[39m
+
+ [32m✓[39m src/modules/planner/shared/families/kitchen/__tests__/kitchen-audit.test.ts [2m([22m[2m90 tests[22m[2m)[22m[33m 327[2mms[22m[39m
+ [32m✓[39m src/modules/planner/shared/construction/__tests__/interlock.test.ts [2m([22m[2m13 tests[22m[2m)[22m[33m 326[2mms[22m[39m
+ [32m✓[39m src/modules/planner/shared/families/laundry/__tests__/laundry.test.ts [2m([22m[2m114 tests[22m[2m)[22m[32m 203[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/step8UpperCarcassSemantics.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m src/modules/planner/shared/families/bathroom/__tests__/bathroom.test.ts [2m([22m[2m61 tests[22m[2m)[22m[32m 120[2mms[22m[39m
+ [32m✓[39m src/modules/planner/shared/families/kitchen/__tests__/kitchen.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/step8UpperWiring.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/aiInteraction.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 64[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/etapa1LowerKitchen.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 89[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/library/services/fabricationReport.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 70[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/goldenHardwarePlacement.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/library/families/kitchen/professionalModules.test.ts [2m([22m[2m50 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+ [32m✓[39m src/modules/planner/shared/families/dresser/__tests__/dresser.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 76[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/naturalKitchenStore.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/goldenMachiningContract.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 84[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/manufacturingIntegration.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 89[2mms[22m[39m
+ [32m✓[39m src/modules/planner/shared/interior/__tests__/interior.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 74[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/library/services/nestingPlan.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 102[2mms[22m[39m
+ [32m✓[39m src/modules/planner/shared/families/wardrobe/__tests__/wardrobe-geometry.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 156[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/usePlannerStore.regression.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 72[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/goldenHardwareManufacturingSpec.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 100[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/library/services/assemblyReport.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 85[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/finalNaturalCommand.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/goldenManufacturingContract.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32m✓[39m src/modules/planner/shared/families/wardrobe/__tests__/wardrobe-interior.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 87[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/goldenKitchen.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 93[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/goldenManufacturingCore.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 136[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/goldenAssemblyApplicationRule.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 76[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/library/families/kitchen/goldenUpperModule.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/library/services/joineryReport.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 59[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/library/layout/KitchenLayoutEngine.audit.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m src/modules/planner/shared/families/wardrobe/__tests__/wardrobe.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m src/modules/planner/shared/families/kitchen/__tests__/fixed-front-panel.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+[90mstdout[2m | src/modules/planner/shared/families/wardrobe/__tests__/dump.test.ts[2m > [22m[2mdump
+[22m[39mslide roupeiro:roupeiro:vao:col-1:gaveta-interna-1:gaveta:lateral-e existsPiece= [33mtrue[39m pivot= [90mundefined[39m axis z travel [33m500[39m ang [90mundefined[39m => {"pieceId":"roupeiro:roupeiro:vao:col-1:gaveta-interna-1:gaveta:lateral-e","translate":[0,0,500],"rotateDeg":[0,0,0],"pivot":[0,0,0]}
+slide roupeiro:roupeiro:vao:col-1:gaveta-interna-1:gaveta:lateral-d existsPiece= [33mtrue[39m pivot= [90mundefined[39m axis z travel [33m500[39m ang [90mundefined[39m => {"pieceId":"roupeiro:roupeiro:vao:col-1:gaveta-interna-1:gaveta:lateral-d","translate":[0,0,500],"rotateDeg":[0,0,0],"pivot":[0,0,0]}
+slide roupeiro:roupeiro:vao:col-1:gaveta-interna-1:gaveta:costa existsPiece= [33mtrue[39m pivot= [90mundefined[39m axis z travel [33m500[39m ang [90mundefined[39m => {"pieceId":"roupeiro:roupeiro:vao:col-1:gaveta-interna-1:gaveta:costa","translate":[0,0,500],"rotateDeg":[0,0,0],"pivot":[0,0,0]}
+slide roupeiro:roupeiro:vao:col-1:gaveta-interna-1:gaveta:travessa existsPiece= [33mtrue[39m pivot= [90mundefined[39m axis z travel [33m500[39m ang [90mundefined[39m => {"pieceId":"roupeiro:roupeiro:vao:col-1:gaveta-interna-1:gaveta:travessa","translate":[0,0,500],"rotateDeg":[0,0,0],"pivot":[0,0,0]}
+slide roupeiro:roupeiro:vao:col-1:gaveta-interna-1:gaveta:base existsPiece= [33mtrue[39m pivot= [90mundefined[39m axis z travel [33m500[39m ang [90mundefined[39m => {"pieceId":"roupeiro:roupeiro:vao:col-1:gaveta-interna-1:gaveta:base","translate":[0,0,500],"rotateDeg":[0,0,0],"pivot":[0,0,0]}
+slide roupeiro:roupeiro:vao:col-1:gaveta-interna-1:gaveta:frente existsPiece= [33mtrue[39m pivot= [90mundefined[39m axis z travel [33m500[39m ang [90mundefined[39m => {"pieceId":"roupeiro:roupeiro:vao:col-1:gaveta-interna-1:gaveta:frente","translate":[0,0,500],"rotateDeg":[0,0,0],"pivot":[0,0,0]}
+slide roupeiro:roupeiro:vao:col-1:gaveta-interna-2:gaveta:lateral-e existsPiece= [33mtrue[39m pivot= [90mundefined[39m axis z travel [33m500[39m ang [90mundefined[39m => {"pieceId":"roupeiro:roupeiro:vao:col-1:gaveta-interna-2:gaveta:lateral-e","translate":[0,0,500],"rotateDeg":[0,0,0],"pivot":[0,0,0]}
+slide roupeiro:roupeiro:vao:col-1:gaveta-interna-2:gaveta:lateral-d existsPiece= [33mtrue[39m pivot= [90mundefined[39m axis z travel [33m500[39m ang [90mundefined[39m => {"pieceId":"roupeiro:roupeiro:vao:col-1:gaveta-interna-2:gaveta:lateral-d","translate":[0,0,500],"rotateDeg":[0,0,0],"pivot":[0,0,0]}
+slide roupeiro:roupeiro:vao:col-1:gaveta-interna-2:gaveta:costa existsPiece= [33mtrue[39m pivot= [90mundefined[39m axis z travel [33m500[39m ang [90mundefined[39m => {"pieceId":"roupeiro:roupeiro:vao:col-1:gaveta-interna-2:gaveta:costa","translate":[0,0,500],"rotateDeg":[0,0,0],"pivot":[0,0,0]}
+slide roupeiro:roupeiro:vao:col-1:gaveta-interna-2:gaveta:travessa existsPiece= [33mtrue[39m pivot= [90mundefined[39m axis z travel [33m500[39m ang [90mundefined[39m => {"pieceId":"roupeiro:roupeiro:vao:col-1:gaveta-interna-2:gaveta:travessa","translate":[0,0,500],"rotateDeg":[0,0,0],"pivot":[0,0,0]}
+slide roupeiro:roupeiro:vao:col-1:gaveta-interna-2:gaveta:base existsPiece= [33mtrue[39m pivot= [90mundefined[39m axis z travel [33m500[39m ang [90mundefined[39m => {"pieceId":"roupeiro:roupeiro:vao:col-1:gaveta-interna-2:gaveta:base","translate":[0,0,500],"rotateDeg":[0,0,0],"pivot":[0,0,0]}
+slide roupeiro:roupeiro:vao:col-1:gaveta-interna-2:gaveta:frente existsPiece= [33mtrue[39m pivot= [90mundefined[39m axis z travel [33m500[39m ang [90mundefined[39m => {"pieceId":"roupeiro:roupeiro:vao:col-1:gaveta-interna-2:gaveta:frente","translate":[0,0,500],"rotateDeg":[0,0,0],"pivot":[0,0,0]}
+hinge roupeiro:porta-1:folha existsPiece= [33mtrue[39m pivot= [2,100,582] axis y travel [90mundefined[39m ang [33m110[39m => {"pieceId":"roupeiro:porta-1:folha","translate":[0,0,0],"rotateDeg":[0,110,0],"pivot":[2,100,582]}
+hinge roupeiro:porta-2:folha existsPiece= [33mtrue[39m pivot= [1798,100,582] axis y travel [90mundefined[39m ang [33m110[39m => {"pieceId":"roupeiro:porta-2:folha","translate":[0,0,0],"rotateDeg":[0,-110,0],"pivot":[1798,100,582]}
+DOORBOX [["roupeiro:porta-1:folha",{"x":2,"y":102,"z":582,"width":896,"height":2296,"depth":18}],["roupeiro:porta-2:folha",{"x":902,"y":102,"z":582,"width":896,"height":2296,"depth":18}]]
+
+ [32m✓[39m src/modules/planner/shared/families/wardrobe/__tests__/dump.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/step8UpperAcceptance.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m src/modules/planner/shared/construction/__tests__/animation.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+[2m1:38:30 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts:35:35 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts
+[2m1:38:30 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts:61:34 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts
+[2m1:38:30 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts:140:37 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts
+[2m1:38:30 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts:162:36 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts
+[2m1:38:30 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts:184:36 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts
+[2m1:38:30 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts:208:36 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts
+[2m1:38:30 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts:232:36 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts
+[2m1:38:30 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts:251:36 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts
+[2m1:38:30 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts:301:37 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts
+[2m1:38:30 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts:427:39 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/modules/planner/domains/catalog/library.admin.functions.ts
+ [32m✓[39m src/modules/planner-v2/pkg/state/step8UpperPilot.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/library/v10VisualSystems.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+[2m1:38:31 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/core/services/tenant.functions.ts:41:30 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/core/services/tenant.functions.ts
+[2m1:38:31 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/core/services/tenant.functions.ts:241:36 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/core/services/tenant.functions.ts
+[2m1:38:31 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/core/services/tenant.functions.ts:284:29 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/core/services/tenant.functions.ts
+[2m1:38:31 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/core/services/tenant.functions.ts:316:33 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/core/services/tenant.functions.ts
+[2m1:38:31 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/core/services/tenant.functions.ts:345:32 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/core/services/tenant.functions.ts
+[2m1:38:31 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/core/services/tenant.functions.ts:378:33 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/core/services/tenant.functions.ts
+[2m1:38:31 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/core/services/tenant.functions.ts:395:33 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/core/services/tenant.functions.ts
+ [32m✓[39m src/modules/planner-v2/pkg/state/goldenCarcassConstruction.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 74[2mms[22m[39m
+[2m1:38:31 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-snapshots.functions.ts:47:36 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-snapshots.functions.ts
+[2m1:38:31 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-snapshots.functions.ts:75:36 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-snapshots.functions.ts
+[2m1:38:31 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-snapshots.functions.ts:132:36 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-snapshots.functions.ts
+[2m1:38:31 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-snapshots.functions.ts:162:37 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-snapshots.functions.ts
+[2m1:38:31 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-snapshots.functions.ts:210:35 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-snapshots.functions.ts
+ [32m✓[39m src/modules/planner-v2/library/layout/KitchenLayoutEngine.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/goldenCarcassIdentityWiring.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/goldenFrontLayout.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/compositionSpec.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/library/services/__tests__/validateModule.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/modules/planner-v2/pkg/state/kitchenIntegrationAudit.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m src/modules/planner/shared/construction/__tests__/construction.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m src/modules/planner/shared/families/wardrobe/__tests__/detect.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+[90mstdout[2m | scripts/export-balcao-audit.test.ts[2m > [22m[2mexportação técnica do balcão[2m > [22m[2mimprime a auditoria 800→900
+[22m[39m{
+  "moduleId": "kitchen-base-2-doors",
+  "rows": [
+    {
+      "width": 800,
+      "partCount": 30,
+      "cuttableCount": 9,
+      "hardwareCount": 21,
+      "doors": [
+        {
+          "widthMm": 397,
+          "heightMm": 714
+        },
+        {
+          "widthMm": 397,
+          "heightMm": 714
+        }
+      ],
+      "shelf": {
+        "width": 762,
+        "height": 18,
+        "depth": 560
+      },
+      "nesting": {
+        "boards": 3,
+        "unplaced": 0,
+        "missing": [],
+        "duplicates": [],
+        "unknown": []
+      }
+    },
+    {
+      "width": 900,
+      "partCount": 30,
+      "cuttableCount": 9,
+      "hardwareCount": 21,
+      "doors": [
+        {
+          "widthMm": 447,
+          "heightMm": 714
+        },
+        {
+          "widthMm": 447,
+          "heightMm": 714
+        }
+      ],
+      "shelf": {
+        "width": 862,
+        "height": 18,
+        "depth": 560
+      },
+      "nesting": {
+        "boards": 3,
+        "unplaced": 0,
+        "missing": [],
+        "duplicates": [],
+        "unknown": []
+      }
+    }
+  ]
+}
+
+ [32m✓[39m scripts/export-balcao-audit.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 17[2mms[22m[39m
+[2m1:38:32 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/core/ai/ai.functions.ts:62:31 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/core/ai/ai.functions.ts
+[2m1:38:32 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/core/ai/ai.functions.ts:89:31 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/core/ai/ai.functions.ts
+[2m1:38:32 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/core/ai/ai.functions.ts:116:36 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/core/ai/ai.functions.ts
+[2m1:38:33 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-projects.functions.ts:63:27 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-projects.functions.ts
+[2m1:38:33 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-projects.functions.ts:77:33 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-projects.functions.ts
+[2m1:38:33 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-projects.functions.ts:106:30 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-projects.functions.ts
+[2m1:38:33 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-projects.functions.ts:131:33 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-projects.functions.ts
+[2m1:38:33 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-projects.functions.ts:153:30 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-projects.functions.ts
+[2m1:38:33 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts:74:31 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts
+[2m1:38:33 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts:99:32 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts
+[2m1:38:33 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts:152:29 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts
+[2m1:38:33 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts:220:32 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts
+[2m1:38:33 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts:238:32 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts
+[2m1:38:33 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts:266:32 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts
+[2m1:38:33 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts:368:33 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts
+[2m1:38:33 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts:430:29 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts
+[2m1:38:33 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts:454:31 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts
+[2m1:38:33 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts:478:31 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts
+[2m1:38:33 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts:493:29 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-ai.functions.ts
+ [32m✓[39m src/modules/planner-v2/library/services/projectPersistence.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+[2m1:38:34 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-catalog.functions.ts:60:37 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-catalog.functions.ts
+[2m1:38:34 AM[22m [33m[1m[vite][22m[39m (ssr) warning: /home/ubuntu/dioris-audit-repo/src/lib/planner-catalog.functions.ts:116:36 createServerFn().inputValidator() is deprecated. Use createServerFn().validator() instead.
+  Plugin: tanstack-start-core::server-fn:ssr
+  File: /home/ubuntu/dioris-audit-repo/src/lib/planner-catalog.functions.ts
+ [32m✓[39m src/modules/planner/domains/ia/planning/generator.kitchen.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/modules/planner/domains/ia/services/__tests__/spec.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m src/modules/planner/domains/ia/planning/planRunner.kitchen.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 46[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m52 passed[39m[22m[90m (52)[39m
+[2m      Tests [22m [1m[32m588 passed[39m[22m[90m (588)[39m
+[2m   Start at [22m 01:38:24
+[2m   Duration [22m 11.56s[2m (transform 17.53s, setup 0ms, import 34.33s, tests 3.47s, environment 6ms)[22m
+

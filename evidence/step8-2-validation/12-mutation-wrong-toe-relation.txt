@@ -1,0 +1,92 @@
+The plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the resolve.tsconfigPaths option. You can remove the plugin and set resolve.tsconfigPaths: true in your Vite config instead.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90m/home/ubuntu/dioris-audit-repo[39m
+
+ [31m❯[39m src/modules/planner-v2/pkg/state/step8UpperCarcassSemantics.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 13[2mms[22m[39m
+[31m     [31m×[31m POST-FIX resolve Upper sem toe-kick como READY e sem representação de toe-kick[39m[32m 10[2mms[22m[39m
+[31m     [31m×[31m aplica a semântica de toe-kick por regra sem exceção de moduleDefinitionId[39m[32m 1[2mms[22m[39m
+ [31m❯[39m src/modules/planner-v2/pkg/state/step8UpperWiring.test.ts [2m([22m[2m3 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 19[2mms[22m[39m
+[31m     [31m×[31m prova Definition → factory upper → carcass/front/hardware resolvers pelo store real[39m[32m 11[2mms[22m[39m
+     [32m✓[39m mantém o Golden Base em regra própria e não vaza a regra Upper[32m 5[2mms[22m[39m
+[31m     [31m×[31m resolve Base e Upper como READY na mesma store, sem cruzar identidade ou toe-kick[39m[32m 2[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 4 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/modules/planner-v2/pkg/state/step8UpperCarcassSemantics.test.ts[2m > [22mStep 8.2 — Upper carcass semantic reproduction[2m > [22mPOST-FIX resolve Upper sem toe-kick como READY e sem representação de toe-kick
+[31m[1mAssertionError[22m: expected 'INVALID' to be 'READY' // Object.is equality[39m
+
+Expected: [32m"READY"[39m
+Received: [31m"INVALID"[39m
+
+[36m [2m❯[22m src/modules/planner-v2/pkg/state/step8UpperCarcassSemantics.test.ts:[2m17:37[22m[39m
+    [90m 15|[39m       rule[33m:[39m [33mGOLDEN_UPPER_CARCASS_CONSTRUCTION_RULE[39m[33m,[39m
+    [90m 16|[39m     })[33m;[39m
+    [90m 17|[39m     [34mexpect[39m(result[33m.[39mvalidationStatus)[33m.[39m[34mtoBe[39m([32m"READY"[39m)[33m;[39m
+    [90m   |[39m                                     [31m^[39m
+    [90m 18|[39m     [34mexpect[39m(result[33m.[39mtoeKickMm)[33m.[39m[34mtoBe[39m([34m0[39m)[33m;[39m
+    [90m 19|[39m     [34mexpect[39m(result[33m.[39mdiagnostics)[33m.[39m[34mtoEqual[39m([])[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/modules/planner-v2/pkg/state/step8UpperCarcassSemantics.test.ts[2m > [22mStep 8.2 — Upper carcass semantic reproduction[2m > [22maplica a semântica de toe-kick por regra sem exceção de moduleDefinitionId
+[31m[1mAssertionError[22m: expected 'INVALID' to be 'READY' // Object.is equality[39m
+
+Expected: [32m"READY"[39m
+Received: [31m"INVALID"[39m
+
+[36m [2m❯[22m src/modules/planner-v2/pkg/state/step8UpperCarcassSemantics.test.ts:[2m36:36[22m[39m
+    [90m 34|[39m       rule[33m:[39m [33mGOLDEN_UPPER_CARCASS_CONSTRUCTION_RULE[39m[33m,[39m
+    [90m 35|[39m     })[33m;[39m
+    [90m 36|[39m     [34mexpect[39m(upper[33m.[39mvalidationStatus)[33m.[39m[34mtoBe[39m([32m"READY"[39m)[33m;[39m
+    [90m   |[39m                                    [31m^[39m
+    [90m 37|[39m
+    [90m 38|[39m     [35mconst[39m upperWithToe [33m=[39m [34mresolveCarcassConstruction[39m({
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/modules/planner-v2/pkg/state/step8UpperWiring.test.ts[2m > [22mStep 8.1 — Upper real wiring and identity acceptance lock[2m > [22mprova Definition → factory upper → carcass/front/hardware resolvers pelo store real
+[31m[1mAssertionError[22m: expected null to be truthy[39m
+
+[32m- Expected:[39m
+true
+
+[31m+ Received:[39m
+null
+
+[36m [2m❯[22m src/modules/planner-v2/pkg/state/step8UpperWiring.test.ts:[2m46:24[22m[39m
+    [90m 44|[39m       { width[33m:[39m [34m800[39m[33m,[39m height[33m:[39m [34m700[39m[33m,[39m depth[33m:[39m [34m350[39m }[33m,[39m
+    [90m 45|[39m     )[33m;[39m
+    [90m 46|[39m     [34mexpect[39m(instanceId)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m   |[39m                        [31m^[39m
+    [90m 47|[39m     const instance = usePlannerStore.getState().instances.find((item) …
+    [90m 48|[39m     [34mexpect[39m(instance[33m.[39mid)[33m.[39mnot[33m.[39m[34mtoBe[39m([33mUPPER_ID[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/modules/planner-v2/pkg/state/step8UpperWiring.test.ts[2m > [22mStep 8.1 — Upper real wiring and identity acceptance lock[2m > [22mresolve Base e Upper como READY na mesma store, sem cruzar identidade ou toe-kick
+[31m[1mAssertionError[22m: expected null to be truthy[39m
+
+[32m- Expected:[39m
+true
+
+[31m+ Received:[39m
+null
+
+[36m [2m❯[22m src/modules/planner-v2/pkg/state/step8UpperWiring.test.ts:[2m119:21[22m[39m
+    [90m117|[39m     const upperId = usePlannerStore.getState().addFurnitureInstance(UP…
+    [90m118|[39m     [34mexpect[39m(baseId)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m119|[39m     [34mexpect[39m(upperId)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m   |[39m                     [31m^[39m
+    [90m120|[39m     [34mexpect[39m(baseId)[33m.[39mnot[33m.[39m[34mtoBe[39m(upperId)[33m;[39m
+    [90m121|[39m     const baseInstance = usePlannerStore.getState().instances.find((it…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 01:37:40
+[2m   Duration [22m 1.43s[2m (transform 1.83s, setup 0ms, import 2.16s, tests 32ms, environment 0ms)[22m
+
+
+RESTORATION: restored original production file after this mutation.

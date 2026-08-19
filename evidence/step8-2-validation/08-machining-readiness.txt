@@ -1,0 +1,1 @@
+MACHINING READINESS: READY implica missingParameters vazio; INCOMPLETE possui missingParameters rastreáveis.

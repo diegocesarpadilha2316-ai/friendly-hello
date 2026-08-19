@@ -12,7 +12,7 @@ quantidade,largura_mm,altura_mm,profundidade_mm,espessura_mm,tipo_material,funca
 "1","764","18","580","18","mdf","top","mdf-white","horizontal","","","","","mdf-white","","Topo"
 "1","764","684","6","6","mdf","back","mdf-white","none","","","","","","","Fundo"
 "1","762","18","560","18","mdf","shelf","mdf-white","horizontal","","","","","mdf-white","","Prateleira 1"
-"2","396","716","18","18","mdf","door","mdf-white","vertical","mdf-white","mdf-white","mdf-white","mdf-white","","","Porta 1 / Porta 2"
+"2","397","714","18","18","mdf","door","mdf-white","vertical","mdf-white","mdf-white","mdf-white","mdf-white","","","Porta 1 / Porta 2"
 "1","840","20","600","18","stone","countertop","stone-light","horizontal","","","stone-light","stone-light","stone-light","","Bancada"
 "1","564","18","580","18","mdf","base","mdf-white","horizontal","","","","","mdf-white","","Base"
 "1","564","18","580","18","mdf","top","mdf-white","horizontal","","","","","mdf-white","","Topo"

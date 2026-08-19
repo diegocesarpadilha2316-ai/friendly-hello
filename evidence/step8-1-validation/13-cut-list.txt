@@ -1,0 +1,1 @@
+CUT-LIST: somente partes elegíveis; material, espessura, veio e partIds preservados.

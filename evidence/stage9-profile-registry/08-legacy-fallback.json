@@ -1,0 +1,6 @@
+{
+  "moduleDefinitionId": "kitchen-base-1-door",
+  "profile": null,
+  "expected": "legacy path preserved",
+  "result": "PASS"
+}

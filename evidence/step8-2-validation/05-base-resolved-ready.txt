@@ -1,0 +1,1 @@
+BASE READY: validationStatus READY, toeKick presente com height 150, side relation full-height-above-toe-kick.

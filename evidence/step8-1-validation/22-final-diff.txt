@@ -1,0 +1,18 @@
+ evidence/final_project/cozinha-resumo-tecnico.json |   53 [32m+[m[31m-[m
+ .../manufacturing/natural-kitchen-cut-list.csv     |    2 [32m+[m[31m-[m
+ .../natural-kitchen-manufacturing.json             | 2267 [32m+++++++++++++[m[31m-------[m
+ evidence/manufacturing/natural-kitchen-nesting.svg |    2 [32m+[m[31m-[m
+ .../library/contracts/FurnitureInstance.ts         |    2 [32m+[m
+ .../library/contracts/HardwareDefinition.ts        |    8 [32m+[m[31m-[m
+ .../library/contracts/JoineryDefinition.ts         |   11 [32m+[m
+ .../library/families/kitchen/builders.ts           |  300 [32m+[m[31m--[m
+ .../families/kitchen/professionalModules.ts        |    2 [32m+[m
+ src/modules/planner-v2/library/index.ts            |   15 [32m+[m
+ .../library/modules/kitchen/KitchenBaseCabinet.ts  |   25 [32m+[m[31m-[m
+ .../library/registry/HardwareRegistry.ts           |  107 [32m+[m
+ .../planner-v2/library/services/buildModule.ts     |    9 [32m+[m
+ .../library/services/fabricationReport.ts          |   25 [32m+[m[31m-[m
+ .../planner-v2/library/services/joineryReport.ts   |  238 [32m+[m[31m-[m
+ .../library/services/nestingPlan.test.ts           |    4 [32m+[m[31m-[m
+ .../planner-v2/library/services/serializeModule.ts |    2 [32m+[m
+ 17 files changed, 2104 insertions(+), 968 deletions(-)

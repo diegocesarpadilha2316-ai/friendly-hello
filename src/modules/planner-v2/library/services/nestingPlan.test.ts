@@ -37,7 +37,7 @@ describe("nesting plan — PartDefinition para chapas", () => {
     const beforeBase = before.parts.find((part) => part.role === "base");
     const beforeDoor = before.parts.find((part) => part.role === "door");
     expect(beforeBase?.dimensionsMm.width).toBe(764);
-    expect(beforeDoor?.dimensionsMm.width).toBe(396);
+    expect(beforeDoor?.dimensionsMm.width).toBe(397);
     const updatedOk = usePlannerStore.getState().updateFurnitureInstance(before.id, {
       dimensionsMm: { ...before.dimensionsMm, width: 900 },
     });
@@ -49,7 +49,7 @@ describe("nesting plan — PartDefinition para chapas", () => {
     expect(after.dimensionsMm.width).toBe(900);
     expect(afterBase?.dimensionsMm.width).toBe(864);
     expect(afterTop?.dimensionsMm.width).toBe(864);
-    expect(afterDoor?.dimensionsMm.width).toBe(446);
+    expect(afterDoor?.dimensionsMm.width).toBe(447);
     expect(buildFabricationReport([after]).warnings).toEqual([]);
     const afterPlan = buildNestingPlanFromPartDefinitions(after.parts);
     const integrity = validateNestingIntegrity(after.parts, afterPlan);

@@ -37,13 +37,22 @@ export * from "./contracts/ModuleDefinition";
 export * from "./contracts/PartDefinition";
 export * from "./contracts/MaterialDefinition";
 export * from "./contracts/HardwareDefinition";
+export * from "./contracts/HardwareManufacturingSpec";
+export * from "./contracts/HardwareApplicationRule";
 export * from "./contracts/PlacementRules";
 export * from "./contracts/ValidationResult";
 export * from "./contracts/FurnitureInstance";
 export * from "./contracts/DesignIntent";
 export * from "./contracts/JoineryDefinition";
+export * from "./contracts/FurnitureSlot";
+export * from "./contracts/FrontLayoutRule";
+export * from "./contracts/HardwarePlacement";
+export * from "./contracts/CarcassConstructionRule";
+export * from "./contracts/ConstructionProfile";
+export * from "./contracts/MachiningOperation";
 export { FamilyRegistry } from "./registry/FamilyRegistry";
 export { ModuleRegistry } from "./registry/ModuleRegistry";
+export { ConstructionProfileRegistry } from "./registry/ConstructionProfileRegistry";
 export { MaterialRegistry, DEFAULT_MATERIAL_ID } from "./registry/MaterialRegistry";
 export { HardwareRegistry } from "./registry/HardwareRegistry";
 export { buildModule } from "./services/buildModule";
@@ -54,6 +63,14 @@ export { resolveHardware } from "./services/resolveHardware";
 export { serializeModule } from "./services/serializeModule";
 export { buildAssemblyReport } from "./services/assemblyReport";
 export { buildJoineryReport } from "./services/joineryReport";
+export { buildMachiningReport, evaluateMachiningReadiness } from "./services/machiningReport";
+export { resolveGoldenHardwareApplication } from "./services/hardwareApplicationResolver";
+export { resolveFrontLayout } from "./services/frontLayoutResolver";
+export {
+  resolveDoorHardwarePlacement,
+  validateDoorHardwarePlacementParts,
+} from "./services/hardwarePlacementResolver";
+export { resolveCarcassConstruction, validateResolvedCarcass } from "./services/carcassConstructionResolver";
 export {
   buildNestingPlanFromPartDefinitions,
   toNestingPartsFromPartDefinitions,

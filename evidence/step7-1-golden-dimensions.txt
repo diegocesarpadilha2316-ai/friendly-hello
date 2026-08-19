@@ -1,0 +1,22 @@
+STEP 7.1 — GOLDEN DIMENSIONS INVARIANCE
+
+External module: 900 × 870 × 580 mm
+Panel: 18 mm
+Back: 6 mm
+Toe kick: 150 mm
+Shelf Y: 510 mm
+
+PartDefinitions snapshot:
+side-left  | 18 × 720 × 580 | center (-441, 510, 0)
+side-right | 18 × 720 × 580 | center (441, 510, 0)
+base       | 864 × 18 × 580 | center (0, 159, 0)
+top        | 864 × 18 × 580 | center (0, 861, 0)
+back       | 864 × 684 × 6 | center (0, 510, -287)
+shelf-1    | 862 × 18 × 560 | center (0, 510, 10)
+toe-kick   | 864 × 150 × 20 | center (0, 75, 260)
+
+Identity-only change:
+Before: resolvedCarcass.moduleDefinitionId = moduleId (instance-scoped in real path)
+After:  resolvedCarcass.moduleDefinitionId = options.moduleDefinitionId (definition-scoped)
+
+No geometry formula changed.

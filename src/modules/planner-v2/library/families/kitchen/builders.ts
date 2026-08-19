@@ -4,6 +4,11 @@ import type {
   ThicknessProfileMm,
 } from "../../contracts/ModuleDefinition";
 import type { PartDefinition } from "../../contracts/PartDefinition";
+import { resolveDoorHardwarePlacement } from "../../services/hardwarePlacementResolver";
+import { resolveFrontLayout } from "../../services/frontLayoutResolver";
+import { resolveCarcassConstruction } from "../../services/carcassConstructionResolver";
+import { ConstructionProfileRegistry } from "../../registry/ConstructionProfileRegistry";
+import { getLegacyKitchenRules } from "./legacyKitchenDispatch";
 import { HARDWARE_MATERIAL_ID, MaterialRegistry } from "../../registry/MaterialRegistry";
 import { HardwareRegistry } from "../../registry/HardwareRegistry";
 import {
@@ -18,6 +23,7 @@ const c = KITCHEN_CONFIG;
 
 type BuildOptions = {
   materialId: string;
+  moduleDefinitionId?: string;
   thicknessMm?: ThicknessProfileMm;
   materialOverrides?: Record<string, string>;
   hardwareOverrides?: Record<string, string>;
@@ -27,6 +33,7 @@ type BuildOptions = {
   drawerCount?: number;
   handle?: string;
   hinge?: string;
+  mountingPlate?: string;
   slide?: string;
   includeCountertop?: boolean;
   towerLayout?: "oven" | "oven-microwave" | "fridge" | "pantry";
@@ -122,89 +129,95 @@ export function buildCarcass(
   const backMm = options.thicknessMm?.backMm ?? c.backMm;
   const toe = options.toeKickMm ?? c.toeKickMm;
   const shelves = options.shelves ?? 0;
-  const bodyHeight = Math.max(panel * 3, dims.height - toe);
-  const innerWidth = Math.max(panel, dims.width - 2 * panel);
-  const innerHeight = Math.max(panel, bodyHeight - 2 * panel);
+  const constructionProfile = options.moduleDefinitionId
+    ? ConstructionProfileRegistry.getByModuleDefinitionId(options.moduleDefinitionId)
+    : undefined;
+  if (options.moduleDefinitionId && ConstructionProfileRegistry.isProfessionalDefinition(options.moduleDefinitionId) && !constructionProfile) {
+    throw new Error(`ConstructionProfile ausente para definição profissional ${options.moduleDefinitionId}.`);
+  }
+  const carcassRule = constructionProfile?.carcassRule;
+  const resolvedCarcass = carcassRule
+    ? resolveCarcassConstruction({
+        moduleDefinitionId: options.moduleDefinitionId ?? carcassRule.moduleDefinitionId,
+        dimensionsMm: dims,
+        thicknessMm: { panelMm: panel, shelfMm: shelf, backMm },
+        toeKickMm: toe,
+        shelves,
+        rule: carcassRule,
+      })
+    : undefined;
+  const legacyBodyHeight = Math.max(panel * 3, dims.height - toe);
+  const legacyInnerWidth = Math.max(panel, dims.width - 2 * panel);
+  const legacyInnerHeight = Math.max(panel, legacyBodyHeight - 2 * panel);
   const parts: PartDefinition[] = [];
   const fullBand = { front: body };
 
-  parts.push(
-    part(
-      moduleId,
-      "side-left",
-      "side-left",
-      "Lateral esquerda",
-      { width: panel, height: bodyHeight, depth: dims.depth },
-      { x: -(dims.width - panel) / 2, y: toe + bodyHeight / 2, z: 0 },
-      body,
-      { edgeBanding: fullBand },
-    ),
-  );
-  parts.push(
-    part(
-      moduleId,
-      "side-right",
-      "side-right",
-      "Lateral direita",
-      { width: panel, height: bodyHeight, depth: dims.depth },
-      { x: (dims.width - panel) / 2, y: toe + bodyHeight / 2, z: 0 },
-      body,
-      { edgeBanding: fullBand },
-    ),
-  );
-  parts.push(
-    part(
-      moduleId,
-      "base",
-      "base",
-      "Base",
-      { width: innerWidth, height: panel, depth: dims.depth },
-      { x: 0, y: toe + panel / 2, z: 0 },
-      body,
-      { edgeBanding: fullBand },
-    ),
-  );
-  parts.push(
-    part(
-      moduleId,
-      "top",
-      "top",
-      "Topo",
-      { width: innerWidth, height: panel, depth: dims.depth },
-      { x: 0, y: dims.height - panel / 2, z: 0 },
-      body,
-      { edgeBanding: fullBand },
-    ),
-  );
-  parts.push(
-    part(
-      moduleId,
-      "back",
-      "back",
-      "Fundo",
-      { width: innerWidth, height: innerHeight, depth: backMm },
-      { x: 0, y: toe + bodyHeight / 2, z: -dims.depth / 2 + backMm / 2 },
-      back,
-    ),
-  );
+  if (resolvedCarcass?.validationStatus === "INVALID") {
+    throw new Error(`Carcass inválida para ${resolvedCarcass.moduleDefinitionId}: ${resolvedCarcass.diagnostics.map((item) => item.code).join(", ")}`);
+  }
 
-  for (let index = 0; index < shelves; index += 1) {
-    const ratio = (index + 1) / (shelves + 1);
-    const shelfId = `shelf-${index + 1}`;
-    const shelfY = toe + panel + innerHeight * ratio;
+  if (resolvedCarcass) {
+    for (const resolvedPanel of resolvedCarcass.panels) {
+      const materialId = resolvedPanel.materialSlot === "back" ? back : body;
+      const edgeBanding = Object.fromEntries(
+        resolvedPanel.edgeBandingEdges.map((edge) => [edge, materialId]),
+      );
+      parts.push(
+        part(
+          moduleId,
+          resolvedPanel.idSuffix,
+          resolvedPanel.role,
+          resolvedPanel.name,
+          resolvedPanel.dimensionsMm,
+          resolvedPanel.positionMm,
+          materialId,
+          { grainDirection: resolvedPanel.grainDirection, edgeBanding },
+        ),
+      );
+    }
+  } else {
     parts.push(
-      part(
-        moduleId,
-        shelfId,
-        "shelf",
-        `Prateleira ${index + 1}`,
-        { width: innerWidth - 2, height: shelf, depth: Math.max(shelf, dims.depth - 20) },
-        { x: 0, y: shelfY, z: 10 },
-        body,
-        { edgeBanding: { front: body } },
-      ),
+      part(moduleId, "side-left", "side-left", "Lateral esquerda", { width: panel, height: legacyBodyHeight, depth: dims.depth }, { x: -(dims.width - panel) / 2, y: toe + legacyBodyHeight / 2, z: 0 }, body, { edgeBanding: fullBand }),
+      part(moduleId, "side-right", "side-right", "Lateral direita", { width: panel, height: legacyBodyHeight, depth: dims.depth }, { x: (dims.width - panel) / 2, y: toe + legacyBodyHeight / 2, z: 0 }, body, { edgeBanding: fullBand }),
+      part(moduleId, "base", "base", "Base", { width: legacyInnerWidth, height: panel, depth: dims.depth }, { x: 0, y: toe + panel / 2, z: 0 }, body, { edgeBanding: fullBand }),
+      part(moduleId, "top", "top", "Topo", { width: legacyInnerWidth, height: panel, depth: dims.depth }, { x: 0, y: dims.height - panel / 2, z: 0 }, body, { edgeBanding: fullBand }),
+      part(moduleId, "back", "back", "Fundo", { width: legacyInnerWidth, height: legacyInnerHeight, depth: backMm }, { x: 0, y: toe + legacyBodyHeight / 2, z: -dims.depth / 2 + backMm / 2 }, back),
     );
-    const supportY = shelfY - shelf / 2 - 4;
+    for (let index = 0; index < shelves; index += 1) {
+      const ratio = (index + 1) / (shelves + 1);
+      const shelfId = `shelf-${index + 1}`;
+      const shelfY = toe + panel + legacyInnerHeight * ratio;
+      parts.push(part(moduleId, shelfId, "shelf", `Prateleira ${index + 1}`, { width: legacyInnerWidth - 2, height: shelf, depth: Math.max(shelf, dims.depth - 20) }, { x: 0, y: shelfY, z: 10 }, body, { edgeBanding: { front: body } }));
+    }
+  }
+
+  if (!resolvedCarcass) {
+    for (let index = 0; index < shelves; index += 1) {
+      const ratio = (index + 1) / (shelves + 1);
+      const shelfId = `shelf-${index + 1}`;
+      const shelfY = toe + panel + legacyInnerHeight * ratio;
+      for (const side of [-1, 1] as const) {
+        for (const depthSign of [-1, 1] as const) {
+          parts.push(
+            hardware(
+              moduleId,
+              `${shelfId}:support-${side < 0 ? "left" : "right"}-${depthSign < 0 ? "back" : "front"}`,
+              "Suporte de prateleira",
+              { width: 8, height: 8, depth: 14 },
+              { x: side * Math.max(20, legacyInnerWidth / 2 - 24), y: shelfY - shelf / 2 - 4, z: depthSign * Math.max(24, dims.depth / 2 - 34) },
+              "shelf-support",
+              shelfId,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  const shelfPanels = resolvedCarcass?.panels.filter((item) => item.role === "shelf") ?? [];
+  for (const shelfPanel of shelfPanels) {
+    const shelfId = shelfPanel.idSuffix;
+    const shelfY = shelfPanel.positionMm.y;
     for (const side of [-1, 1] as const) {
       for (const depthSign of [-1, 1] as const) {
         parts.push(
@@ -213,11 +226,7 @@ export function buildCarcass(
             `${shelfId}:support-${side < 0 ? "left" : "right"}-${depthSign < 0 ? "back" : "front"}`,
             "Suporte de prateleira",
             { width: 8, height: 8, depth: 14 },
-            {
-              x: side * Math.max(20, innerWidth / 2 - 24),
-              y: supportY,
-              z: depthSign * Math.max(24, dims.depth / 2 - 34),
-            },
+            { x: side * Math.max(20, (resolvedCarcass?.internalWidthMm ?? legacyInnerWidth) / 2 - 24), y: shelfY - (shelfPanel.dimensionsMm.height / 2) - 4, z: depthSign * Math.max(24, dims.depth / 2 - 34) },
             "shelf-support",
             shelfId,
           ),
@@ -227,58 +236,27 @@ export function buildCarcass(
   }
 
   if (toe > 0) {
+    const toeKick = resolvedCarcass?.toeKick;
+    const toeDimensions = toeKick?.dimensionsMm ?? { width: legacyInnerWidth, height: toe, depth: c.toeKickInsetMm };
+    const toePosition = toeKick?.positionMm ?? { x: 0, y: toe / 2, z: dims.depth / 2 - c.toeKickInsetMm - c.toeKickInsetMm / 2 };
     parts.push(
-      part(
-        moduleId,
-        "toe-kick",
-        "hardware",
-        "Rodapé — HARDWARE/PROFILE",
-        { width: innerWidth, height: toe, depth: c.toeKickInsetMm },
-        { x: 0, y: toe / 2, z: dims.depth / 2 - c.toeKickInsetMm - c.toeKickInsetMm / 2 },
-        "mdf-cinza-sagrado",
-        {
-          hardwareId: "toe-kick-profile",
-          hardwareGeometry: { kind: "profile", radiusMm: 2, removable: true, fixedTo: "adjustable-feet" },
-          groupId: `${moduleId}:toe-kick`,
-        },
-      ),
+      part(moduleId, "toe-kick", "hardware", "Rodapé — HARDWARE/PROFILE", toeDimensions, toePosition, "mdf-cinza-sagrado", {
+        hardwareId: "toe-kick-profile",
+        hardwareGeometry: { kind: "profile", radiusMm: 2 },
+        groupId: `${moduleId}:toe-kick`,
+      }),
     );
     const footWidth = Math.min(50, Math.max(30, (dims.width - panel * 2) / 8));
     const footDepth = Math.min(50, Math.max(30, (dims.depth - panel * 2) / 8));
     const footY = Math.max(25, toe - 25);
     const footX = Math.max(footWidth, dims.width / 2 - panel - footWidth / 2);
     const footZ = Math.max(footDepth, dims.depth / 2 - panel - footDepth / 2);
-    const footPositions: Array<[number, number]> = [
-      [-footX, -footZ],
-      [footX, -footZ],
-      [-footX, footZ],
-      [footX, footZ],
-    ];
+    const footPositions: Array<[number, number]> = [[-footX, -footZ], [footX, -footZ], [-footX, footZ], [footX, footZ]];
     for (const [footXPosition, footZPosition] of footPositions) {
       const footLabel = `foot-${footXPosition < 0 ? "left" : "right"}-${footZPosition < 0 ? "back" : "front"}`;
-      parts.push(
-        hardware(
-          moduleId,
-          footLabel,
-          "Pé regulável",
-          { width: footWidth, height: 50, depth: footDepth },
-          { x: footXPosition, y: footY, z: footZPosition },
-          "leg-adjustable",
-          `${moduleId}:toe-kick`,
-        ),
-      );
+      parts.push(hardware(moduleId, footLabel, "Pé regulável", { width: footWidth, height: 50, depth: footDepth }, { x: footXPosition, y: footY, z: footZPosition }, "leg-adjustable", `${moduleId}:toe-kick`));
       if (footZPosition > 0) {
-        parts.push(
-          hardware(
-            moduleId,
-            `${footLabel}:toe-kick-clip`,
-            "Clip de fixação do rodapé",
-            { width: 18, height: 35, depth: 12 },
-            { x: footXPosition, y: c.toeKickClipHeightMm, z: dims.depth / 2 - c.toeKickInsetMm },
-            "toe-kick-clip",
-            `${moduleId}:toe-kick`,
-          ),
-        );
+        parts.push(hardware(moduleId, `${footLabel}:toe-kick-clip`, "Clip de fixação do rodapé", { width: 18, height: 35, depth: 12 }, { x: footXPosition, y: c.toeKickClipHeightMm, z: dims.depth / 2 - c.toeKickInsetMm }, "toe-kick-clip", `${moduleId}:toe-kick`));
       }
     }
   }
@@ -295,18 +273,44 @@ export function buildDoors(
   const leaves = options.doorLeaves ?? 2;
   if (!leaves) return [];
   const toe = options.toeKickMm ?? c.toeKickMm;
-  const doorHeight = Math.max(c.panelMm * 2, dims.height - toe - c.doorGapMm * 2);
+  const constructionProfile = options.moduleDefinitionId
+    ? ConstructionProfileRegistry.getByModuleDefinitionId(options.moduleDefinitionId)
+    : undefined;
+  if (options.moduleDefinitionId && ConstructionProfileRegistry.isProfessionalDefinition(options.moduleDefinitionId) && !constructionProfile) {
+    throw new Error(`ConstructionProfile ausente para definição profissional ${options.moduleDefinitionId}.`);
+  }
+  const legacyRules = options.moduleDefinitionId ? undefined : getLegacyKitchenRules(moduleId, leaves);
+  const frontRule = leaves === 2 ? constructionProfile?.frontLayoutRule ?? legacyRules?.frontLayoutRule : undefined;
+  const frontLayout = frontRule
+    ? resolveFrontLayout(
+        {
+          moduleDefinitionId: options.moduleDefinitionId ?? frontRule.moduleDefinitionId,
+          cabinetWidthMm: dims.width,
+          cabinetHeightMm: dims.height,
+          cabinetDepthMm: dims.depth,
+          frontBottomMm: toe,
+          frontTopMm: dims.height,
+          frontZMm: dims.depth / 2 + doorMm / 2,
+        },
+        frontRule,
+      )
+    : undefined;
+  const doorHeight = frontLayout?.doorHeightMm ?? Math.max(c.panelMm * 2, dims.height - toe - c.doorGapMm * 2);
   const totalWidth = dims.width - c.doorGapMm * 2;
-  const doorWidth = leaves === 1 ? totalWidth : totalWidth / leaves - c.doorGapMm;
+  const doorWidth = frontLayout?.doorWidthsMm[0] ?? (leaves === 1 ? totalWidth : totalWidth / leaves - c.doorGapMm);
+  const doorY = frontLayout
+    ? toe + frontLayout.bottomRevealMm + doorHeight / 2
+    : toe + c.doorGapMm + doorHeight / 2;
   const hingeId = options.hinge ?? "hinge-soft-close";
+  const mountingPlateId = options.mountingPlate ?? "mounting-plate-37-32";
   const handleId = options.handle ?? "handle-bar";
   const parts: PartDefinition[] = [];
 
   for (let index = 0; index < leaves; index += 1) {
     const hingeSide: "left" | "right" =
-      leaves === 1 ? "left" : index < Math.ceil(leaves / 2) ? "left" : "right";
+      frontLayout?.hingeSides[index] ?? (leaves === 1 ? "left" : index < Math.ceil(leaves / 2) ? "left" : "right");
     const x =
-      leaves === 1 ? 0 : -totalWidth / 2 + doorWidth / 2 + index * (doorWidth + c.doorGapMm);
+      frontLayout?.doorCentersMm[index] ?? (leaves === 1 ? 0 : -totalWidth / 2 + doorWidth / 2 + index * (doorWidth + c.doorGapMm));
     const doorId = `door-${index + 1}`;
     const groupId = `${moduleId}:${doorId}`;
     parts.push(
@@ -316,13 +320,13 @@ export function buildDoors(
         "door",
         `Porta ${index + 1}`,
         { width: doorWidth, height: doorHeight, depth: doorMm },
-        { x, y: toe + c.doorGapMm + doorHeight / 2, z: dims.depth / 2 + doorMm / 2 },
+        { x, y: doorY, z: dims.depth / 2 + doorMm / 2 },
         front,
         {
           edgeBanding: { top: front, bottom: front, left: front, right: front },
           pivotMm: {
-            x: x + (hingeSide === "left" ? -doorWidth / 2 : doorWidth / 2),
-            y: toe + c.doorGapMm + doorHeight / 2,
+            x: frontLayout?.pivotXByFrontMm[index] ?? x + (hingeSide === "left" ? -doorWidth / 2 : doorWidth / 2),
+            y: doorY,
             z: dims.depth / 2 + doorMm / 2,
           },
           groupId,
@@ -331,11 +335,28 @@ export function buildDoors(
         },
       ),
     );
-    const hingeX = x + (hingeSide === "left" ? -doorWidth / 2 + 35 : doorWidth / 2 - 35);
-    const hingeCount = doorHeight >= 900 ? 3 : 2;
-    const hingeYs = hingeCount === 3
-      ? [toe + 110, toe + doorHeight / 2, toe + doorHeight - 110]
-      : [toe + 110, toe + doorHeight - 110];
+    const hardwareApplicationRule = options.moduleDefinitionId
+      ? ConstructionProfileRegistry.getHardwareApplicationRule(options.moduleDefinitionId)
+      : legacyRules?.hardwareApplicationRule;
+    const hardwarePlacement = frontLayout && hardwareApplicationRule
+      ? resolveDoorHardwarePlacement({
+          frontLayout,
+          applicationRule: hardwareApplicationRule,
+          doorIndex: index,
+          doorPartId: doorId,
+          toeKickMm: toe,
+          cabinetDepthMm: dims.depth,
+          doorThicknessMm: doorMm,
+          targetSidePartId: `${moduleId}:${hingeSide === "left" ? "side-left" : "side-right"}`,
+        })
+      : undefined;
+    const hingeX = hardwarePlacement?.hingePositionsMm[0]?.x
+      ?? x + (hingeSide === "left" ? -doorWidth / 2 + 35 : doorWidth / 2 - 35);
+    const hingeCount = hardwarePlacement?.hingeCount ?? (doorHeight >= 900 ? 3 : 2);
+    const hingeYs = hardwarePlacement?.hingePositionsMm.map((point) => point.y)
+      ?? (hingeCount === 3
+        ? [toe + 110, toe + doorHeight / 2, toe + doorHeight - 110]
+        : [toe + 110, toe + doorHeight - 110]);
     hingeYs.forEach((hingeY, hingeIndex) => {
       parts.push(
         hardware(
@@ -345,6 +366,15 @@ export function buildDoors(
           { width: 35, height: 72, depth: 18 },
           { x: hingeX, y: hingeY, z: dims.depth / 2 + doorMm },
           hingeId,
+          groupId,
+        ),
+        hardware(
+          moduleId,
+          `${doorId}:mounting-plate-${hingeIndex + 1}`,
+          "Placa de montagem",
+          { width: 37, height: 8.5, depth: 32 },
+          { x: hingeX, y: hingeY, z: dims.depth / 2 },
+          mountingPlateId,
           groupId,
         ),
       );
@@ -363,8 +393,8 @@ export function buildDoors(
             ? doorWidth / 2 - handleSize.width / 2 - 30
             : -doorWidth / 2 + handleSize.width / 2 + 30);
       const handleY = isContinuous
-        ? toe + c.doorGapMm + doorHeight - handleSize.height / 2 - 10
-        : toe + doorHeight / 2;
+        ? doorY + doorHeight / 2 - handleSize.height / 2 - 10
+        : doorY;
       parts.push(
         hardware(
           moduleId,

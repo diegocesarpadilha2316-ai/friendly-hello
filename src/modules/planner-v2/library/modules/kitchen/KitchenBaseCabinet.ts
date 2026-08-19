@@ -1,6 +1,6 @@
 import type { ModuleDefinition } from "../../contracts/ModuleDefinition";
 import { DEFAULT_PLACEMENT } from "../../contracts/PlacementRules";
-import { buildCarcass, buildDoors } from "../demo/carcass";
+import { buildCarcass, buildDoors } from "../../families/kitchen/builders";
 
 export const KitchenBaseCabinet: ModuleDefinition = {
   id: "kitchen-base-2-doors",
@@ -20,12 +20,29 @@ export const KitchenBaseCabinet: ModuleDefinition = {
   defaultMaterialId: "mdf-white",
   allowedMaterialIds: ["mdf-white", "mdf-wood-natural", "mdf-graphite", "mdf-green", "mdf-taupe"],
   defaultHardwareIds: ["hinge-standard", "handle-bar", "leg-adjustable"],
-  build: ({ dimensionsMm, materialId }) => {
+  build: ({ dimensionsMm, materialId, materialOverrides, hardwareOverrides, thicknessMm }) => {
     const moduleId = KitchenBaseCabinet.id;
     const toeKickMm = 150; // Padrão cozinha brasileira
     const parts = [
-      ...buildCarcass(moduleId, dimensionsMm, materialId, { toeKickMm, shelves: 1 }),
-      ...buildDoors(moduleId, dimensionsMm, materialId, { toeKickMm, leaves: 2 }),
+      ...buildCarcass(moduleId, dimensionsMm, {
+        materialId,
+        materialOverrides,
+        hardwareOverrides,
+        toeKickMm,
+        shelves: 1,
+        thicknessMm,
+      }),
+      ...buildDoors(moduleId, dimensionsMm, {
+        materialId,
+        materialOverrides,
+        hardwareOverrides,
+        toeKickMm,
+        doorLeaves: 2,
+        handle: hardwareOverrides?.handle,
+        hinge: hardwareOverrides?.hinge,
+        mountingPlate: hardwareOverrides?.mountingPlate,
+        thicknessMm,
+      }),
     ];
     return {
       parts,

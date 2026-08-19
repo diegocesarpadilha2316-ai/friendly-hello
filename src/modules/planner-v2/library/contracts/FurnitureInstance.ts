@@ -14,6 +14,8 @@ export interface FurnitureInstance {
   rotationDeg: { x: number; y: number; z: number };
   materialOverrides: Record<string, string>;
   hardwareOverrides: Record<string, string>;
+  /** Referências leves para variantes industriais mantidas no registry. */
+  hardwareVariantIds?: Record<string, string>;
   parts: PartDefinition[];
   layout?: LayoutPlacement;
   visible: boolean;

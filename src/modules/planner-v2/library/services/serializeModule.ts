@@ -12,6 +12,7 @@ export interface SerializedInstance {
   rotationDeg: FurnitureInstance["rotationDeg"];
   materialOverrides: Record<string, string>;
   hardwareOverrides: Record<string, string>;
+  hardwareVariantIds?: Record<string, string>;
   parts: Array<{
     id: string;
     role: string;
@@ -35,6 +36,7 @@ export function serializeModule(instance: FurnitureInstance): SerializedInstance
     rotationDeg: instance.rotationDeg,
     materialOverrides: instance.materialOverrides,
     hardwareOverrides: instance.hardwareOverrides,
+    hardwareVariantIds: instance.hardwareVariantIds,
     parts: instance.parts.map((part) => ({
       id: part.id,
       role: part.role,

@@ -78,6 +78,7 @@ const base = (config: {
     },
     ({ instanceId, dimensionsMm, materialId, materialOverrides, hardwareOverrides, thicknessMm }) =>
       buildBase(instanceId, dimensionsMm, {
+        moduleDefinitionId: config.id,
         materialId,
         materialOverrides,
         hardwareOverrides,
@@ -127,6 +128,7 @@ const upper = (config: {
     },
     ({ instanceId, dimensionsMm, materialId, materialOverrides, hardwareOverrides, thicknessMm }) =>
       buildUpper(instanceId, dimensionsMm, {
+        moduleDefinitionId: config.id,
         materialId,
         materialOverrides,
         hardwareOverrides,

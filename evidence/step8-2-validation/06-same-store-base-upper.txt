@@ -1,0 +1,1 @@
+SAME STORE: Base + Upper sem reset, definições corretas, READY, toeKick somente no Base, IDs isolados.

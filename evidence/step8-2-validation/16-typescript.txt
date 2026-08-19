@@ -1,0 +1,10 @@
+src/modules/planner-v2/pkg/state/usePlannerStore.ts(1089,13): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/modules/planner-v2/pkg/state/usePlannerStore.ts(1090,13): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/modules/planner-v2/pkg/state/usePlannerStore.ts(1091,13): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/modules/planner-v2/pkg/state/usePlannerStore.ts(1092,13): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/modules/planner-v2/pkg/state/usePlannerStore.ts(1093,13): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.

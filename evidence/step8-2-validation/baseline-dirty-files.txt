@@ -1,0 +1,80 @@
+ [31mM[m evidence/final_project/cozinha-resumo-tecnico.json
+ [31mM[m evidence/manufacturing/natural-kitchen-cut-list.csv
+ [31mM[m evidence/manufacturing/natural-kitchen-manufacturing.json
+ [31mM[m evidence/manufacturing/natural-kitchen-nesting.svg
+ [31mM[m src/modules/planner-v2/library/contracts/FurnitureInstance.ts
+ [31mM[m src/modules/planner-v2/library/contracts/HardwareDefinition.ts
+ [31mM[m src/modules/planner-v2/library/contracts/JoineryDefinition.ts
+ [31mM[m src/modules/planner-v2/library/families/kitchen/builders.ts
+ [31mM[m src/modules/planner-v2/library/families/kitchen/professionalModules.ts
+ [31mM[m src/modules/planner-v2/library/index.ts
+ [31mM[m src/modules/planner-v2/library/modules/kitchen/KitchenBaseCabinet.ts
+ [31mM[m src/modules/planner-v2/library/registry/HardwareRegistry.ts
+ [31mM[m src/modules/planner-v2/library/services/buildModule.ts
+ [31mM[m src/modules/planner-v2/library/services/fabricationReport.ts
+ [31mM[m src/modules/planner-v2/library/services/joineryReport.ts
+ [31mM[m src/modules/planner-v2/library/services/nestingPlan.test.ts
+ [31mM[m src/modules/planner-v2/library/services/serializeModule.ts
+[31m??[m STEP_2_GOLDEN_MANUFACTURING_CONTRACT.md
+[31m??[m STEP_3_GOLDEN_MACHINING_CONTRACT.md
+[31m??[m STEP_4_1_INDUSTRIAL_ACCURACY_AUDIT.md
+[31m??[m STEP_4_GOLDEN_HARDWARE_MANUFACTURING_SPEC.md
+[31m??[m STEP_5_GOLDEN_ASSEMBLY_RULE.md
+[31m??[m STEP_6_1_GOLDEN_HARDWARE_PLACEMENT.md
+[31m??[m STEP_6_2_COORDINATE_SEMANTICS.md
+[31m??[m STEP_6_GOLDEN_FRONT_LAYOUT.md
+[31m??[m STEP_6_GOLDEN_FRONT_LAYOUT_900.png
+[31m??[m STEP_7_1_GOLDEN_CARCASS_IDENTITY_FIX_REPORT.md
+[31m??[m STEP_7_1_GOLDEN_CARCASS_IDENTITY_FIX_REPORT.pdf
+[31m??[m STEP_7_2_GOLDEN_IDENTITY_WIRING_REGRESSION_LOCK_REPORT.md
+[31m??[m STEP_7_2_GOLDEN_IDENTITY_WIRING_REGRESSION_LOCK_REPORT.pdf
+[31m??[m STEP_7_GOLDEN_CARCASS_900.png
+[31m??[m STEP_7_GOLDEN_CARCASS_CONSTRUCTION.md
+[31m??[m STEP_8_1_UPPER_WIRING_ACCEPTANCE_REPORT.md
+[31m??[m STEP_8_1_UPPER_WIRING_ACCEPTANCE_REPORT.pdf
+[31m??[m STEP_8_GOLDEN_UPPER_2_DOORS_BASELINE_BLOCKER_REPORT.md
+[31m??[m STEP_8_GOLDEN_UPPER_2_DOORS_BLOCKER_REPORT.md
+[31m??[m evidence/etapa6-1-hardware-placement-audit.md
+[31m??[m evidence/etapa6-front-layout-research.md
+[31m??[m evidence/etapa7-1-identity-audit.md
+[31m??[m evidence/etapa7-carcass-benchmark-research.md
+[31m??[m evidence/etapa7-carcass-builder-audit.md
+[31m??[m evidence/step7-1-golden-dimensions.txt
+[31m??[m evidence/step7-2-wiring-mutation-check.md
+[31m??[m evidence/step8-1-validation/
+[31m??[m evidence/step8-2-validation/
+[31m??[m evidence/step8-canonical-decision.md
+[31m??[m evidence/step8-shared-architecture-decision.md
+[31m??[m evidence/step8-upper-algorithm-audit.md
+[31m??[m evidence/step8-upper-baseline-audit.md
+[31m??[m evidence/step8-validation/
+[31m??[m scripts/render_stage6_front_evidence.py
+[31m??[m scripts/render_stage7_carcass_evidence.py
+[31m??[m src/modules/planner-v2/library/contracts/CarcassConstructionRule.ts
+[31m??[m src/modules/planner-v2/library/contracts/FrontLayoutRule.ts
+[31m??[m src/modules/planner-v2/library/contracts/FurnitureSlot.ts
+[31m??[m src/modules/planner-v2/library/contracts/HardwareApplicationRule.ts
+[31m??[m src/modules/planner-v2/library/contracts/HardwareManufacturingSpec.ts
+[31m??[m src/modules/planner-v2/library/contracts/HardwarePlacement.ts
+[31m??[m src/modules/planner-v2/library/contracts/MachiningOperation.ts
+[31m??[m src/modules/planner-v2/library/families/kitchen/applicationRules.ts
+[31m??[m src/modules/planner-v2/library/families/kitchen/carcassConstructionRules.ts
+[31m??[m src/modules/planner-v2/library/families/kitchen/frontLayoutRules.ts
+[31m??[m src/modules/planner-v2/library/families/kitchen/upperCarcassConstructionRules.ts
+[31m??[m src/modules/planner-v2/library/services/carcassConstructionResolver.ts
+[31m??[m src/modules/planner-v2/library/services/frontLayoutResolver.ts
+[31m??[m src/modules/planner-v2/library/services/hardwareApplicationResolver.ts
+[31m??[m src/modules/planner-v2/library/services/hardwarePlacementResolver.ts
+[31m??[m src/modules/planner-v2/library/services/machiningReport.ts
+[31m??[m src/modules/planner-v2/pkg/state/goldenAssemblyApplicationRule.test.ts
+[31m??[m src/modules/planner-v2/pkg/state/goldenCarcassConstruction.test.ts
+[31m??[m src/modules/planner-v2/pkg/state/goldenCarcassIdentityWiring.test.ts
+[31m??[m src/modules/planner-v2/pkg/state/goldenFrontLayout.test.ts
+[31m??[m src/modules/planner-v2/pkg/state/goldenHardwareManufacturingSpec.test.ts
+[31m??[m src/modules/planner-v2/pkg/state/goldenHardwarePlacement.test.ts
+[31m??[m src/modules/planner-v2/pkg/state/goldenMachiningContract.test.ts
+[31m??[m src/modules/planner-v2/pkg/state/goldenManufacturingContract.test.ts
+[31m??[m src/modules/planner-v2/pkg/state/step8UpperAcceptance.test.ts
+[31m??[m src/modules/planner-v2/pkg/state/step8UpperCarcassSemantics.test.ts
+[31m??[m src/modules/planner-v2/pkg/state/step8UpperPilot.test.ts
+[31m??[m src/modules/planner-v2/pkg/state/step8UpperWiring.test.ts

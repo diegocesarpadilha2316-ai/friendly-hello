@@ -1,0 +1,1 @@
+FRONT APPLICATION TYPE: Upper paired-overlay/symmetric=false; Base symmetric-paired-overlay/symmetric=true.

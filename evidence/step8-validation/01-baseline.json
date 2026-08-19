@@ -1,0 +1,1005 @@
+{
+  "request": {
+    "moduleId": "kitchen-golden-upper-800",
+    "instanceId": "step8-upper-baseline-instance-001",
+    "dimensionsMm": {
+      "width": 800,
+      "height": 700,
+      "depth": 350
+    },
+    "materialId": "mdf-freijo",
+    "hardwareOverrides": {
+      "handle": "handle-cava",
+      "hinge": "hinge-soft-close"
+    },
+    "positionMm": {
+      "x": 120,
+      "y": 1500,
+      "z": -1600
+    },
+    "room": {
+      "widthMm": 6000,
+      "depthMm": 5000,
+      "heightMm": 3000
+    }
+  },
+  "ok": true,
+  "dimensionsMm": {
+    "width": 800,
+    "height": 700,
+    "depth": 350
+  },
+  "hardwareIds": [
+    "hinge-soft-close",
+    "handle-cava",
+    "hinge-standard"
+  ],
+  "warningCount": 0,
+  "partCount": 32,
+  "physicalPartCount": 10,
+  "hardwarePartCount": 22,
+  "parts": [
+    {
+      "id": "step8-upper-baseline-instance-001:side-left",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "side-left",
+      "dimensionsMm": {
+        "width": 18,
+        "height": 700,
+        "depth": 350
+      },
+      "positionMm": {
+        "x": -391,
+        "y": 350,
+        "z": 0
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "mdf-freijo",
+      "thicknessMm": 18,
+      "grainDirection": "vertical",
+      "edgeBanding": {
+        "front": "mdf-freijo"
+      },
+      "volumeType": "physical"
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:side-right",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "side-right",
+      "dimensionsMm": {
+        "width": 18,
+        "height": 700,
+        "depth": 350
+      },
+      "positionMm": {
+        "x": 391,
+        "y": 350,
+        "z": 0
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "mdf-freijo",
+      "thicknessMm": 18,
+      "grainDirection": "vertical",
+      "edgeBanding": {
+        "front": "mdf-freijo"
+      },
+      "volumeType": "physical"
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:base",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "base",
+      "dimensionsMm": {
+        "width": 764,
+        "height": 18,
+        "depth": 350
+      },
+      "positionMm": {
+        "x": 0,
+        "y": 9,
+        "z": 0
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "mdf-freijo",
+      "thicknessMm": 18,
+      "grainDirection": "horizontal",
+      "edgeBanding": {
+        "front": "mdf-freijo"
+      },
+      "volumeType": "physical"
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:top",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "top",
+      "dimensionsMm": {
+        "width": 764,
+        "height": 18,
+        "depth": 350
+      },
+      "positionMm": {
+        "x": 0,
+        "y": 691,
+        "z": 0
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "mdf-freijo",
+      "thicknessMm": 18,
+      "grainDirection": "horizontal",
+      "edgeBanding": {
+        "front": "mdf-freijo"
+      },
+      "volumeType": "physical"
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:back",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "back",
+      "dimensionsMm": {
+        "width": 764,
+        "height": 664,
+        "depth": 6
+      },
+      "positionMm": {
+        "x": 0,
+        "y": 350,
+        "z": -172
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "mdf-freijo",
+      "thicknessMm": 6,
+      "grainDirection": "none",
+      "edgeBanding": {},
+      "volumeType": "safety"
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:shelf-1",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "shelf",
+      "dimensionsMm": {
+        "width": 762,
+        "height": 18,
+        "depth": 330
+      },
+      "positionMm": {
+        "x": 0,
+        "y": 184,
+        "z": 10
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "mdf-freijo",
+      "thicknessMm": 18,
+      "grainDirection": "horizontal",
+      "edgeBanding": {
+        "front": "mdf-freijo"
+      },
+      "volumeType": "physical"
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:shelf-2",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "shelf",
+      "dimensionsMm": {
+        "width": 762,
+        "height": 18,
+        "depth": 330
+      },
+      "positionMm": {
+        "x": 0,
+        "y": 350,
+        "z": 10
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "mdf-freijo",
+      "thicknessMm": 18,
+      "grainDirection": "horizontal",
+      "edgeBanding": {
+        "front": "mdf-freijo"
+      },
+      "volumeType": "physical"
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:shelf-3",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "shelf",
+      "dimensionsMm": {
+        "width": 762,
+        "height": 18,
+        "depth": 330
+      },
+      "positionMm": {
+        "x": 0,
+        "y": 516,
+        "z": 10
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "mdf-freijo",
+      "thicknessMm": 18,
+      "grainDirection": "horizontal",
+      "edgeBanding": {
+        "front": "mdf-freijo"
+      },
+      "volumeType": "physical"
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:shelf-1:support-left-back",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 8,
+        "height": 8,
+        "depth": 14
+      },
+      "positionMm": {
+        "x": -358,
+        "y": 171,
+        "z": -141
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "shelf-1",
+      "hardwareId": "shelf-support",
+      "hardwareGeometry": {
+        "kind": "cylinder",
+        "radiusMm": 4
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:shelf-1:support-left-front",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 8,
+        "height": 8,
+        "depth": 14
+      },
+      "positionMm": {
+        "x": -358,
+        "y": 171,
+        "z": 141
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "shelf-1",
+      "hardwareId": "shelf-support",
+      "hardwareGeometry": {
+        "kind": "cylinder",
+        "radiusMm": 4
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:shelf-1:support-right-back",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 8,
+        "height": 8,
+        "depth": 14
+      },
+      "positionMm": {
+        "x": 358,
+        "y": 171,
+        "z": -141
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "shelf-1",
+      "hardwareId": "shelf-support",
+      "hardwareGeometry": {
+        "kind": "cylinder",
+        "radiusMm": 4
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:shelf-1:support-right-front",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 8,
+        "height": 8,
+        "depth": 14
+      },
+      "positionMm": {
+        "x": 358,
+        "y": 171,
+        "z": 141
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "shelf-1",
+      "hardwareId": "shelf-support",
+      "hardwareGeometry": {
+        "kind": "cylinder",
+        "radiusMm": 4
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:shelf-2:support-left-back",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 8,
+        "height": 8,
+        "depth": 14
+      },
+      "positionMm": {
+        "x": -358,
+        "y": 337,
+        "z": -141
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "shelf-2",
+      "hardwareId": "shelf-support",
+      "hardwareGeometry": {
+        "kind": "cylinder",
+        "radiusMm": 4
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:shelf-2:support-left-front",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 8,
+        "height": 8,
+        "depth": 14
+      },
+      "positionMm": {
+        "x": -358,
+        "y": 337,
+        "z": 141
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "shelf-2",
+      "hardwareId": "shelf-support",
+      "hardwareGeometry": {
+        "kind": "cylinder",
+        "radiusMm": 4
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:shelf-2:support-right-back",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 8,
+        "height": 8,
+        "depth": 14
+      },
+      "positionMm": {
+        "x": 358,
+        "y": 337,
+        "z": -141
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "shelf-2",
+      "hardwareId": "shelf-support",
+      "hardwareGeometry": {
+        "kind": "cylinder",
+        "radiusMm": 4
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:shelf-2:support-right-front",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 8,
+        "height": 8,
+        "depth": 14
+      },
+      "positionMm": {
+        "x": 358,
+        "y": 337,
+        "z": 141
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "shelf-2",
+      "hardwareId": "shelf-support",
+      "hardwareGeometry": {
+        "kind": "cylinder",
+        "radiusMm": 4
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:shelf-3:support-left-back",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 8,
+        "height": 8,
+        "depth": 14
+      },
+      "positionMm": {
+        "x": -358,
+        "y": 503,
+        "z": -141
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "shelf-3",
+      "hardwareId": "shelf-support",
+      "hardwareGeometry": {
+        "kind": "cylinder",
+        "radiusMm": 4
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:shelf-3:support-left-front",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 8,
+        "height": 8,
+        "depth": 14
+      },
+      "positionMm": {
+        "x": -358,
+        "y": 503,
+        "z": 141
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "shelf-3",
+      "hardwareId": "shelf-support",
+      "hardwareGeometry": {
+        "kind": "cylinder",
+        "radiusMm": 4
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:shelf-3:support-right-back",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 8,
+        "height": 8,
+        "depth": 14
+      },
+      "positionMm": {
+        "x": 358,
+        "y": 503,
+        "z": -141
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "shelf-3",
+      "hardwareId": "shelf-support",
+      "hardwareGeometry": {
+        "kind": "cylinder",
+        "radiusMm": 4
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:shelf-3:support-right-front",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 8,
+        "height": 8,
+        "depth": 14
+      },
+      "positionMm": {
+        "x": 358,
+        "y": 503,
+        "z": 141
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "shelf-3",
+      "hardwareId": "shelf-support",
+      "hardwareGeometry": {
+        "kind": "cylinder",
+        "radiusMm": 4
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:door-1",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "door",
+      "dimensionsMm": {
+        "width": 396,
+        "height": 696,
+        "depth": 18
+      },
+      "positionMm": {
+        "x": -200,
+        "y": 350,
+        "z": 184
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "pivotMm": {
+        "x": -398,
+        "y": 350,
+        "z": 184
+      },
+      "materialId": "mdf-freijo",
+      "thicknessMm": 18,
+      "grainDirection": "vertical",
+      "edgeBanding": {
+        "top": "mdf-freijo",
+        "bottom": "mdf-freijo",
+        "left": "mdf-freijo",
+        "right": "mdf-freijo"
+      },
+      "volumeType": "opening",
+      "groupId": "step8-upper-baseline-instance-001:door-1",
+      "hardwareId": "hinge-soft-close",
+      "interactive": {
+        "type": "door",
+        "hingeSide": "left",
+        "maxOpenAngleDeg": 95
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:door-1:hinge-1",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 35,
+        "height": 72,
+        "depth": 18
+      },
+      "positionMm": {
+        "x": -363,
+        "y": 112,
+        "z": 193
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "step8-upper-baseline-instance-001:door-1",
+      "hardwareId": "hinge-soft-close",
+      "hardwareGeometry": {
+        "kind": "box"
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:door-1:mounting-plate-1",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 37,
+        "height": 8.5,
+        "depth": 32
+      },
+      "positionMm": {
+        "x": -363,
+        "y": 112,
+        "z": 175
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "step8-upper-baseline-instance-001:door-1",
+      "hardwareId": "mounting-plate-37-32",
+      "hardwareGeometry": {
+        "kind": "box"
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:door-1:hinge-2",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 35,
+        "height": 72,
+        "depth": 18
+      },
+      "positionMm": {
+        "x": -363,
+        "y": 588,
+        "z": 193
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "step8-upper-baseline-instance-001:door-1",
+      "hardwareId": "hinge-soft-close",
+      "hardwareGeometry": {
+        "kind": "box"
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:door-1:mounting-plate-2",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 37,
+        "height": 8.5,
+        "depth": 32
+      },
+      "positionMm": {
+        "x": -363,
+        "y": 588,
+        "z": 175
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "step8-upper-baseline-instance-001:door-1",
+      "hardwareId": "mounting-plate-37-32",
+      "hardwareGeometry": {
+        "kind": "box"
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:door-1:handle",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 372,
+        "height": 34,
+        "depth": 22
+      },
+      "positionMm": {
+        "x": -200,
+        "y": 671,
+        "z": 202
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "step8-upper-baseline-instance-001:door-1",
+      "hardwareId": "handle-cava",
+      "hardwareGeometry": {
+        "kind": "cava",
+        "lipMm": 6,
+        "recessMm": 12
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:door-2",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "door",
+      "dimensionsMm": {
+        "width": 396,
+        "height": 696,
+        "depth": 18
+      },
+      "positionMm": {
+        "x": 198,
+        "y": 350,
+        "z": 184
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "pivotMm": {
+        "x": 396,
+        "y": 350,
+        "z": 184
+      },
+      "materialId": "mdf-freijo",
+      "thicknessMm": 18,
+      "grainDirection": "vertical",
+      "edgeBanding": {
+        "top": "mdf-freijo",
+        "bottom": "mdf-freijo",
+        "left": "mdf-freijo",
+        "right": "mdf-freijo"
+      },
+      "volumeType": "opening",
+      "groupId": "step8-upper-baseline-instance-001:door-2",
+      "hardwareId": "hinge-soft-close",
+      "interactive": {
+        "type": "door",
+        "hingeSide": "right",
+        "maxOpenAngleDeg": 95
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:door-2:hinge-1",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 35,
+        "height": 72,
+        "depth": 18
+      },
+      "positionMm": {
+        "x": 361,
+        "y": 112,
+        "z": 193
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "step8-upper-baseline-instance-001:door-2",
+      "hardwareId": "hinge-soft-close",
+      "hardwareGeometry": {
+        "kind": "box"
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:door-2:mounting-plate-1",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 37,
+        "height": 8.5,
+        "depth": 32
+      },
+      "positionMm": {
+        "x": 361,
+        "y": 112,
+        "z": 175
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "step8-upper-baseline-instance-001:door-2",
+      "hardwareId": "mounting-plate-37-32",
+      "hardwareGeometry": {
+        "kind": "box"
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:door-2:hinge-2",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 35,
+        "height": 72,
+        "depth": 18
+      },
+      "positionMm": {
+        "x": 361,
+        "y": 588,
+        "z": 193
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "step8-upper-baseline-instance-001:door-2",
+      "hardwareId": "hinge-soft-close",
+      "hardwareGeometry": {
+        "kind": "box"
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:door-2:mounting-plate-2",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 37,
+        "height": 8.5,
+        "depth": 32
+      },
+      "positionMm": {
+        "x": 361,
+        "y": 588,
+        "z": 175
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "step8-upper-baseline-instance-001:door-2",
+      "hardwareId": "mounting-plate-37-32",
+      "hardwareGeometry": {
+        "kind": "box"
+      }
+    },
+    {
+      "id": "step8-upper-baseline-instance-001:door-2:handle",
+      "moduleId": "step8-upper-baseline-instance-001",
+      "parentInstanceId": "step8-upper-baseline-instance-001",
+      "role": "hardware",
+      "dimensionsMm": {
+        "width": 372,
+        "height": 34,
+        "depth": 22
+      },
+      "positionMm": {
+        "x": 198,
+        "y": 671,
+        "z": 202
+      },
+      "rotationDeg": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "materialId": "metal-black",
+      "grainDirection": "none",
+      "volumeType": "technical",
+      "groupId": "step8-upper-baseline-instance-001:door-2",
+      "hardwareId": "handle-cava",
+      "hardwareGeometry": {
+        "kind": "cava",
+        "lipMm": 6,
+        "recessMm": 12
+      }
+    }
+  ]
+}

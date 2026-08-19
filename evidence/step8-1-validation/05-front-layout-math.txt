@@ -1,0 +1,1 @@
+FRONT MATH: widths [396,396], edges [-398,-2]/[0,396], centers [-200,198], pivots [-398,396], height 696, reveals 2/4/2/2.

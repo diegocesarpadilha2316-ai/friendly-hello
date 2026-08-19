@@ -1,0 +1,1 @@
+PRE-FIX AUDIT: professionalModules.upper() não encaminhava moduleDefinitionId; o FrontLayout recebia moduleId da ocorrência. Evidência e correção registradas no relatório.

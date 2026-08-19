@@ -1,0 +1,1 @@
+MACHINING: operações apontam para instanceId/partId existentes e preservam readiness INCOMPLETE quando aplicável.

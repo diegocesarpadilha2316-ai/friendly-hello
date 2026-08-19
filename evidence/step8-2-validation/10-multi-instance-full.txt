@@ -1,0 +1,1 @@
+MULTI-INSTANCE: IDs de partes, hardware, groups, joinery e machining não colidem entre instâncias.

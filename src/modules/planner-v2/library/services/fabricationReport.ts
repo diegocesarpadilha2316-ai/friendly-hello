@@ -1,4 +1,5 @@
 import type { FurnitureInstance } from "../contracts/FurnitureInstance";
+import { HardwareRegistry } from "../registry/HardwareRegistry";
 import type { PartDefinition } from "../contracts/PartDefinition";
 
 export type FabricationCutItem = {
@@ -21,6 +22,10 @@ export type FabricationCutItem = {
 
 export type FabricationHardwareItem = {
   hardwareId: string;
+  hardwareVariantId?: string;
+  manufacturer?: string;
+  model?: string;
+  manufacturerCode?: string;
   quantity: number;
   partIds: string[];
   moduleIds: string[];
@@ -59,6 +64,16 @@ function normalizedEdgeBanding(part: PartDefinition) {
 
 function isPhysicalCutPart(part: PartDefinition) {
   return part.role !== "hardware" && part.role !== "decorative" && part.volumeType !== "technical";
+}
+
+function hardwareVariantFor(instance: FurnitureInstance, hardwareId: string) {
+  const variantId =
+    hardwareId === instance.hardwareOverrides.hinge
+      ? instance.hardwareVariantIds?.hinge
+      : hardwareId === instance.hardwareOverrides.mountingPlate
+        ? instance.hardwareVariantIds?.mountingPlate
+        : undefined;
+  return HardwareRegistry.getManufacturingVariant(hardwareId, variantId);
 }
 
 function cutKey(part: PartDefinition) {
@@ -146,15 +161,21 @@ export function buildFabricationReport(instances: FurnitureInstance[]): Fabricat
         warningCount += 1;
         continue;
       }
-      const current = hardwareMap.get(part.hardwareId);
+      const variant = hardwareVariantFor(instance, part.hardwareId);
+      const hardwareKey = `${part.hardwareId}::${variant?.id ?? "generic"}`;
+      const current = hardwareMap.get(hardwareKey);
       if (current) {
         current.quantity += 1;
         current.partIds.push(part.id);
         if (!current.moduleIds.includes(instance.moduleDefinitionId))
           current.moduleIds.push(instance.moduleDefinitionId);
       } else {
-        hardwareMap.set(part.hardwareId, {
+        hardwareMap.set(hardwareKey, {
           hardwareId: part.hardwareId,
+          hardwareVariantId: variant?.id,
+          manufacturer: variant?.manufacturer,
+          model: variant?.model,
+          manufacturerCode: variant?.manufacturerCode,
           quantity: 1,
           partIds: [part.id],
           moduleIds: [instance.moduleDefinitionId],

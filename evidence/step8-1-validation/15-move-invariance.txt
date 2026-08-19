@@ -1,0 +1,1 @@
+MOVE INVARIANCE: mover no mundo não alterou operações locais.

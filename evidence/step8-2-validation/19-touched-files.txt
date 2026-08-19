@@ -1,0 +1,11 @@
+STEP 8.2 TOUCHED FILES
+src/modules/planner-v2/library/contracts/CarcassConstructionRule.ts
+src/modules/planner-v2/library/contracts/FrontLayoutRule.ts
+src/modules/planner-v2/library/services/carcassConstructionResolver.ts
+src/modules/planner-v2/library/families/kitchen/upperCarcassConstructionRules.ts
+src/modules/planner-v2/library/families/kitchen/frontLayoutRules.ts
+src/modules/planner-v2/library/families/kitchen/builders.ts
+src/modules/planner-v2/pkg/state/goldenCarcassConstruction.test.ts
+src/modules/planner-v2/pkg/state/step8UpperCarcassSemantics.test.ts
+src/modules/planner-v2/pkg/state/step8UpperWiring.test.ts
+src/modules/planner-v2/pkg/state/step8UpperAcceptance.test.ts

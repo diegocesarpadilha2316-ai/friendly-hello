@@ -5,6 +5,7 @@ import { MaterialRegistry, resolveMaterialThicknessProfile } from "../registry/M
 import { validateModule, type RoomBoundsMm } from "./validateModule";
 import type { ValidationIssue, ValidationResult } from "../contracts/ValidationResult";
 import type { ThicknessProfileMm } from "../contracts/ModuleDefinition";
+import { validateFurnitureSlotMap } from "../contracts/FurnitureSlot";
 
 export interface BuildRequest {
   moduleId: string;
@@ -111,6 +112,10 @@ export function buildModule(request: BuildRequest): BuildOutcome {
     request.materialId && MaterialRegistry.has(request.materialId)
       ? request.materialId
       : definition.defaultMaterialId;
+  const slotDiagnostics = validateFurnitureSlotMap({
+    ...(request.materialOverrides ?? {}),
+    ...(request.hardwareOverrides ?? {}),
+  });
   const effectiveMaterialId = request.materialOverrides?.body ?? materialId;
   const thicknessMm = resolveMaterialThicknessProfile(effectiveMaterialId, request.thicknessMm);
 
@@ -124,6 +129,10 @@ export function buildModule(request: BuildRequest): BuildOutcome {
       hardwareOverrides: request.hardwareOverrides,
       thicknessMm,
     });
+    result = {
+      ...result,
+      warnings: [...result.warnings, ...slotDiagnostics.warnings],
+    };
   } catch (error) {
     return {
       ok: false,
