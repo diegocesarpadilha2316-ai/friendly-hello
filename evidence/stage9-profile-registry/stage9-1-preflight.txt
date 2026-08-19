@@ -1,0 +1,18 @@
+REPOSITORY: friendly-hello
+OWNER: diegocesarpadilha2316-ai
+REMOTE:
+origin	https://github.com/diegocesarpadilha2316-ai/friendly-hello.git (fetch)
+origin	https://github.com/diegocesarpadilha2316-ai/friendly-hello.git (push)
+BRANCH:
+main
+HEAD BEFORE:
+deb8280d27c065539cf730eaf613b67088e70a6f
+LOG -5:
+[33mdeb8280[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m feat(planner-v2): consolidate golden architecture stages 7-9
+[33m8e68851[m fix(planner-v2): frame golden cabinet in front view
+[33m7ba6880[m feat(planner-v2): finalize golden cabinet visual hardening
+[33mbebf484[m feat: add professional cabinet configuration presets
+[33mbf43903[m fix: mount toe kick profile and add top view
+STATUS:
+[31m??[m evidence/stage9-profile-registry/stage9-1-preflight.txt
+DIFF STAT:
