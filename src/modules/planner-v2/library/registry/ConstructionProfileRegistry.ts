@@ -1,7 +1,5 @@
 import type { ConstructionProfile } from "../contracts/ConstructionProfile";
-import type { FurnitureAssemblyRule } from "../contracts/HardwareApplicationRule";
 import { GOLDEN_CONSTRUCTION_PROFILES } from "../families/kitchen/constructionProfiles";
-import { GOLDEN_71B3550_173H7100_RULE } from "../families/kitchen/applicationRules";
 
 function requireNonEmpty(value: string, field: string): void {
   if (!value.trim()) throw new Error(`ConstructionProfile inválido: ${field} é obrigatório.`);
@@ -10,7 +8,6 @@ function requireNonEmpty(value: string, field: string): void {
 export class ConstructionProfileRegistryImpl {
   private readonly profiles = new Map<string, ConstructionProfile>();
   private readonly professionalDefinitionIds = new Set<string>();
-  private defaultHardwareApplicationRule?: FurnitureAssemblyRule;
 
   register(profile: ConstructionProfile): ConstructionProfile {
     requireNonEmpty(profile.id, "id");
@@ -39,14 +36,6 @@ export class ConstructionProfileRegistryImpl {
     for (const profile of profiles) this.register(profile);
   }
 
-  registerDefaultHardwareApplicationRule(rule: FurnitureAssemblyRule): void {
-    requireNonEmpty(rule.id, "hardwareApplicationRule.id");
-    if (this.defaultHardwareApplicationRule) {
-      throw new Error("Default HardwareApplicationRule já registrada.");
-    }
-    this.defaultHardwareApplicationRule = rule;
-  }
-
   removeForTest(moduleDefinitionId: string): ConstructionProfile | undefined {
     const profile = this.profiles.get(moduleDefinitionId);
     this.profiles.delete(moduleDefinitionId);
@@ -61,9 +50,8 @@ export class ConstructionProfileRegistryImpl {
     return this.profiles.get(moduleDefinitionId);
   }
 
-  getHardwareApplicationRule(moduleDefinitionId: string): FurnitureAssemblyRule | undefined {
-    const profile = this.profiles.get(moduleDefinitionId);
-    return profile?.hardwareApplicationRule ?? this.defaultHardwareApplicationRule;
+  getHardwareApplicationRule(moduleDefinitionId: string) {
+    return this.profiles.get(moduleDefinitionId)?.hardwareApplicationRule;
   }
 
   has(moduleDefinitionId: string): boolean {
@@ -77,4 +65,3 @@ export class ConstructionProfileRegistryImpl {
 
 export const ConstructionProfileRegistry = new ConstructionProfileRegistryImpl();
 ConstructionProfileRegistry.registerMany(GOLDEN_CONSTRUCTION_PROFILES);
-ConstructionProfileRegistry.registerDefaultHardwareApplicationRule(GOLDEN_71B3550_173H7100_RULE);

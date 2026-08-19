@@ -81,8 +81,7 @@ describe("Step 8.1 — Upper real wiring and identity acceptance lock", () => {
     const upperHardwareCalls = hardwareSpy.mock.calls.filter(([input]) =>
       input.frontLayout.moduleDefinitionId === UPPER_ID,
     );
-    expect(upperHardwareCalls).toHaveLength(2);
-    expect(upperHardwareCalls.every(([input]) => input.frontLayout.moduleDefinitionId === UPPER_ID)).toBe(true);
+    expect(upperHardwareCalls).toHaveLength(0);
 
     expect(instance.parts).toHaveLength(32);
     expect(instance.parts.every((part) => part.moduleId === instance.id)).toBe(true);

@@ -1,0 +1,13 @@
+MUTATION=upper-uses-base-rule
+EXIT_CODE=1
+EXPECTED_FAILURE_OBSERVED for upper-uses-base-rule
+MUTATION=base-loses-explicit-rule
+EXIT_CODE=1
+EXPECTED_FAILURE_OBSERVED for base-loses-explicit-rule
+MUTATION=legacy-fallback-removed
+EXIT_CODE=1
+EXPECTED_FAILURE_OBSERVED for legacy-fallback-removed
+MUTATION=instance-id-used-for-rule-selection
+EXIT_CODE=1
+EXPECTED_FAILURE_OBSERVED for instance-id-used-for-rule-selection
+ALL_MUTATIONS_EXPECTED_FAILURE_OBSERVED
