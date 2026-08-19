@@ -114,7 +114,10 @@ describe("Stage 13 — Verified Structural Carcass Joinery", () => {
     expect(relations.some((joint) => joint.targetPartId.includes(":shelf") || joint.hostPartId.includes(":shelf"))).toBe(false);
     expect(relations.some((joint) => joint.targetPartId.endsWith(":toe-kick") || joint.hostPartId.endsWith(":toe-kick"))).toBe(false);
     expect(report.joinery.readiness.find((item) => item.scope === "carcass-structural")?.status).toBe("READY");
-    expect(report.joinery.readiness.some((item) => item.scope === "shelf" && item.status === "INCOMPLETE")).toBe(false);
+    expect(report.joinery.readiness.find((item) => item.scope === "back-attachment")?.status).toBe("INCOMPLETE");
+    expect(report.joinery.readiness.find((item) => item.scope === "back-attachment")?.missingParameters).toContain("backAttachmentRule");
+    expect(report.joinery.readiness.find((item) => item.scope === "shelf-attachment")?.status).toBe("INCOMPLETE");
+    expect(report.joinery.readiness.find((item) => item.scope === "toe-kick-structural-boundary")?.status).toBe("NOT_REQUIRED");
   });
 
   it("reuses the ManufacturerSpec but owns a distinct Drawer ApplicationRule and does not touch drawer internals", () => {

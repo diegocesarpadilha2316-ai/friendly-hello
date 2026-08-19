@@ -399,6 +399,33 @@ function professionalReadiness(instance: FurnitureInstance, application: Structu
     source: "PROFILE_RULE",
     reason: structuralAssemblyReady ? "Relações estruturais resolvidas pelo profile; shelf, back e toe-kick permanecem boundaries separadas." : "Nenhuma cadeia estrutural profissional completa foi resolvida.",
   }];
+  if (instance.parts.some((part) => part.role === "back")) {
+    readiness.push({
+      scope: "back-attachment",
+      status: "INCOMPLETE",
+      missingParameters: ["backAttachmentRule"],
+      source: "PROFILE_RULE",
+      reason: "Fundo 6 mm possui boundary própria; nenhum connector estrutural de painel 18 mm é aplicado automaticamente.",
+    });
+  }
+  if (instance.parts.some((part) => part.role === "shelf")) {
+    readiness.push({
+      scope: "shelf-attachment",
+      status: "INCOMPLETE",
+      missingParameters: ["shelfAttachmentRule"],
+      source: "PROFILE_RULE",
+      reason: "Prateleira removível permanece na semântica de shelf support; sem furação industrial não documentada.",
+    });
+  }
+  if (instance.parts.some((part) => part.hardwareId === "toe-kick-profile")) {
+    readiness.push({
+      scope: "toe-kick-structural-boundary",
+      status: "NOT_REQUIRED",
+      missingParameters: [],
+      source: "SEMANTIC_ASSEMBLY",
+      reason: "Rodapé/perfil e seus clips são boundary de perfil/assembly, não joint estrutural de carcass.",
+    });
+  }
   if (hasStructuralRule) {
     readiness.push({
       scope: "carcass-structural-machining",
