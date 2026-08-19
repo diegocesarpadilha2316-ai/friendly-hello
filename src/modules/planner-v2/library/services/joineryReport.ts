@@ -326,15 +326,14 @@ export function buildJoineryReport(instances: FurnitureInstance[]): JoineryRepor
     });
 
     drawerParts.forEach((part, index) => {
-      operations.push(
-        op(instance, part.id, "slide-fixing", index, {
-          hardwareId: instance.hardwareOverrides.slide,
-          diameterMm: 5,
-          depthMm: 12,
-          tool: "broca-5",
-          notes: "Furação da corrediça com paralelismo obrigatório.",
-        }),
-      );
+      const slideOperation = op(instance, part.id, "slide-fixing", index, {
+        hardwareId: part.hardwareId ?? instance.hardwareOverrides.slide,
+        diameterMm: 5,
+        depthMm: 12,
+        tool: "broca-5",
+        notes: "Furação da corrediça com paralelismo obrigatório.",
+      });
+      operations.push({ ...slideOperation, id: `${part.id}:slide-fixing-${index}` });
     });
 
     operations.push(...goldenConstructionOperations(instance));

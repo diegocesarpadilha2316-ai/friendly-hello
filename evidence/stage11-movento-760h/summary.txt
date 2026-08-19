@@ -1,0 +1,6 @@
+01-change-nominal-length=EXPECTED_FAIL
+02-change-skw-equation=EXPECTED_FAIL
+03-break-variant-identity=EXPECTED_FAIL
+04-exceed-side-thickness=EXPECTED_FAIL
+EXPECTED_FAILURES=4
+UNEXPECTED_PASSES=0

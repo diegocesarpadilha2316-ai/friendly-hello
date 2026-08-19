@@ -10,7 +10,7 @@ import type { LayoutModuleSpec, LayoutPlacement } from "../../library/layout/Lay
 import { buildModule } from "../../library/services/buildModule";
 import { findKitchenSnapCandidate } from "../../library/services/snapKitchen";
 import { validateOpeningClearance } from "../../library/services/validateOpeningClearance";
-import { ModuleRegistry } from "../../library/registry/ModuleRegistry";
+import { ModuleRegistry } from "../../library/registry/ModuleRegistry"; import { ConstructionProfileRegistry } from "../../library/registry/ConstructionProfileRegistry";
 import { useRoomBuilderStore } from "./useRoomBuilderStore";
 import { useImmersiveStore } from "./useImmersiveStore";
 import {
@@ -1478,6 +1478,7 @@ export const usePlannerStore = create<PlannerState>()(
         return null;
       }
 
+      const industrialSlideVariantId = ConstructionProfileRegistry.getByModuleDefinitionId(moduleId)?.drawerIndustrialSlideRule?.manufacturingVariantId;
       const instance: FurnitureInstance = {
         id,
         moduleDefinitionId: moduleId,
@@ -1490,6 +1491,7 @@ export const usePlannerStore = create<PlannerState>()(
         rotationDeg: { x: 0, y: 0, z: 0 },
         materialOverrides: {},
         hardwareOverrides: {},
+        hardwareVariantIds: industrialSlideVariantId ? { slide: industrialSlideVariantId } : undefined,
         parts: outcome.parts,
         visible: true,
         locked: false,

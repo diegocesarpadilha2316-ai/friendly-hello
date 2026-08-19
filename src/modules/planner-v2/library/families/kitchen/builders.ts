@@ -583,12 +583,23 @@ export function buildDrawers(
   if (resolvedCarcass.validationStatus === "INVALID") {
     throw new Error(`Carcass inválida para ${resolvedCarcass.moduleDefinitionId}: ${resolvedCarcass.diagnostics.map((item) => item.code).join(", ")}`);
   }
+  const industrialVariant = profile.drawerIndustrialSlideRule
+    ? HardwareRegistry.getManufacturingVariant(
+        profile.drawerIndustrialSlideRule.hardwareId,
+        profile.drawerIndustrialSlideRule.manufacturingVariantId,
+      )
+    : undefined;
+  const industrialSlideSpec = industrialVariant?.manufacturingSpec.kind === "runner"
+    ? industrialVariant.manufacturingSpec
+    : undefined;
   const stack = resolveDrawerStack({
     moduleDefinitionId: options.moduleDefinitionId ?? profile.moduleDefinitionId,
     carcass: resolvedCarcass,
     stackRule: profile.drawerStackRule,
     boxRule: profile.drawerBoxRule,
     slideRule: profile.drawerSlideApplicationRule,
+    industrialSlideRule: profile.drawerIndustrialSlideRule,
+    industrialSlideSpec,
     frontWidthMm: resolvedCarcass.internalWidthMm,
     frontThicknessMm: options.thicknessMm?.doorMm ?? panel,
   });

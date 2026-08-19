@@ -30,6 +30,28 @@ export const GOLDEN_DRAWER_3_BOX_RULE: DrawerBoxRule = {
   readiness: "READY",
 };
 
+export const GOLDEN_DRAWER_3_INDUSTRIAL_SLIDE_RULE = {
+  id: "kitchen-drawer-3:industrial-slide:blum-movento-760h-nl500-v1",
+  moduleDefinitionId: GOLDEN_DRAWER_3_ID,
+  hardwareId: "slide-hidden-soft-close",
+  manufacturingVariantId: "blum-movento-760h-nl500",
+  manufacturer: "Blum" as const,
+  family: "MOVENTO" as const,
+  variant: "760H" as const,
+  nominalLengthMm: 500,
+  drawerSideThicknessMm: GOLDEN_DRAWER_3_BOX_RULE.sideThicknessMm,
+  boxDepthPolicy: "manufacturer-drawer-length" as const,
+  mountingStatus: "READY" as const,
+  machiningStatus: "INCOMPLETE" as const,
+  provenance: {
+    sourceType: "manufacturer-documentation" as const,
+    sourceTitle: "Blum catalogue and technical manual 2024/2025 — MOVENTO 760H",
+    sourceReference: "https://publications.blum.com/2024/catalogue/en/413/; https://publications.blum.com/2024/catalogue/en/428/",
+    verifiedAt: "2026-08-19",
+    notes: "NL 500 is an official 760H nominal length. Drawer equations and attachment references are manufacturer-backed; complete CNC coordinates remain INCOMPLETE.",
+  },
+};
+
 export const GOLDEN_DRAWER_3_SLIDE_RULE: DrawerSlideApplicationRule = {
   id: "kitchen-drawer-3:slide-application:generic-visual-v1",
   moduleDefinitionId: GOLDEN_DRAWER_3_ID,

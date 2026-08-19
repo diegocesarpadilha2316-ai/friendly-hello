@@ -1,9 +1,12 @@
 import type { ResolvedCarcass } from "../contracts/CarcassConstructionRule";
+import type { RunnerManufacturingSpec } from "../contracts/HardwareManufacturingSpec";
 import type {
   DrawerBoxRule,
+  DrawerIndustrialSlideRule,
   DrawerReadiness,
   DrawerSlideApplicationRule,
   DrawerStackRule,
+  ResolvedDrawerIndustrialSlide,
   ResolvedDrawerOpening,
   ResolvedDrawerStack,
 } from "../contracts/DrawerRules";
@@ -14,6 +17,8 @@ export type DrawerStackInput = {
   stackRule: DrawerStackRule;
   boxRule: DrawerBoxRule;
   slideRule: DrawerSlideApplicationRule;
+  industrialSlideRule?: DrawerIndustrialSlideRule;
+  industrialSlideSpec?: RunnerManufacturingSpec;
   frontWidthMm?: number;
   frontThicknessMm?: number;
 };
@@ -34,10 +39,57 @@ export function resolveDrawerOpening(carcass: ResolvedCarcass): ResolvedDrawerOp
   };
 }
 
+function resolveIndustrialSlide(
+  input: DrawerStackInput,
+  opening: ResolvedDrawerOpening,
+): ResolvedDrawerIndustrialSlide | undefined {
+  const rule = input.industrialSlideRule;
+  if (!rule) return undefined;
+
+  const diagnostics: string[] = [];
+  const spec = input.industrialSlideSpec;
+  if (!spec) diagnostics.push("Especificação de fabricação Blum ausente no HardwareRegistry.");
+  if (rule.moduleDefinitionId !== input.moduleDefinitionId) diagnostics.push("DrawerIndustrialSlideRule pertence a outra ModuleDefinition.");
+  if (!spec || spec.kind !== "runner" || spec.family !== rule.family || spec.variant !== rule.variant) {
+    diagnostics.push("A variante industrial MOVENTO selecionada não corresponde ao rule do piloto.");
+  }
+  if (spec && !spec.supportedNominalLengthsMm.includes(rule.nominalLengthMm)) {
+    diagnostics.push(`NL ${rule.nominalLengthMm} mm não está entre os comprimentos nominais oficiais do MOVENTO 760H.`);
+  }
+
+  const drawerWidthMm = opening.internalWidthMm - 42;
+  const drawerLengthMm = rule.nominalLengthMm - 10;
+  if (!Number.isFinite(drawerWidthMm) || drawerWidthMm <= 0) diagnostics.push("SKW industrial <= 0.");
+  if (!Number.isFinite(drawerLengthMm) || drawerLengthMm <= 0) diagnostics.push("SKL industrial <= 0.");
+  if (spec && rule.drawerSideThicknessMm > spec.drawerDimensionRules.sidePanelMaximumThicknessMm) {
+    diagnostics.push("A espessura lateral da caixa excede o máximo documentado pela Blum.");
+  }
+  if (opening.internalDepthMm < drawerLengthMm) {
+    diagnostics.push(`A abertura interna (${opening.internalDepthMm} mm) não comporta SKL ${drawerLengthMm} mm.`);
+  }
+
+  const status: DrawerReadiness = diagnostics.length > 0 ? "INVALID" : "READY";
+  return {
+    status,
+    ruleId: rule.id,
+    manufacturer: rule.manufacturer,
+    family: rule.family,
+    variant: rule.variant,
+    nominalLengthMm: rule.nominalLengthMm,
+    drawerLengthMm,
+    drawerWidthMm,
+    drawerSideThicknessMm: rule.drawerSideThicknessMm,
+    mountingStatus: rule.mountingStatus,
+    machiningStatus: rule.machiningStatus,
+    diagnostics,
+  };
+}
+
 export function resolveDrawerStack(input: DrawerStackInput): ResolvedDrawerStack {
   const { carcass, stackRule, boxRule, slideRule } = input;
   const opening = resolveDrawerOpening(carcass);
-  const diagnostics = [...opening.diagnostics];
+  const industrialSlide = resolveIndustrialSlide(input, opening);
+  const diagnostics = [...opening.diagnostics, ...(industrialSlide?.diagnostics ?? [])];
   const invalidRule =
     stackRule.moduleDefinitionId !== input.moduleDefinitionId ||
     boxRule.moduleDefinitionId !== input.moduleDefinitionId ||
@@ -55,9 +107,15 @@ export function resolveDrawerStack(input: DrawerStackInput): ResolvedDrawerStack
   const frontOpeningHeightMm = carcass.internalHeightMm - stackRule.topRevealMm - stackRule.bottomRevealMm;
   const frontHeightMm = (frontOpeningHeightMm - totalGapsMm) / stackRule.drawerCount;
   const frontWidthMm = input.frontWidthMm ?? carcass.internalWidthMm;
-  const boxWidthMm = carcass.internalWidthMm - slideRule.lateralClearanceLeftMm - slideRule.lateralClearanceRightMm;
-  const boxDepthMm = carcass.internalDepthMm - slideRule.depthClearanceMm;
+  const boxWidthMm = industrialSlide?.status === "READY"
+    ? industrialSlide.drawerWidthMm
+    : carcass.internalWidthMm - slideRule.lateralClearanceLeftMm - slideRule.lateralClearanceRightMm;
+  const boxDepthMm = industrialSlide?.status === "READY"
+    ? industrialSlide.drawerLengthMm
+    : carcass.internalDepthMm - slideRule.depthClearanceMm;
   const boxHeightMm = frontHeightMm - boxRule.sideHeightReductionMm;
+  const slideClearanceLeftMm = industrialSlide?.status === "READY" ? (carcass.internalWidthMm - boxWidthMm) / 2 : slideRule.lateralClearanceLeftMm;
+  const slideClearanceRightMm = industrialSlide?.status === "READY" ? (carcass.internalWidthMm - boxWidthMm) / 2 : slideRule.lateralClearanceRightMm;
 
   if (!Number.isFinite(frontHeightMm) || frontHeightMm <= 0) diagnostics.push("A equação das frentes não fecha uma altura positiva.");
   if (!Number.isFinite(frontWidthMm) || frontWidthMm <= 0) diagnostics.push("Largura da frente inválida.");
@@ -84,9 +142,9 @@ export function resolveDrawerStack(input: DrawerStackInput): ResolvedDrawerStack
       boxWidthMm,
       boxHeightMm,
       boxDepthMm,
-      slideClearanceLeftMm: slideRule.lateralClearanceLeftMm,
-      slideClearanceRightMm: slideRule.lateralClearanceRightMm,
-      slideTravelMm: Math.max(0, Math.min(boxDepthMm, boxDepthMm * 0.85)),
+      slideClearanceLeftMm,
+      slideClearanceRightMm,
+      slideTravelMm: industrialSlide?.status === "READY" ? boxDepthMm : Math.max(0, Math.min(boxDepthMm, boxDepthMm * 0.85)),
     });
   }
 
@@ -98,19 +156,25 @@ export function resolveDrawerStack(input: DrawerStackInput): ResolvedDrawerStack
     diagnostics.push("Bounds verticais das frentes não preservam a distribuição declarada.");
   }
 
+  const hasGeometryError = diagnostics.some((message) =>
+    message.includes("insuficiente") || message.includes("inválid") || message.includes("não fecha") || message.includes("não preservam") || message.includes("<= 0") || message.includes("não comporta") || message.includes("não está") || message.includes("ausente") || message.includes("não corresponde") || message.includes("excede"),
+  );
+  const industrialIncomplete = Boolean(industrialSlide && (industrialSlide.machiningStatus === "INCOMPLETE" || industrialSlide.mountingStatus === "INCOMPLETE"));
+  const status: DrawerReadiness = hasGeometryError || opening.status === "INVALID" ? "INVALID" : "READY";
+  const finalDiagnostics = industrialSlide
+    ? [...diagnostics, ...(industrialIncomplete ? ["MOVENTO 760H: machining/furação CNC permanece INCOMPLETE apesar da montagem documental READY."] : [])]
+    : slideRule.manufacturingStatus === "INCOMPLETE"
+      ? [...diagnostics, "Corrediça genérica sem dados industriais: manufacturing INCOMPLETE.", "Furação/machining de corrediça: INCOMPLETE."]
+      : diagnostics;
+
   return {
-    status: diagnostics.some((message) => message.includes("insuficiente") || message.includes("inválid") || message.includes("não fecha") || message.includes("não preservam") || message.includes("<= 0"))
-      ? "INVALID"
-      : opening.status === "INVALID"
-        ? "INVALID"
-        : "READY",
+    status,
     moduleDefinitionId: input.moduleDefinitionId,
     opening,
     ruleId: stackRule.id,
     drawerCount: stackRule.drawerCount,
     items,
-    diagnostics: slideRule.manufacturingStatus === "INCOMPLETE"
-      ? [...diagnostics, "Corrediça genérica sem dados industriais: manufacturing INCOMPLETE.", "Furação/machining de corrediça: INCOMPLETE."]
-      : diagnostics,
+    diagnostics: finalDiagnostics,
+    industrialSlide,
   };
 }

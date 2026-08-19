@@ -13,6 +13,7 @@ import { resolveGoldenHardwareApplication } from "./hardwareApplicationResolver"
 import type { ResolvedHardwareApplication } from "../contracts/HardwareApplicationRule";
 
 const GOLDEN_MODULE_ID = "kitchen-base-2-doors";
+const GOLDEN_DRAWER_MODULE_ID = "kitchen-drawer-3";
 
 function localCoordinates(
   targetPart: { id: string; positionMm: { x: number; y: number; z: number } },
@@ -232,6 +233,39 @@ function makeShelfSupportMachiningOperation(
   };
 }
 
+function makeMoventoSlideMachiningOperation(
+  instance: FurnitureInstance,
+  source: JoineryDefinition,
+  targetPart: FurnitureInstance["parts"][number],
+): MachiningOperation {
+  const variantId = instance.hardwareVariantIds?.slide;
+  const variant = source.hardwareId ? HardwareRegistry.getManufacturingVariant(source.hardwareId, variantId) : undefined;
+  const spec = variant?.manufacturingSpec.kind === "runner" ? variant.manufacturingSpec : undefined;
+  return {
+    id: `${source.id}:movento-machining`,
+    type: "drilling",
+    instanceId: instance.id,
+    partId: targetPart.id,
+    hardwareId: source.hardwareId,
+    hardwareVariantId: variant?.id,
+    sourceJoineryId: source.id,
+    relatedPartIds: source.relatedPartIds ?? [source.partId],
+    coordinates: localCoordinates(targetPart, targetPart.positionMm, source.face),
+    toolHint: "NOT_ASSIGNED",
+    parameters: {
+      coordinateStatus: "UNKNOWN",
+      drillingTemplateId: spec?.attachment.drillingTemplateId ?? null,
+      nominalLengthMm: spec?.nominalLengthMm ?? null,
+      drawerLengthMm: spec ? spec.nominalLengthMm - 10 : null,
+      chipboardScrewCode: spec?.attachment.chipboardScrew.manufacturerCode ?? null,
+      systemScrewCode: spec?.attachment.systemScrew.manufacturerCode ?? null,
+    },
+    readiness: "INCOMPLETE",
+    missingParameters: ["runnerMountingCoordinates", "drawerHookCoordinates", "pilotHoleDecision"],
+    provenance: spec?.provenance,
+  };
+}
+
 function classification(
   instance: FurnitureInstance,
   source: JoineryDefinition,
@@ -304,7 +338,7 @@ export function buildMachiningReport(
   const warnings: string[] = [];
 
   for (const instance of instances) {
-    if (instance.moduleDefinitionId !== GOLDEN_MODULE_ID) continue;
+    if (instance.moduleDefinitionId !== GOLDEN_MODULE_ID && instance.moduleDefinitionId !== GOLDEN_DRAWER_MODULE_ID) continue;
     const instanceJoinery = joineryOperations.filter((operation) => operation.moduleInstanceId === instance.id);
     const partsById = new Map(instance.parts.map((part) => [part.id, part]));
     const doors = instance.parts.filter((part) => part.role === "door");
@@ -314,6 +348,33 @@ export function buildMachiningReport(
     }
 
     for (const source of instanceJoinery) {
+      if (source.kind === "slide-fixing" && instance.moduleDefinitionId === GOLDEN_DRAWER_MODULE_ID) {
+        const targetPart = partsById.get(source.partId);
+        const variantId = instance.hardwareVariantIds?.slide;
+        const variant = source.hardwareId ? HardwareRegistry.getManufacturingVariant(source.hardwareId, variantId) : undefined;
+        const spec = variant?.manufacturingSpec.kind === "runner" ? variant.manufacturingSpec : undefined;
+        if (!targetPart || !spec || !variant) {
+          warnings.push(`Operação ${source.id}: variante MOVENTO 760H não encontrada.`);
+          continue;
+        }
+        const operation = makeMoventoSlideMachiningOperation(instance, source, targetPart);
+        operations.push(operation);
+        readiness.push(...evaluateMachiningReadiness([operation]));
+        assemblyReadiness.push({
+          id: `${source.id}:movento-assembly`,
+          instanceId: instance.id,
+          hardwareId: source.hardwareId,
+          hardwareVariantId: variant.id,
+          relatedPartIds: source.relatedPartIds ?? [source.partId],
+          status: "READY",
+          missingParameters: [],
+          provenance: spec.provenance,
+          reason: "Família, variante, NL, template e referências de fixação Blum verificados; coordenadas CNC permanecem em operação INCOMPLETE.",
+        });
+        classifications.push(classification(instance, source, "ASSEMBLY", "MOVENTO 760H é ferragem comprada; montagem documental READY e usinagem CNC INCOMPLETE."));
+        continue;
+      }
+
       if (source.kind === "hinge-cup" || source.kind === "hinge-fixing") {
         const door = partsById.get(source.partId);
         if (!door) {

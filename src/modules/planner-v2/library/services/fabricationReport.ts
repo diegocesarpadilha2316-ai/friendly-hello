@@ -70,9 +70,11 @@ function hardwareVariantFor(instance: FurnitureInstance, hardwareId: string) {
   const variantId =
     hardwareId === instance.hardwareOverrides.hinge
       ? instance.hardwareVariantIds?.hinge
-      : hardwareId === instance.hardwareOverrides.mountingPlate
-        ? instance.hardwareVariantIds?.mountingPlate
-        : undefined;
+        : hardwareId === instance.hardwareOverrides.mountingPlate
+          ? instance.hardwareVariantIds?.mountingPlate
+          : HardwareRegistry.get(hardwareId)?.category === "slide"
+            ? instance.hardwareVariantIds?.slide
+            : undefined;
   return HardwareRegistry.getManufacturingVariant(hardwareId, variantId);
 }
 

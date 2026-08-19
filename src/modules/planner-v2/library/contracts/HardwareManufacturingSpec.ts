@@ -56,6 +56,45 @@ export type HingeManufacturingSpec = {
   provenance: ManufacturingProvenance;
 };
 
+export type RunnerDrawerDimensionRules = {
+  internalDrawerWidthFormula: "LW - 42 mm";
+  internalDrawerWidthToleranceMm: { min: -1.5; max: 0 };
+  drawerLengthFormula: "NL - 10 mm";
+  sidePanelMaximumThicknessMm: 16;
+  recessHeightMm: { min: 12; max: 15 };
+  recessDepthMaximumMm: 15;
+};
+
+export type RunnerAttachmentSpec = {
+  drillingTemplateId: "T65.1000.02";
+  chipboardScrew: { diameterMm: 3.5; lengthMm: 15; manufacturerCode: "609.1500" };
+  systemScrew: { diameterMm: 6; lengthMm: 14.5; manufacturerCode: "661.1450.HG" };
+  optionalStabilityFixing: boolean;
+};
+
+export type RunnerManufacturingSpec = {
+  kind: "runner";
+  family: "MOVENTO";
+  variant: "760H";
+  dynamicCarryingCapacityKg: 40;
+  nominalLengthMm: number;
+  supportedNominalLengthsMm: number[];
+  drawerDimensionRules: RunnerDrawerDimensionRules;
+  attachment: RunnerAttachmentSpec;
+  provenance: ManufacturingProvenance;
+};
+
+export type RunnerManufacturingVariant = {
+  id: string;
+  hardwareId: string;
+  manufacturer: "Blum";
+  model: "MOVENTO 760H";
+  manufacturerCode?: string;
+  revision: string;
+  source: ManufacturingProvenance;
+  manufacturingSpec: RunnerManufacturingSpec;
+};
+
 export type HardwareManufacturingVariant = {
   id: string;
   hardwareId: string;
@@ -82,4 +121,5 @@ export type MountingPlateManufacturingVariant = {
 
 export type AnyHardwareManufacturingVariant =
   | HardwareManufacturingVariant
-  | MountingPlateManufacturingVariant;
+  | MountingPlateManufacturingVariant
+  | RunnerManufacturingVariant;

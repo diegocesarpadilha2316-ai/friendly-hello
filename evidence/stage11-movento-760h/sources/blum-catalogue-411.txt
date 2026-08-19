@@ -1,0 +1,87 @@
+﻿
+
+
+
+
+
+
+
+
+     Catalogue and technical manual 2024-2025 en – Page 415
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        var titleElement = document.getElementsByTagName('title')[0];
+        if (titleElement)
+            titleElement.innerHTML = "Catalogue and technical manual 2024-2025 en";
+        if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
+            document.write('  ');
+
+
+        window.FBPublication = window.FBPublication || {};
+        var FBInit = window.FBPublication.Initial = window.FBPublication.Initial || {};
+
+        FBInit.BASIC_FIRST_PAGE = "I";
+        FBInit.DYNAMIC_FOLDER = "files/assets/";
+        FBInit.STATIC_FOLDER = "files/html/";
+        FBInit.HTML_INDEX_FILE_NAME = "index.html";
+
+        FBInit.Versions = ["html", "mobile", "mobile-old"];
+        FBInit.BGCOLOR = "#E2E2E2";
+        FBInit.TITLE = "Catalogue and technical manual 2024-2025 en";
+        FBInit.textColor = "#3A3A3A";
+        FBInit.GUID = "c5447b7bbac6914a64181c061eecfa48";
+
+        FBInit.PRELOADER = {
+            backgroundColor: "#E2E2E2",
+            titleColor: "#3A3A3A",
+            titleText: "Catalogue and technical manual 2024-2025 en",
+            logoLink: { image: "skins/current/images/brandbox100x50.png" },
+            coverSrc: "assets/cover300.jpg"
+        };
+
+        FBInit.CURRENT_PAGE = "411";
+
+        window.FBInit = FBInit;
+
+
+
+        body {
+            background-color: #E2E2E2;
+        }
+
+
+
+
+
+
+
+
+
+
+
+         I
+         410
+         Table of Contents
+         412
+         754
+
+
+
+         Catalogue and technical manual 2024-2025 en
+         293 A B + 411 4 〉 Runner systems 〉 MOVENTO 〉 Overview Catalogue 2024/2025 Runner systems Runner systems 408 TANDEM 430 SERVO-DRIVE for MOVENTO | TANDEM 462 TIP-ON BLUMOTION for MOVENTO 502 TIP-ON for MOVENTO | TANDEM 506 Applications kg Page Web code Locking device feature MOVENTO with BLUMOTION – 760H | 766H 40 ● ○ ○ – DQCZ3Y 412 60 70 MOVENTO with BLUMOTION – 760H – base fixing – pull-out shelf 40 ● ○ ○ – DQGX9A 414 Larder unit SPACE TOWER 40 ● ○ ○ – 416 60 70 Cabinet width KB 275–1200 mm Narrow cabinets SPACE TWIN 20 ● ○ ○ – DQE1TC 418 Cabinet width KB 180–250 mm kg Dynamic carrying capacity ● Integrated ○ Optional – Not possible Accessories Pull-out shelf lock 420 Side stabilisation set 422 Depth adjustment 422 Longside gallery rail with chipboard back fixing 423 Fixing bracket for pull-out shelf 423 Corner connectors 424 Gallery rail for pull-out shelf corner connectors 424 Lock-open stop 425 Screws 426 Centre bit 426 Door buffer 426 Screwdriver 427 Attachment of runners Runner – 760H – 40 kg 428 Runner – 766H – 60 | 70 kg 428 Runner – 760H – 40 kg – base fixing 428 Cabinet assembly 429 Assembly, removal and adjustment Assembly, removal and adjustment Short URL www.blum.com/a410 Pictograph Item available on request Web code – click on the code or enter it in the Product Configurator 4 Symbolic image Symbolic image Symbolic image Symbolic image Symbolic image Symbolic image Symbolic image Symbolic image
+            Made with FlippingBook
+         RkJQdWJsaXNoZXIy

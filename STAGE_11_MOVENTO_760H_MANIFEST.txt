@@ -1,0 +1,45 @@
+STAGE 11 — MOVENTO 760H INDUSTRIAL PILOT
+
+Reports:
+- STAGE_11_MOVENTO_760H_INDUSTRIAL_REPORT.md
+- STAGE_11_MOVENTO_760H_INDUSTRIAL_REPORT.pdf
+- evidence/stage11-movento-760h/06-supabase-audit.md
+
+Official Blum source evidence:
+- evidence/stage11-movento-760h/official-source-ledger.md
+- evidence/stage11-movento-760h/sources/
+
+Technical evidence and validation:
+- evidence/stage11-movento-760h/STAGE_11_MOVENTO_760H_TECHNICAL.png
+- evidence/stage11-movento-760h/01-vitest-final.log
+- evidence/stage11-movento-760h/02-tsc-final.log
+- evidence/stage11-movento-760h/03-production-build-final.log
+- evidence/stage11-movento-760h/04-diff-check-final.log
+- evidence/stage11-movento-760h/summary.txt
+- evidence/stage11-movento-760h/05-supabase-config-audit.log
+- evidence/stage11-movento-760h/07-pdf-generation.log
+- evidence/stage11-movento-760h/01-change-nominal-length.log
+- evidence/stage11-movento-760h/02-change-skw-equation.log
+- evidence/stage11-movento-760h/03-break-variant-identity.log
+- evidence/stage11-movento-760h/04-exceed-side-thickness.log
+
+Implementation:
+- src/modules/planner-v2/library/contracts/HardwareManufacturingSpec.ts
+- src/modules/planner-v2/library/contracts/DrawerRules.ts
+- src/modules/planner-v2/library/contracts/ConstructionProfile.ts
+- src/modules/planner-v2/library/families/kitchen/drawerRules.ts
+- src/modules/planner-v2/library/families/kitchen/constructionProfiles.ts
+- src/modules/planner-v2/library/families/kitchen/builders.ts
+- src/modules/planner-v2/library/registry/HardwareRegistry.ts
+- src/modules/planner-v2/library/registry/ConstructionProfileRegistry.ts
+- src/modules/planner-v2/library/services/drawerStackResolver.ts
+- src/modules/planner-v2/library/services/fabricationReport.ts
+- src/modules/planner-v2/library/services/joineryReport.ts
+- src/modules/planner-v2/library/services/machiningReport.ts
+- src/modules/planner-v2/pkg/state/usePlannerStore.ts
+
+Tests and scripts:
+- src/modules/planner-v2/pkg/state/stage11Movento760HFoundation.test.ts
+- src/modules/planner-v2/pkg/state/stage11Movento760HAcceptance.test.ts
+- scripts/stage11_mutation_checks.sh
+- scripts/render_stage11_movento_evidence.py
