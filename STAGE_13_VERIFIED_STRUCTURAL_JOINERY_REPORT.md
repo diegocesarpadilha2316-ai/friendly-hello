@@ -119,7 +119,7 @@ A figura abaixo é uma representação determinística de engenharia, não um sc
 
 ## 17. Git
 
-O commit de implementação é `605710b` (`feat(planner-v2): add verified structural carcass joinery`). A correção complementar de boundaries é `142ceb6` (`fix(planner-v2): enforce structural attachment boundaries`). O push obrigatório para `origin/main` foi tentado e falhou com `Invalid username or token`; a rota HTTPS e a alternativa SSH também não autenticaram. A prova está em `90-git-push-proof.log` e `91-final-git-status.log`. O HEAD documental local final é `0e84d21`; a validação desse estado está em `97-final-head-typecheck.log`, `98-final-head-vitest.log`, `99-final-head-build.log`, `100-final-head-diff-check.log` e `101-final-head-validation-summary.txt`. Git push, paridade local/remota e encerramento limpo permanecem BLOCKED até reautenticação.
+O commit de implementação é `605710b` (`feat(planner-v2): add verified structural carcass joinery`). A correção complementar de boundaries é `142ceb6` (`fix(planner-v2): enforce structural attachment boundaries`). O push obrigatório para `origin/main` foi tentado e falhou com `Invalid username or token`; a rota HTTPS e a alternativa SSH também não autenticaram. A prova está em `90-git-push-proof.log` e `91-final-git-status.log`. O HEAD documental local final é `fadc1f5`; a validação desse estado está em `97-final-head-typecheck.log`, `98-final-head-vitest.log`, `99-final-head-build.log`, `100-final-head-diff-check.log` e `101-final-head-validation-summary.txt`. Git push, paridade local/remota e encerramento limpo permanecem BLOCKED até reautenticação.
 
 ## 18. Supabase
 
@@ -164,7 +164,7 @@ O commit de implementação é `605710b` (`feat(planner-v2): add verified struct
 | Vitest | PASS | Vitest log |
 | Production build | PASS | build log |
 | git diff --check | PASS | diff log |
-| Git commit | PASS — local `0e84d21` | Git proof |
+| Git commit | PASS — local `fadc1f5` | Git proof |
 | Git push | BLOCKED — GitHub credential invalid | Git proof |
 | Local HEAD = Remote HEAD | BLOCKED — remote parity unavailable | Git proof |
 | Final Git status | BLOCKED — final clean state awaits evidence commit/push | Git proof |

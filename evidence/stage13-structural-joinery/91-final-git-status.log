@@ -1,6 +1,5 @@
 FINAL_GIT_STATUS=PASS_LOCAL_ONLY
 PUSH_STATUS=BLOCKED_PENDING_GITHUB_REAUTH
 BRANCH=main
-LOCAL_HEAD=0e84d21186e44a3120a20678072470e5ca4c578f
- [31mM[m evidence/stage13-structural-joinery/91-final-git-status.log
-[31m??[m evidence/stage13-structural-joinery/101-final-head-validation-summary.txt
+LOCAL_HEAD=pre-final-doc-commit
+TREE_STATUS=clean-before-this-proof-refresh
