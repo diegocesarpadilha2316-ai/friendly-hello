@@ -64,7 +64,8 @@ describe("Golden machining contract — Etapa 3", () => {
     const { joinery, machining } = machiningSnapshot(id);
     expect(joinery.operations.some((operation) => operation.kind === "confirmat")).toBe(false);
     expect(joinery.operations.some((operation) => operation.kind === "dowel")).toBe(false);
-    expect(joinery.readiness.find((item) => item.scope === "carcass-structural")?.status).toBe("INCOMPLETE");
+    expect(joinery.readiness.find((item) => item.scope === "carcass-structural")?.status).toBe("READY");
+    expect(joinery.readiness.find((item) => item.scope === "carcass-structural-machining")?.status).toBe("INCOMPLETE");
     expect(machining.classifications.filter((item) => item.hardwareId === undefined).every((item) => item.classification === "ASSEMBLY")).toBe(true);
     expect(machining.system32).toBe("NOT_REQUIRED");
   });
@@ -72,7 +73,7 @@ describe("Golden machining contract — Etapa 3", () => {
   it("liga hinge-cup e hinge-fixing à porta, dobradiça e lateral correta", () => {
     const id = createGolden();
     const { instance, machining } = machiningSnapshot(id);
-    const cup = machining.operations.filter((operation) => operation.type === "boring");
+    const cup = machining.operations.filter((operation) => operation.hardwareId === "hinge-soft-close" && operation.type === "boring");
     const fixing = machining.assemblyReadiness.filter((item) => item.hardwareId === "hinge-soft-close");
     expect(cup.length).toBe(4);
     expect(fixing.length).toBe(4);

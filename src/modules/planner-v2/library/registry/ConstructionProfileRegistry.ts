@@ -39,6 +39,9 @@ export class ConstructionProfileRegistryImpl {
     if (profile.drawerIndustrialSlideRule && profile.drawerIndustrialSlideRule.moduleDefinitionId !== profile.moduleDefinitionId) {
       throw new Error(`DrawerIndustrialSlideRule ${profile.drawerIndustrialSlideRule.id} não pertence a ${profile.moduleDefinitionId}.`);
     }
+    if (profile.structuralJoineryRule && profile.structuralJoineryRule.moduleDefinitionId !== profile.moduleDefinitionId) {
+      throw new Error(`StructuralJoineryRule ${profile.structuralJoineryRule.id} não pertence a ${profile.moduleDefinitionId}.`);
+    }
     this.profiles.set(profile.moduleDefinitionId, profile);
     this.professionalDefinitionIds.add(profile.moduleDefinitionId);
     return profile;

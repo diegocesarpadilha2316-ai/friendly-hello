@@ -1,6 +1,7 @@
 import type { FurnitureInstance } from "../contracts/FurnitureInstance";
 import { HardwareRegistry } from "../registry/HardwareRegistry";
 import type { PartDefinition } from "../contracts/PartDefinition";
+import type { StructuralJoineryResolution } from "../contracts/StructuralJoinery";
 
 export type FabricationCutItem = {
   key: string;
@@ -29,6 +30,7 @@ export type FabricationHardwareItem = {
   quantity: number;
   partIds: string[];
   moduleIds: string[];
+  jointIds?: string[];
 };
 
 export type FabricationModuleSummary = {
@@ -92,7 +94,7 @@ function cutKey(part: PartDefinition) {
   });
 }
 
-export function buildFabricationReport(instances: FurnitureInstance[]): FabricationReport {
+export function buildFabricationReport(instances: FurnitureInstance[], structuralJoinery: readonly StructuralJoineryResolution[] = []): FabricationReport {
   const cutMap = new Map<string, FabricationCutItem>();
   const hardwareMap = new Map<string, FabricationHardwareItem>();
   const modules: FabricationModuleSummary[] = [];
@@ -182,6 +184,33 @@ export function buildFabricationReport(instances: FurnitureInstance[]): Fabricat
           partIds: [part.id],
           moduleIds: [instance.moduleDefinitionId],
         });
+      }
+    }
+
+    const structuralForInstance = structuralJoinery.filter((resolution) => resolution.joints.some((joint) => joint.instanceId === instance.id));
+    for (const resolution of structuralForInstance) {
+      for (const joint of resolution.joints.filter((candidate) => candidate.instanceId === instance.id)) {
+        const variant = HardwareRegistry.getManufacturingVariant(joint.connectorHardwareId, joint.manufacturingVariantId);
+        const hardwareKey = `${joint.connectorHardwareId}::${joint.manufacturingVariantId}`;
+        const current = hardwareMap.get(hardwareKey);
+        if (current) {
+          current.quantity += 1;
+          current.jointIds = [...(current.jointIds ?? []), joint.id];
+          for (const partId of [joint.hostPartId, joint.targetPartId]) if (!current.partIds.includes(partId)) current.partIds.push(partId);
+          if (!current.moduleIds.includes(instance.moduleDefinitionId)) current.moduleIds.push(instance.moduleDefinitionId);
+        } else {
+          hardwareMap.set(hardwareKey, {
+            hardwareId: joint.connectorHardwareId,
+            hardwareVariantId: joint.manufacturingVariantId,
+            manufacturer: variant?.manufacturer,
+            model: variant?.model,
+            manufacturerCode: variant?.manufacturerCode,
+            quantity: 1,
+            partIds: [joint.hostPartId, joint.targetPartId],
+            moduleIds: [instance.moduleDefinitionId],
+            jointIds: [joint.id],
+          });
+        }
       }
     }
   }

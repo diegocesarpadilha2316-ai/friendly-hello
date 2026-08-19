@@ -223,6 +223,39 @@ function makeShelfSupportMachiningOperation(
   };
 }
 
+function makeStructuralMachiningOperation(
+  instance: FurnitureInstance,
+  source: JoineryDefinition,
+  targetPart: FurnitureInstance["parts"][number],
+): MachiningOperation {
+  const variant = source.hardwareId ? HardwareRegistry.getManufacturingVariant(source.hardwareId, source.hardwareVariantId) : undefined;
+  const spec = variant?.manufacturingSpec.kind === "structural-connector" ? variant.manufacturingSpec : undefined;
+  const ready = source.kind === "minifix-head" && Boolean(source.position3dMm && source.face && source.diameterMm !== undefined && source.depthMm !== undefined && spec);
+  return {
+    id: `${source.id}:machining`,
+    type: source.kind === "minifix-head" ? "boring" : "drilling",
+    instanceId: instance.id,
+    partId: targetPart.id,
+    hardwareId: source.hardwareId,
+    hardwareVariantId: source.hardwareVariantId,
+    sourceJoineryId: source.id,
+    relatedPartIds: source.relatedPartIds ?? [source.partId],
+    coordinates: source.position3dMm && source.face ? localCoordinates(targetPart, source.position3dMm, source.face) : undefined,
+    diameterMm: source.diameterMm,
+    depthMm: source.depthMm,
+    toolHint: ready ? "manufacturer-tool-unspecified" : "NOT_ASSIGNED",
+    parameters: {
+      ...(source.parameters ?? {}),
+      manufacturingRole: source.manufacturingRole,
+      truthStatus: source.truthStatus,
+      coordinateStatus: source.position3dMm && source.face ? "READY" : "UNKNOWN",
+    },
+    readiness: ready ? "READY" : "INCOMPLETE",
+    missingParameters: ready ? [] : source.unknownParameters.length > 0 ? source.unknownParameters : ["position", "face", "diameterMm", "depthMm"],
+    provenance: spec?.provenance,
+  };
+}
+
 function makeMoventoSlideMachiningOperation(
   instance: FurnitureInstance,
   source: JoineryDefinition,
@@ -362,6 +395,33 @@ export function buildMachiningReport(
     for (const source of instanceJoinery) {
       if (source.source === "LEGACY_DEFAULT") {
         classifications.push(classification(instance, source, "ASSEMBLY", "LEGACY_DEFAULT encontrado dentro do dispatch profissional; não promover para machining."));
+        continue;
+      }
+      if (source.kind === "minifix-head" || source.kind === "minifix-body") {
+        const targetPart = partsById.get(source.partId);
+        if (!targetPart) {
+          warnings.push(`Operação ${source.id}: parte estrutural ${source.partId} não encontrada.`);
+          continue;
+        }
+        const operation = makeStructuralMachiningOperation(instance, source, targetPart);
+        operations.push(operation);
+        readiness.push(...evaluateMachiningReadiness([operation]));
+        classifications.push(classification(instance, source, "MACHINING", source.kind === "minifix-head" ? "Housing Minifix derivado de ManufacturerSpec oficial." : "Bolt Minifix permanece operação INCOMPLETE sem dados industriais completos."));
+        if (source.kind === "minifix-head") {
+          const variant = source.hardwareId ? HardwareRegistry.getManufacturingVariant(source.hardwareId, source.hardwareVariantId) : undefined;
+          const spec = variant?.manufacturingSpec.kind === "structural-connector" ? variant.manufacturingSpec : undefined;
+          assemblyReadiness.push({
+            id: `${source.id}:assembly`,
+            instanceId: instance.id,
+            hardwareId: source.hardwareId,
+            hardwareVariantId: source.hardwareVariantId,
+            relatedPartIds: source.relatedPartIds ?? [source.partId],
+            status: "READY",
+            missingParameters: [],
+            provenance: spec?.provenance,
+            reason: "Relação estrutural Minifix é desmontável e foi resolvida pelo profile; readiness de furação é independente.",
+          });
+        }
         continue;
       }
       if (source.kind === "runner-installation") {

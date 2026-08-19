@@ -29,11 +29,13 @@ function instanceOf(id: string) {
 describe("Stage 12.1 — professional dispatch boundary", () => {
   beforeEach(setup);
 
-  it("does not select confirmat+dowel for a professional carcass without an explicit structural rule", () => {
+  it("does not select confirmat+dowel and uses only the declared professional structural rule", () => {
     const id = usePlannerStore.getState().addFurnitureInstance("kitchen-base-2-doors", { x: 0, y: 0, z: 0 }, { width: 800, height: 870, depth: 580 });
     const report = buildJoineryReport([instanceOf(id!)]);
-    expect(report.operations.filter((operation) => ["confirmat", "dowel", "minifix-head", "minifix-body"].includes(operation.kind))).toEqual([]);
-    expect(report.readiness).toEqual(expect.arrayContaining([expect.objectContaining({ scope: "carcass-structural", status: "INCOMPLETE", missingParameters: ["structuralJoineryRule"] })]));
+    expect(report.operations.filter((operation) => ["confirmat", "dowel"].includes(operation.kind))).toEqual([]);
+    expect(report.operations.filter((operation) => ["minifix-head", "minifix-body"].includes(operation.kind))).toHaveLength(16);
+    expect(report.structuralJoinery).toHaveLength(1);
+    expect(report.readiness).toEqual(expect.arrayContaining([expect.objectContaining({ scope: "carcass-structural", status: "READY", missingParameters: [] })]));
   });
 
   it("keeps Upper professional with NO_PROFILE_HARDWARE_RULE and no generic hinge", () => {

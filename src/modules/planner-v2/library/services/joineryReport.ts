@@ -3,11 +3,14 @@ import type { JoineryCapabilityReadiness, JoineryDefinition, JoineryManufacturin
 import { ConstructionProfileRegistry } from "../registry/ConstructionProfileRegistry";
 import type { PartDefinition } from "../contracts/PartDefinition";
 import { resolveHardwareApplication } from "./hardwareApplicationResolver";
+import { resolveStructuralJoineryForInstance, type StructuralJoineryApplication } from "./structuralJoineryApplication";
+import type { StructuralJoineryResolution } from "../contracts/StructuralJoinery";
 
 export type JoineryReport = {
   operations: JoineryDefinition[];
   readiness: JoineryCapabilityReadiness[];
   warnings: string[];
+  structuralJoinery: StructuralJoineryResolution[];
 };
 
 const LEGACY_EDGE_OFFSET_RULE_ID = "legacy-edge-offset-37-v1";
@@ -35,6 +38,66 @@ const truthByKind: Record<JoineryDefinition["kind"], { role: JoineryManufacturin
 
 function semanticPartKey(partId: string): string {
   return partId.split(":").at(-1) ?? partId;
+}
+
+function structuralJoineryOperations(instance: FurnitureInstance, application: StructuralJoineryApplication): JoineryDefinition[] {
+  if (!application.resolution || !application.rule || !application.spec) return [];
+  const spec = application.spec;
+  return application.resolution.joints.flatMap((joint) => {
+    const host = instance.parts.find((part) => part.id === joint.hostPartId || semanticPartKey(part.id) === semanticPartKey(joint.hostPartId));
+    const target = instance.parts.find((part) => part.id === joint.targetPartId || semanticPartKey(part.id) === semanticPartKey(joint.targetPartId));
+    if (!host || !target) return [];
+    const common: Partial<JoineryDefinition> = {
+      moduleInstanceId: instance.id,
+      hardwareId: joint.connectorHardwareId,
+      hardwareVariantId: joint.manufacturingVariantId,
+      manufacturerSpecId: joint.manufacturingVariantId,
+      ruleId: joint.ruleId,
+      relatedPartIds: [host.id, target.id],
+      position3dMm: joint.positionMm,
+      positionMm: { x: joint.positionMm.x, y: joint.positionMm.y },
+      parameters: {
+        relationId: joint.relationId,
+        relationOccurrence: joint.relationOccurrence,
+        hostPartId: host.id,
+        targetPartId: target.id,
+        hostFace: joint.hostFace,
+        targetFace: joint.targetFace,
+        housingDiameterMm: spec.housingDiameterMm,
+        housingDepthMm: spec.housingDepthMm,
+        connectingBoltDrillingDistanceMm: spec.connectingBoltDrillingDistanceMm,
+        targetBoltHoleDiameterMm: null,
+        targetBoltHoleDepthMm: null,
+      },
+      notes: "Structural joint resolvido por regra de aplicação; housing e bolt são operações distintas.",
+    };
+    return [
+      op(instance, host.id, "minifix-head", joint.quantityIndex, {
+        ...common,
+        id: `${joint.id}:housing`,
+        face: joint.hostFace,
+        diameterMm: spec.housingDiameterMm,
+        depthMm: spec.housingDepthMm,
+        manufacturingRole: "MACHINING",
+        truthStatus: "READY",
+        unknownParameters: [],
+        source: "MANUFACTURER_SPEC",
+        provenance: { sourceId: spec.provenance.id ?? "hafele-minifix15", sourceRevision: spec.provenance.documentRevision, url: spec.provenance.sourceReference },
+        notes: "Furação do housing Minifix 15 documentada pelo fabricante; não é a furação do bolt.",
+      }),
+      op(instance, target.id, "minifix-body", joint.quantityIndex, {
+        ...common,
+        id: `${joint.id}:bolt`,
+        face: joint.targetFace,
+        manufacturingRole: "MACHINING",
+        truthStatus: "INCOMPLETE",
+        unknownParameters: ["targetBoltHoleDiameterMm", "targetBoltHoleDepthMm", "targetTool"],
+        source: "MANUFACTURER_SPEC",
+        provenance: { sourceId: spec.provenance.id ?? "hafele-minifix15", sourceRevision: spec.provenance.documentRevision, url: spec.provenance.sourceReference },
+        notes: "Furação do bolt permanece INCOMPLETE: screw/bolt identity não autoriza inferir diâmetro, profundidade ou tool.",
+      }),
+    ];
+  });
 }
 
 function op(
@@ -322,16 +385,29 @@ function legacyBuildJoineryOperations(instance: FurnitureInstance): JoineryDefin
   return operations;
 }
 
-function professionalReadiness(instance: FurnitureInstance): JoineryCapabilityReadiness[] {
+function professionalReadiness(instance: FurnitureInstance, application: StructuralJoineryApplication): JoineryCapabilityReadiness[] {
   const profile = ConstructionProfileRegistry.getByModuleDefinitionId(instance.moduleDefinitionId);
   if (!profile) return [];
+  const hasStructuralRule = Boolean(application.rule && application.resolution);
+  const structuralJoints = application.resolution?.joints ?? [];
+  const structuralAssemblyReady = hasStructuralRule && structuralJoints.length > 0 && structuralJoints.every((joint) => joint.assemblyStatus === "READY");
+  const machiningMissing = [...new Set(structuralJoints.flatMap((joint) => joint.unknownParameters))];
   const readiness: JoineryCapabilityReadiness[] = [{
     scope: "carcass-structural",
-    status: "INCOMPLETE",
-    missingParameters: ["structuralJoineryRule"],
+    status: structuralAssemblyReady ? "READY" : "INCOMPLETE",
+    missingParameters: structuralAssemblyReady ? [] : hasStructuralRule ? (application.diagnostics.length > 0 ? application.diagnostics : ["resolvedStructuralJoinery"]) : ["structuralJoineryRule"],
     source: "PROFILE_RULE",
-    reason: "Nenhum ConstructionProfile profissional seleciona confirmat, dowel ou minifix nesta etapa.",
+    reason: structuralAssemblyReady ? "Relações estruturais resolvidas pelo profile; shelf, back e toe-kick permanecem boundaries separadas." : "Nenhuma cadeia estrutural profissional completa foi resolvida.",
   }];
+  if (hasStructuralRule) {
+    readiness.push({
+      scope: "carcass-structural-machining",
+      status: machiningMissing.length === 0 ? "READY" : "INCOMPLETE",
+      missingParameters: machiningMissing,
+      source: "MANUFACTURER_SPEC",
+      reason: machiningMissing.length === 0 ? "Todos os parâmetros industriais necessários estão documentados." : "A relação de assembly está resolvida, mas a furação do bolt não é inferida a partir de dados ausentes.",
+    });
+  }
   if (!profile.hardwareApplicationRule && instance.parts.some((part) => part.role === "door")) {
     readiness.push({ scope: "hardware-application", status: "INCOMPLETE", missingParameters: ["hardwareApplicationRule"], source: "PROFILE_RULE", reason: "Profile profissional sem regra declarativa de hardware; não gerar dobradiça genérica." });
   }
@@ -347,7 +423,9 @@ function professionalReadiness(instance: FurnitureInstance): JoineryCapabilityRe
 function professionalBuildJoineryOperations(instance: FurnitureInstance): JoineryDefinition[] {
   const profile = ConstructionProfileRegistry.getByModuleDefinitionId(instance.moduleDefinitionId);
   if (!profile) return [];
+  const application = resolveStructuralJoineryForInstance(instance);
   const operations: JoineryDefinition[] = [];
+  operations.push(...structuralJoineryOperations(instance, application));
   if (profile.hardwareApplicationRule) {
     operations.push(...goldenConstructionOperations(instance));
   }
@@ -373,15 +451,18 @@ export function buildJoineryReport(instances: FurnitureInstance[]): JoineryRepor
   const operations: JoineryDefinition[] = [];
   const readiness: JoineryCapabilityReadiness[] = [];
   const warnings: string[] = [];
+  const structuralJoinery: StructuralJoineryResolution[] = [];
   for (const instance of instances) {
     const profile = ConstructionProfileRegistry.getByModuleDefinitionId(instance.moduleDefinitionId);
     if (profile) {
+      const application = resolveStructuralJoineryForInstance(instance);
       operations.push(...professionalBuildJoineryOperations(instance));
-      readiness.push(...professionalReadiness(instance));
+      readiness.push(...professionalReadiness(instance, application));
+      if (application.resolution) structuralJoinery.push(application.resolution);
     } else {
       operations.push(...legacyBuildJoineryOperations(instance));
     }
     if (instance.moduleDefinitionId.includes("sink") && !instance.parts.some((part) => part.volumeType === "technical")) warnings.push(`${instance.name}: zona hidráulica sem volume técnico associado.`);
   }
-  return { operations, readiness, warnings };
+  return { operations, readiness, warnings, structuralJoinery };
 }

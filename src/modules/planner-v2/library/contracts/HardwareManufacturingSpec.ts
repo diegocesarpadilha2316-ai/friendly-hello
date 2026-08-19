@@ -119,7 +119,21 @@ export type MountingPlateManufacturingVariant = {
   compatibleHardwareVariantIds: string[];
 };
 
+import type { StructuralConnectorManufacturingSpec } from "./StructuralJoinery";
+
+export type StructuralConnectorManufacturingVariant = {
+  id: string;
+  hardwareId: string;
+  manufacturer: string;
+  model: string;
+  manufacturerCode?: string;
+  revision?: string;
+  source: ManufacturingProvenance;
+  manufacturingSpec: StructuralConnectorManufacturingSpec;
+};
+
 export type AnyHardwareManufacturingVariant =
   | HardwareManufacturingVariant
   | MountingPlateManufacturingVariant
-  | RunnerManufacturingVariant;
+  | RunnerManufacturingVariant
+  | StructuralConnectorManufacturingVariant;

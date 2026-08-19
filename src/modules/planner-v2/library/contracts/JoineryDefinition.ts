@@ -35,6 +35,8 @@ export interface JoineryDefinition {
   kind: JoineryOperationKind;
   face?: JoineryFace;
   positionMm?: { x: number; y: number };
+  /** Posição 3D no sistema local do módulo para relações estruturais; não é toolpath. */
+  position3dMm?: { x: number; y: number; z: number };
   diameterMm?: number;
   depthMm?: number;
   angleDeg?: number;

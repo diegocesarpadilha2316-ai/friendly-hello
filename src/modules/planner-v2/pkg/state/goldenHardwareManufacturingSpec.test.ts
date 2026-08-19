@@ -80,7 +80,7 @@ describe("Golden hardware manufacturing specification — Etapa 4.1", () => {
     })).toBe(true);
     const invalid = reports(id!);
     expect(invalid.machining.warnings.some((warning) => warning.includes("does-not-exist"))).toBe(true);
-    expect(invalid.machining.operations.every((operation) => operation.readiness !== "READY")).toBe(true);
+    expect(invalid.machining.operations.filter((operation) => operation.hardwareId !== "structural-minifix-15").every((operation) => operation.readiness !== "READY")).toBe(true);
   });
 
   it("mantém 71B3550 verificada, 173H7100 separada e a relação é compatível", () => {
@@ -97,7 +97,7 @@ describe("Golden hardware manufacturing specification — Etapa 4.1", () => {
 
   it("não confunde parafuso com pré-furo e mantém assembly READY separado de machining", () => {
     const { instance, machining, fabrication } = reports(createGolden(true));
-    const hingeCup = machining.operations.filter((operation) => operation.type === "boring");
+    const hingeCup = machining.operations.filter((operation) => operation.hardwareId === "hinge-soft-close" && operation.type === "boring");
     const hingeFixing = machining.operations.filter((operation) => operation.hardwareId === "hinge-soft-close" && operation.parameters.hingePartId && operation.type === "drilling");
     const platePilot = machining.operations.filter((operation) => operation.hardwareId === "mounting-plate-37-32");
     expect(hingeCup).toHaveLength(4);
