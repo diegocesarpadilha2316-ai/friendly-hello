@@ -1,0 +1,31 @@
+DIORIS PLANNER V2 — STAGE 12 CLOSURE PACKAGE
+
+This single ZIP contains every Stage 11/Stage 12 deliverable committed or generated for this mission, including all available related images.
+
+Stage 12 reports:
+- STAGE_12_CLOSURE_REPORT.md
+- STAGE_12_CLOSURE_REPORT.pdf
+- STAGE_12_CLOSURE_MANIFEST.txt
+
+Stage 12 implementation and tests:
+- src/modules/planner-v2/pkg/state/usePlannerStore.ts
+- src/modules/planner-v2/pkg/state/stage12ClosureAcceptance.test.ts
+- scripts/stage12_mutation_checks.sh
+
+Stage 12 evidence, logs and proofs:
+- evidence/stage12-closure/
+
+Stage 11 reports and industrial pilot artifacts:
+- STAGE_11_MOVENTO_760H_INDUSTRIAL_REPORT.md
+- STAGE_11_MOVENTO_760H_INDUSTRIAL_REPORT.pdf
+- STAGE_11_MOVENTO_760H_MANIFEST.txt
+- evidence/stage11-movento-760h/
+- scripts/stage11_mutation_checks.sh
+- scripts/render_stage11_movento_evidence.py
+- src/modules/planner-v2/pkg/state/stage11Movento760HFoundation.test.ts
+- src/modules/planner-v2/pkg/state/stage11Movento760HAcceptance.test.ts
+
+Stage 11 implementation files:
+- all source files changed between Stage 10 commit dcc056b and Stage 11 commit 93757d1
+
+The package intentionally stops after Stage 12. It does not contain Stage 13 work, new families or CAM/CNC implementation.
