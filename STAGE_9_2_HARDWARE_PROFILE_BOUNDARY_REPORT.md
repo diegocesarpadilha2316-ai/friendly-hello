@@ -74,9 +74,19 @@ Todas as mutations foram restauradas automaticamente e não permaneceram no cód
 
 Os cinco erros TypeScript continuam restritos a `usePlannerStore.ts`, linhas 1089–1093, e são os mesmos erros conhecidos anteriores à Stage 9.2.
 
-## Supabase
+## Git e Supabase
 
-**SUPABASE = NOT APPLICABLE.** Esta Stage não alterou migrations, functions, RLS, policies, storage, schema, seed ou configuração Supabase. Nenhuma migration vazia foi criada e nenhum banco foi alterado para satisfazer checklist.
+| Item | Resultado |
+|---|---|
+| Repository | `diegocesarpadilha2316-ai/friendly-hello` |
+| Branch | `main` |
+| Commit Stage 9.2 | `ca0fe8f1d59fa2e543e91c05995eeba0b450e8e8` |
+| Commit message | `feat(planner): isolate hardware application profile boundary` |
+| Push status | PASS |
+| Remote | `origin/main` |
+| Commit URL | [ca0fe8f](https://github.com/diegocesarpadilha2316-ai/friendly-hello/commit/ca0fe8f1d59fa2e543e91c05995eeba0b450e8e8) |
+
+**SUPABASE = NOT APPLICABLE.** Esta Stage não alterou migrations, functions, RLS, policies, storage, schema, seed ou configuração Supabase. Nenhuma migration vazia foi criada e nenhum banco foi alterado para satisfazer checklist. O projeto auditado foi `Dioris.ai`, ref `odckltoqgsqombnxfdax`, status `ACTIVE_HEALTHY`.
 
 ## Limites respeitados
 

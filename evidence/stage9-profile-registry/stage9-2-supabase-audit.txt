@@ -1,0 +1,9 @@
+SUPABASE=NOT APPLICABLE
+SUPABASE CHANGES IN STAGE 9.2: NO
+PROJECT=Dioris.ai
+PROJECT_REF=odckltoqgsqombnxfdax
+PROJECT_STATUS=ACTIVE_HEALTHY
+TARGET_ENVIRONMENT=sa-east-1 active project
+LOCAL_SUPABASE_PATH_SCAN:
+No pending Supabase-related paths
+No migration, function, policy, RLS, storage, schema, seed or config change was required.
