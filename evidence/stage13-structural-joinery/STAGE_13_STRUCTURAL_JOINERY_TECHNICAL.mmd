@@ -1,0 +1,39 @@
+flowchart LR
+  TITLE["TECHNICAL DETERMINISTIC EVIDENCE\nNão é screenshot do browser\nBase Golden 800 × 870 × 580 mm"]
+  subgraph CARCASS["ResolvedCarcass — host/target topology"]
+    SL["HOST side-left\n18 mm\nface target R"]
+    SR["HOST side-right\n18 mm\nface target L"]
+    BA["TARGET base\n18 mm\nhost face T"]
+    TO["TARGET top\n18 mm\nhost face B"]
+  end
+  subgraph JOINTS["ResolvedStructuralJoinery — Minifix 15 symmetric-pair"]
+    J1["side-left-to-base\noccurrence 1/2\nfront/rear z = ±210 mm\nassembly READY\nmachining INCOMPLETE"]
+    J2["side-right-to-base\noccurrence 1/2\nfront/rear z = ±210 mm\nassembly READY\nmachining INCOMPLETE"]
+    J3["side-left-to-top\noccurrence 1/2\nfront/rear z = ±210 mm\nassembly READY\nmachining INCOMPLETE"]
+    J4["side-right-to-top\noccurrence 1/2\nfront/rear z = ±210 mm\nassembly READY\nmachining INCOMPLETE"]
+  end
+  subgraph MACHINING["MachiningOperation — part-local points"]
+    H["8 × housing boring\nhost face T/B\nØ15 × 12.5 mm\npart-local coordinate READY\nsource Häfele ManufacturerSpec"]
+    B["8 × bolt drilling\ntarget face L/R\ndiameter/depth/tool UNKNOWN\nINCOMPLETE\nno zero-as-unknown"]
+  end
+  TITLE --> CARCASS
+  SL -->|host/target relation| J1
+  BA -->|host/target relation| J1
+  SR --> J2
+  BA --> J2
+  SL --> J3
+  TO --> J3
+  SR --> J4
+  TO --> J4
+  J1 --> H
+  J2 --> H
+  J3 --> H
+  J4 --> H
+  J1 --> B
+  J2 --> B
+  J3 --> B
+  J4 --> B
+  classDef ready fill:#d9f7e8,stroke:#138a4b,color:#063b21;
+  classDef incomplete fill:#fff2cc,stroke:#b7791f,color:#5b3a00;
+  class H ready;
+  class B incomplete;

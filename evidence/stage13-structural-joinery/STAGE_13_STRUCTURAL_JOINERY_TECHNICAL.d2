@@ -1,0 +1,46 @@
+title: "TECHNICAL DETERMINISTIC EVIDENCE\nNão é screenshot do browser\nBase Golden 800 x 870 x 580 mm" {
+  style.font-family: "Arial"
+}
+
+carcass: "ResolvedCarcass — host/target topology" {
+  side_left: "HOST side-left\n18 mm\ntarget face R"
+  side_right: "HOST side-right\n18 mm\ntarget face L"
+  base: "TARGET base\n18 mm\nhost face T"
+  top: "TARGET top\n18 mm\nhost face B"
+}
+
+joints: "ResolvedStructuralJoinery — Minifix 15 symmetric-pair" {
+  left_base: "side-left-to-base\noccurrence 1/2\nfront/rear z = +/-210 mm\nassembly READY\nmachining INCOMPLETE"
+  right_base: "side-right-to-base\noccurrence 1/2\nfront/rear z = +/-210 mm\nassembly READY\nmachining INCOMPLETE"
+  left_top: "side-left-to-top\noccurrence 1/2\nfront/rear z = +/-210 mm\nassembly READY\nmachining INCOMPLETE"
+  right_top: "side-right-to-top\noccurrence 1/2\nfront/rear z = +/-210 mm\nassembly READY\nmachining INCOMPLETE"
+}
+
+machining: "MachiningOperation — part-local points" {
+  housing: "8 x housing boring\nhost face T/B\nDiameter 15 x depth 12.5 mm\npart-local coordinate READY\nHafele ManufacturerSpec" {
+    style.fill: "#d9f7e8"
+    style.stroke: "#138a4b"
+  }
+  bolt: "8 x bolt drilling\ntarget face L/R\ndiameter/depth/tool UNKNOWN\nINCOMPLETE\nno zero-as-unknown" {
+    style.fill: "#fff2cc"
+    style.stroke: "#b7791f"
+  }
+}
+
+carcass.side_left -> joints.left_base: "host/target"
+carcass.base -> joints.left_base: "host/target"
+carcass.side_right -> joints.right_base: "host/target"
+carcass.base -> joints.right_base: "host/target"
+carcass.side_left -> joints.left_top: "host/target"
+carcass.top -> joints.left_top: "host/target"
+carcass.side_right -> joints.right_top: "host/target"
+carcass.top -> joints.right_top: "host/target"
+
+joints.left_base -> machining.housing
+joints.right_base -> machining.housing
+joints.left_top -> machining.housing
+joints.right_top -> machining.housing
+joints.left_base -> machining.bolt
+joints.right_base -> machining.bolt
+joints.left_top -> machining.bolt
+joints.right_top -> machining.bolt
