@@ -1,0 +1,49 @@
+Config loaded for non-project session.
+Config file: /home/ubuntu/.manus/config/config.json
+Baseline file: /home/ubuntu/.manus/config/baseline/config.json
+
+Search results for "supabase" in config.json:
+2062:    {
+2063:      "uid": "84ab78ef-139c-48ff-acd4-cba718b8a484",
+2064:      "name": "Supabase",
+2065:      "brief": "Manage Supabase projects, query databases, and organize data efficiently",
+2066:      "enabled": true,
+2067:      "tokenReplacementEnabled": true
+2068:    }
+2069:    {
+2070:      "uid": "86a04f98-35cf-4099-9044-ab851a473cf5",
+2071:      "name": "Supabase API",
+2072:      "brief": "Manage Postgres databases with authentication, file storage, and more",
+2073:      "enabled": false,
+2074:      "tokenReplacementEnabled": true
+2075:    }
+Next step: edit config.json and run `manus-config config save`
+--- REPO SUPABASE PATHS ---
+db/baseline/README.md
+db/migrations/001_tenant_rbac.sql
+db/migrations/002_billing_credits.sql
+db/migrations/003_storage_assets.sql
+db/migrations/004_events_notifications.sql
+db/migrations/005_observability.sql
+db/migrations/006_global_configuration.sql
+db/migrations/007_integrations.sql
+db/migrations/008_sdk_plugins.sql
+db/migrations/009_jobs_workers.sql
+db/migrations/010_api_gateway.sql
+db/migrations/011_cache.sql
+db/migrations/012_security.sql
+db/migrations/013_quality.sql
+db/migrations/014_cicd.sql
+db/migrations/015_recovery.sql
+db/migrations/016_planner_foundation.sql
+db/migrations/017_planner_library.sql
+db/migrations/018_platform_admin_library.sql
+db/migrations/019_planner_library_imports.sql
+db/migrations/020_commercial_platform.sql
+db/migrations/041_planner_snapshots.sql
+db/migrations/042_payment_providers.sql
+db/migrations/043_payment_orders.sql
+db/migrations/044_workers_cron.sql
+db/migrations/045_blog_posts.sql
+--- FILE DIFF SUPABASE PATHS ---
+SUPABASE=NOT APPLICABLE — no Stage 13 database/schema/migration files changed

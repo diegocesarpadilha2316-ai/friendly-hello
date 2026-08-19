@@ -1,6 +1,6 @@
 # Stage 13 — Verified Structural Carcass Joinery
 
-> **STATUS: PASS** — Stage 13 foi implementada, validada e encerrada sem iniciar Stage 14, nova família industrial ou CAM/CNC.
+> **STATUS: BLOCKED** — A implementação e validação local passaram, mas o encerramento Git obrigatório está bloqueado porque o push para `origin/main` falhou por credencial GitHub inválida. Stage 13 não é declarada PASS. Não foi iniciado Stage 14, nova família industrial ou CAM/CNC.
 
 ## 1. Baseline e escopo
 
@@ -119,7 +119,7 @@ A figura abaixo é uma representação determinística de engenharia, não um sc
 
 ## 17. Git
 
-O commit de implementação é `605710b` (`feat(planner-v2): add verified structural carcass joinery`). A correção complementar de boundaries é `142ceb6` (`fix(planner-v2): enforce structural attachment boundaries`). A prova pós-push será registrada em `90-git-push-proof.log` e `91-final-git-status.log` após o push final. A árvore será validada novamente no estado exatamente commitado.
+O commit de implementação é `605710b` (`feat(planner-v2): add verified structural carcass joinery`). A correção complementar de boundaries é `142ceb6` (`fix(planner-v2): enforce structural attachment boundaries`). O push obrigatório para `origin/main` foi tentado e falhou com `Invalid username or token`; a rota HTTPS e a alternativa SSH também não autenticaram. A prova está em `90-git-push-proof.log` e `91-final-git-status.log`. Portanto, Git push, paridade local/remota e encerramento limpo permanecem BLOCKED até reautenticação.
 
 ## 18. Supabase
 
@@ -165,9 +165,9 @@ O commit de implementação é `605710b` (`feat(planner-v2): add verified struct
 | Production build | PASS | build log |
 | git diff --check | PASS | diff log |
 | Git commit | PASS | Git proof |
-| Git push | PASS after final push | Git proof |
-| Local HEAD = Remote HEAD | PASS after final fetch | Git proof |
-| Final Git status | PASS after final fetch | Git proof |
+| Git push | BLOCKED — GitHub credential invalid | Git proof |
+| Local HEAD = Remote HEAD | BLOCKED — remote parity unavailable | Git proof |
+| Final Git status | BLOCKED — final clean state awaits evidence commit/push | Git proof |
 | Supabase audit | NOT APPLICABLE | `80-supabase-audit.log` |
 
 ## 20. Respostas obrigatórias de aprovação
@@ -194,7 +194,7 @@ O commit de implementação é `605710b` (`feat(planner-v2): add verified struct
 
 ## 21. Encerramento
 
-Stage 13 está concluída com **PASS**. Conforme a missão, o trabalho para aqui. Não iniciar Stage 14, não criar nova família, não iniciar CAM/CNC/G-code. O pacote final inclui código alterado, testes, mutation script, logs, auditoria, relatório Markdown, PDF, evidência técnica, provas Git e auditoria Supabase.
+A implementação local Stage 13 está tecnicamente validada, mas o estado de encerramento é **BLOCKED** pela falha de autenticação GitHub. Conforme a missão, não declarar PASS. O trabalho para aqui sem iniciar Stage 14, nova família, CAM/CNC/G-code. O pacote local inclui código alterado, testes, mutation script, logs, auditoria, relatório Markdown, PDF, evidência técnica, prova da falha Git e auditoria Supabase.
 
 ## Referências
 
