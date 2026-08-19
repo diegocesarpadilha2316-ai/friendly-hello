@@ -1082,7 +1082,7 @@ export const usePlannerStore = create<PlannerState>()(
           patch.hardwareOverrides = { ...selected.hardwareOverrides, handle: requestedHandle };
         }
         if (requestedMaterial || requestedBodyMaterial || requestedFrontMaterial) {
-          const bodyMaterial = requestedBodyMaterial ?? (requestedFrontMaterial ? selected.materialOverrides.body ?? "mdf-white" : requestedMaterial);
+          const bodyMaterial = requestedBodyMaterial ?? (requestedFrontMaterial ? selected.materialOverrides.body ?? "mdf-white" : requestedMaterial ?? "mdf-white");
           const frontMaterial = requestedFrontMaterial ?? requestedMaterial ?? bodyMaterial;
           patch.materialOverrides = {
             ...selected.materialOverrides,

@@ -1,0 +1,6 @@
+01-remove-material-fallback=EXPECTED_FAIL
+02-break-a-to-b-to-a-restore=EXPECTED_FAIL
+03-collapse-rotation-update=EXPECTED_FAIL
+04-collapse-instance-isolation=EXPECTED_FAIL
+EXPECTED_FAILURES=4
+UNEXPECTED_PASSES=0
