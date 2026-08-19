@@ -7,6 +7,7 @@ import type { PartDefinition } from "../../contracts/PartDefinition";
 import { resolveDoorHardwarePlacement } from "../../services/hardwarePlacementResolver";
 import { resolveFrontLayout } from "../../services/frontLayoutResolver";
 import { resolveCarcassConstruction } from "../../services/carcassConstructionResolver";
+import { resolveDrawerStack } from "../../services/drawerStackResolver";
 import { ConstructionProfileRegistry } from "../../registry/ConstructionProfileRegistry";
 import { getLegacyKitchenRules } from "./legacyKitchenDispatch";
 import { HARDWARE_MATERIAL_ID, MaterialRegistry } from "../../registry/MaterialRegistry";
@@ -41,7 +42,7 @@ type BuildOptions = {
 };
 
 const grainForRole = (role: PartDefinition["role"]): PartDefinition["grainDirection"] => {
-  if (["door", "side-left", "side-right", "divider"].includes(role)) return "vertical";
+  if (["door", "drawer-box-front", "side-left", "side-right", "divider"].includes(role)) return "vertical";
   if (["base", "top", "shelf", "drawer-bottom", "countertop"].includes(role)) return "horizontal";
   return "none";
 };
@@ -411,7 +412,7 @@ export function buildDoors(
   return parts;
 }
 
-export function buildDrawers(
+function buildLegacyDrawers(
   moduleId: string,
   dims: Dimensions3,
   options: BuildOptions,
@@ -543,6 +544,91 @@ export function buildDrawers(
           groupId,
         ),
       );
+    }
+  }
+  return parts;
+}
+
+export function buildDrawers(
+  moduleId: string,
+  dims: Dimensions3,
+  options: BuildOptions,
+): PartDefinition[] {
+  const profile = options.moduleDefinitionId
+    ? ConstructionProfileRegistry.getByModuleDefinitionId(options.moduleDefinitionId)
+    : undefined;
+  if (options.moduleDefinitionId && ConstructionProfileRegistry.isProfessionalDefinition(options.moduleDefinitionId) && !profile) {
+    throw new Error(`ConstructionProfile ausente para definição profissional ${options.moduleDefinitionId}.`);
+  }
+  if (profile && (!profile.drawerStackRule || !profile.drawerBoxRule || !profile.drawerSlideApplicationRule)) {
+    throw new Error(`Drawer profile incompleto para definição profissional ${profile.moduleDefinitionId}.`);
+  }
+  if (!profile?.drawerStackRule || !profile.drawerBoxRule || !profile.drawerSlideApplicationRule) {
+    return buildLegacyDrawers(moduleId, dims, options);
+  }
+
+  const panel = options.thicknessMm?.panelMm ?? c.panelMm;
+  const shelf = options.thicknessMm?.shelfMm ?? panel;
+  const backMm = options.thicknessMm?.backMm ?? c.backMm;
+  const toe = options.toeKickMm ?? c.toeKickMm;
+  const shelves = options.shelves ?? 0;
+  const resolvedCarcass = resolveCarcassConstruction({
+    moduleDefinitionId: options.moduleDefinitionId ?? profile.carcassRule.moduleDefinitionId,
+    dimensionsMm: dims,
+    thicknessMm: { panelMm: panel, shelfMm: shelf, backMm },
+    toeKickMm: toe,
+    shelves,
+    rule: profile.carcassRule,
+  });
+  if (resolvedCarcass.validationStatus === "INVALID") {
+    throw new Error(`Carcass inválida para ${resolvedCarcass.moduleDefinitionId}: ${resolvedCarcass.diagnostics.map((item) => item.code).join(", ")}`);
+  }
+  const stack = resolveDrawerStack({
+    moduleDefinitionId: options.moduleDefinitionId ?? profile.moduleDefinitionId,
+    carcass: resolvedCarcass,
+    stackRule: profile.drawerStackRule,
+    boxRule: profile.drawerBoxRule,
+    slideRule: profile.drawerSlideApplicationRule,
+    frontWidthMm: resolvedCarcass.internalWidthMm,
+    frontThicknessMm: options.thicknessMm?.doorMm ?? panel,
+  });
+  if (stack.status === "INVALID") {
+    throw new Error(`DrawerStack inválido para ${stack.moduleDefinitionId}: ${stack.diagnostics.join(" | ")}`);
+  }
+
+  const { front, body } = materials(options);
+  const frontMm = options.thicknessMm?.doorMm ?? panel;
+  const boxSideMm = profile.drawerBoxRule.sideThicknessMm;
+  const boxBackMm = profile.drawerBoxRule.backThicknessMm;
+  const boxBottomMm = profile.drawerBoxRule.bottomThicknessMm;
+  const slideId = profile.drawerSlideApplicationRule.slideHardwareId;
+  const handleId = options.handle ?? "handle-bar";
+  const parts: PartDefinition[] = [];
+
+  for (const item of stack.items) {
+    const groupId = `${moduleId}:${item.drawerId}`;
+    const boxFrontDepthMm = boxSideMm;
+    parts.push(
+      part(moduleId, `${item.drawerId}:front`, "drawer-front", `Frente gaveta ${item.index}`, { width: item.frontWidthMm, height: item.frontHeightMm, depth: frontMm }, { x: 0, y: item.frontCenterYmm, z: dims.depth / 2 + frontMm / 2 }, front, {
+        groupId,
+        edgeBanding: { top: front, bottom: front, left: front, right: front },
+        interactive: { type: "drawer", maxTravelMm: item.slideTravelMm },
+      }),
+      part(moduleId, `${item.drawerId}:box-front`, "drawer-box-front", `Frente estrutural da caixa ${item.index}`, { width: item.boxWidthMm, height: item.boxHeightMm, depth: boxFrontDepthMm }, { x: 0, y: item.frontCenterYmm, z: item.boxDepthMm / 2 - boxFrontDepthMm / 2 }, body, {
+        groupId,
+        interactive: { type: "drawer", maxTravelMm: item.slideTravelMm },
+      }),
+      part(moduleId, `${item.drawerId}:side-left`, "drawer-side", `Lateral gaveta ${item.index} esquerda`, { width: boxSideMm, height: item.boxHeightMm, depth: item.boxDepthMm }, { x: -(item.boxWidthMm - boxSideMm) / 2, y: item.frontCenterYmm, z: 0 }, body, { groupId, hardwareId: slideId, interactive: { type: "drawer", maxTravelMm: item.slideTravelMm } }),
+      part(moduleId, `${item.drawerId}:side-right`, "drawer-side", `Lateral gaveta ${item.index} direita`, { width: boxSideMm, height: item.boxHeightMm, depth: item.boxDepthMm }, { x: (item.boxWidthMm - boxSideMm) / 2, y: item.frontCenterYmm, z: 0 }, body, { groupId, hardwareId: slideId, interactive: { type: "drawer", maxTravelMm: item.slideTravelMm } }),
+      part(moduleId, `${item.drawerId}:back`, "back", `Traseira gaveta ${item.index}`, { width: item.boxWidthMm - 2 * boxSideMm, height: item.boxHeightMm, depth: boxBackMm }, { x: 0, y: item.frontCenterYmm, z: -item.boxDepthMm / 2 + boxBackMm / 2 }, body, { groupId, interactive: { type: "drawer", maxTravelMm: item.slideTravelMm } }),
+      part(moduleId, `${item.drawerId}:bottom`, "drawer-bottom", `Fundo gaveta ${item.index}`, { width: item.boxWidthMm - 2 * boxSideMm, height: boxBottomMm, depth: item.boxDepthMm }, { x: 0, y: item.frontCenterYmm - item.boxHeightMm / 2 + boxBottomMm / 2, z: 0 }, body, { groupId, interactive: { type: "drawer", maxTravelMm: item.slideTravelMm } }),
+      hardware(moduleId, `${item.drawerId}:slide-left`, "Corrediça esquerda", { width: 14, height: 48, depth: item.boxDepthMm }, { x: -(item.boxWidthMm - boxSideMm) / 2, y: item.frontCenterYmm, z: 0 }, slideId, groupId),
+      hardware(moduleId, `${item.drawerId}:slide-right`, "Corrediça direita", { width: 14, height: 48, depth: item.boxDepthMm }, { x: (item.boxWidthMm - boxSideMm) / 2, y: item.frontCenterYmm, z: 0 }, slideId, groupId),
+    );
+    if (handleId !== "handle-none") {
+      const handleSize = handleDimensions(item.frontWidthMm, handleId, { width: Math.min(320, item.frontWidthMm * 0.5), height: 22, depth: 28 });
+      const isContinuous = handleId === "handle-gola" || handleId === "handle-cava";
+      parts.push(hardware(moduleId, `${item.drawerId}:handle`, isContinuous ? "Puxador contínuo" : "Puxador", handleSize, { x: 0, y: isContinuous ? item.frontTopMm - handleSize.height / 2 - 10 : item.frontCenterYmm, z: dims.depth / 2 + frontMm * 1.5 }, handleId, groupId));
     }
   }
   return parts;

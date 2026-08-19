@@ -1,0 +1,6 @@
+01-remove-drawer-stack-rule=EXPECTED_FAIL
+02-use-instance-id-for-stack=EXPECTED_FAIL
+03-collapse-box-front-role=EXPECTED_FAIL
+04-change-drawer-count=EXPECTED_FAIL
+EXPECTED_FAILURES=4
+UNEXPECTED_PASSES=0

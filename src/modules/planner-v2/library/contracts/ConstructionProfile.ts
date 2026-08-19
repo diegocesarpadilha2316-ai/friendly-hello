@@ -1,6 +1,7 @@
 import type { CarcassConstructionRule } from "./CarcassConstructionRule";
 import type { FrontLayoutRule } from "./FrontLayoutRule";
 import type { FurnitureAssemblyRule } from "./HardwareApplicationRule";
+import type { DrawerBoxRule, DrawerSlideApplicationRule, DrawerStackRule } from "./DrawerRules";
 
 export interface ConstructionProfile {
   id: string;
@@ -8,4 +9,7 @@ export interface ConstructionProfile {
   carcassRule: CarcassConstructionRule;
   frontLayoutRule?: FrontLayoutRule;
   hardwareApplicationRule?: FurnitureAssemblyRule;
+  drawerStackRule?: DrawerStackRule;
+  drawerBoxRule?: DrawerBoxRule;
+  drawerSlideApplicationRule?: DrawerSlideApplicationRule;
 }

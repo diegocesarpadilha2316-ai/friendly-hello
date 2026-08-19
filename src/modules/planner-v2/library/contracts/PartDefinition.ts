@@ -20,6 +20,7 @@ export type PartRole =
   | "back"
   | "door"
   | "drawer-front"
+  | "drawer-box-front"
   | "drawer-side"
   | "drawer-bottom"
   | "divider"

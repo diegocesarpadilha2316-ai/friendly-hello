@@ -27,6 +27,15 @@ export class ConstructionProfileRegistryImpl {
     if (profile.hardwareApplicationRule && profile.hardwareApplicationRule.moduleDefinitionId !== profile.moduleDefinitionId) {
       throw new Error(`HardwareApplicationRule ${profile.hardwareApplicationRule.id} não pertence a ${profile.moduleDefinitionId}.`);
     }
+    if (profile.drawerStackRule && profile.drawerStackRule.moduleDefinitionId !== profile.moduleDefinitionId) {
+      throw new Error(`DrawerStackRule ${profile.drawerStackRule.id} não pertence a ${profile.moduleDefinitionId}.`);
+    }
+    if (profile.drawerBoxRule && profile.drawerBoxRule.moduleDefinitionId !== profile.moduleDefinitionId) {
+      throw new Error(`DrawerBoxRule ${profile.drawerBoxRule.id} não pertence a ${profile.moduleDefinitionId}.`);
+    }
+    if (profile.drawerSlideApplicationRule && profile.drawerSlideApplicationRule.moduleDefinitionId !== profile.moduleDefinitionId) {
+      throw new Error(`DrawerSlideApplicationRule ${profile.drawerSlideApplicationRule.id} não pertence a ${profile.moduleDefinitionId}.`);
+    }
     this.profiles.set(profile.moduleDefinitionId, profile);
     this.professionalDefinitionIds.add(profile.moduleDefinitionId);
     return profile;

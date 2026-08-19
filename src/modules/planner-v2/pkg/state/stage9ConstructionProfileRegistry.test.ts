@@ -37,7 +37,7 @@ describe("Stage 9 — ConstructionProfileRegistry", () => {
     expect(ConstructionProfileRegistry.getByModuleDefinitionId(BASE_ID)?.id).toBe("kitchen-base-2-doors:construction-profile-v1");
     expect(ConstructionProfileRegistry.getByModuleDefinitionId(UPPER_ID)?.id).toBe("kitchen-golden-upper-800:construction-profile-v1");
     expect(ConstructionProfileRegistry.getByModuleDefinitionId("furniture-123456")).toBeUndefined();
-    expect(ConstructionProfileRegistry.list().map((profile) => profile.moduleDefinitionId)).toEqual([BASE_ID, UPPER_ID]);
+    expect(ConstructionProfileRegistry.list().map((profile) => profile.moduleDefinitionId)).toEqual([BASE_ID, UPPER_ID, "kitchen-drawer-3"]);
   });
 
   it("rejeita profile vazio, duplicado e rules destinadas a outra definição", () => {

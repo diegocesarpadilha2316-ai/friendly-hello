@@ -154,6 +154,8 @@ export function buildModule(request: BuildRequest): BuildOutcome {
           ? thicknessMm.backMm
           : part.role === "door" || part.role === "drawer-front"
             ? thicknessMm.doorMm
+            : part.role === "drawer-box-front"
+              ? thicknessMm.panelMm
             : part.role === "shelf" || part.role === "drawer-bottom"
               ? thicknessMm.shelfMm
               : thicknessMm.panelMm;
