@@ -1,5 +1,5 @@
 FINAL_GIT_STATUS=PASS_LOCAL_ONLY
 PUSH_STATUS=BLOCKED_PENDING_GITHUB_REAUTH
 BRANCH=main
-LOCAL_HEAD=pre-final-doc-commit
-TREE_STATUS=clean-before-this-proof-refresh
+LOCAL_HEAD=e3a5f4a
+TREE_STATUS=clean-before-final-document-commit
