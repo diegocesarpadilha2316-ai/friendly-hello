@@ -1,14 +1,37 @@
 import type { FurnitureInstance } from "../contracts/FurnitureInstance";
-import type { JoineryDefinition } from "../contracts/JoineryDefinition";
+import type { JoineryCapabilityReadiness, JoineryDefinition, JoineryManufacturingRole, JoineryTruthStatus } from "../contracts/JoineryDefinition";
+import { ConstructionProfileRegistry } from "../registry/ConstructionProfileRegistry";
 import type { PartDefinition } from "../contracts/PartDefinition";
-import { resolveGoldenHardwareApplication } from "./hardwareApplicationResolver";
+import { resolveHardwareApplication } from "./hardwareApplicationResolver";
 
 export type JoineryReport = {
   operations: JoineryDefinition[];
+  readiness: JoineryCapabilityReadiness[];
   warnings: string[];
 };
 
-const GOLDEN_MODULE_ID = "kitchen-base-2-doors";
+const LEGACY_EDGE_OFFSET_RULE_ID = "legacy-edge-offset-37-v1";
+const LEGACY_EDGE_OFFSET_MM = 37;
+
+const truthByKind: Record<JoineryDefinition["kind"], { role: JoineryManufacturingRole; status: JoineryTruthStatus; unknownParameters: string[] }> = {
+  "minifix-head": { role: "MACHINING", status: "INCOMPLETE", unknownParameters: ["manufacturerFastenerSpec", "edgeReferenceMm"] },
+  "minifix-body": { role: "MACHINING", status: "INCOMPLETE", unknownParameters: ["manufacturerFastenerSpec", "edgeReferenceMm"] },
+  dowel: { role: "MACHINING", status: "INCOMPLETE", unknownParameters: ["manufacturerFastenerSpec", "edgeReferenceMm"] },
+  confirmat: { role: "MACHINING", status: "INCOMPLETE", unknownParameters: ["manufacturerFastenerSpec", "edgeReferenceMm"] },
+  "hinge-cup": { role: "MACHINING", status: "INCOMPLETE", unknownParameters: ["manufacturerVariantId", "selectedBoringDistanceMm"] },
+  "hinge-fixing": { role: "ASSEMBLY", status: "INCOMPLETE", unknownParameters: ["pilotHoleDiameterMm", "pilotHoleDepthMm"] },
+  "mounting-plate-placement": { role: "ASSEMBLY", status: "INCOMPLETE", unknownParameters: ["compatibleMountingPlateVariantId"] },
+  "mounting-plate-fixing": { role: "ASSEMBLY", status: "INCOMPLETE", unknownParameters: ["pilotHoleDiameterMm", "pilotHoleDepthMm"] },
+  "slide-fixing": { role: "ASSEMBLY", status: "INCOMPLETE", unknownParameters: ["runnerMountingCoordinates", "drawerHookCoordinates"] },
+  "runner-installation": { role: "ASSEMBLY", status: "READY", unknownParameters: [] },
+  "handle-through": { role: "MACHINING", status: "INCOMPLETE", unknownParameters: ["manufacturerHandleDrillingTemplate"] },
+  "gola-profile": { role: "HARDWARE_VISUAL", status: "READY", unknownParameters: [] },
+  "adjustable-foot": { role: "ASSEMBLY", status: "READY", unknownParameters: [] },
+  "toe-kick-profile": { role: "PROFILE", status: "READY", unknownParameters: [] },
+  "toe-kick-clip": { role: "ASSEMBLY", status: "READY", unknownParameters: [] },
+  "shelf-support": { role: "ASSEMBLY", status: "INCOMPLETE", unknownParameters: ["holeDiameterMm", "holeDepthMm", "edgeOffsetMm", "patternPitchMm"] },
+  "free-drilling": { role: "MACHINING", status: "INCOMPLETE", unknownParameters: ["drillingPurpose", "manufacturerPattern"] },
+};
 
 function semanticPartKey(partId: string): string {
   return partId.split(":").at(-1) ?? partId;
@@ -21,32 +44,23 @@ function op(
   index: number,
   overrides: Partial<JoineryDefinition> = {},
 ): JoineryDefinition {
+  const truth = truthByKind[kind];
   return {
     id: `${instance.id}-${partId}-${kind}-${index}`,
     moduleInstanceId: instance.id,
     partId,
     kind,
-    face: "F1",
-    positionMm: { x: 37, y: 37 },
-    diameterMm:
-      kind === "dowel" ? 8 : kind.startsWith("minifix") ? 15 : kind === "confirmat" ? 5 : 35,
-    depthMm: kind === "hinge-cup" ? 12.5 : kind === "dowel" ? 30 : 13,
-    tool:
-      kind === "hinge-cup"
-        ? "broca-forstner-35"
-        : kind === "dowel"
-          ? "broca-8"
-          : kind.startsWith("minifix")
-            ? "broca-15"
-            : kind === "hinge-fixing" || kind === "handle-through"
-              ? "broca-5"
-              : "sem-ferramenta-cam",
+    manufacturingRole: truth.role,
+    truthStatus: truth.status,
+    unknownParameters: truth.unknownParameters,
+    source: truth.role === "MACHINING" ? "PROFILE_RULE" : "SEMANTIC_ASSEMBLY",
+    ruleId: `joinery:${instance.moduleDefinitionId}:${kind}`,
     ...overrides,
   };
 }
 
 function goldenHingeOperations(instance: FurnitureInstance, door: PartDefinition): JoineryDefinition[] {
-  const resolvedApplication = resolveGoldenHardwareApplication(instance);
+  const resolvedApplication = resolveHardwareApplication(instance);
   const hingeParts = instance.parts.filter(
     (part) =>
       part.role === "hardware" &&
@@ -69,6 +83,7 @@ function goldenHingeOperations(instance: FurnitureInstance, door: PartDefinition
       y: hingePart.positionMm.y,
     };
     const common = {
+      face: "F1" as const,
       hardwareId: hingePart.hardwareId,
       relatedPartIds: [door.id, hingePart.id, ...(mountingPlate ? [mountingPlate.id] : [])],
       parameters: {
@@ -93,8 +108,6 @@ function goldenHingeOperations(instance: FurnitureInstance, door: PartDefinition
       op(instance, door.id, "hinge-fixing", index, {
         id: `${instance.id}:${logicalHinge}:fixing`,
         positionMm,
-        diameterMm: 0,
-        depthMm: 0,
         tool: "assembly-only",
         ...common,
         notes: "Fixação da dobradiça/placa não promove pré-furo sem pilot-hole documentado.",
@@ -104,8 +117,6 @@ function goldenHingeOperations(instance: FurnitureInstance, door: PartDefinition
             op(instance, mountingPlate.id, "mounting-plate-placement", index, {
               id: `${instance.id}:${logicalHinge}:plate-placement`,
               positionMm,
-              diameterMm: 0,
-              depthMm: 0,
               tool: "assembly-only",
               hardwareId: mountingPlate.hardwareId,
               relatedPartIds: [door.id, hingePart.id, mountingPlate.id],
@@ -123,8 +134,6 @@ function goldenHingeOperations(instance: FurnitureInstance, door: PartDefinition
             op(instance, mountingPlate.id, "mounting-plate-fixing", index, {
               id: `${instance.id}:${logicalHinge}:plate-fixing`,
               positionMm,
-              diameterMm: 0,
-              depthMm: 0,
               tool: "assembly-only",
               hardwareId: mountingPlate.hardwareId,
               relatedPartIds: [door.id, hingePart.id, mountingPlate.id],
@@ -146,8 +155,6 @@ function goldenHingeOperations(instance: FurnitureInstance, door: PartDefinition
 }
 
 function goldenConstructionOperations(instance: FurnitureInstance): JoineryDefinition[] {
-  if (instance.moduleDefinitionId !== GOLDEN_MODULE_ID) return [];
-
   const operations: JoineryDefinition[] = [];
   const parts = instance.parts;
   const doors = parts.filter((part) => part.role === "door");
@@ -267,83 +274,114 @@ function goldenConstructionOperations(instance: FurnitureInstance): JoineryDefin
   return operations;
 }
 
+function legacyOp(
+  instance: FurnitureInstance,
+  partId: string,
+  kind: JoineryDefinition["kind"],
+  index: number,
+  overrides: Partial<JoineryDefinition> = {},
+): JoineryDefinition {
+  const legacyDefaults: Partial<JoineryDefinition> = {
+    face: "F1",
+    positionMm: { x: LEGACY_EDGE_OFFSET_MM, y: LEGACY_EDGE_OFFSET_MM },
+    diameterMm: kind === "dowel" ? 8 : kind.startsWith("minifix") ? 15 : kind === "confirmat" ? 5 : kind === "hinge-cup" ? 35 : kind === "handle-through" ? 5 : undefined,
+    depthMm: kind === "hinge-cup" ? 12.5 : kind === "dowel" ? 30 : kind === "handle-through" ? 18 : kind === "slide-fixing" ? 12 : 13,
+    tool: kind === "hinge-cup" ? "broca-forstner-35" : kind === "dowel" ? "broca-8" : kind.startsWith("minifix") ? "broca-15" : kind === "handle-through" ? "broca-5" : kind === "slide-fixing" ? "broca-5" : "sem-ferramenta-cam",
+    parameters: { placementRuleId: LEGACY_EDGE_OFFSET_RULE_ID, placementRuleStatus: "LEGACY_ISOLATED" },
+  };
+  return op(instance, partId, kind, index, {
+    ...legacyDefaults,
+    source: "LEGACY_DEFAULT",
+    truthStatus: "INCOMPLETE",
+    unknownParameters: ["legacyDefaultNotManufacturerVerified"],
+    ruleId: "legacy-default",
+    ...overrides,
+  });
+}
+
+function legacyBuildJoineryOperations(instance: FurnitureInstance): JoineryDefinition[] {
+  const operations: JoineryDefinition[] = [];
+  const parts = instance.parts;
+  const structural = parts.filter((part) => ["side-left", "side-right", "base", "top", "shelf", "divider", "back"].includes(part.role));
+  const fronts = parts.filter((part) => part.role === "door" || part.role === "drawer-front");
+  const drawerParts = parts.filter((part) => part.role === "drawer-side" || part.role === "drawer-bottom");
+  structural.forEach((part, index) => {
+    operations.push(legacyOp(instance, part.id, "confirmat", index, { notes: "LEGACY_DEFAULT: structural legacy adapter." }));
+    operations.push(legacyOp(instance, part.id, "dowel", index, { notes: "LEGACY_DEFAULT: structural legacy adapter." }));
+  });
+  fronts.forEach((part, index) => {
+    if (part.role === "door") {
+      operations.push(legacyOp(instance, part.id, "hinge-cup", index, { hardwareId: instance.hardwareOverrides.hinge, positionMm: { x: 21.5, y: Math.max(80, part.dimensionsMm.height - 100) }, notes: "LEGACY_DEFAULT: generic hinge geometry." }));
+      operations.push(legacyOp(instance, part.id, "hinge-fixing", index, { hardwareId: instance.hardwareOverrides.hinge, positionMm: { x: 37, y: Math.max(80, part.dimensionsMm.height - 100) } }));
+    }
+    if (part.role === "drawer-front" && instance.hardwareOverrides.handle) {
+      operations.push(legacyOp(instance, part.id, "handle-through", index, { hardwareId: instance.hardwareOverrides.handle, diameterMm: 5, depthMm: 18, tool: "broca-5", notes: "LEGACY_DEFAULT: generic handle drilling." }));
+    }
+  });
+  drawerParts.forEach((part, index) => operations.push(legacyOp(instance, part.id, "slide-fixing", index, { hardwareId: part.hardwareId ?? instance.hardwareOverrides.slide, diameterMm: 5, depthMm: 12, tool: "broca-5", notes: "LEGACY_DEFAULT: generic slide fixing." })));
+  return operations;
+}
+
+function professionalReadiness(instance: FurnitureInstance): JoineryCapabilityReadiness[] {
+  const profile = ConstructionProfileRegistry.getByModuleDefinitionId(instance.moduleDefinitionId);
+  if (!profile) return [];
+  const readiness: JoineryCapabilityReadiness[] = [{
+    scope: "carcass-structural",
+    status: "INCOMPLETE",
+    missingParameters: ["structuralJoineryRule"],
+    source: "PROFILE_RULE",
+    reason: "Nenhum ConstructionProfile profissional seleciona confirmat, dowel ou minifix nesta etapa.",
+  }];
+  if (!profile.hardwareApplicationRule && instance.parts.some((part) => part.role === "door")) {
+    readiness.push({ scope: "hardware-application", status: "INCOMPLETE", missingParameters: ["hardwareApplicationRule"], source: "PROFILE_RULE", reason: "Profile profissional sem regra declarativa de hardware; não gerar dobradiça genérica." });
+  }
+  if (instance.parts.some((part) => part.role === "drawer-front") && instance.hardwareOverrides.handle) {
+    readiness.push({ scope: "handle-application", status: "INCOMPLETE", missingParameters: ["handleApplicationRule", "manufacturerHandleDrillingTemplate"], source: "PROFILE_RULE", reason: "Hardware visual não implica furação sem regra de aplicação." });
+  }
+  if (instance.parts.some((part) => part.role === "drawer-side")) {
+    readiness.push({ scope: "drawer-runner-application", status: profile.drawerIndustrialSlideRule ? "READY" : "INCOMPLETE", missingParameters: profile.drawerIndustrialSlideRule ? [] : ["drawerSlideApplicationRule"], source: profile.drawerIndustrialSlideRule ? "MANUFACTURER_SPEC" : "PROFILE_RULE", reason: profile.drawerIndustrialSlideRule ? "Runner industrial selecionado pelo profile." : "Nenhuma regra de corrediça declarada." });
+  }
+  return readiness;
+}
+
+function professionalBuildJoineryOperations(instance: FurnitureInstance): JoineryDefinition[] {
+  const profile = ConstructionProfileRegistry.getByModuleDefinitionId(instance.moduleDefinitionId);
+  if (!profile) return [];
+  const operations: JoineryDefinition[] = [];
+  if (profile.hardwareApplicationRule) {
+    operations.push(...goldenConstructionOperations(instance));
+  }
+  if (profile.drawerIndustrialSlideRule) {
+    const sides = instance.parts.filter((part) => part.role === "drawer-side");
+    sides.forEach((part, index) => operations.push(op(instance, part.id, "runner-installation", index, {
+      id: `${instance.id}:${semanticPartKey(part.id)}:runner-installation-${index}`,
+      source: "MANUFACTURER_SPEC",
+      truthStatus: "READY",
+      unknownParameters: [],
+      ruleId: profile.drawerIndustrialSlideRule?.id,
+      manufacturerSpecId: instance.hardwareVariantIds?.slide,
+      hardwareId: part.hardwareId ?? instance.hardwareOverrides.slide,
+      hardwareVariantId: instance.hardwareVariantIds?.slide,
+      relatedPartIds: [part.id],
+      notes: "Instalação semântica do runner MOVENTO; qualquer candidato CNC é downstream e separado.",
+    })));
+  }
+  return operations;
+}
+
 export function buildJoineryReport(instances: FurnitureInstance[]): JoineryReport {
   const operations: JoineryDefinition[] = [];
+  const readiness: JoineryCapabilityReadiness[] = [];
   const warnings: string[] = [];
-
   for (const instance of instances) {
-    const parts = instance.parts;
-    const structural = parts.filter((part) =>
-      ["side-left", "side-right", "base", "top", "shelf", "divider", "back"].includes(part.role),
-    );
-    const fronts = parts.filter((part) => part.role === "door" || part.role === "drawer-front");
-    const drawerParts = parts.filter(
-      (part) => part.role === "drawer-side" || part.role === "drawer-bottom",
-    );
-
-    structural.forEach((part, index) => {
-      operations.push(
-        op(instance, part.id, "confirmat", index, {
-          face: "F1",
-          notes: "Fixação estrutural do carcass; confirmar recuo do fundo antes da usinagem.",
-        }),
-      );
-      operations.push(
-        op(instance, part.id, "dowel", index, {
-          face: "F1",
-          notes: "Cavilha de alinhamento estrutural.",
-        }),
-      );
-    });
-
-    fronts.forEach((part, index) => {
-      if (part.role === "door" && instance.moduleDefinitionId !== GOLDEN_MODULE_ID) {
-        operations.push(
-          op(instance, part.id, "hinge-cup", index, {
-            hardwareId: instance.hardwareOverrides.hinge,
-            positionMm: { x: 21.5, y: Math.max(80, part.dimensionsMm.height - 100) },
-            notes: "Copo de dobradiça; repetir no topo e base da porta conforme altura.",
-          }),
-        );
-        operations.push(
-          op(instance, part.id, "hinge-fixing", index, {
-            hardwareId: instance.hardwareOverrides.hinge,
-            positionMm: { x: 37, y: Math.max(80, part.dimensionsMm.height - 100) },
-          }),
-        );
-      }
-      if (part.role === "drawer-front" && instance.hardwareOverrides.handle) {
-        operations.push(
-          op(instance, part.id, "handle-through", index, {
-            hardwareId: instance.hardwareOverrides.handle,
-            diameterMm: 5,
-            depthMm: 18,
-            tool: "broca-5",
-            notes: "Furação do puxador conforme gabarito do fabricante.",
-          }),
-        );
-      }
-    });
-
-    drawerParts.forEach((part, index) => {
-      const slideOperation = op(instance, part.id, "slide-fixing", index, {
-        hardwareId: part.hardwareId ?? instance.hardwareOverrides.slide,
-        diameterMm: 5,
-        depthMm: 12,
-        tool: "broca-5",
-        notes: "Furação da corrediça com paralelismo obrigatório.",
-      });
-      operations.push({ ...slideOperation, id: `${part.id}:slide-fixing-${index}` });
-    });
-
-    operations.push(...goldenConstructionOperations(instance));
-
-    if (instance.moduleDefinitionId.includes("sink")) {
-      const technical = parts.find((part) => part.volumeType === "technical");
-      if (!technical)
-        warnings.push(`${instance.name}: zona hidráulica sem volume técnico associado.`);
+    const profile = ConstructionProfileRegistry.getByModuleDefinitionId(instance.moduleDefinitionId);
+    if (profile) {
+      operations.push(...professionalBuildJoineryOperations(instance));
+      readiness.push(...professionalReadiness(instance));
+    } else {
+      operations.push(...legacyBuildJoineryOperations(instance));
     }
+    if (instance.moduleDefinitionId.includes("sink") && !instance.parts.some((part) => part.volumeType === "technical")) warnings.push(`${instance.name}: zona hidráulica sem volume técnico associado.`);
   }
-
-  return { operations, warnings };
+  return { operations, readiness, warnings };
 }

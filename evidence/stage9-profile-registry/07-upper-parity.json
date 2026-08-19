@@ -346,7 +346,7 @@
         },
         "positionMm": {
           "x": -363,
-          "y": 112,
+          "y": 110,
           "z": 193
         },
         "hardwareId": "hinge-soft-close",
@@ -362,7 +362,7 @@
         },
         "positionMm": {
           "x": -363,
-          "y": 112,
+          "y": 110,
           "z": 175
         },
         "hardwareId": "mounting-plate-37-32",
@@ -378,7 +378,7 @@
         },
         "positionMm": {
           "x": -363,
-          "y": 588,
+          "y": 586,
           "z": 193
         },
         "hardwareId": "hinge-soft-close",
@@ -394,7 +394,7 @@
         },
         "positionMm": {
           "x": -363,
-          "y": 588,
+          "y": 586,
           "z": 175
         },
         "hardwareId": "mounting-plate-37-32",
@@ -442,7 +442,7 @@
         },
         "positionMm": {
           "x": 361,
-          "y": 112,
+          "y": 110,
           "z": 193
         },
         "hardwareId": "hinge-soft-close",
@@ -458,7 +458,7 @@
         },
         "positionMm": {
           "x": 361,
-          "y": 112,
+          "y": 110,
           "z": 175
         },
         "hardwareId": "mounting-plate-37-32",
@@ -474,7 +474,7 @@
         },
         "positionMm": {
           "x": 361,
-          "y": 588,
+          "y": 586,
           "z": 193
         },
         "hardwareId": "hinge-soft-close",
@@ -490,7 +490,7 @@
         },
         "positionMm": {
           "x": 361,
-          "y": 588,
+          "y": 586,
           "z": 175
         },
         "hardwareId": "mounting-plate-37-32",

@@ -32,7 +32,7 @@ export interface MachiningOperation {
   hardwareVariantId?: string;
   sourceJoineryId?: string;
   relatedPartIds: string[];
-  coordinates: PartLocalCoordinates;
+  coordinates?: PartLocalCoordinates;
   diameterMm?: number;
   depthMm?: number;
   widthMm?: number;

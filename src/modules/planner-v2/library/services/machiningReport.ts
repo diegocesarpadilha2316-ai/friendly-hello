@@ -9,11 +9,10 @@ import type {
   PartLocalCoordinates,
 } from "../contracts/MachiningOperation";
 import { HardwareRegistry } from "../registry/HardwareRegistry";
-import { resolveGoldenHardwareApplication } from "./hardwareApplicationResolver";
+import { ConstructionProfileRegistry } from "../registry/ConstructionProfileRegistry";
+import { resolveHardwareApplication } from "./hardwareApplicationResolver";
 import type { ResolvedHardwareApplication } from "../contracts/HardwareApplicationRule";
 
-const GOLDEN_MODULE_ID = "kitchen-base-2-doors";
-const GOLDEN_DRAWER_MODULE_ID = "kitchen-drawer-3";
 
 function localCoordinates(
   targetPart: { id: string; positionMm: { x: number; y: number; z: number } },
@@ -88,15 +87,13 @@ function makeHingeMachiningOperation(
     relatedPartIds: [door.id, hingePartId, targetPart.id].filter(
       (id, index, ids) => ids.indexOf(id) === index,
     ),
-    coordinates: localCoordinates(
-      targetPart,
-      {
-        x: source.positionMm.x,
-        y: source.positionMm.y,
-        z: door.positionMm.z + (type === "hinge-cup" ? door.dimensionsMm.depth / 2 : 0),
-      },
-      source.face,
-    ),
+    coordinates: source.positionMm && source.face
+      ? localCoordinates(targetPart, {
+          x: source.positionMm.x,
+          y: source.positionMm.y,
+          z: door.positionMm.z + (type === "hinge-cup" ? door.dimensionsMm.depth / 2 : 0),
+        }, source.face)
+      : undefined,
     diameterMm: type === "hinge-cup" ? spec?.cup.cupDiameterMm : undefined,
     depthMm: type === "hinge-cup" ? spec?.cup.cupDepthMm : undefined,
     toolHint: type === "hinge-cup" ? undefined : "pilot-hole-not-specified",
@@ -166,11 +163,9 @@ function makeMountingPlatePilotOperation(
     relatedPartIds: [doorId, hingePartId, plate.id, targetPart.id].filter(
       (id, index, ids) => ids.indexOf(id) === index,
     ),
-    coordinates: localCoordinates(
-      targetPart,
-      { x: source.positionMm.x, y: source.positionMm.y, z: targetPart.positionMm.z },
-      source.face,
-    ),
+    coordinates: source.positionMm && source.face
+      ? localCoordinates(targetPart, { x: source.positionMm.x, y: source.positionMm.y, z: targetPart.positionMm.z }, source.face)
+      : undefined,
     toolHint: "pilot-hole-not-specified",
     parameters: {
       mountingPlatePartId: plate.id,
@@ -209,18 +204,13 @@ function makeShelfSupportMachiningOperation(
     relatedPartIds: [targetPart.id, shelfPartId, supportPartId].filter(
       (id, index, ids) => ids.indexOf(id) === index,
     ),
-    coordinates: localCoordinates(
-      targetPart,
-      {
-        x: source.positionMm.x,
-        y: source.positionMm.y,
-        z:
-          source.positionMm.x < 0
-            ? targetPart.positionMm.z + targetPart.dimensionsMm.depth / 2
-            : targetPart.positionMm.z - targetPart.dimensionsMm.depth / 2,
-      },
-      source.face,
-    ),
+    coordinates: source.positionMm && source.face
+      ? localCoordinates(targetPart, {
+          x: source.positionMm.x,
+          y: source.positionMm.y,
+          z: source.positionMm.x < 0 ? targetPart.positionMm.z + targetPart.dimensionsMm.depth / 2 : targetPart.positionMm.z - targetPart.dimensionsMm.depth / 2,
+        }, source.face)
+      : undefined,
     parameters: {
       shelfPartId,
       supportPartId,
@@ -250,7 +240,7 @@ function makeMoventoSlideMachiningOperation(
     hardwareVariantId: variant?.id,
     sourceJoineryId: source.id,
     relatedPartIds: source.relatedPartIds ?? [source.partId],
-    coordinates: localCoordinates(targetPart, targetPart.positionMm, source.face),
+    coordinates: source.positionMm && source.face ? localCoordinates(targetPart, targetPart.positionMm, source.face) : undefined,
     toolHint: "NOT_ASSIGNED",
     parameters: {
       coordinateStatus: "UNKNOWN",
@@ -281,6 +271,23 @@ function classification(
     classification: classificationValue,
     relatedPartIds: source.relatedPartIds ?? [source.partId],
     reason,
+  };
+}
+
+function hingeAssemblyReadiness(instance: FurnitureInstance, source: JoineryDefinition): AssemblyReadiness {
+  const variantId = instance.hardwareVariantIds?.hinge;
+  const variant = source.hardwareId ? HardwareRegistry.getManufacturingVariant(source.hardwareId, variantId) : undefined;
+  const spec = variant?.manufacturingSpec.kind === "hinge" ? variant.manufacturingSpec : undefined;
+  return {
+    id: `${source.id}:assembly`,
+    instanceId: instance.id,
+    hardwareId: source.hardwareId,
+    hardwareVariantId: variant?.id,
+    relatedPartIds: source.relatedPartIds ?? [source.partId],
+    status: spec ? "READY" : "INCOMPLETE",
+    missingParameters: spec ? [] : ["manufacturerVariantId"],
+    provenance: spec?.provenance,
+    reason: "Hinge fixing is assembly semantics; pilot-hole machining is not inferred from fastener data.",
   };
 }
 
@@ -338,17 +345,26 @@ export function buildMachiningReport(
   const warnings: string[] = [];
 
   for (const instance of instances) {
-    if (instance.moduleDefinitionId !== GOLDEN_MODULE_ID && instance.moduleDefinitionId !== GOLDEN_DRAWER_MODULE_ID) continue;
+    const profile = ConstructionProfileRegistry.getByModuleDefinitionId(instance.moduleDefinitionId);
     const instanceJoinery = joineryOperations.filter((operation) => operation.moduleInstanceId === instance.id);
     const partsById = new Map(instance.parts.map((part) => [part.id, part]));
     const doors = instance.parts.filter((part) => part.role === "door");
+    if (!profile) {
+      instanceJoinery.forEach((source) => classifications.push(classification(instance, source, "ASSEMBLY", "LEGACY_DEFAULT isolado: não promover operação sem provenance profissional.")));
+      continue;
+    }
+    const resolvedApplication = resolveHardwareApplication(instance);
     const requestedVariantId = instance.hardwareVariantIds?.hinge;
     if (requestedVariantId && !HardwareRegistry.getManufacturingVariant(instance.hardwareOverrides.hinge, requestedVariantId)) {
       warnings.push(`Variante de dobradiça não encontrada: ${requestedVariantId}`);
     }
 
     for (const source of instanceJoinery) {
-      if (source.kind === "slide-fixing" && instance.moduleDefinitionId === GOLDEN_DRAWER_MODULE_ID) {
+      if (source.source === "LEGACY_DEFAULT") {
+        classifications.push(classification(instance, source, "ASSEMBLY", "LEGACY_DEFAULT encontrado dentro do dispatch profissional; não promover para machining."));
+        continue;
+      }
+      if (source.kind === "runner-installation") {
         const targetPart = partsById.get(source.partId);
         const variantId = instance.hardwareVariantIds?.slide;
         const variant = source.hardwareId ? HardwareRegistry.getManufacturingVariant(source.hardwareId, variantId) : undefined;
@@ -360,6 +376,7 @@ export function buildMachiningReport(
         const operation = makeMoventoSlideMachiningOperation(instance, source, targetPart);
         operations.push(operation);
         readiness.push(...evaluateMachiningReadiness([operation]));
+        classifications.push(classification(instance, source, "MACHINING", "Candidato downstream MOVENTO; permanece INCOMPLETE enquanto coordenadas industriais não forem documentadas."));
         assemblyReadiness.push({
           id: `${source.id}:movento-assembly`,
           instanceId: instance.id,
@@ -388,9 +405,15 @@ export function buildMachiningReport(
           warnings.push(`Operação ${source.id}: lateral correspondente não encontrada.`);
           continue;
         }
-        const operation = makeHingeMachiningOperation(instance, source, door, targetPart, source.kind, resolveGoldenHardwareApplication(instance));
+        if (source.kind === "hinge-fixing") {
+          assemblyReadiness.push(hingeAssemblyReadiness(instance, source));
+          classifications.push(classification(instance, source, "ASSEMBLY", "Fixação de dobradiça é montagem; nenhum diâmetro/profundidade de pilot hole foi inventado."));
+          continue;
+        }
+        const operation = makeHingeMachiningOperation(instance, source, door, targetPart, source.kind, resolvedApplication);
         operations.push(operation);
         readiness.push(...evaluateMachiningReadiness([operation]));
+        classifications.push(classification(instance, source, "MACHINING", "Furação de copo derivada de ManufacturerSpec/ApplicationRule; readiness explícita."));
         continue;
       }
 
@@ -413,39 +436,40 @@ export function buildMachiningReport(
           assemblyReadiness.push({
             ...mountingPlateAssemblyReadiness(instance, source),
             id: `${source.id}:fastener-assembly`,
-            reason: "Fastener specification is READY; screw diameter is not promoted to pilot-hole diameter.",
+            status: "INCOMPLETE",
+            missingParameters: ["pilotHoleDiameterMm", "pilotHoleDepthMm"],
+            reason: "Mounting plate fastener is assembly data; no pilot-hole machining is promoted without documented parameters.",
           });
-          const operation = makeMountingPlatePilotOperation(instance, source, plate, targetPart, hingePart.id, door.id);
-          operations.push(operation);
-          readiness.push(...evaluateMachiningReadiness([operation]));
+          classifications.push(classification(instance, source, "ASSEMBLY", "Fixação da placa é montagem; screw diameter is not promoted to pilot-hole diameter."));
         }
         continue;
       }
 
       if (source.kind === "shelf-support") {
-        const shelfPartId = source.relatedPartIds?.find((id) => partsById.get(id)?.role === "shelf");
-        const shelf = shelfPartId ? partsById.get(shelfPartId) : undefined;
-        const targetPart = instance.parts.find((part) => part.role === (source.positionMm.x < 0 ? "side-left" : "side-right"));
-        if (!shelf || !targetPart) {
-          warnings.push(`Operação ${source.id}: prateleira/lateral correspondente não encontrada.`);
-          continue;
-        }
-        const operation = makeShelfSupportMachiningOperation(instance, source, targetPart, shelf.id);
-        operations.push(operation);
-        readiness.push(...evaluateMachiningReadiness([operation]));
+        assemblyReadiness.push({
+          id: `${source.id}:assembly`,
+          instanceId: instance.id,
+          hardwareId: source.hardwareId,
+          relatedPartIds: source.relatedPartIds ?? [source.partId],
+          status: "INCOMPLETE",
+          missingParameters: ["holeDiameterMm", "holeDepthMm", "edgeOffsetMm", "patternPitchMm"],
+          reason: "Shelf/support/side relation is semantic assembly; no drilling is materialized without a documented hole rule.",
+        });
+        classifications.push(classification(instance, source, "ASSEMBLY", "Shelf support semantic relation retained without fabricated drilling."));
+        classifications.push(classification(instance, source, "MACHINING", "Shelf support machining remains INCOMPLETE without hole specification."));
         continue;
       }
 
       if (source.kind === "gola-profile") {
-        classifications.push(classification(instance, source, "ASSEMBLY", "Perfil Gola montado; não há variante oficial que comprove rasgo/cava nesta etapa."));
+        classifications.push(classification(instance, source, "PURCHASED_HARDWARE", "HARDWARE_VISUAL: Perfil Gola montado; não há variante oficial que comprove rasgo/cava nesta etapa."));
       } else if (source.kind === "adjustable-foot") {
         classifications.push(classification(instance, source, "PURCHASED_HARDWARE", "Pé regulável é ferragem comprada e montada; nenhuma furação foi inventada."));
       } else if (source.kind === "toe-kick-clip") {
         classifications.push(classification(instance, source, "PURCHASED_HARDWARE", "Clip é ferragem comprada e montada no conjunto do rodapé."));
       } else if (source.kind === "toe-kick-profile") {
         classifications.push(classification(instance, source, "PROFILE", "Rodapé/perfil é componente de perfil; não é operação CNC por si só."));
-      } else if (source.kind === "confirmat" || source.kind === "dowel") {
-        classifications.push(classification(instance, source, "ASSEMBLY", "Operação genérica legada; não foi promovida a usinagem sem evidência industrial do módulo."));
+      } else if (source.kind === "confirmat" || source.kind === "dowel" || source.kind === "handle-through") {
+        classifications.push(classification(instance, source, "MACHINING", "Sem regra/provenance industrial suficiente; permanece INCOMPLETE e não é promovida a operação geométrica."));
       }
     }
 

@@ -4,6 +4,7 @@ import type {
 } from "../contracts/HardwareApplicationRule";
 import type { FurnitureInstance } from "../contracts/FurnitureInstance";
 import { HardwareRegistry } from "../registry/HardwareRegistry";
+import { ConstructionProfileRegistry } from "../registry/ConstructionProfileRegistry";
 import { GOLDEN_71B3550_173H7100_RULE } from "../families/kitchen/applicationRules";
 import { GOLDEN_2_DOOR_FRONT_LAYOUT_RULE } from "../families/kitchen/frontLayoutRules";
 import { resolveFrontLayout } from "./frontLayoutResolver";
@@ -23,12 +24,11 @@ function unique(values: string[]) {
   return values.filter((value, index) => values.indexOf(value) === index);
 }
 
-export function resolveGoldenHardwareApplication(
+function resolveHardwareApplicationForRule(
   instance: FurnitureInstance,
+  rule: typeof GOLDEN_71B3550_173H7100_RULE,
+  frontLayoutRule = GOLDEN_2_DOOR_FRONT_LAYOUT_RULE,
 ): ResolvedHardwareApplication | undefined {
-  if (instance.moduleDefinitionId !== GOLDEN_MODULE_ID) return undefined;
-
-  const rule = GOLDEN_71B3550_173H7100_RULE;
   const hingeVariantId = instance.hardwareVariantIds?.hinge;
   const plateVariantId = instance.hardwareVariantIds?.mountingPlate;
   const hingeVariant = HardwareRegistry.getManufacturingVariant(instance.hardwareOverrides.hinge, hingeVariantId);
@@ -89,7 +89,7 @@ export function resolveGoldenHardwareApplication(
           frontTopMm: instance.dimensionsMm.height,
           frontZMm: doors[0].positionMm.z,
         },
-        GOLDEN_2_DOOR_FRONT_LAYOUT_RULE,
+        frontLayoutRule,
       )
     : undefined;
   const placements = frontLayout
@@ -187,4 +187,17 @@ export function resolveGoldenHardwareApplication(
     applicationRuleProvenance: rule.provenance,
     manufacturerProvenance: hingeSpec?.provenance ?? plateSpec?.provenance,
   };
+}
+
+export function resolveHardwareApplication(instance: FurnitureInstance): ResolvedHardwareApplication | undefined {
+  const profile = ConstructionProfileRegistry.getByModuleDefinitionId(instance.moduleDefinitionId);
+  const rule = profile?.hardwareApplicationRule;
+  if (!profile || !rule) return undefined;
+  return resolveHardwareApplicationForRule(instance, rule, profile.frontLayoutRule ?? GOLDEN_2_DOOR_FRONT_LAYOUT_RULE);
+}
+
+/** @deprecated Use resolveHardwareApplication; retained only for Stage 9/10 compatibility. */
+export function resolveGoldenHardwareApplication(instance: FurnitureInstance): ResolvedHardwareApplication | undefined {
+  if (instance.moduleDefinitionId !== GOLDEN_MODULE_ID) return undefined;
+  return resolveHardwareApplication(instance);
 }

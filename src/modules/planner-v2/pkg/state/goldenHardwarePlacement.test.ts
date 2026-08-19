@@ -177,20 +177,20 @@ describe("Golden Hardware Placement — Etapa 6.1", () => {
     }
     const hingeJoinery = joinery.operations.filter((operation) => operation.kind === "hinge-cup" || operation.kind === "mounting-plate-placement");
     expect(hingeJoinery.length).toBe(8);
-    expect(hingeJoinery.every((operation) => [263, 757].includes(operation.positionMm.y))).toBe(true);
+    expect(hingeJoinery.every((operation) => [263, 757].includes(operation.positionMm!.y))).toBe(true);
     const hingeMachining = machining.operations.filter((operation) => operation.hardwareId === "hinge-soft-close" || operation.hardwareId === "mounting-plate-37-32");
-    expect(hingeMachining.length).toBe(12);
+    expect(hingeMachining.length).toBe(4);
     const localMismatches = hingeMachining.filter((operation) => {
       const source = joinery.operations.find((candidate) => candidate.id === operation.sourceJoineryId);
       const target = instance.parts.find((part) => part.id === operation.partId);
       return source === undefined || target === undefined
-        || operation.coordinates.positionMm.x !== source.positionMm.x - target.positionMm.x
-        || operation.coordinates.positionMm.y !== source.positionMm.y - target.positionMm.y;
+        || operation.coordinates!.positionMm.x !== source.positionMm!.x - target.positionMm!.x
+        || operation.coordinates!.positionMm.y !== source.positionMm!.y - target.positionMm!.y;
     }).map((operation) => ({
       id: operation.id,
       sourceJoineryId: operation.sourceJoineryId,
       partId: operation.partId,
-      operation: operation.coordinates.positionMm,
+      operation: operation.coordinates!.positionMm,
       source: joinery.operations.find((candidate) => candidate.id === operation.sourceJoineryId)?.positionMm,
       target: instance.parts.find((part) => part.id === operation.partId)?.positionMm,
     }));

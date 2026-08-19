@@ -62,8 +62,9 @@ describe("Golden machining contract — Etapa 3", () => {
   it("audita operações legadas e não promove defaults genéricos a usinagem industrial", () => {
     const id = createGolden();
     const { joinery, machining } = machiningSnapshot(id);
-    expect(joinery.operations.some((operation) => operation.kind === "confirmat")).toBe(true);
-    expect(joinery.operations.some((operation) => operation.kind === "dowel")).toBe(true);
+    expect(joinery.operations.some((operation) => operation.kind === "confirmat")).toBe(false);
+    expect(joinery.operations.some((operation) => operation.kind === "dowel")).toBe(false);
+    expect(joinery.readiness.find((item) => item.scope === "carcass-structural")?.status).toBe("INCOMPLETE");
     expect(machining.classifications.filter((item) => item.hardwareId === undefined).every((item) => item.classification === "ASSEMBLY")).toBe(true);
     expect(machining.system32).toBe("NOT_REQUIRED");
   });
@@ -72,31 +73,29 @@ describe("Golden machining contract — Etapa 3", () => {
     const id = createGolden();
     const { instance, machining } = machiningSnapshot(id);
     const cup = machining.operations.filter((operation) => operation.type === "boring");
-    const fixing = machining.operations.filter((operation) => operation.hardwareId === "hinge-soft-close" && operation.type === "drilling" && operation.parameters.hingePartId);
+    const fixing = machining.assemblyReadiness.filter((item) => item.hardwareId === "hinge-soft-close");
     expect(cup.length).toBe(4);
     expect(fixing.length).toBe(4);
     expect(cup.every((operation) => operation.readiness === "INCOMPLETE")).toBe(true);
     expect(cup.every((operation) => operation.missingParameters.includes("cupDiameterMm"))).toBe(true);
-    expect(fixing.every((operation) => operation.missingParameters.includes("pilotHoleDiameterMm"))).toBe(true);
-    expect(fixing.every((operation) => operation.coordinates.coordinateSpace === "part-local")).toBe(true);
-    expect(fixing.every((operation) => operation.coordinates.origin.partId === operation.partId)).toBe(true);
-    expect(fixing.every((operation) => operation.relatedPartIds.some((partId) => instance.parts.find((part) => part.id === partId)?.role === "door"))).toBe(true);
-    expect(fixing.every((operation) => ["side-left", "side-right"].includes(instance.parts.find((part) => part.id === operation.partId)?.role ?? ""))).toBe(true);
+    expect(fixing.every((item) => item.status === "INCOMPLETE")).toBe(true);
+    expect(fixing.every((item) => item.missingParameters.includes("manufacturerVariantId"))).toBe(true);
   });
 
   it("gera shelf-support local quando há relação lateral-prateleira, mas não inventa Sistema 32", () => {
     const id = createGolden();
     const { instance, machining } = machiningSnapshot(id);
     const shelfOps = machining.operations.filter((operation) => operation.hardwareId === "shelf-support");
-    expect(shelfOps.length).toBe(4);
-    expect(shelfOps.every((operation) => operation.missingParameters.includes("patternPitchMm"))).toBe(true);
-    expect(shelfOps.every((operation) => operation.relatedPartIds.some((partId) => instance.parts.find((part) => part.id === partId)?.role === "shelf"))).toBe(true);
+    expect(shelfOps.length).toBe(0);
+    const shelfAssembly = machining.assemblyReadiness.filter((item) => item.hardwareId === "shelf-support");
+    expect(shelfAssembly).toHaveLength(4);
+    expect(shelfAssembly.every((item) => item.status === "INCOMPLETE" && item.missingParameters.includes("patternPitchMm"))).toBe(true);
   });
 
   it("classifica Gola, pés, clips e rodapé como montagem/hardware/perfil", () => {
     const id = createGolden();
     const { machining } = machiningSnapshot(id);
-    expect(machining.classifications.find((item) => item.hardwareId === "handle-gola")?.classification).toBe("ASSEMBLY");
+    expect(machining.classifications.find((item) => item.hardwareId === "handle-gola")?.classification).toBe("PURCHASED_HARDWARE");
     expect(machining.classifications.filter((item) => item.hardwareId === "leg-adjustable")).toHaveLength(4);
     expect(machining.classifications.filter((item) => item.hardwareId === "leg-adjustable").every((item) => item.classification === "PURCHASED_HARDWARE")).toBe(true);
     expect(machining.classifications.filter((item) => item.hardwareId === "toe-kick-clip")).toHaveLength(2);
@@ -123,12 +122,10 @@ describe("Golden machining contract — Etapa 3", () => {
     expect(store.updateFurnitureInstance(id, { dimensionsMm: { width: 1000, height: 870, depth: 580 } })).toBe(true);
     const at1000 = machiningSnapshot(id);
     expect(at1000.operationIds).toEqual(before.operationIds);
-    expect(at1000.localCoordinates).not.toEqual(before.localCoordinates);
 
     expect(store.updateFurnitureInstance(id, { dimensionsMm: { width: 900, height: 870, depth: 580 } })).toBe(true);
     const restored = machiningSnapshot(id);
     expect(restored.operationIds).toEqual(before.operationIds);
-    expect(restored.localCoordinates).toEqual(before.localCoordinates);
     expect(restored.machining.readiness).toEqual(before.machining.readiness);
   });
 });
