@@ -1,29 +1,28 @@
-# Welcome to your Lovable project
+# Dioris ERP
 
-This project was built with [Lovable](https://lovable.dev).
+Dioris ERP é uma plataforma SaaS brasileira para operações de comércio multicanal. O produto centraliza catálogo, SKUs, estoque, pedidos, clientes, canais de venda, integrações e assinatura em uma única operação.
 
-## Build with Lovable
+## Direção do produto
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+A nova base substitui completamente o produto anterior e não contém mais o domínio de marcenaria. O núcleo será construído para competir com hubs e ERPs de e-commerce, com arquitetura preparada para marketplaces, lojas virtuais, dropshipping, APIs e webhooks.
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+## Primeira fundação
 
-## Development
+- Dashboard operacional
+- Produtos e catálogo
+- Estoque
+- Pedidos
+- Clientes
+- Canais de venda
+- Planos e assinatura
+- Estrutura preparada para integrações
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+## Desenvolvimento
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+```bash
+pnpm install
+pnpm dev
+pnpm build
 ```
 
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
+O banco da nova versão deve ser provisionado somente com as migrações de ERP em `db/migrations`.

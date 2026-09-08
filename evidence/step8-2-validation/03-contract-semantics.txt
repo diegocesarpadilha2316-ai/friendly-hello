@@ -1,1 +1,0 @@
-CONTRACT: CarcassRelation agora suporta full-height; ToeKickRelation suporta none; ResolvedCarcass.toeKick é opcional.

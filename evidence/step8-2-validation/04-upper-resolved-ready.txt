@@ -1,1 +1,0 @@
-UPPER READY: validationStatus READY, diagnostics [], toeKickMm 0, toeKick undefined, side relations full-height.

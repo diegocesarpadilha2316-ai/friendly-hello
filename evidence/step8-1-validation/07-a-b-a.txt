@@ -1,1 +1,0 @@
-A→B→A: 800→850→800 validado na mesma instância; cut-list/nesting recalculam e retornam ao snapshot A.

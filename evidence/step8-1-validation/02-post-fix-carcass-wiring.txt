@@ -1,1 +1,0 @@
-POST-FIX: factory upper() encaminha config.id; spy observou GOLDEN_UPPER_CARCASS_CONSTRUCTION_RULE.

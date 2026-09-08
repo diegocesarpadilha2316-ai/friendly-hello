@@ -1,1 +1,0 @@
-STORE REAL PATH: usePlannerStore.addFurnitureInstance → buildModule → ModuleRegistry → ModuleDefinition.build → upper().
